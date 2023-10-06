@@ -1,0 +1,20 @@
+Package: BLMEngineInR
+Type: Package
+Version: 0.1.0
+Date: 2023-10-02
+Title: BLM Engine In R
+Authors@R: c(person(given = "Robert", family = "Santore", 
+                    email = "roberts@windwardenv.com",
+                    role = c("aut")),
+             person(given = "Kelly", family = "Croteau",
+                    email = "kellyc@windwardenv.com",
+                    role = c("aut","cre")))
+Description: The Windward Environmental, LLC Biotic Ligand Model, now as an R 
+    package. Originally programmed in PowerBasic by Robert Santore and others.
+    WORK IN PROGRESS.
+License: file LICENSE
+URL: https://www.windwardenv.com/biotic-ligand-model/
+Encoding: UTF-8
+LazyData: true
+Imports: Rcpp (>= 1.0.10)
+LinkingTo: Rcpp, RcppArmadillo

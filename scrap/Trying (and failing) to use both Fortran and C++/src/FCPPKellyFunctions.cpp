@@ -1,4 +1,4 @@
-#include <Rcpp.h>
+#include "RcppArmadillo.h"
 using namespace Rcpp;
 
 // This is a simple example of exporting a C++ function to R. You can
@@ -11,9 +11,11 @@ using namespace Rcpp;
 //   http://gallery.rcpp.org/
 //
 
-// [[Rcpp::depends(Rcpp)]]
+// [[Rcpp::depends(RcppArmadillo)]]
+
 extern "C" {
-  FNCalcSpecConc_(int NComp, int NSpec, double *CConc, double *K, int **Stoich, double *SConc);
+  double* FNCalcSpecConc_(int NComp, int NSpec, double CConc[],
+                          double K[], int* Stoich[]);
 }
 
 // [[Rcpp::export]]
@@ -24,7 +26,7 @@ Rcpp::NumericVector FCalcSpecConc(Rcpp::NumericVector CConc,
 
   Rcpp::NumericVector SConc(NSpec);
 
-  FNCalcSpecConc_(NComp, NSpec, CConc, K, Stoich, SConc)
+  FNCalcSpecConc_(NComp, NSpec, CConc, K, Stoich, SConc);
 
   return SConc;
 }
