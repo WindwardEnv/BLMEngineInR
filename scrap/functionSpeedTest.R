@@ -40,6 +40,14 @@ apply(time.rec*10^6, MARGIN = 2, FUN = quantile, probs = c(0.05,0.25,0.5,0.75,0.
 # KellyR   0        .-|-.........                                            +++
 # KellyCpp 0     |-....                                                        +
 # KellyF   0      |-.......                                   0
+#
+#
+# Other reasons to choose one over the other:
+#  - ease of using vectors and matrices
+#  - ease of coding and stuff
+#
+#  - can we build package with .f90 source or does it need to be .f? (Kelly)
+#  - relative speed improvement of C++ with log-space (Bob)
 
 
 
