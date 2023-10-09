@@ -29,8 +29,8 @@ save(TestDataStoich, file = "data/TestDataStoich.RData")
 
 # Reaction Equilibrium constants
 TestDataK = 10^c(
-  H = 1,
-  CO3 = 1,
+  H = 0,
+  CO3 = 0,
   HCO3 = 10.329,
   H2CO3 = 16.686
 )
