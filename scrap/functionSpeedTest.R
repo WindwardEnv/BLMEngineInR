@@ -21,7 +21,6 @@ for(i in 1:nrow(time.rec)){
   time.rec$KellyCpp[i] = time.2 - time.1
   time.rec$KellyF[i] = time.3 - time.2
 }
-#hello
 summary(time.rec * 10^6)#microseconds
 #     KellyR           KellyCpp          KellyF
 # Min.   :  8.106   Min.   : 4.768   Min.   : 6.914
