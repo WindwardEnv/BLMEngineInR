@@ -1,6 +1,6 @@
-# tryCatch(dyn.unload("src/FNKellyFunctions.dll"))
-# system("R CMD SHLIB src/FNKellyFunctions.f")
-# dyn.load("src/FNKellyFunctions.dll")
+tryCatch(dyn.unload("src/FNKellyFunctions.dll"))
+system("R CMD SHLIB src/FNKellyFunctions.f")
+dyn.load("src/FNKellyFunctions.dll")
 
 FCalcSpecConc = function(CConc, K, Stoich, NComp, NSpec){
   results = .Fortran("FNCalcSpecConc",

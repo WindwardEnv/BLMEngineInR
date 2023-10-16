@@ -1,25 +1,32 @@
 load("data/testData.RData")
 source("R/KellyFunctions.R")
-Rcpp::sourceCpp("scrap/KellyFunctions.cpp")
+Rcpp::sourceCpp("src/CPPKellyFunctions.cpp")
 source("R/FKellyFunctions.R")
 
-stoichV = as.vector(t(TestDataStoich[3:4,]))
+stoichV = as.vector(t(TestDataStoich[1:4,]))
+logCConc = log10(TestDataFreeConc[1:2])
+logK = log10(TestDataK[1:4])
 
-time.rec = data.frame(KellyR = rep(NA, 10000), KellyCpp = NA, KellyF = NA)
+time.rec = data.frame(KellyR = rep(NA, 10000), KellyF = NA, KellyCpp = NA, KellyCppLog = NA)
 for(i in 1:nrow(time.rec)){
   start.time = Sys.time()
-  CalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[3:4], Stoich = TestDataStoich[3:4,])
+  CalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
+               Stoich = TestDataStoich[1:4,])
   time.1 = Sys.time()
-  CppCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[3:4], Stoich = stoichV,
-                  NComp = 2, NSpec = 2)
+  FCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
+                   Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
   time.2 = Sys.time()
-  FCalcSpeciesConc(CConc = TestDataFreeConc[1:2], K = TestDataK[3:4],
-                   Stoich = TestDataStoich[3:4,], NComp = 2, NSpec = 2)
+  CppCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
+                  Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
   time.3 = Sys.time()
+  10^CppCalcLogSpecConc(LogCConc = logCConc, LogK = logK,
+                        Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
+  time.4 = Sys.time()
 
   time.rec$KellyR[i] = time.1 - start.time
-  time.rec$KellyCpp[i] = time.2 - time.1
-  time.rec$KellyF[i] = time.3 - time.2
+  time.rec$KellyF[i] = time.2 - time.1
+  time.rec$KellyCpp[i] = time.3 - time.2
+  time.rec$KellyCppLog[i] = time.4 - time.3
 }
 summary(time.rec * 10^6)#microseconds
 #     KellyR           KellyCpp          KellyF
@@ -37,9 +44,10 @@ apply(time.rec*10^6, MARGIN = 2, FUN = quantile, probs = c(0.05,0.25,0.5,0.75,0.
 # 75% 11.205673  6.914139  9.059906
 # 95% 20.980835 10.967255 15.974045
 
-# KellyR   0        .-|-.........                                            +++
-# KellyCpp 0     |-....                                                        +
-# KellyF   0      |-.......                                   0
+# KellyR      0        .-|-.........                                            +++
+# KellyF      0      |-.......                                   0
+# KellyCpp    0     |-....                                                        +
+# KellyCppLog 0     |-....                                                        +
 #
 #
 # Other reasons to choose one over the other:
