@@ -16,7 +16,6 @@
 getData = function(inputFile, NComp){
 
   # for now, using the test data
-  data("TestDataTotalConc")
   NObs = 1
   obsLabels = matrix(
     c("A", "a"),
@@ -24,9 +23,18 @@ getData = function(inputFile, NComp){
     ncol = 2,
     dimnames = list(Obs = 1:NObs, c("Site Label", "Sample Label"))
   )
-  totConcObs = matrix(TestDataTotalConc,
-                      nrow = NObs,
-                      dimnames = list(Obs = 1, Comps = NULL))
+  if (inputFile == "Test") {
+    data("TestDataTotalConc")
+    totConcObs = matrix(TestDataTotalConc,
+                        nrow = NObs,
+                        dimnames = list(Obs = 1, Comps = NULL))
+  } else if (inputFile == "Full_Inorg"){
+    data("Full_InorgDataTotalConc")
+    totConcObs = matrix(Full_InorgDataTotalConc,
+                        nrow = NObs,
+                        dimnames = list(Obs = 1, Comps = NULL))
+  }
+
 
   # read in input file
   # -get number of observations

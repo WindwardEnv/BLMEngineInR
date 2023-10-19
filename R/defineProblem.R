@@ -10,8 +10,10 @@
 #' \describe{
 #'  \item{`NComp`}{integer; the number of components}
 #'  \item{`NSpec`}{integer; the number of species}
+#'  \item{`K`}{the equilibrium coefficients (numeric vector of length `NSpec`)}
 #'  \item{`logK`}{the log10-transformed equilibrium coefficients (numeric vector of length `NSpec`)}
 #'  \item{`Stoich`}{the stoichiometry matrix of the reactions (integer matrix of size `NSpec` x `nComp`)}
+#'  \item{`CConc`}{the component free ion concentrations (numeric vector of length `nComp`)}
 #' }
 #'
 #' @noRd
@@ -21,12 +23,23 @@ defineProblem = function(paramFile){
   # stopifnot(file.exists(paramFile))
 
   # for now, this function will be returning our test data
-  data(TestDataFreeConc, TestDataK, TestDataStoich)
-  NComp = length(TestDataFreeConc)
-  NSpec = length(TestDataK)
-  CConc = TestDataFreeConc[1:NComp]
-  logK = log10(TestDataK)
-  Stoich = TestDataStoich
+  if (paramFile == "Test") {
+    data("TestDataFreeConc", "TestDataK", "TestDataStoich")
+    NComp = ncol(TestDataStoich)
+    NSpec = nrow(TestDataStoich)
+    CConc = TestDataFreeConc[1:NComp]
+    K = TestDataK
+    logK = log10(TestDataK)
+    Stoich = TestDataStoich
+  } else if (paramFile == "Full_Inorg"){
+    data("Full_InorgDataFreeConc", "Full_InorgDataK", "Full_InorgDataStoich")
+    NComp = ncol(Full_InorgDataStoich)
+    NSpec = nrow(Full_InorgDataStoich)
+    CConc = Full_InorgDataFreeConc[1:NComp]
+    K = Full_InorgDataK
+    logK = log10(Full_InorgDataK)
+    Stoich = Full_InorgDataStoich
+  }
 
   # read in parameter file
   # -get number of components
@@ -58,6 +71,7 @@ defineProblem = function(paramFile){
   out = list(
     NComp = NComp,
     NSpec = NSpec,
+    K = K,
     logK = logK,
     Stoich = Stoich,
     CConc = CConc

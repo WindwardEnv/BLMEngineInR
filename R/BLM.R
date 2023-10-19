@@ -20,15 +20,16 @@
 #' ## Not run:
 #' BLM(paramFile = "path/mypfile.dat", inputFile = "path/myinputfile.blm")
 #' ## End(Not run)
-BLM = function(paramFile, inputFile, quiet = T, mode = c("speciation","toxicity"),
-               writeOutputFile = F, outputFileName = NULL,
-               criticalSource = c("paramFile","inputFile"),
-               convergenceCriteria = 0.001){
+BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity"),
+               # writeOutputFile = F, outputFileName = NULL,
+               # criticalSource = c("paramFile","inputFile"),
+               # convergenceCriteria = 0.001
+               ){
 
   # error catching
   # stopifnot(file.exists(paramFile))
   # stopifnot(file.exists(inputFile))
-  mode = match.arg(mode)
+  # mode = match.arg(mode)
 
   # 1. parse out parameter file in DefineProblem
   #   --> parameter file name
@@ -40,11 +41,13 @@ BLM = function(paramFile, inputFile, quiet = T, mode = c("speciation","toxicity"
   #   <-- R variable with component concentrations (total or free dep on paramFile)
   thisInput = getData(inputFile, thisProblem$NComp)
 
+  globalVars = c(thisProblem, thisInput)
+
   # 3. Run the speciation problem
   #   --> R variable defining problem from step 1
   #   --> R variable with inputs from step 2
   #   <-- R variable with speciation outputs
-  out = do.call(CppCalcSpecConc, args = c(thisProblem, thisInput))
+  out = do.call(CppCalcSpecConc, args = globalVars[formalArgs(CppCalcSpecConc)])
 
   return(out)
 
