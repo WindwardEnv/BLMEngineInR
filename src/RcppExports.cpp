@@ -25,10 +25,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// CppCalcLogSpecConc
+std::vector<double> CppCalcLogSpecConc(std::vector<double> LogCConc, std::vector<double> LogK, Rcpp::IntegerMatrix Stoich, unsigned int NComp, unsigned int NSpec);
+RcppExport SEXP _BLMEngineInR_CppCalcLogSpecConc(SEXP LogCConcSEXP, SEXP LogKSEXP, SEXP StoichSEXP, SEXP NCompSEXP, SEXP NSpecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type LogCConc(LogCConcSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type LogK(LogKSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type Stoich(StoichSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type NComp(NCompSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type NSpec(NSpecSEXP);
+    rcpp_result_gen = Rcpp::wrap(CppCalcLogSpecConc(LogCConc, LogK, Stoich, NComp, NSpec));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BLMEngineInR_CppCalcSpecConc", (DL_FUNC) &_BLMEngineInR_CppCalcSpecConc, 5},
-    {"fncalcspecconc", (DL_FUNC) &F77_NAME(fncalcspecconc), 6},
+    {"_BLMEngineInR_CppCalcLogSpecConc", (DL_FUNC) &_BLMEngineInR_CppCalcLogSpecConc, 5},
     {NULL, NULL, 0}
 };
 
