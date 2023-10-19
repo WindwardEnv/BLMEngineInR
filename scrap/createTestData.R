@@ -17,14 +17,17 @@ TestDataFreeConc = c(
 save(TestDataFreeConc, file = "data/TestDataFreeConc.RData")
 
 # Reaction stoichiometry
-TestDataStoich = matrix(c(
-  # H  CO3
-  1, 0,  #H = +1*H
-  0, 1,  #CO3 = +1*CO3
-  1, 1,  #HCO3 = +1*H +1*CO3
-  2, 1   #H2CO3 = +2*H +1*CO3
-), byrow = T, ncol = 2,
-dimnames = list(Spec=c("H","CO3","HCO3","H2CO3"), Comp = c("H","CO3")))
+TestDataStoich = matrix(
+  data = c(
+    # H  CO3
+    1, 0,  #H = +1*H
+    0, 1,  #CO3 = +1*CO3
+    1, 1,  #HCO3 = +1*H +1*CO3
+    2, 1   #H2CO3 = +2*H +1*CO3
+  ), byrow = T, nrow = 4, ncol = 2,
+  dimnames = list(Spec = c("H","CO3","HCO3","H2CO3"),
+                  Comp = c("H","CO3"))
+)
 save(TestDataStoich, file = "data/TestDataStoich.RData")
 
 # Reaction Equilibrium constants
