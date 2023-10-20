@@ -8,13 +8,23 @@
 #' @returns Returns whatever is needed for the speciation problem to be run. A
 #' `list` object with the following components:
 #' \describe{
-#'  \item{`NComp`}{integer; the number of components}
-#'  \item{`NSpec`}{integer; the number of species}
-#'  \item{`K`}{the equilibrium coefficients (numeric vector of length `NSpec`)}
-#'  \item{`logK`}{the log10-transformed equilibrium coefficients (numeric vector of length `NSpec`)}
-#'  \item{`Stoich`}{the stoichiometry matrix of the reactions (integer matrix of size `NSpec` x `nComp`)}
-#'  \item{`CConc`}{the component free ion concentrations (numeric vector of length `nComp`)}
+#'  \item{\code{NComp}}{integer; the number of components}
+#'  \item{\code{NSpec}}{integer; the number of species}
+#'  \item{\code{CompNames}}{character vector of length `NComp`; component names}
+#'  \item{\code{CompCharge}}{integer vector of length `NComp`; the charge of the components as free ions}
+#'  \item{\code{CompType}}{integer vector of length `NComp`; the type of component. It should be a fixed set of values where 1 =...}
+#'  \item{\code{CompActCorr}}{integer vector of length `NComp`; the method to use for activity corrections with this component, where 1 == }
+#'  \item{\code{CompSiteDens}}{numeric vector of length `NComp`; the density of binding sites for this component - usually 1, except for DOC and BL components}
+#'  \item{\code{SpecNames}}{character vector of length `NSpec`; species names}
+#'  \item{\code{SpecType}}{integer vector of length `NSpec`; the type of chemical species, where 1 = ...}
+#'  \item{\code{SpecActCorr}}{integer vector of length `NSpec`; the method to use for activity corrections with this speies where 1 = ...}
+#'  \item{\code{Stoich}}{the stoichiometry matrix of the reactions (integer matrix of size `NSpec` x `nComp`)}
+#'  \item{\code{K}}{the equilibrium coefficients (numeric vector of length `NSpec`)}
+#'  \item{\code{logK}}{the log10-transformed equilibrium coefficients (numeric vector of length `NSpec`)}
+#'  \item{\code{deltaH}}{the enthalpy change for each formation reaction (species)}
 #' }
+#'
+#' @keywords internal
 #'
 #' @noRd
 defineProblem = function(paramFile){
@@ -24,19 +34,15 @@ defineProblem = function(paramFile){
 
   # for now, this function will be returning our test data
   if (paramFile == "Test") {
-    data("TestDataFreeConc", "TestDataK", "TestDataStoich")
+    data("TestDataK", "TestDataStoich")
     NComp = ncol(TestDataStoich)
     NSpec = nrow(TestDataStoich)
-    CConc = TestDataFreeConc[1:NComp]
-    K = TestDataK
     logK = log10(TestDataK)
     Stoich = TestDataStoich
   } else if (paramFile == "Full_Inorg"){
-    data("Full_InorgDataFreeConc", "Full_InorgDataK", "Full_InorgDataStoich")
+    data("Full_InorgDataK", "Full_InorgDataStoich")
     NComp = ncol(Full_InorgDataStoich)
     NSpec = nrow(Full_InorgDataStoich)
-    CConc = Full_InorgDataFreeConc[1:NComp]
-    K = Full_InorgDataK
     logK = log10(Full_InorgDataK)
     Stoich = Full_InorgDataStoich
   }
@@ -45,36 +51,53 @@ defineProblem = function(paramFile){
   # -get number of components
   # -get number of species
   # -get component information
-  # --name (character string)
-  # --charge (signed integer)
-  # --component type
-  # --activity correction type
-  # --site density
+  # --CompNames: name (character string)
+  CompNames = colnames(Stoich)
+  # --CompCharge: charge (signed integer)
+  CompCharge = integer(NComp)
+  # --CompType: component type
+  CompType = integer(NComp)
+  # --CompActCorr: activity correction type
+  CompActCorr = integer(NComp)
+  # --CompSiteDens: site density
+  CompSiteDens = numeric(NComp)
   # -get species information
-  # --name
-  # --species type
-  # --activity correction type
-  # --stoichiometry
-  # --equilibrium coefficient (logK)
-  # --enthalpy change (deltaH)
+  # --SpecNames: name
+  SpecNames = names(logK)
+  # --SpecType: species type
+  SpecType = integer(NSpec)
+  # --SpecActCorr: activity correction type
+  SpecActCorr = integer(NSpec)
+  # --Stoich: stoichiometry
+  # --logK: equilibrium coefficient
+  # --detlaH: enthalpy change
+  deltaH = numeric(NSpec)
   # -get special species/component information
   # --name of metal
   # --name of biotic ligand
   # --name of BL-metal complex(es)
   # --name of DOC component(s)
+  # ---Make WHAM species from DOC
   # -get critical accumulation information --> this part also needs to happen in listCAT function
   # --number of critical accumulations in table
   # --critical accumulation table (CAT)
-  # -Make WHAM species from DOC
 
   # assemble output
   out = list(
     NComp = NComp,
     NSpec = NSpec,
-    K = K,
-    logK = logK,
+    CompNames = CompNames,
+    CompCharge = CompCharge,
+    CompType = CompType,
+    CompActCorr = CompActCorr,
+    CompSiteDens = CompSiteDens,
+    SpecNames = SpecNames,
+    SpecType = SpecType,
+    SpecActCorr = SpecActCorr,
     Stoich = Stoich,
-    CConc = CConc
+    K = 10^logK,
+    logK = logK,
+    deltaH = deltaH
   )
   return(out)
 }

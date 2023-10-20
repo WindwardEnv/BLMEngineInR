@@ -14,6 +14,7 @@
 #'
 #' @return A data frame with chemistry speciation information, including total
 #'   concentrations.
+#'
 #' @export
 #'
 #' @examples
@@ -39,15 +40,51 @@ BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity
   # 2. Read inputFile
   #   --> input file name
   #   <-- R variable with component concentrations (total or free dep on paramFile)
-  thisInput = getData(inputFile, thisProblem$NComp)
+  allInput = getData(inputFile, thisProblem$NComp, thisProblem$CompNames)
+  # globalVars = c(thisProblem, thisInput)
 
-  globalVars = c(thisProblem, thisInput)
+  # Save some common variables for inializing arrays
+  NComp = thisProblem$NComp
+  CompNames = thisProblem$CompNames
+  NSpec = thisProblem$NSpec
+  SpecNames = thisProblem$SpecNames
 
-  # 3. Run the speciation problem
-  #   --> R variable defining problem from step 1
-  #   --> R variable with inputs from step 2
-  #   <-- R variable with speciation outputs
-  out = do.call(CppCalcSpecConc, args = globalVars[formalArgs(CppCalcSpecConc)])
+  # Initialize the output array
+  out = array(numeric(1), dim = c(allInput$NObs, NSpec),
+              dimnames = list(1:allInput$NObs, SpecNames))
+
+  # Initialize thisInput as thisProblem, with one observation's worth of
+  # concentrations
+  thisInput = thisProblem
+  thisInput$obsLabels = array(character(2), dimnames = list(c("Site Label", "Sample Label")))
+  thisInput$totConcObs = array(numeric(NComp), dimnames = list(CompNames))
+  thisInput$CConc = array(numeric(NComp), dimnames = list(CompNames))
+  thisInput$SConc = array(numeric(NSpec), dimnames = list(SpecNames))
+
+  # Loop through each observation
+  for (iObs in 1:allInput$NObs){
+    thisInput$obsLabels = allInput$obsLabels[iObs,]
+    thisInput$totConcObs = allInput$totConcObs[iObs,]
+
+    # For now, we're going to use test data, setting the initial "guess" to the
+    # actual component free ion concentrations
+    if (inputFile == "Test") {
+      data("TestDataFreeConc")
+      thisInput$CConc = TestDataFreeConc[1:NComp]
+    } else if (inputFile == "Full_Inorg"){
+      data("Full_InorgDataFreeConc")
+      thisInput$CConc = Full_InorgDataFreeConc[1:NComp]
+    } else {
+      thisInput$CConc = do.call(initialGuess, args = thisInput[formalArgs(initialGuess)])
+    }
+
+    # 3. Run the speciation problem
+    #   --> R variable defining problem from step 1
+    #   --> R variable with inputs from step 2
+    #   <-- R variable with speciation outputs
+    out[iObs,] = do.call("CppCalcSpecConc", args = thisInput[formalArgs("CppCalcSpecConc")])
+
+  }
 
   return(out)
 
