@@ -1,0 +1,118 @@
+Column model parameter file, Ver 4.00
+--------------------------------------------------------------------------------
+Number of Mass Compartments, Input Components, Defined Components, Species, Phases, Linked Lists
+3, 13,  3, 20, 0,  0
+--------------------------------------------------------------------------------
+Compartment    C to M      Units label   <- thinking here about multiple compartments with different Conc to Mass conversions, BL is just one example
+Water,         0.01,       L             <----- if "C to M" is -999 then this field is editable, display in interface
+BL,            0.0000178,  g wt
+Soil,          0.003,      kg
+--------------------------------------------------------------------------------
+Component Charge  Type  Activity  Site Den            <--- these components are displayed in the interface
+H,         1,        1,        2,        1            <--- instead of type, maybe we should specify "Mass compartment" actually, we'll still need type 
+Cu,        2,        1,        2,        1                 to be able to specify fixed activity but we can simplify "Type" if we split out the mass unit info
+DOC-FA,   -1,        1,        1,        0.0006       <--- WHAM FA component - have to think about the interface and if we still want %HA, also WHAMV vs WHAMVII     
+Ca,        2,        1,        2,        1                 We also need to have a section for other WHAM parameters like proton binding, double layer overlap etc
+Mg,        2,        1,        2,        1                 this stuff:  FA parameters, 4.73E-3, 3.26, 9.64, 3.34, 5.52, -103, 0.4,    8E-10, 1500
+Na,        1,        1,        2,        1
+K,         1,        1,        2,        1
+Al,        3,        1,        2,        1
+FeIII,     3,        1,        2,        1
+SO4,      -2,        1,        2,        1
+Cl,       -1,        1,        2,        1
+CO3,      -2,        1,        2,        1
+POC,      -1,       31,        1,        0.0006       <---- I'm not trying to suggest that HA is interpreted as POC, but that POC is interepreted as HA
+--------------------------------------------------------------------------------
+Defined components                                    <--- I'm thinking these components are not displayed in the interface
+Component   From     Charge    Type    Activity    Site Den 
+BL1,      1.45E-05,  -1,       11,      1,          1
+FA1,        DOC-FA,   0,        1,      1,          .004      <--- we need to think through how to specify WHAM species and WHAMV vs WHAMVII
+FA2,        DOC-FA,   0,        1,      1,          .006           we will also be able to put them into different mass units (e.g. soils vs water)
+HA1,        POC,      0,       31,      1,          .004           and have master dbs for WHAM distribution as well as an over-ride with
+HA2,        POC,      0,       31,      1,          .006           a given parameter file (maybe have a parameter file creator)
+--------------------------------------------------------------------------------      <--- Mass unit should be defined as well
+Species  Type Act. iTemp iMonte NC  C1     S1    C2    S2    C3    S3     Log K  Var Log K   Delta H    Temp        Conc
+BL1-Cu,  21,  1,   0,    0,     2, BL1,   1,   Cu,    1,                 7.400       0.000     0.000   0.000  0.0000E+00   <-- what about searching from a master dbs?
+BL1-CuOH,21,  1,   0,    0,     3, BL1,   1,   Cu,    1,     H,    -1,  -1.300       0.000     0.000   0.000  0.0000E+00
+BL1-Ca,  21,  1,   0,    0,     2, BL1,   1,   Ca,    1,                 3.600       0.000     0.000   0.000  0.0000E+00
+BL1-H,   21,  1,   0,    0,     2, BL1,   1,    H,    1,                 5.400       0.000     0.000   0.000  0.0000E+00
+BL1-Na,  21,  1,   0,    0,     2, BL1,   1,   Na,    1,                 3.000       0.000     0.000   0.000  0.0000E+00
+HCO3,    11,  1,   0,    0,     2, CO3,   1,    H,    1,                10.329       0.000     0.000   0.000  0.0000E+00
+H2CO3,   11,  1,   0,    0,     2, CO3,   1,    H,    2,                16.681       0.000     0.000   0.000  0.0000E+00
+MgHCO3,  11,  1,   0,    0,     3, CO3,   1,   Mg,    1,     H,     1,  11.400       0.000     0.000   0.000  0.0000E+00
+MgCO3,   11,  1,   0,    0,     2, CO3,   1,   Mg,    1,                 2.980       0.000     0.000   0.000  0.0000E+00
+MgSO4,   11,  1,   0,    0,     2, Mg,    1,  SO4,    1,                 2.370       0.000     0.000   0.000  0.0000E+00
+CaHCO3,  11,  1,   0,    0,     3, Ca,    1,  CO3,    1,     H,     1,  11.440       0.000     0.000   0.000  0.0000E+00
+CaCO3,   11,  1,   0,    0,     2, Ca,    1,  CO3,    1,                 3.220       0.000     0.000   0.000  0.0000E+00
+CaSO4,   11,  1,   0,    0,     2, Ca,    1,  SO4,    1,                 2.300       0.000     0.000   0.000  0.0000E+00
+CuOH,    11,  1,   0,    0,     2, Cu,    1,    H,   -1,                -7.520       0.000     0.000   0.000  0.0000E+00
+Cu(OH)2, 11,  1,   0,    0,     2, Cu,    1,    H,   -2,               -16.220       0.000     0.000   0.000  0.0000E+00
+CuSO4,   11,  1,   0,    0,     2, Cu,    1,  SO4,    1,                 2.360       0.000     0.000   0.000  0.0000E+00
+CuCO3,   11,  1,   0,    0,     2, Cu,    1,  CO3,    1,                 6.750       0.000     0.000   0.000  0.0000E+00
+Cu(CO3)2,11,  1,   0,    0,     2, Cu,    1,  CO3,    2,                 9.920       0.000     0.000   0.000  0.0000E+00
+CuCl,    11,  1,   0,    0,     2, Cu,    1,   Cl,    1,                 0.400       0.000     0.000   0.000  0.0000E+00
+CuHCO3,  11,  1,   0,    0,     3, Cu,    1,  CO3,    1,      H,    1,  14.620       0.000     0.000   0.000  0.0000E+00
+Cu-FA1,  11,  1,   0,    0,     2, FA1,   1,   Cu,    1,                 5.000       0.000     0.000   0.000  0.0000E+00
+Cu-FA2,  11,  1,   0,    0,     2, FA1,   1,   Cu,    1,                 7.000       0.000     0.000   0.000  0.0000E+00
+Cu-HA1,  31,  1,   0,    0,     2, HA1,   1,   Cu,    1,                 5.500       0.000     0.000   0.000  0.0000E+00
+Cu-HA2,  31,  1,   0,    0,     2, HA1,   1,   Cu,    1,                 7.500       0.000     0.000   0.000  0.0000E+00
+--------------------------------------------------------------------------------
+Linked Lists
+--------------------------------------------------------------------------------      <-- need to think this one through as well
+Phase    iTemp iMonte  H   Cu DOC Ca   Mg   Na  K Al Fe  SO4  Cl CO3   BL  Log Ks  Var Log K   Delta H    Temp        Moles
+--------------------------------------------------------------------------------
+File I/O and System Description
+                              |  File with sequence of input chemistry (next line)               <---- this section needs to be completely re-vamped
+D:\MODELS\CHESS315\CU\LC50.WK1                                              
+ 2                            |  Type of file (1 = ASCII, 2 = LOTUS)
+                              |
+                              |  Name of output file (next line)
+lc50??.WKS                                                                  
+ 2                            |  Type of file (1 = ASCII, 2 = LOTUS)
+                              |
+ 1                            |  Simulation Type
+                              |  (1 = Batch, 2 = Titration, 3 = Column)
+                              |
+ 1                            |  Number of Layers
+                              |
+ 0                            |  Number of Monte Carlo Simulations
+                              |
+ 1.0000E-05                   |  Error Tolerance
+                              |
+ 500                          |  Maximum Iterations
+                              |
+                              |  Output file contents, do you want:
+-1                            |     Concentrations?
+-1                            |     Totals?
+ 0                            |     Equilibrium constants?
+ 0                            |     Residuals?
+ 0                            |     Activity Coefficients?
+-1                            |     Phase Sat. Indices?
+ 0                            |     Phase Ion Activity Products?
+
+User Notes:
+
+[Metal]: Cu
+
+[BL]: BL1
+
+[BL-Metal]: BL1-Cu
+[BL-Metal]: BL1-CuOH
+
+[DOC]: DOC
+
+[THERMO]: NONE
+
+
+                              
+[CRITICAL]: 0.451              <----- If we standardize on the table maybe we don't need the single entry format, that would force us to document
+
+[CRITICAL START]:
+CA,Species,Test Type,Lifestage,Endpoint,Quantifier,References,Miscellaneous
+0.016407677,Ceriodaphnia dubia,Acute,Neonate (<24 hr),,EC50; LC50,WER Reference water,SMEA calculated by median
+[CRITICAL END]
+
+[END]:
+
+
+
