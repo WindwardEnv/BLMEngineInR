@@ -10,14 +10,6 @@ BLM(paramFile, inputFile)
 \item{paramFile}{the path and file name of the parameter file}
 
 \item{inputFile}{the path and file name of the chemistry input file}
-
-\item{quiet}{logical. If `TRUE`, iteration information will be displayed in
-the console.}
-
-\item{mode}{the mode to run the model in. Only values of `"speciation"` or
-`"toxicity"` are supported, or partial matches to those character strings.}
-
-\item{writeOutputFile, outputFileName, criticalSource, convergenceCriteria}{Other parameters that are not implemented, but expected to be needed.}
 }
 \value{
 A data frame with chemistry speciation information, including total
@@ -29,6 +21,6 @@ provided parameter file, input file, and options.
 }
 \examples{
 ## Not run:
-BLM(paramFile = "path/mypfile.dat", inputFile = "path/myinputfile.blm")
+# BLM(paramFile = "path/mypfile.dat", inputFile = "path/myinputfile.blm")
 ## End(Not run)
 }

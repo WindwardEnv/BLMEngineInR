@@ -5,12 +5,12 @@
 #'
 #' @param paramFile the path and file name of the parameter file
 #' @param inputFile the path and file name of the chemistry input file
-#' @param quiet logical. If `TRUE`, iteration information will be displayed in
-#'   the console.
-#' @param mode the mode to run the model in. Only values of `"speciation"` or
-#'   `"toxicity"` are supported, or partial matches to those character strings.
-#' @param writeOutputFile,outputFileName,criticalSource,convergenceCriteria
-#'   Other parameters that are not implemented, but expected to be needed.
+# @param quiet logical. If `TRUE`, iteration information will be displayed in
+#   the console.
+# @param mode the mode to run the model in. Only values of `"speciation"` or
+#   `"toxicity"` are supported, or partial matches to those character strings.
+# @param writeOutputFile,outputFileName,criticalSource,convergenceCriteria
+#   Other parameters that are not implemented, but expected to be needed.
 #'
 #' @return A data frame with chemistry speciation information, including total
 #'   concentrations.
@@ -19,7 +19,7 @@
 #'
 #' @examples
 #' ## Not run:
-#' BLM(paramFile = "path/mypfile.dat", inputFile = "path/myinputfile.blm")
+#' # BLM(paramFile = "path/mypfile.dat", inputFile = "path/myinputfile.blm")
 #' ## End(Not run)
 BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity"),
                # writeOutputFile = F, outputFileName = NULL,

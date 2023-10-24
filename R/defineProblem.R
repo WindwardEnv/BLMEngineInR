@@ -29,22 +29,22 @@
 #' @noRd
 defineProblem = function(paramFile){
 
-  # # error catching
-  # stopifnot(file.exists(paramFile))
+  # error catching
+  stopifnot(file.exists(paramFile))
 
   # for now, this function will be returning our test data
   if (paramFile == "Test") {
-    data("TestDataK", "TestDataStoich")
-    NComp = ncol(TestDataStoich)
-    NSpec = nrow(TestDataStoich)
-    logK = log10(TestDataK)
-    Stoich = TestDataStoich
+    # data("TestDataK", "TestDataStoich")
+    NComp = ncol(BLMEngineInR::TestDataStoich)
+    NSpec = nrow(BLMEngineInR::TestDataStoich)
+    logK = log10(BLMEngineInR::TestDataK)
+    Stoich = BLMEngineInR::TestDataStoich
   } else if (paramFile == "Full_Inorg"){
     data("Full_InorgDataK", "Full_InorgDataStoich")
-    NComp = ncol(Full_InorgDataStoich)
-    NSpec = nrow(Full_InorgDataStoich)
-    logK = log10(Full_InorgDataK)
-    Stoich = Full_InorgDataStoich
+    NComp = ncol(BLMEngineInR::Full_InorgDataStoich)
+    NSpec = nrow(BLMEngineInR::Full_InorgDataStoich)
+    logK = log10(BLMEngineInR::Full_InorgDataK)
+    Stoich = BLMEngineInR::Full_InorgDataStoich
   }
 
   # read in parameter file

@@ -14,7 +14,7 @@ Full_InorgDataTotalConc = c(
   T.CO3 =  1.099870E-03,
   T.BL  =  1.780000E-05
 )
-save(Full_InorgDataTotalConc, file = "data/Full_InorgDataTotalConc.RData")
+usethis::use_data(Full_InorgDataTotalConc, overwrite = T)
 
 # Free ion species concentrations
 Full_InorgDataFreeConc = c(
@@ -51,7 +51,7 @@ Full_InorgDataFreeConc = c(
   CuCl     =  2.048608E-13,
   CuHCO3   =  2.894471E-08
 )
-save(Full_InorgDataFreeConc, file = "data/Full_InorgDataFreeConc.RData")
+usethis::use_data(Full_InorgDataFreeConc, overwrite = T)
 
 # Reaction stoichiometry
 Full_InorgDataStoich = matrix(
@@ -97,7 +97,7 @@ Full_InorgDataStoich = matrix(
 						   "Cu(CO3)2" ,"CuCl" ,"CuHCO3"),
                   Comp = c("H","Cu","DOC","Ca","Mg","Na","K","SO4","Cl","CO3","BL"))
 )
-save(Full_InorgDataStoich, file = "data/Full_InorgDataStoich.RData")
+usethis::use_data(Full_InorgDataStoich, overwrite = T)
 
 # Reaction Equilibrium constants
 Full_InorgDataK = 10^c(
@@ -134,7 +134,7 @@ Full_InorgDataK = 10^c(
   CuCl     =   0.4,
   CuHCO3   =  14.62
 )
-save(Full_InorgDataK, file = "data/Full_InorgDataK.RData")
+usethis::use_data(Full_InorgDataK, overwrite = T)
 
 
 

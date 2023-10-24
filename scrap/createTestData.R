@@ -5,7 +5,7 @@ TestDataTotalConc = c(
   T.H = 1.18332E-04,
   T.CO3 = 1.00000E-04
 )
-save(TestDataTotalConc, file = "data/TestDataTotalConc.RData")
+usethis::use_data(TestDataTotalConc, overwrite = T)
 
 # Free ion species concentrations
 TestDataFreeConc = c(
@@ -14,7 +14,7 @@ TestDataFreeConc = c(
   HCO3 = 8.16805E-05,
   H2CO3 = 1.82705E-05
 )
-save(TestDataFreeConc, file = "data/TestDataFreeConc.RData")
+usethis::use_data(TestDataFreeConc, overwrite = T)
 
 # Reaction stoichiometry
 TestDataStoich = matrix(
@@ -28,7 +28,7 @@ TestDataStoich = matrix(
   dimnames = list(Spec = c("H","CO3","HCO3","H2CO3"),
                   Comp = c("H","CO3"))
 )
-save(TestDataStoich, file = "data/TestDataStoich.RData")
+usethis::use_data(TestDataStoich, overwrite = T)
 
 # Reaction Equilibrium constants
 TestDataK = 10^c(
@@ -37,4 +37,4 @@ TestDataK = 10^c(
   HCO3 = 10.329,
   H2CO3 = 16.686
 )
-save(TestDataK, file = "data/TestDataK.RData")
+usethis::use_data(TestDataK, overwrite = T)
