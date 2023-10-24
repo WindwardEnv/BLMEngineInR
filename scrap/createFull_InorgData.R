@@ -1,7 +1,7 @@
 # Create a set of test chemistry
 
 # Total concentrations for components
-TestDataTotalConc = c(
+Full_InorgDataTotalConc = c(
   T.H   =  2.692990E-08,
   T.Cu  =  4.720990E-08,
   T.DOC =  2.000000E-09,
@@ -14,7 +14,7 @@ TestDataTotalConc = c(
   T.CO3 =  1.099870E-03,
   T.BL  =  1.780000E-05
 )
-save(TestDataTotalConc, file = "data/Full_InorgDataTotalConc.RData")
+save(Full_InorgDataTotalConc, file = "data/Full_InorgDataTotalConc.RData")
 
 # Free ion species concentrations
 Full_InorgDataFreeConc = c(
