@@ -27,13 +27,13 @@ getData = function(inputFile, NComp, CompNames){
     dimnames = list(Obs = 1:NObs, c("Site Label", "Sample Label"))
   )
   if (inputFile == "Test") {
-    data("TestDataTotalConc")
-    totConcObs = matrix(TestDataTotalConc,
+    data("TestDataTotalConc", envir = environment())
+    totConcObs = matrix(BLMEngineInR::TestDataTotalConc,
                         nrow = NObs, ncol = NComp,
                         dimnames = list(Obs = 1, Comps = CompNames))
   } else if (inputFile == "Full_Inorg"){
-    data("Full_InorgDataTotalConc")
-    totConcObs = matrix(Full_InorgDataTotalConc,
+    data("Full_InorgDataTotalConc", envir = environment())
+    totConcObs = matrix(BLMEngineInR::Full_InorgDataTotalConc,
                         nrow = NObs, ncol = NComp,
                         dimnames = list(Obs = 1, Comps = CompNames))
   }

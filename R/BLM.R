@@ -69,11 +69,11 @@ BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity
     # For now, we're going to use test data, setting the initial "guess" to the
     # actual component free ion concentrations
     if (inputFile == "Test") {
-      data("TestDataFreeConc")
-      thisInput$CConc = TestDataFreeConc[1:NComp]
+      data("TestDataFreeConc", envir = environment())
+      thisInput$CConc = BLMEngineInR::TestDataFreeConc[1:NComp]
     } else if (inputFile == "Full_Inorg"){
-      data("Full_InorgDataFreeConc")
-      thisInput$CConc = Full_InorgDataFreeConc[1:NComp]
+      data("Full_InorgDataFreeConc", envir = environment())
+      thisInput$CConc = BLMEngineInR::Full_InorgDataFreeConc[1:NComp]
     } else {
       thisInput$CConc = do.call(initialGuess, args = thisInput[formalArgs(initialGuess)])
     }

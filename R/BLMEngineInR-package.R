@@ -2,7 +2,9 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom methods formalArgs
 #' @importFrom Rcpp evalCpp
+#' @importFrom utils data
 #' @useDynLib BLMEngineInR, .registration = TRUE
 ## usethis namespace: end
 NULL

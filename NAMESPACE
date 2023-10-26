@@ -3,4 +3,6 @@
 export(BLM)
 export(listCAT)
 importFrom(Rcpp,evalCpp)
+importFrom(methods,formalArgs)
+importFrom(utils,data)
 useDynLib(BLMEngineInR, .registration = TRUE)

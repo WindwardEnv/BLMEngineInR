@@ -34,13 +34,13 @@ defineProblem = function(paramFile){
 
   # for now, this function will be returning our test data
   if (paramFile == "Test") {
-    # data("TestDataK", "TestDataStoich")
+    data("TestDataK", "TestDataStoich", envir = environment())
     NComp = ncol(BLMEngineInR::TestDataStoich)
     NSpec = nrow(BLMEngineInR::TestDataStoich)
     logK = log10(BLMEngineInR::TestDataK)
     Stoich = BLMEngineInR::TestDataStoich
   } else if (paramFile == "Full_Inorg"){
-    data("Full_InorgDataK", "Full_InorgDataStoich")
+    data("Full_InorgDataK", "Full_InorgDataStoich", envir = environment())
     NComp = ncol(BLMEngineInR::Full_InorgDataStoich)
     NSpec = nrow(BLMEngineInR::Full_InorgDataStoich)
     logK = log10(BLMEngineInR::Full_InorgDataK)
