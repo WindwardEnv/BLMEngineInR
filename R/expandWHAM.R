@@ -120,7 +120,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       names(BidentTable) = c("S1","S2","AbundDenom")
       BidentTable$FullyProt = paste0(BidentTable$S1,BidentTable$S2,"H")
       BidentTable$S1Deprot = paste0(BidentTable$S1,"-",BidentTable$S2,"H")
-      BidentTable$S2Deprot = paste0(BidentTable$S2,"-",BidentTable$S3,"H")
+      BidentTable$S2Deprot = paste0(BidentTable$S2,"-",BidentTable$S1,"H")
       BidentTable$FullyDeprot = paste0(BidentTable$S1,BidentTable$S2)
       BidentTable$S1Strong1Weak2 = ifelse(BidentTable$S1<=4,1,2)
       BidentTable$S2Strong1Weak2 = ifelse(BidentTable$S2<=4,1,2)
@@ -165,8 +165,6 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
     }
 
   }
-
-
 
   # Initialize variables
   HAFA = c("HA","FA")
@@ -405,7 +403,6 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
     startSpec = max(newSpecNum) + 1
 
   }
-
 
   # Cleanup
   names(SpecCharge) = SpecName
