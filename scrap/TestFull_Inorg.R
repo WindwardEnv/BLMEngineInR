@@ -1,26 +1,27 @@
-load("data/testData.RData")
-source("R/KellyFunctions.R")
-Rcpp::sourceCpp("src/CPPKellyFunctions.cpp")
-source("R/FKellyFunctions.R")
+# load("data/testData.RData")
+# source("R/KellyFunctions.R")
+# Rcpp::sourceCpp("src/CPPKellyFunctions.cpp")
+# source("R/FKellyFunctions.R")
 
-stoichV = as.vector(t(TestDataStoich[1:4,]))
-logCConc = log10(TestDataFreeConc[1:2])
-logK = log10(TestDataK[1:4])
+stoichV = as.vector(t(Full_InorgDataStoich[1:32,]))
+logCConc = log10(Full_InorgDataFreeConc[1:32])
+logK = log10(Full_InorgDataK[1:32])
 
 time.rec = data.frame(KellyR = rep(NA, 10000), KellyF = NA, KellyCpp = NA, KellyCppLog = NA)
 for(i in 1:nrow(time.rec)){
   start.time = Sys.time()
-  CalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
-               Stoich = TestDataStoich[1:4,])
+  # CalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
+  #              Stoich = TestDataStoich[1:4,])
+  # time.1 = Sys.time()
+  # FCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
+  #                  Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
   time.1 = Sys.time()
-  FCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
-                   Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
   time.2 = Sys.time()
-  CppCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
-                  Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
+  CppCalcSpecConc(CConc = Full_InorgDataFreeConc, K = Full_InorgDataK,
+                  Stoich = Full_InorgDataStoich, NComp = 11, NSpec = 32)
   time.3 = Sys.time()
-  10^CppCalcLogSpecConc(LogCConc = logCConc, LogK = logK,
-                        Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
+  CppCalcLogSpecConc(LogCConc = logCConc, LogK = logK,
+                        Stoich = Full_InorgDataStoich, NComp = 11, NSpec = 32)
   time.4 = Sys.time()
 
   time.rec$KellyR[i] = time.1 - start.time

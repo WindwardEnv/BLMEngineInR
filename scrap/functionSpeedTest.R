@@ -10,16 +10,16 @@ logK = log10(TestDataK[1:4])
 time.rec = data.frame(KellyR = rep(NA, 10000), KellyF = NA, KellyCpp = NA, KellyCppLog = NA)
 for(i in 1:nrow(time.rec)){
   start.time = Sys.time()
-  CalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
-               Stoich = TestDataStoich[1:4,])
+  # CalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
+  #              Stoich = TestDataStoich[1:4,])
   time.1 = Sys.time()
-  FCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
-                   Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
+  # FCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
+  #                  Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
   time.2 = Sys.time()
   CppCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[1:4],
                   Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
   time.3 = Sys.time()
-  10^CppCalcLogSpecConc(LogCConc = logCConc, LogK = logK,
+  CppCalcLogSpecConc(LogCConc = logCConc, LogK = logK,
                         Stoich = TestDataStoich[1:4,], NComp = 2, NSpec = 4)
   time.4 = Sys.time()
 
