@@ -16,7 +16,10 @@ License: file LICENSE
 URL: https://www.windwardenv.com/biotic-ligand-model/
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 1.0.10)
+Imports: 
+    methods,
+    Rcpp (>= 1.0.10),
+    utils
 LinkingTo: Rcpp
 Suggests: 
     testthat (>= 3.0.0)

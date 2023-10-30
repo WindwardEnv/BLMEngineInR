@@ -29,12 +29,12 @@ Full_InorgDataFreeConc = c(
   Cl       =  5.359210E-05,
   CO3      =  2.100791E-06,
   BL       =  1.302789E-10,
- `BL-Cu`   =  4.779432E-12,
- `BL-CuOH` =  3.866660E-13,
- `BL-Ca`   =  9.985501E-11,
- `BL-Mg`   =  1.665927E-10,
- `BL-H`    =  8.070763E-13,
- `BL-Na`   =  1.313004E-10,
+  `BL-Cu`   =  4.779432E-12,
+  `BL-CuOH` =  3.866660E-13,
+  `BL-Ca`   =  9.985501E-11,
+  `BL-Mg`   =  1.665927E-10,
+  `BL-H`    =  8.070763E-13,
+  `BL-Na`   =  1.313004E-10,
   HCO3     =  1.031935E-03,
   H2CO3    =  5.803086E-05,
   MgHCO3   =  4.166637E-06,
@@ -44,10 +44,10 @@ Full_InorgDataFreeConc = c(
   CaCO3    =  5.073102E-07,
   CaSO4    =  2.262226E-05,
   CuOH     =  1.381260E-09,
- `Cu(OH)2` =  6.870140E-11,
+  `Cu(OH)2` =  6.870140E-11,
   CuSO4    =  1.944034E-10,
   CuCO3    =  1.449888E-08,
- `Cu(CO3)2`=  4.505236E-11,
+  `Cu(CO3)2`=  4.505236E-11,
   CuCl     =  2.048608E-13,
   CuHCO3   =  2.894471E-08
 )
@@ -56,7 +56,7 @@ usethis::use_data(Full_InorgDataFreeConc, overwrite = T)
 # Reaction stoichiometry
 Full_InorgDataStoich = matrix(
   data = c(
-   #H    Cu  DOC   Ca   Mg   Na   K    SO4  Cl  CO3   BL
+    #H    Cu  DOC   Ca   Mg   Na   K    SO4  Cl  CO3   BL
     1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  #H        = H
     0,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,  #Cu       = Cu
     0,   0,   1,   0,   0,   0,   0,   0,   0,   0,   0,  #DOC      = DOC
@@ -67,9 +67,9 @@ Full_InorgDataStoich = matrix(
     0,   0,   0,   0,   0,   0,   0,   1,   0,   0,   0,  #SO4      = SO4
     0,   0,   0,   0,   0,   0,   0,   0,   1,   0,   0,  #Cl       = Cl
     0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   0,  #CO3      = CO3
-  	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,  #BL       = BL
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,  #BL       = BL
     0,   1,   0,   0,   0,   0,   0,   0,   0,   0,   1,  #BL-Cu    = BL + Cu
-   -1,   1,   0,   0,   0,   0,   0,   0,   0,   0,   1,  #BL-CuOH  = BL + Cu - H
+    -1,   1,   0,   0,   0,   0,   0,   0,   0,   0,   1,  #BL-CuOH  = BL + Cu - H
     0,   0,   0,   1,   0,   0,   0,   0,   0,   0,   1,  #BL-Ca    = BL + Ca
     0,   0,   0,   0,   1,   0,   0,   0,   0,   0,   1,  #BL-Mg    = BL + Mg
     1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,  #BL-H     = BL + H
@@ -82,8 +82,8 @@ Full_InorgDataStoich = matrix(
     1,   0,   0,   1,   0,   0,   0,   0,   0,   1,   0,  #CaHCO3   = H + Ca + CO3
     0,   0,   0,   1,   0,   0,   0,   0,   0,   1,   0,  #CaCO3    = Ca + CO3
     0,   0,   0,   1,   0,   0,   0,   1,   0,   0,   0,  #CaSO4    = Ca + SO4
-   -1,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,  #CuOH     = Cu - H
-   -2,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,  #Cu(OH)2  = Cu - 2*H
+    -1,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,  #CuOH     = Cu - H
+    -2,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,  #Cu(OH)2  = Cu - 2*H
     0,   1,   0,   0,   0,   0,   0,   1,   0,   0,   0,  #CuSO4    = Cu + SO4
     0,   1,   0,   0,   0,   0,   0,   0,   0,   1,   0,  #CuCO3    = Cu + CO3
     0,   1,   0,   0,   0,   0,   0,   0,   0,   2,   0,  #Cu(CO3)2 = Cu + 2*CO3
@@ -92,9 +92,9 @@ Full_InorgDataStoich = matrix(
   ), byrow = T, nrow = 32, ncol = 11,
   dimnames = list(Spec = c("H","Cu","DOC","Ca","Mg","Na","K","SO4","Cl","CO3","BL",
                            "BL-Cu" ,"BL-CuOH" ,"BL-Ca" ,"BL-Mg" ,"BL-H" ,"BL-Na" ,
-						   "HCO3" ,"H2CO3" ,"MgHCO3" ,"MgCO3" ,"MgSO4" ,"CaHCO3" ,
-						   "CaCO3" ,"CaSO4" ,"CuOH" ,"Cu(OH)2" ,"CuSO4" ,"CuCO3" ,
-						   "Cu(CO3)2" ,"CuCl" ,"CuHCO3"),
+                           "HCO3" ,"H2CO3" ,"MgHCO3" ,"MgCO3" ,"MgSO4" ,"CaHCO3" ,
+                           "CaCO3" ,"CaSO4" ,"CuOH" ,"Cu(OH)2" ,"CuSO4" ,"CuCO3" ,
+                           "Cu(CO3)2" ,"CuCl" ,"CuHCO3"),
                   Comp = c("H","Cu","DOC","Ca","Mg","Na","K","SO4","Cl","CO3","BL"))
 )
 usethis::use_data(Full_InorgDataStoich, overwrite = T)
@@ -112,12 +112,12 @@ Full_InorgDataK = 10^c(
   Cl       =    0.0,
   CO3      =    0.0,
   BL       =    0.0,
- `BL-Cu`   =    7.4,
- `BL-CuOH` =   -1.3,
- `BL-Ca`   =    3.6,
- `BL-Mg`   =    3.6,
- `BL-H`    =    5.4,
- `BL-Na`   =    3.0,
+  `BL-Cu`   =    7.4,
+  `BL-CuOH` =   -1.3,
+  `BL-Ca`   =    3.6,
+  `BL-Mg`   =    3.6,
+  `BL-H`    =    5.4,
+  `BL-Na`   =    3.0,
   HCO3     =   10.329,
   H2CO3    =   16.681,
   MgHCO3   =   11.4,
@@ -127,22 +127,47 @@ Full_InorgDataK = 10^c(
   CaCO3    =   3.22,
   CaSO4    =   2.3,
   CuOH     =  -7.52,
- `Cu(OH)2` = -16.22,
+  `Cu(OH)2` = -16.22,
   CuSO4    =   2.36,
   CuCO3    =   6.75,
- `Cu(CO3)2`=   9.92,
+  `Cu(CO3)2`=   9.92,
   CuCl     =   0.4,
   CuHCO3   =  14.62
 )
 usethis::use_data(Full_InorgDataK, overwrite = T)
 
-
-
-
-
-
-
-
-
-
-
+Full_InorgDataCharge = c(
+  H          =  1L,
+  Cu         =  2L,
+  DOC        = -1L,
+  Ca         =  2L,
+  Mg         =  2L,
+  Na         =  1L,
+  K          =  1L,
+  SO4        = -2L,
+  Cl         = -1L,
+  CO3        = -2L,
+  BL         =  0L,
+  `BL-Cu`    =  2L,
+  `BL-CuOH`  =  1L,
+  `BL-Ca`    =  2L,
+  `BL-Mg`    =  2L,
+  `BL-H`     =  1L,
+  `BL-Na`    =  1L,
+  HCO3       = -1L,
+  H2CO3      =  0L,
+  MgHCO3     =  1L,
+  MgCO3      =  0L,
+  MgSO4      =  0L,
+  CaHCO3     =  1L,
+  CaCO3      =  0L,
+  CaSO4      =  0L,
+  CuOH       =  1L,
+  `Cu(OH)2`  =  0L,
+  CuSO4      =  0L,
+  CuCO3      =  0L,
+  `Cu(CO3)2` = -2L,
+  CuCl       =  1L,
+  CuHCO3     =  1L
+)
+usethis::use_data(Full_InorgDataCharge, overwrite = T)
