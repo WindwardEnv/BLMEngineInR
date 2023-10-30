@@ -143,3 +143,8 @@
 #'     \item{\code{cols}}{Components.}
 #'   }
 "Full_InorgDataStoich"
+
+#' @rdname Full_InorgData
+#' @format \code{Full_InorgDataCharge} is an object of class \code{integer} of
+#'   length 32 containing species charges.
+"Full_InorgDataCharge"
