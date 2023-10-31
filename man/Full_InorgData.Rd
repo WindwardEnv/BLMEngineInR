@@ -6,6 +6,7 @@
 \alias{Full_InorgDataFreeConc}
 \alias{Full_InorgDataK}
 \alias{Full_InorgDataStoich}
+\alias{Full_InorgDataCharge}
 \title{Simple Test DAta with Full Inorganic Components}
 \format{
 \code{Full_InorgDataTotalConc} is an object of class \code{numeric} of
@@ -24,6 +25,9 @@
     \item{\code{rows}}{Species reactions.}
     \item{\code{cols}}{Components.}
   }
+
+\code{Full_InorgDataCharge} is an object of class \code{integer} of
+  length 32 containing species charges.
 }
 \source{
 Windward BLM (Ver 3.57.2.49, build 2022-03-30)
@@ -36,6 +40,8 @@ Full_InorgDataFreeConc
 Full_InorgDataK
 
 Full_InorgDataStoich
+
+Full_InorgDataCharge
 }
 \description{
 A collection of chemistry inputs and outputs from an existing

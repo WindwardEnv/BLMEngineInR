@@ -1,7 +1,13 @@
 Column model parameter file, Ver 4.00
 --------------------------------------------------------------------------------
-Number of Mass Compartments, Input Components, Defined Components, Species, Phases, Linked Lists
-3, 13,  3, 20, 0,  0
+3,  Number of Mass Compartments
+5,  Number of Input variables
+13, Number of Input Components 
+3,  Number of Defined Components
+20, Number of Species
+1,  Number of Phases
+4,  Number of Biotic Ligand Definitions  <--2023-10-31 (KEC): As I was going through this, it seemed silly to keep the User Note format when the 
+1,  Number of Critical Values                                 rest of the file was pretty consistent formatting-wise. Let me know if you like this idea.
 --------------------------------------------------------------------------------
 Compartment List
 Compartment    C to M      Units label   <- thinking here about multiple compartments with different Conc to Mass conversions, BL is just one example
@@ -70,21 +76,32 @@ Cu-HA1,  Water?,      31,  1,   2, HA1,   1,   Cu,    1,                 5.500  
 Cu-HA2,  Water?,      31,  1,   2, HA1,   1,   Cu,    1,                 7.500     0.000   0.000  0.0000E+00
 --------------------------------------------------------------------------------
 Phase List
-Phase    NC  C1     S1    C2    S2    C3    S3     Log K  Delta H    Temp    Moles
+Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles
 CO2(g),  2   CO3,   1,    H,    2,    pCO2, 1,     -1.5,  ??,        0,      0 
 --------------------------------------------------------------------------------
 Biotic Ligand Definitions
-[Metal]: Cu
-[BL]: BL1
-[BL-Metal]: BL1-Cu
-[BL-Metal]: BL1-CuOH
-
-[CRITICAL START]:
-#,CA,Species,Test Type,Duration,Lifestage,Endpoint,Quantifier,References,Miscellaneous
-1,0.016407677,Ceriodaphnia dubia,Acute,48h,Neonate (<24 hr),,EC50; LC50,WER Reference water,SMEA calculated by median
-[CRITICAL END]
-
-[END]:
-
-
-
+Definition, Species
+Metal,      Cu
+BL,         BL1
+BL-Metal,   BL1-Cu
+BL-Metal,   BL1-CuOH
+--------------------------------------------------------------------------------
+Critical Accumulation Table
+#, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
+1, 0.016407677, Ceriodaphnia dubia, Acute,     48h,      Neonate (<24 hr), Mortality, EC50; LC50, WER Reference water, SMEA calculated by median
+--------------------------------------------------------------------------------
+Comments & Notes:
+Types: 
+  1=Float
+  2=Fixed
+  3=Substituted
+  4=ChargeBal
+  5=SurfPOt
+  6=WHAM
+Activity Correction Methods: 
+  1=None
+  2=Davies
+  3=Debye
+  4=MoleFraction
+  5=ChargeFraction
+  6=WHAM (usually internal use only)

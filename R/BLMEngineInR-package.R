@@ -5,6 +5,7 @@
 #' @importFrom methods formalArgs
 #' @importFrom Rcpp evalCpp
 #' @importFrom utils data
+#' @importFrom utils read.delim
 #' @useDynLib BLMEngineInR, .registration = TRUE
 ## usethis namespace: end
 NULL

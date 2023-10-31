@@ -47,7 +47,7 @@ defineProblem = function(paramFile){
   NInVar   = temp[2,1]
   NComp    = temp[3,1]
   NDefComp = temp[4,1]
-  NSpecies = temp[5,1]
+  NSpec = temp[5,1]
   NPhases  = temp[6,1]
 
 #  MassName = character(NMass)
@@ -109,56 +109,74 @@ defineProblem = function(paramFile){
                           # dimensions of both component lists in subsequent calcs
 
   # Create variables for species information
-  SpeciesName=character(NSpecies)
-  SpeciesMC=integer(NSpecies)
-  SpeciesType=integer(NSpecies)
-  SpeciesActCorr=integer(NSpecies)
-  SpeciesNC=integer(NSpecies)                  # the number of components that form species(i)
-  CompList = matrix(nrow=NSpecies,ncol=NComp+NDefComp)  # the list of components (by component number) that form species(i) for SpeciesNC(i) number of components
-  SC=matrix(nrow=NSpecies,ncol=NComp+NDefComp)          # SC(i,j) = the amount of component(j) needed to form species(i)
-  LogK=numeric(NSpecies)
-  DeltaH=numeric(NSpecies)
+  SpecName = character(NSpec)
+  SpecMC = integer(NSpec)
+  SpecType = integer(NSpec)
+  SpecActCorr = integer(NSpec)
+  SpecNC = integer(NSpec)                  # the number of components that form species(i)
+  CompList = matrix(data = 0, nrow = NSpec, ncol = NComp + NDefComp)  # the list of components (by component number) that form species(i) for SpecNC(i) number of components
+  Stoich = matrix(data = 0, nrow = NSpec, ncol = NComp + NDefComp)          # Stoich(i,j) = the amount of component(j) needed to form species(i)
+  LogK = numeric(NSpec)
+  DeltaH = numeric(NSpec)
 
   # read species information including stoichiometry, log Ks, etc.
-  temp=scan(file=paramFile,skip=23+NMass+NInVar+NComp+NDefComp,sep="\n",nlines=NSpecies,what="character")
-  for (i in 1: NSpecies) {
-    SpeciesName[i]=as.character(trimws(strsplit(temp,",")[[i]][1]))
-    SpeciesMC[i]=as.integer(match(trimws(strsplit(temp,",")[[i]][2]),MassName))
-    SpeciesType[i]= as.integer(trimws(strsplit(temp,",")[[i]][3]))
-    SpeciesActCorr[i]= as.integer(trimws(strsplit(temp,",")[[i]][4]))
-    SpeciesNC[i]= as.integer(trimws(strsplit(temp,",")[[i]][5]))
-    for (j in 1: SpeciesNC[i]){
-      CompList[i,j]=match(trimws(strsplit(temp,",")[[i]][6+(j-1)*2]),CompName)
-      SC[i,CompList[i,j]]=as.integer(trimws(strsplit(temp,",")[[i]][7+(j-1)*2]))
+  temp=scan(file=paramFile,skip=23+NMass+NInVar+NComp+NDefComp,sep="\n",nlines=NSpec,what="character")
+  temp.split = strsplit(temp,",")
+  for (i in 1:NSpec) {
+    SpecName[i] = as.character(trimws(temp.split[[i]][1]))
+    SpecMC[i] = as.integer(match(trimws(temp.split[[i]][2]), MassName))
+    SpecType[i] = as.integer(trimws(temp.split[[i]][3]))
+    SpecActCorr[i] = as.integer(trimws(temp.split[[i]][4]))
+    SpecNC[i] = as.integer(trimws(temp.split[[i]][5]))
+    for (j in 1:SpecNC[i]) {
+      CompList[i, j] = match(trimws(temp.split[[i]][6 + (j - 1) * 2]), CompName)
+      Stoich[i, CompList[i, j]] = as.integer(trimws(temp.split[[i]][7 + (j - 1) * 2]))
     }
-    LogK[i]=as.numeric(trimws(strsplit(temp,",")[[i]][6+(SpeciesNC[i]-1)*2]))
-    DeltaH[i]=as.numeric(trimws(strsplit(temp,",")[[i]][7+(SpeciesNC[i]-1)*2]))
+    LogK[i] = as.numeric(trimws(temp.split[[i]][6 + SpecNC[i] * 2]))
+    DeltaH[i] = as.numeric(trimws(temp.split[[i]][7 + SpecNC[i] * 2]))
   }
+
+  # Add components to the species list
+  SpecName = c(CompName, SpecName)
+  SpecMC = c(CompMC, SpecMC)
+  SpecType = c(CompType, SpecType)
+  SpecActCorr = c(CompActCorr, SpecActCorr)
+  SpecNC = c(array(1L, NComp + NDefComp), SpecNC)
+  temp = matrix(0, nrow = NComp + NDefComp, ncol = NComp + NDefComp)
+  temp[, 1] = 1:(NComp + NDefComp)
+  CompList = rbind(temp, CompList)
+  Stoich = rbind(diag(1, nrow = NComp + NDefComp, ncol = NComp + NDefComp), Stoich)
+  LogK = c(rep(0,NComp + NDefComp), LogK)
+  DeltaH = c(rep(0, NComp + NDefComp), DeltaH)
+
+  # Trim down CompList...give it 2 extra columns in case any WHAM species need it
+  CompList = CompList[,1:(max(which(apply(CompList, MARGIN = 2, FUN = sum)>0)) + 2)]
+
 
 
   # # read species list, tableau, and properties
-  # temp=read.delim(file=paramFile,header=FALSE,sep=",", skip=23+NMass+NInVar+NComp+NDefComp,nrows=NSpecies)
-  # SpeciesName=as.character(trimws(temp[,1]))
-  # SpeciesMC=as.integer(match(trimws(strsplit(temp,",")[[i]][2]),MassName))
-  # SpeciesType= as.integer(temp[,3])
-  # SpeciesActCorr= as.integer(temp[,4])
-  # SpeciesNC= as.numeric(temp[,5])
-  # CompList = matrix(nrow=NSpecies,ncol=NComp)
-  # for (i in 1: NSpecies) {
-  #   for (j in 1: SpeciesNC[i]){
+  # temp=read.delim(file=paramFile,header=FALSE,sep=",", skip=23+NMass+NInVar+NComp+NDefComp,nrows=NSpec)
+  # SpecName=as.character(trimws(temp[,1]))
+  # SpecMC=as.integer(match(trimws(strsplit(temp,",")[[i]][2]),MassName))
+  # SpecType= as.integer(temp[,3])
+  # SpecActCorr= as.integer(temp[,4])
+  # SpecNC= as.numeric(temp[,5])
+  # CompList = matrix(nrow=NSpec,ncol=NComp)
+  # for (i in 1: NSpec) {
+  #   for (j in 1: SpecNC[i]){
   #     CompList[i,j]=match(trimws(temp[i,5+j]),CompName)
   #   }
   # }
 
-# CompNames = colnames(Stoich)
-# # --CompCharge: charge (signed integer)
-# CompCharge = integer(NComp)
-# # --CompType: component type
-# CompType = integer(NComp)
-# # --CompActCorr: activity correction type
-# CompActCorr = integer(NComp)
-# # --CompSiteDens: site density
-# CompSiteDens = numeric(NComp)
+  # CompNames = colnames(Stoich)
+  # # --CompCharge: charge (signed integer)
+  # CompCharge = integer(NComp)
+  # # --CompType: component type
+  # CompType = integer(NComp)
+  # # --CompActCorr: activity correction type
+  # CompActCorr = integer(NComp)
+  # # --CompSiteDens: site density
+  # CompSiteDens = numeric(NComp)
 
   # # -get species information
   # # --SpecNames: name
@@ -176,6 +194,13 @@ defineProblem = function(paramFile){
   # # --name of biotic ligand
   # # --name of BL-metal complex(es)
   # # --name of DOC component(s)
+
+  wdatFile = NULL
+  WHAMVer = "V"
+  # to do: Where is wdatFile coming from? Should it be passed within the
+  # parameter file? Probably, since the WHAM calibration will definitely
+  # change the results of any simulation.
+
   # # ---Make WHAM species from DOC
   # # -get critical accumulation information --> this part also needs to happen in listCAT function
   # # --number of critical accumulations in table
@@ -183,20 +208,49 @@ defineProblem = function(paramFile){
 
   # assemble output
   out = list(
+    NMass = NMass,
+    NInVar = NInVar,
     NComp = NComp,
+    NDefComp = NDefComp,
     NSpec = NSpec,
-    CompNames = CompNames,
+    NPhases = NPhases,
+
+    InVarName = InVarName,
+    InVarFlag = InVarFlag,
+
+    CompName = CompName,
     CompCharge = CompCharge,
+    CompMC = CompMC,
     CompType = CompType,
     CompActCorr = CompActCorr,
     CompSiteDens = CompSiteDens,
-    SpecNames = SpecNames,
+
+    DefCompName = DefCompName,
+    DefCompFrom = DefCompFrom,
+    DefCompCharge = DefCompCharge,
+    DefCompMC = DefCompMC,
+    DefCompType = DefCompType,
+    DefCompActCorr = DefCompActCorr,
+    DefCompSiteDens = DefCompSiteDens,
+
+    SpecName = SpecName,
+    SpecMC = SpecMC,
     SpecType = SpecType,
     SpecActCorr = SpecActCorr,
+    SpecNC = SpecNC,
+    CompList = CompList,
     Stoich = Stoich,
-    K = 10^logK,
-    logK = logK,
-    deltaH = deltaH
+    LogK = LogK,
+    DeltaH = DeltaH
   )
+
+  # Expand WHAM components and species, if needed
+  if (any((CompType == 6) | (CompType == "WHAM"))){
+    out2 = do.call("expandWHAM",
+                   args = c(out[which(names(out) %in% formalArgs("expandWHAM"))],
+                            list(wdatFile=wdatFile, WHAMVer = WHAMVer)))
+    out[names(out2)] = out2
+  }
+
   return(out)
 }

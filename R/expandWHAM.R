@@ -15,11 +15,13 @@
 #' @param SpecMC integer vector of length `NSpec`; which mass compartment the speces belongs to
 #' @param SpecType integer vector of length `NSpec`; the type of chemical species, where 1 = ...
 #' @param SpecActCorr integer vector of length `NSpec`; the method to use for activity corrections with this speies where 1 = ...
+#' @param SpecNC integer vector of length `NSpec`; the number of components used to create a given species
+#' @param CompList the list of components used to create a given species
 #' @param Stoich the stoichiometry matrix of the reactions (integer matrix of size `NSpec` x `nComp`)
-#' @param K the equilibrium coefficients (numeric vector of length `NSpec`)
-#' @param logK the log10-transformed equilibrium coefficients (numeric vector of length `NSpec`)
-#' @param deltaH the enthalpy change for each formation reaction (species)
-#' @param WHAMType a character string specifying the WHAM version to use, must be one of `"V"` (default), `"VI"`, or `"VII"`.
+#' @param LogK the log10-transformed equilibrium coefficients (numeric vector of length `NSpec`)
+#' @param DeltaH the enthalpy change for each formation reaction (species)
+#' @param WHAMVer a character string specifying the WHAM version to use, must be one of `"V"` (default), `"VI"`, or `"VII"`.
+#' @param wdatFile (optional) a character string specifying the file path of a WHAM parameter file
 #'
 #' @keywords internal
 #'
@@ -27,49 +29,77 @@
 expandWHAM = function(nMC, NComp, NSpec, MassName,
                       CompName, CompCharge, CompMC, CompType,
                       CompActCorr, CompSiteDens, SpecName, SpecCharge, SpecMC,
-                      SpecType,  SpecActCorr, Stoich, K, logK, deltaH,
-                      WHAMType = c("V","VI","VII")) {
-
-  # error catching and input cleanup
-  WHAMType = match.arg(WHAMType)
+                      SpecType,  SpecActCorr, SpecNC,
+                      CompList, Stoich, LogK, DeltaH,
+                      WHAMVer = c("V","VI","VII"), wdatFile=NULL) {
 
   # Debugging
-  if(TRUE){
+  if(FALSE){
 
-    Stoich = Full_InorgDataStoich
-    K = Full_InorgDataK
-    logK = log10(K)
-    nMC = 2
-    MassName = c("Water","BL")
-    NComp = ncol(Stoich)
-    CompName = colnames(Stoich)
-    CompCharge = array(as.integer(c(1,2,-1,2,2,1,1,-2,-1,-2,0)), dimnames = list(CompName))
-    CompMC = array(c(rep(1L, NComp - 1), 2L), dimnames = list(CompName))
-    CompType = array(c(2L, rep(1L,NComp - 2), 11L), dimnames = list(CompName))
-    CompActCorr = array(c(2L,2L,1L,rep(2L,NComp-4),1L), dimnames = list(CompName))
-    CompSiteDens = array(c(1.0,1.0,0.0006,rep(1.0, NComp-4),3E-5), dimnames = list(CompName))
+      Stoich = Full_InorgDataStoich
+      K = Full_InorgDataK
+      LogK = log10(K)
+      nMC = 2
+      MassName = c("Water","BL")
+      NComp = ncol(Stoich)
+      CompName = colnames(Stoich)
+      CompCharge = array(as.integer(c(1,2,-1,2,2,1,1,-2,-1,-2,0)), dimnames = list(CompName))
+      CompMC = array(c(rep(1L, NComp - 1), 2L), dimnames = list(CompName))
+      CompType = array(c(2L, rep(1L,NComp - 2), 11L), dimnames = list(CompName))
+      CompActCorr = array(c(2L,2L,1L,rep(2L,NComp-4),1L), dimnames = list(CompName))
+      CompSiteDens = array(c(1.0,1.0,0.0006,rep(1.0, NComp-4),3E-5), dimnames = list(CompName))
 
-    NSpec = nrow(Stoich)
-    SpecName = rownames(Stoich)
-    SpecCharge = Full_InorgDataCharge#Stoich %*% CompCharge
-    SpecMC = array(rep(1L, NSpec), dimnames = list(SpecName))
-    SpecType = array(c(CompType, rep(1L,NSpec-NComp)), dimnames = list(SpecName))
-    SpecActCorr = array(c(CompActCorr,rep(2L,NSpec-NComp)), dimnames = list(SpecName))
-    SpecActCorr[grepl("BL",SpecName)] = 1L
-    deltaH = array(rep(0.0, NSpec), dimnames = list(SpecName))
-    WHAMType = "V"
+      NSpec = nrow(Stoich)
+      SpecName = rownames(Stoich)
+      SpecCharge = Full_InorgDataCharge#Stoich %*% CompCharge
+      SpecMC = array(rep(1L, NSpec), dimnames = list(SpecName))
+      SpecType = array(c(CompType, rep(1L,NSpec-NComp)), dimnames = list(SpecName))
+      SpecActCorr = array(c(CompActCorr,rep(2L,NSpec-NComp)), dimnames = list(SpecName))
+      SpecActCorr[grepl("BL",SpecName)] = 1L
+      SpecNC = rowSums(Stoich != 0)
+      CompList = t(apply(
+        Stoich,
+        MARGIN = 1,
+        FUN = function(X) {
+          tmp = sort(which(X != 0L))
+          if (length(tmp) < max(SpecNC)+2) {
+            tmp = c(tmp, rep(0, max(SpecNC) + 2 - length(tmp)))
+          }
+          return(tmp)
+        }
+      ))
+      # CompNS = colSums(Stoich != 0L)
+      # SpecList = t(apply(
+      #   Stoich,
+      #   MARGIN = 2,
+      #   FUN = function(X) {
+      #     tmp = sort(which(X != 0L))
+      #     if (length(tmp) < max(CompNS)){
+      #       tmp = c(tmp, rep(0,max(CompNS)-length(tmp)))
+      #     }
+      #     return(tmp)
+      #   }))
+      DeltaH = array(rep(0.0, NSpec), dimnames = list(SpecName))
+      WHAMVer = "V"
 
+    }
+
+  # error catching and input cleanup
+  if (is.null(wdatFile)){
+    WHAMVer = match.arg(WHAMVer)
+
+    # set paramters
+    if(WHAMVer == "V"){
+      wdatFile = "scrap/parameter file format/WHAM_V.wdat"
+    } else if (WHAMVer == "VI"){
+      wdatFile = "scrap/parameter file format/WHAM_VI.wdat"
+    } else if (WHAMVer  == "VII"){
+      wdatFile = "scrap/parameter file format/WHAM_VII.wdat"
+    }
   }
+  wdatFile = normalizePath(wdatFile)
+  stopifnot(file.exists(wdatFile))
 
-
-  # set paramters
-  if(WHAMType == "V"){
-    wdatFile = "scrap/parameter file format/WHAM_V.wdat"
-  } else if (WHAMType == "VI"){
-    wdatFile = "scrap/parameter file format/WHAM_VI.wdat"
-  } else if (WHAMTYPE %in% c("VII")){
-    stop("Still need to implement WHAM VI and WHAM VII files...")
-  }
   # read WHAM data file
   {
 
@@ -200,23 +230,24 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
   NSpec = NSpec + wNSpec
   SpecName = c(SpecName, array(paste0("newDOCSpecies",1:wNSpec),wNSpec))
   SpecMC = c(SpecMC, array(which(tolower(MassName) == "water"), dim = wNSpec,dimnames=list(paste0("newDOCSpecies",1:wNSpec))))#this should always be water
-  SpecType = c(SpecType, array(1L, wNSpec,dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
-  SpecActCorr = c(SpecActCorr, array(0L, wNSpec,dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
-  SpecCharge = c(SpecCharge, array(NA, wNSpec,dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
+  SpecType = c(SpecType, array(1L, wNSpec, dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
+  SpecActCorr = c(SpecActCorr, array(0L, wNSpec, dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
+  SpecCharge = c(SpecCharge, array(NA, wNSpec, dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
+  SpecNC = c(SpecNC, array(NA, wNSpec, dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
+  CompList = rbind(CompList, matrix(0L, nrow = wNSpec, ncol = ncol(CompList)))
   Stoich = rbind(cbind(Stoich,
                        matrix(0L,nrow=NSpec-wNSpec, ncol = wNComp,
                               dimnames = list(SpecName[1:(NSpec-wNSpec)],wCompName))),
                  matrix(0L, nrow = wNSpec, ncol = NComp,
                         dimnames = list(paste0("newDOCSpecies",1:wNSpec), CompName)))
-  K = c(K, array(NA,wNSpec,dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
-  logK = c(logK, array(NA,wNSpec,dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
-  deltaH = c(deltaH, array(0,wNSpec,dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
+  LogK = c(LogK, array(NA,wNSpec,dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
+  DeltaH = c(DeltaH, array(0,wNSpec,dimnames=list(paste0("newDOCSpecies",1:wNSpec))))
 
   Monodent_pKH = numeric(nMS)
   Monodent_Abundance = numeric(nMS)
   Bident_Abundance = numeric(nBP)
   Trident_Abundance = numeric(nTG)
-  for(OMType in c("HA","FA")){
+  for(OMType in HAFA){
 
     pKM_cols = paste0("pKM",c("A","B"),OMType)
 
@@ -231,7 +262,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
     SpecName[newSpecNum] = paste0(OMType, MonodentTable$FullyProt)
     SpecCharge[newSpecNum] = 0L
     diag(Stoich[newSpecNum, newCompNum]) = 1L
-    logK[newSpecNum] = 0.0
+    LogK[newSpecNum] = 0.0
 
     # - fully deprot
     newSpecNum = newSpecNum + nMS
@@ -239,7 +270,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
     SpecCharge[newSpecNum] = -1L
     diag(Stoich[newSpecNum, newCompNum]) = 1L
     Stoich[newSpecNum,iH] = -1L
-    logK[newSpecNum] = -1 * Monodent_pKH
+    LogK[newSpecNum] = -1 * Monodent_pKH
 
     # bound to each metal
     for(iMetal in 1:nMP){
@@ -251,7 +282,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       Stoich[newSpecNum, 1:NComp] = matrix(Stoich[iMetalSpec,], nrow = nMS, ncol = NComp, byrow = T)
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = Stoich[newSpecNum,iH] -1L
-      logK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[MonodentTable$Strong1Weak2]])
+      LogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[MonodentTable$Strong1Weak2]])
     }
 
 
@@ -267,7 +298,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecName[newSpecNum] = paste0(OMType, BidentTable$FullyProt)
       SpecCharge[newSpecNum] = 0L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
-      logK[newSpecNum] = 0.0
+      LogK[newSpecNum] = 0.0
 
       # - first site deprotonated
       newSpecNum = newSpecNum + nBP
@@ -275,7 +306,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -1L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -1L
-      logK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S1]
+      LogK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S1]
 
       # - second site deprotonated
       newSpecNum = newSpecNum + nBP
@@ -283,7 +314,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -1L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -1L
-      logK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S2]
+      LogK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S2]
 
       # - fully deprot
       newSpecNum = newSpecNum + nBP
@@ -291,7 +322,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -2L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -2L
-      logK[newSpecNum] = -1 * (Monodent_pKH[BidentTable$S1] +
+      LogK[newSpecNum] = -1 * (Monodent_pKH[BidentTable$S1] +
                                  Monodent_pKH[BidentTable$S2])
 
       # bound to each metal
@@ -304,7 +335,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
         Stoich[newSpecNum, 1:NComp] = matrix(Stoich[iMetalSpec,], nrow = nBP, ncol = NComp, byrow = T)
         diag(Stoich[newSpecNum, newCompNum]) = 1L
         Stoich[newSpecNum,iH] = Stoich[newSpecNum,iH] -2L
-        logK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[BidentTable$S1Strong1Weak2]] +
+        LogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[BidentTable$S1Strong1Weak2]] +
                                              MetalsTable[iMetal,pKM_cols[BidentTable$S2Strong1Weak2]])
       }
 
@@ -322,7 +353,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecName[newSpecNum] = paste0(OMType, TridentTable$FullyProt)
       SpecCharge[newSpecNum] = 0L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
-      logK[newSpecNum] = 0.0
+      LogK[newSpecNum] = 0.0
 
       # - first site deprotonated
       newSpecNum = newSpecNum + nTG
@@ -330,7 +361,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -1L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -1L
-      logK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S1]
+      LogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S1]
 
       # - second site deprotonated
       newSpecNum = newSpecNum + nTG
@@ -338,7 +369,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -1L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -1L
-      logK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S2]
+      LogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S2]
 
       # - third site deprotonated
       newSpecNum = newSpecNum + nTG
@@ -346,7 +377,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -1L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -1L
-      logK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S3]
+      LogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S3]
 
       # - first & second sites deprotonated
       newSpecNum = newSpecNum + nTG
@@ -354,7 +385,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -2L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -2L
-      logK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S2])
+      LogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S2])
 
       # - first & third sites deprotonated
       newSpecNum = newSpecNum + nTG
@@ -362,7 +393,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -2L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -2L
-      logK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S3])
+      LogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S3])
 
       # - second & third sites deprotonated
       newSpecNum = newSpecNum + nTG
@@ -370,7 +401,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -2L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -2L
-      logK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S2] + Monodent_pKH[TridentTable$S3])
+      LogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S2] + Monodent_pKH[TridentTable$S3])
 
       # - fully deprot
       newSpecNum = newSpecNum + nTG
@@ -378,7 +409,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       SpecCharge[newSpecNum] = -3L
       diag(Stoich[newSpecNum, newCompNum]) = 1L
       Stoich[newSpecNum,iH] = -3L
-      logK[newSpecNum] = -1 *(Monodent_pKH[TridentTable$S1] +
+      LogK[newSpecNum] = -1 *(Monodent_pKH[TridentTable$S1] +
                                 Monodent_pKH[TridentTable$S2] +
                                 Monodent_pKH[TridentTable$S3])
 
@@ -392,7 +423,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
         Stoich[newSpecNum, 1:NComp] = matrix(Stoich[iMetalSpec,], nrow = nTG, ncol = NComp, byrow = T)
         diag(Stoich[newSpecNum, newCompNum]) = 1L
         Stoich[newSpecNum,iH] = Stoich[newSpecNum,iH] -3L
-        logK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[TridentTable$S1Strong1Weak2]] +
+        LogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[TridentTable$S1Strong1Weak2]] +
                                              MetalsTable[iMetal,pKM_cols[TridentTable$S2Strong1Weak2]] +
                                              MetalsTable[iMetal,pKM_cols[TridentTable$S3Strong1Weak2]])
       }
@@ -405,13 +436,35 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
   }
 
   # Cleanup
+  SpecNC = rowSums(Stoich != 0L)
+  CompList = t(apply(
+    Stoich,
+    MARGIN = 1,
+    FUN = function(X) {
+      tmp = sort(which(X != 0L))
+      if (length(tmp) < max(SpecNC)){
+        tmp = c(tmp, rep(0,max(SpecNC) - length(tmp)))
+      }
+      return(tmp)
+    }))
+  # CompNS = colSums(Stoich != 0L)
+  # SpecList = t(apply(
+  #   Stoich,
+  #   MARGIN = 2,
+  #   FUN = function(X) {
+  #     tmp = sort(which(X != 0L))
+  #     if (length(tmp) < max(CompNS)){
+  #       tmp = c(tmp, rep(0,max(CompNS)-length(tmp)))
+  #     }
+  #     return(tmp)
+  #   }))
   names(SpecCharge) = SpecName
   names(SpecMC) = SpecName
   names(SpecType) = SpecName
   names(SpecActCorr) = SpecName
   rownames(Stoich) = SpecName
-  names(logK) = SpecName
-  names(deltaH) = SpecName
+  names(LogK) = SpecName
+  names(DeltaH) = SpecName
 
   # every input should be returned, other than the WHAM type and other info
   out = list(
@@ -428,16 +481,17 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
     SpecMC = SpecMC,
     SpecType = SpecType,
     SpecActCorr = SpecActCorr,
+    SpecNC = SpecNC,
+    CompList = CompList,
     Stoich = Stoich,
-    K = 10 ^ logK,
-    logK = logK,
-    deltaH = deltaH,
+    LogK = LogK,
+    DeltaH = DeltaH,
     wDLF = wDLF,
     wKZED = wKZED,
     wKsel = wKsel,
     wP = wP,
     wRadius = wRadius,
-    wMolWt = wMolwt
+    wMolWt = wMolWt
   )
   return(out)
 
