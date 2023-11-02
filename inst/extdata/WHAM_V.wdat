@@ -20,7 +20,7 @@ dLK1A,  n/a,      1.78,    3.34
 dLK1B,  n/a,      3.43,    5.52
 P,      n/a,      -374,    -103
 radius, m,        1.72E-9, 8.0E-10
-MolWt,  daltons,  15000,   1500
+MolWt,  g OM/mol, 15000,   1500
 --------------------------------------------------------
 Monodentate Sites
 S, AbundDenom
