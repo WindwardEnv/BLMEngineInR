@@ -14,7 +14,6 @@
 #'  \item{\code{CompCharge}}{integer vector of length `NComp`; the charge of the components as free ions}
 #'  \item{\code{CompType}}{character vector of length `NComp`; the type of component. It should be a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal, SurfPot, WHAMV, WHAMVI, WHAMVII, WHAM=FileName.dat)
 #'  \item{\code{CompActCorr}}{character vector of length `NComp`; the method to use for activity corrections with this component,  }
-#'  \item{\code{CompSiteDens}}{numeric vector of length `NComp`; the density of binding sites for this component - usually 1, except for DOC and BL components}
 #'  \item{\code{SpecName}}{character vector of length `NSpec`; species names}
 #'  \item{\code{SpecType}}{integer vector of length `NSpec`; the type of chemical species, where 1 = ...}
 #'  \item{\code{SpecActCorr}}{integer vector of length `NSpec`; the method to use for activity corrections with this speies where 1 = ...}
@@ -50,7 +49,7 @@ defineProblem = function(paramFile) {
   NInComp = tmp[4, 1]
   NDefComp = tmp[5, 1]
   NSpec = tmp[6, 1]
-  NPhases  = tmp[7, 1]
+  NPhase  = tmp[7, 1]
   NBLD  = tmp[8, 1]
   NCAT  = tmp[9, 1]
 
@@ -121,9 +120,9 @@ defineProblem = function(paramFile) {
   # expandWHAM...let's instead increase NComp, then just subtract out NDefComp
   # if we ever need to refer specifically to the input components.
 
-  # Add pH to the component list, if needed
+  # Add pH to the component list, if needed -- to do: there should only be H in water compartment, and not in others
   for (iMass in 1:NMass){#Must have either pH or H in non-BL compartments
-    if (!grepl("BL", MassName[iMass])){
+    if (grepl("Water", MassName[iMass], ignore.case = T)){
       stopifnot(xor(("H" %in% CompName[CompMC == iMass]),
                     ("pH" %in% InVarType[InVarMC == iMass])))
       if ("pH" %in% InVarType[InVarMC == iMass]) {
@@ -133,6 +132,10 @@ defineProblem = function(paramFile) {
         CompMC = c(CompMC, iMass)
         CompType = c(CompType, "FixedAct")
         CompActCorr = c(CompActCorr, "Debye")
+      }
+    } else {
+      if(("H" %in% CompName[CompMC == iMass]) | ("pH" %in% InVarType[InVarMC == iMass])){
+        stop("pH/[H+] specified for non-water mass compartment.")
       }
     }
   }
@@ -151,23 +154,77 @@ defineProblem = function(paramFile) {
   Stoich = matrix(data = 0, nrow = NSpec, ncol = NComp)          # Stoich(i,j) = the amount of component(j) needed to form species(i)
   LogK = numeric(NSpec)
   DeltaH = numeric(NSpec)
+  SpecTemp = numeric(NSpec)
 
   # read species information including stoichiometry, log Ks, etc.
   skipRows = skipRows + NDefComp + 4
   tmp = scan(file = paramFile,skip = skipRows,sep = "\n",nlines = NSpec,what = "character", quiet = T)
-  temp.split = strsplit(tmp, ",")
+  tmp.split = strsplit(tmp, ",")
   for (i in 1:NSpec) {
-    SpecName[i] = as.character(trimws(temp.split[[i]][1]))
-    SpecMC[i] = as.integer(match(trimws(temp.split[[i]][2]), MassName))
-    SpecActCorr[i] = as.character(trimws(temp.split[[i]][3]))
-    SpecNC[i] = as.integer(trimws(temp.split[[i]][4]))
+    SpecName[i] = as.character(trimws(tmp.split[[i]][1]))
+    SpecMC[i] = as.integer(match(trimws(tmp.split[[i]][2]), MassName))
+    SpecActCorr[i] = as.character(trimws(tmp.split[[i]][3]))
+    SpecNC[i] = as.integer(trimws(tmp.split[[i]][4]))
     for (j in 1:SpecNC[i]) {
-      CompList[i, j] = match(trimws(temp.split[[i]][5 + (j - 1) * 2]), CompName)
-      Stoich[i, CompList[i, j]] = as.integer(trimws(temp.split[[i]][6 + (j - 1) * 2]))
+      CompList[i, j] = match(trimws(tmp.split[[i]][5 + (j - 1) * 2]), CompName)
+      Stoich[i, CompList[i, j]] = as.integer(trimws(tmp.split[[i]][6 + (j - 1) * 2]))
     }
-    LogK[i] = as.numeric(trimws(temp.split[[i]][5 + SpecNC[i] * 2]))
-    DeltaH[i] = as.numeric(trimws(temp.split[[i]][6 + SpecNC[i] * 2]))
+    LogK[i] = as.numeric(trimws(tmp.split[[i]][5 + SpecNC[i] * 2]))
+    DeltaH[i] = as.numeric(trimws(tmp.split[[i]][6 + SpecNC[i] * 2]))
+    SpecTemp = as.numeric(trimws(tmp.split[[i]][7 + SpecNC[i] * 2]))
   }
+
+  # -Get Phase information
+  skipRows = skipRows + NSpec + 3
+  # Create variables for Phase information
+  PhaseName = character(NPhase)
+  PhaseNC = integer(NPhase)                  # the number of components that form Phase(i)
+  PhaseCompList = matrix(data = 0, nrow = NPhase, ncol = NComp)  # the list of components (by component number) that form Phase(i) for PhaseNC(i) number of components
+  PhaseStoich = matrix(data = 0, nrow = NPhase, ncol = NComp)          # Stoich(i,j) = the amount of component(j) needed to form Phase(i)
+  PhaseLogK = numeric(NPhase)
+  PhaseDeltaH = numeric(NPhase)
+  PhaseTemp = numeric(NPhase)
+  PhaseMoles = numeric(NPhase)
+  if (NPhase > 0){
+    # read Phase information including stoichiometry, log Ks, etc.
+    tmp = scan(file = paramFile, skip = skipRows, sep = "\n", nlines = NPhase,
+               what = "character", quiet = T)
+    tmp.split = strsplit(tmp, ",")
+    for (i in 1:NPhase) {
+      PhaseName[i] = as.character(trimws(tmp.split[[i]][1]))
+      PhaseNC[i] = as.integer(trimws(tmp.split[[i]][2]))
+      for (j in 1:PhaseNC[i]) {
+        PhaseCompList[i, j] = match(trimws(tmp.split[[i]][3 + (j - 1) * 2]), CompName)
+        PhaseStoich[i, PhaseCompList[i, j]] = as.integer(trimws(tmp.split[[i]][4 + (j - 1) * 2]))
+      }
+      PhaseLogK[i] = as.numeric(trimws(tmp.split[[i]][3 + PhaseNC[i] * 2]))
+      PhaseDeltaH[i] = as.numeric(trimws(tmp.split[[i]][4 + PhaseNC[i] * 2]))
+      PhaseTemp[i] = as.numeric(trimws(tmp.split[[i]][5 + PhaseNC[i] * 2]))
+      PhaseMoles[i] = as.numeric(trimws(tmp.split[[i]][6 + PhaseNC[i] * 2]))
+    }
+  }
+
+  # -get Biotic ligand definitions
+  skipRows = skipRows + NPhase + 2
+  tmp = read.csv(file = paramFile, header = TRUE, skip = skipRows, nrows = NBLD)
+  # --name of metal
+  NMetal = sum(tmp[,1] == "Metal")
+  MetalName = as.character(trimws(tmp[tmp[,1] == "Metal",2]))
+  stopifnot(all(MetalName %in% CompName))
+  # --name of biotic ligand
+  NBL = sum(tmp[,1] == "BL")
+  BLName = as.character(trimws(tmp[tmp[,1] == "BL", 2]))
+  stopifnot(all(BLName %in% CompName))
+  # --name of BL-metal complex(es)
+  NBLMetal = sum(tmp[,1] == "BL-Metal")
+  BLMetalName = as.character(trimws(tmp[tmp[,1] == "BL-Metal", 2]))
+  stopifnot(all(BLMetalName %in% SpecName))
+
+  # -get critical accumulation information --> this part also needs to happen in listCAT function
+  skipRows = skipRows + NBLD + 3
+  CATab = read.csv(file = paramFile, header = TRUE, skip = skipRows, nrows = NCAT)
+  colnames(CATab) = c("Num","CA","Species","Test.Type","Duration","Lifestage",
+                      "Endpoint","Quantifier","References","Miscellaneous")
 
   # Add components to the species list
   NSpec = NComp + NSpec
@@ -182,18 +239,90 @@ defineProblem = function(paramFile) {
   dimnames(Stoich) = list(Spec = SpecName, Comp = CompName)
   LogK = c(rep(0, NComp), LogK)
   DeltaH = c(rep(0, NComp), DeltaH)
+  SpecTemp = c(rep(0, NComp), SpecTemp)
 
   # Trim down CompList...give it 2 extra columns in case any WHAM species need it
   CompList = CompList[, 1:(max(which(colSums(CompList)>0)) + 2)]
 
-  # -get special species/component information
-  # --name of metal
-  # --name of biotic ligand
-  # --name of BL-metal complex(es)
-  # --name of DOC component(s)
+  # assemble output
+  out = list(
+    # Counts
+    NMass = NMass,
+    NInLab = NInLab,
+    NInVar = NInVar,
+    NInComp = NInComp,
+    NDefComp = NDefComp,
+    NComp = NComp,
+    NSpec = NSpec,
+    NPhase = NPhase,
+    NBLD = NBLD,
+    NBL = NBL,
+    NMetal = NMetal,
+    NBLMetal = NBLMetal,
+    NCAT = NCAT,
 
-  # --name of WHAM file
-  if (any(grepl("WHAM",InVarType))){
+    # Mass Compartment List
+    MassName = MassName,
+    MassAmt = MassAmt,
+    MassUnit = MassUnit,
+
+    # Input Labels
+    InLabName = InLabName,
+
+    # Input Variables
+    InVarName = InVarName,
+    InVarMC = InVarMC,
+    InVarType = InVarType,
+
+    # Input Components
+    InCompName = InCompName,
+    CompName = CompName,
+    CompCharge = CompCharge,
+    CompMC = CompMC,
+    CompType = CompType,
+    CompActCorr = CompActCorr,
+
+    # Defined Components
+    DefCompName = DefCompName,
+    DefCompFrom = DefCompFrom,
+    DefCompCharge = DefCompCharge,
+    DefCompMC = DefCompMC,
+    DefCompType = DefCompType,
+    DefCompActCorr = DefCompActCorr,
+
+    # Formation Reactions
+    SpecName = SpecName,
+    SpecMC = SpecMC,
+    SpecActCorr = SpecActCorr,
+    SpecNC = SpecNC,
+    CompList = CompList,
+    Stoich = Stoich,
+    LogK = LogK,
+    DeltaH = DeltaH,
+    SpecTemp = SpecTemp,
+
+    # Phase List
+    PhaseName = PhaseName,
+    PhaseNC = PhaseNC,
+    PhaseCompList = PhaseCompList,
+    PhaseStoich = PhaseStoich,
+    PhaseLogK = PhaseLogK,
+    PhaseDeltaH = PhaseDeltaH,
+    PhaseTemp = PhaseTemp,
+    PhaseMoles = PhaseMoles,
+
+    # Biotic Ligand Definitions
+    BLName = BLName,
+    MetalName = MetalName,
+    BLMetalName = BLMetalName,
+
+    # Critical Accumulation Table
+    CATab = CATab
+  )
+
+  # Expand WHAM components and species, if needed
+  if (any(grepl("WHAM", InVarType))){
+    # --name of WHAM file
     stopifnot(length(which(grepl("WHAM",InVarType))) == 1)
     tmp = gsub("WHAM","",InVarType[which(grepl("WHAM",InVarType))])
     if (tmp %in% c("V","VI","VII")){
@@ -203,80 +332,10 @@ defineProblem = function(paramFile) {
       WHAMVer = NULL
       wdatFile = substr(tmp,2,nchar(tmp))
     }
-  }
-  # to do: Where is wdatFile coming from? Should it be passed within the
-  # parameter file? Probably, since the WHAM calibration will definitely
-  # change the results of any simulation.
-
-  # # ---Make WHAM species from DOC
-
-  # # -get critical accumulation information --> this part also needs to happen in listCAT function
-  # # --number of critical accumulations in table
-  # # --critical accumulation table (CAT)
-
-  # assemble output
-  out = list(
-    NMass = NMass,
-    NInLab = NInLab,
-    NInVar = NInVar,
-    NInComp = NInComp,
-    NDefComp = NDefComp,
-    NComp = NComp,
-    NSpec = NSpec,
-    NPhases = NPhases,
-    NBLD = NBLD,
-    NCAT = NCAT,
-
-    MassName = MassName,
-    MassAmt = MassAmt,
-    MassUnit = MassUnit,
-
-    InLabName = InLabName,
-
-    InVarName = InVarName,
-    InVarMC = InVarMC,
-    InVarType = InVarType,
-
-    InCompName = InCompName,
-
-    CompName = CompName,
-    CompCharge = CompCharge,
-    CompMC = CompMC,
-    CompType = CompType,
-    CompActCorr = CompActCorr,
-    CompSiteDens = CompSiteDens,
-
-    # Defined Components
-    DefCompName = DefCompName,
-    DefCompFrom = DefCompFrom,
-    DefCompCharge = DefCompCharge,
-    DefCompMC = DefCompMC,
-    DefCompType = DefCompType,
-    DefCompActCorr = DefCompActCorr,
-    DefCompSiteDens = DefCompSiteDens,
-
-    #Formation Reactions
-    SpecName = SpecName,
-    SpecMC = SpecMC,
-    SpecActCorr = SpecActCorr,
-    SpecNC = SpecNC,
-    CompList = CompList,
-    Stoich = Stoich,
-    LogK = LogK,
-    DeltaH = DeltaH
-
-    #Phase List
-    #Biotic Ligand Definitions
-    #Critical Accumultion Table
-  )
-
-  # Expand WHAM components and species, if needed
-  if (any(InVarType == "WHAM")) {
+    # ---Make WHAM species from DOC
     out2 = do.call("expandWHAM",
                    args = c(out[which(names(out) %in% formalArgs("expandWHAM"))],
-                            list(
-                              wdatFile = wdatFile, WHAMVer = WHAMVer
-                            )))
+                            list(wdatFile = wdatFile, WHAMVer = WHAMVer)))
     out[names(out2)] = out2
   }
 

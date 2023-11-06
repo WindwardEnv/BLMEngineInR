@@ -38,7 +38,7 @@
 #' @keywords internal
 #'
 #' @noRd
-expandWHAM = function(nMC, NComp, NSpec, MassName,
+expandWHAM = function(NMass, NComp, NSpec, MassName,
                       CompName, CompCharge, CompMC, CompType,
                       CompActCorr, CompSiteDens, SpecName, SpecMC,
                       SpecType,  SpecActCorr, SpecNC,
@@ -51,7 +51,7 @@ expandWHAM = function(nMC, NComp, NSpec, MassName,
       Stoich = Full_InorgDataStoich
       K = Full_InorgDataK
       LogK = log10(K)
-      nMC = 2
+      NMass = 2
       MassName = c("Water","BL")
       NComp = ncol(Stoich)
       CompName = colnames(Stoich)
