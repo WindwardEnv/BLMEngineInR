@@ -7,7 +7,7 @@ Column model parameter file, Ver 4.00
 1,  Defined Components
 21, Species
 0,  Phases
-4,  Number of Biotic Ligand Definitions
+5,  Number of Special Definitions
 1,  Number of Critical Values     
 --------------------------------------------------------------------------------
 Mass Compartment List
@@ -23,8 +23,8 @@ Input Variables
 Variable,  Compartment, Type
 Temp,      Water,       Temperature 
 pH,        Water,       pH
-DOC,       Water,       WHAMV       
-HA,        Water,       PercHA    
+DOC,       Water,       WHAM-HAFA
+HA,        Water,       PercHA
 --------------------------------------------------------------------------------
 Input Components
 Component, Charge, Compartment, Type,     Activity
@@ -68,12 +68,13 @@ CuHCO3,  Water,    Debye, 3,  Cu,  1,  CO3,  1,   H,  1,  14.620,    0.000,  0.0
 Phase List
 Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles
 --------------------------------------------------------------------------------
-Biotic Ligand Definitions
+Special Definitions
 Definition, Species
 Metal,      Cu
 BL,         BL1
 BL-Metal,   BL1-Cu
 BL-Metal,   BL1-CuOH
+WHAM,       V
 --------------------------------------------------------------------------------
 Critical Accumulation Table
 #, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
