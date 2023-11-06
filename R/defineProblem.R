@@ -126,7 +126,7 @@ defineProblem = function(paramFile) {
       stopifnot(xor(("H" %in% CompName[CompMC == iMass]),
                     ("pH" %in% InVarType[InVarMC == iMass])))
       if ("pH" %in% InVarType[InVarMC == iMass]) {
-        NComp = NComp + 1
+        NComp = NComp + 1L
         CompName = c(CompName,"H")
         CompCharge = c(CompCharge, 1L)
         CompMC = c(CompMC, iMass)
