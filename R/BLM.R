@@ -40,7 +40,8 @@ BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity
   # 2. Read inputFile
   #   --> input file name
   #   <-- R variable with component concentrations (total or free dep on paramFile)
-  allInput = do.call(getData, args = c(list(inputFile=inputFile), thisProblem[formalArgs(getDAta)]))
+  allInput = do.call(getData, args = c(list(inputFile=inputFile),
+                                       thisProblem[formalArgs(getData)]))
   # globalVars = c(thisProblem, thisInput)
 
   # Save some common variables for inializing arrays

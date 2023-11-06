@@ -21,6 +21,8 @@
 #'   (modified and returned)
 #' @param CompActCorr character vector of length `NComp`; the method to use for
 #'   activity corrections with this component (modified and returned)
+#' @param CompSiteDens numeric vector of length `NComp`; the binding site
+#'   density of each component (modified and returned)
 #' @param NSpec Number of species (modified and returned)
 #' @param SpecName character vector of length `NSpec`; species names (modified
 #'   and returned)
@@ -30,15 +32,15 @@
 #'   activity corrections with this species (modified and returned)
 #' @param SpecNC integer vector of length `NSpec`; the number of components used
 #'   to create a given species (modified and returned)
-#' @param CompList integer matrix of `NSpec` rows and `max(SpecNC)+2` columns;
-#'   the list of components used to create a given species (modified and
-#'   returned)
-#' @param Stoich integer matrix of `NSpec` rows and `NComp` columns; the
+#' @param SpecCompList integer matrix of `NSpec` rows and `max(SpecNC)+2`
+#'   columns; the list of components used to create a given species (modified
+#'   and returned)
+#' @param SpecStoich integer matrix of `NSpec` rows and `NComp` columns; the
 #'   stoichiometry matrix of the formation reactions (modified and returned)
-#' @param LogK numeric vector of length `NSpec`; the log10-transformed
+#' @param SpecLogK numeric vector of length `NSpec`; the log10-transformed
 #'   equilibrium coefficients (modified and returned)
-#' @param DeltaH numeric vector of length `NSpec`; the enthalpy change for each
-#'   formation reaction/species (modified and returned)
+#' @param SpecDeltaH numeric vector of length `NSpec`; the enthalpy change for
+#'   each formation reaction/species (modified and returned)
 #' @param SpecTemp numeric vector of length `NSpec`; temperature at which the
 #'   logK/deltaH were measured (modified and returned)
 #' @param NPhase integer; Number of phases
@@ -60,7 +62,7 @@ expandWHAM = function(NMass, MassName,
                       NInVar, InVarName, InVarMC, InVarType,
                       NComp, CompName, CompCharge, CompMC, CompType, CompActCorr, CompSiteDens,
                       NSpec, SpecName, SpecMC, SpecActCorr, SpecNC,
-                      CompList, Stoich, LogK, DeltaH, SpecTemp,
+                      SpecCompList, SpecStoich, SpecLogK, SpecDeltaH, SpecTemp,
                       NPhase, PhaseCompList, PhaseStoich,
                       WHAMVer = c("V","VI","VII"), wdatFile=NULL
                       ) {
@@ -231,8 +233,8 @@ expandWHAM = function(NMass, MassName,
     CompName = c(CompName, wCompName)
     CompCharge = c(CompCharge, array(0L, dim = wNComp, dimnames = list(wCompName)))
     CompMC = c(CompMC, array(iMass, dim = wNComp, dimnames = list(wCompName)))
-    CompType = c(CompType, array(1L, wNComp, dimnames = list(wCompName)))
-    CompActCorr = c(CompActCorr, array(0L, wNComp, dimnames = list(wCompName)))
+    CompType = c(CompType, array("MassBal", wNComp, dimnames = list(wCompName)))
+    CompActCorr = c(CompActCorr, array("WHAM", wNComp, dimnames = list(wCompName)))
     CompSiteDens = c(CompSiteDens, array(NA, wNComp, dimnames = list(wCompName)))
 
     wNSpec = (nMS * (2L + nMP) + nBP * (4L + nMP) + nTG * (8L + nMP)) * nWHAMFracAdd
@@ -240,19 +242,19 @@ expandWHAM = function(NMass, MassName,
     NSpec = NSpec + wNSpec
     SpecName = c(SpecName, array(paste0("newOCSpecies",1:wNSpec),wNSpec))
     SpecMC = c(SpecMC, array(iMass, dim = wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))#this should always be water
-    SpecType = c(SpecType, array(1L, wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
-    SpecActCorr = c(SpecActCorr, array(0L, wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
+    # SpecType = c(SpecType, array(1L, wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
+    SpecActCorr = c(SpecActCorr, array("WHAM", wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
     # SpecCharge = c(SpecCharge, array(NA, wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
     SpecNC = c(SpecNC, array(NA, wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
-    CompList = rbind(CompList, matrix(0L, nrow = wNSpec, ncol = ncol(CompList)))
-    Stoich = rbind(cbind(Stoich,
+    SpecCompList = rbind(SpecCompList, matrix(0L, nrow = wNSpec, ncol = ncol(SpecCompList)))
+    SpecStoich = rbind(cbind(SpecStoich,
                          matrix(0L,nrow=NSpec-wNSpec, ncol = wNComp,
                                 dimnames = list(SpecName[1:(NSpec-wNSpec)],wCompName))),
                    matrix(0L, nrow = wNSpec, ncol = NComp,
                           dimnames = list(paste0("newOCSpecies",1:wNSpec),
                                           CompName)))
-    LogK = c(LogK, array(NA,wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))
-    DeltaH = c(DeltaH, array(0.0,wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))
+    SpecLogK = c(SpecLogK, array(NA,wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))
+    SpecDeltaH = c(SpecDeltaH, array(0.0,wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))
     SpecTemp = c(SpecTemp, array(0.0,wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))
 
     Monodent_pKH = numeric(nMS)
@@ -274,16 +276,16 @@ expandWHAM = function(NMass, MassName,
       newSpecNum = startSpec:(startSpec + nMS - 1)
       SpecName[newSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyProt)
       # SpecCharge[newSpecNum] = 0L
-      diag(Stoich[newSpecNum, newCompNum]) = 1L
-      LogK[newSpecNum] = 0.0
+      diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+      SpecLogK[newSpecNum] = 0.0
 
       # - fully deprot
       newSpecNum = newSpecNum + nMS
       SpecName[newSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot)
       # SpecCharge[newSpecNum] = -1L
-      diag(Stoich[newSpecNum, newCompNum]) = 1L
-      Stoich[newSpecNum,iH] = -1L
-      LogK[newSpecNum] = -1 * Monodent_pKH
+      diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+      SpecStoich[newSpecNum,iH] = -1L
+      SpecLogK[newSpecNum] = -1 * Monodent_pKH
 
       # bound to each metal
       for(iMetal in 1:nMP){
@@ -292,10 +294,10 @@ expandWHAM = function(NMass, MassName,
         # SpecCharge[newSpecNum] = -1L + SpecCharge[iMetalSpec]
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot, "-",
                                       MetalsTable$Metal[iMetal])
-        Stoich[newSpecNum, 1:NComp] = matrix(Stoich[iMetalSpec,], nrow = nMS, ncol = NComp, byrow = T)
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = Stoich[newSpecNum,iH] -1L
-        LogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[MonodentTable$Strong1Weak2]])
+        SpecStoich[newSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nMS, ncol = NComp, byrow = T)
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = SpecStoich[newSpecNum,iH] -1L
+        SpecLogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[MonodentTable$Strong1Weak2]])
       }
 
 
@@ -311,32 +313,32 @@ expandWHAM = function(NMass, MassName,
         newSpecNum = startSpec:(startSpec + nBP - 1)
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyProt)
         # SpecCharge[newSpecNum] = 0L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        LogK[newSpecNum] = 0.0
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecLogK[newSpecNum] = 0.0
 
         # - first site deprotonated
         newSpecNum = newSpecNum + nBP
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$S1Deprot)
         # SpecCharge[newSpecNum] = -1L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -1L
-        LogK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S1]
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -1L
+        SpecLogK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S1]
 
         # - second site deprotonated
         newSpecNum = newSpecNum + nBP
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$S2Deprot)
         # SpecCharge[newSpecNum] = -1L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -1L
-        LogK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S2]
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -1L
+        SpecLogK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S2]
 
         # - fully deprot
         newSpecNum = newSpecNum + nBP
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyDeprot)
         # SpecCharge[newSpecNum] = -2L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -2L
-        LogK[newSpecNum] = -1 * (Monodent_pKH[BidentTable$S1] +
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -2L
+        SpecLogK[newSpecNum] = -1 * (Monodent_pKH[BidentTable$S1] +
                                    Monodent_pKH[BidentTable$S2])
 
         # bound to each metal
@@ -346,10 +348,10 @@ expandWHAM = function(NMass, MassName,
           # SpecCharge[newSpecNum] = -2L + SpecCharge[iMetalSpec]
           SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyDeprot, "-",
                                         MetalsTable$Metal[iMetal])
-          Stoich[newSpecNum, 1:NComp] = matrix(Stoich[iMetalSpec,], nrow = nBP, ncol = NComp, byrow = T)
-          diag(Stoich[newSpecNum, newCompNum]) = 1L
-          Stoich[newSpecNum,iH] = Stoich[newSpecNum,iH] -2L
-          LogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[BidentTable$S1Strong1Weak2]] +
+          SpecStoich[newSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nBP, ncol = NComp, byrow = T)
+          diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+          SpecStoich[newSpecNum,iH] = SpecStoich[newSpecNum,iH] -2L
+          SpecLogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[BidentTable$S1Strong1Weak2]] +
                                                MetalsTable[iMetal,pKM_cols[BidentTable$S2Strong1Weak2]])
         }
 
@@ -367,64 +369,64 @@ expandWHAM = function(NMass, MassName,
         newSpecNum = startSpec:(startSpec + nTG - 1)
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyProt)
         # SpecCharge[newSpecNum] = 0L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        LogK[newSpecNum] = 0.0
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecLogK[newSpecNum] = 0.0
 
         # - first site deprotonated
         newSpecNum = newSpecNum + nTG
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S1Deprot)
         # SpecCharge[newSpecNum] = -1L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -1L
-        LogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S1]
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -1L
+        SpecLogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S1]
 
         # - second site deprotonated
         newSpecNum = newSpecNum + nTG
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S2Deprot)
         # SpecCharge[newSpecNum] = -1L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -1L
-        LogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S2]
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -1L
+        SpecLogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S2]
 
         # - third site deprotonated
         newSpecNum = newSpecNum + nTG
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S3Deprot)
         # SpecCharge[newSpecNum] = -1L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -1L
-        LogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S3]
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -1L
+        SpecLogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S3]
 
         # - first & second sites deprotonated
         newSpecNum = newSpecNum + nTG
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S12Deprot)
         # SpecCharge[newSpecNum] = -2L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -2L
-        LogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S2])
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -2L
+        SpecLogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S2])
 
         # - first & third sites deprotonated
         newSpecNum = newSpecNum + nTG
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S13Deprot)
         # SpecCharge[newSpecNum] = -2L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -2L
-        LogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S3])
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -2L
+        SpecLogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S3])
 
         # - second & third sites deprotonated
         newSpecNum = newSpecNum + nTG
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S23Deprot)
         # SpecCharge[newSpecNum] = -2L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -2L
-        LogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S2] + Monodent_pKH[TridentTable$S3])
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -2L
+        SpecLogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S2] + Monodent_pKH[TridentTable$S3])
 
         # - fully deprot
         newSpecNum = newSpecNum + nTG
         SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyDeprot)
         # SpecCharge[newSpecNum] = -3L
-        diag(Stoich[newSpecNum, newCompNum]) = 1L
-        Stoich[newSpecNum,iH] = -3L
-        LogK[newSpecNum] = -1 *(Monodent_pKH[TridentTable$S1] +
+        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+        SpecStoich[newSpecNum,iH] = -3L
+        SpecLogK[newSpecNum] = -1 *(Monodent_pKH[TridentTable$S1] +
                                   Monodent_pKH[TridentTable$S2] +
                                   Monodent_pKH[TridentTable$S3])
 
@@ -435,10 +437,10 @@ expandWHAM = function(NMass, MassName,
           # SpecCharge[newSpecNum] = -3L + SpecCharge[iMetalSpec]
           SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyDeprot, "-",
                                         MetalsTable$Metal[iMetal])
-          Stoich[newSpecNum, 1:NComp] = matrix(Stoich[iMetalSpec,], nrow = nTG, ncol = NComp, byrow = T)
-          diag(Stoich[newSpecNum, newCompNum]) = 1L
-          Stoich[newSpecNum,iH] = Stoich[newSpecNum,iH] -3L
-          LogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[TridentTable$S1Strong1Weak2]] +
+          SpecStoich[newSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nTG, ncol = NComp, byrow = T)
+          diag(SpecStoich[newSpecNum, newCompNum]) = 1L
+          SpecStoich[newSpecNum,iH] = SpecStoich[newSpecNum,iH] -3L
+          SpecLogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[TridentTable$S1Strong1Weak2]] +
                                                MetalsTable[iMetal,pKM_cols[TridentTable$S2Strong1Weak2]] +
                                                MetalsTable[iMetal,pKM_cols[TridentTable$S3Strong1Weak2]])
         }
@@ -458,9 +460,9 @@ expandWHAM = function(NMass, MassName,
   names(SpecMC) = SpecName
   names(SpecType) = SpecName
   names(SpecActCorr) = SpecName
-  rownames(Stoich) = SpecName
-  names(LogK) = SpecName
-  names(DeltaH) = SpecName
+  rownames(SpecStoich) = SpecName
+  names(SpecLogK) = SpecName
+  names(SpecDeltaH) = SpecName
   names(SpecTemp) = SpecName
 
   # Re-ordering species so components are in front
@@ -469,16 +471,16 @@ expandWHAM = function(NMass, MassName,
   SpecMC = SpecMC[reorder]
   SpecActCorr = SpecActCorr[reorder]
   SpecNC = SpecNC[reorder]
-  CompList = CompList[reorder,]
-  Stoich = Stoich[reorder,]
-  LogK = LogK[reorder]
-  DeltaH = DeltaH[reorder]
+  SpecCompList = SpecCompList[reorder,]
+  SpecStoich = SpecStoich[reorder,]
+  SpecLogK = SpecLogK[reorder]
+  SpecDeltaH = SpecDeltaH[reorder]
   SpecTemp = SpecTemp[reorder]
 
-  SpecNC = rowSums(Stoich != 0L)
+  SpecNC = rowSums(SpecStoich != 0L)
   names(SpecNC) = SpecName
-  CompList = t(apply(
-    Stoich,
+  SpecCompList = t(apply(
+    SpecStoich,
     MARGIN = 1,
     FUN = function(X) {
       tmp = sort(which(X != 0L))
@@ -487,7 +489,7 @@ expandWHAM = function(NMass, MassName,
       }
       return(tmp)
     }))
-  rownames(CompList) = SpecName
+  rownames(SpecCompList) = SpecName
   # CompNS = colSums(Stoich != 0L)
   # names(CompNS) = CompName
   # SpecList = t(apply(
@@ -520,10 +522,10 @@ expandWHAM = function(NMass, MassName,
     SpecMC = SpecMC,
     SpecActCorr = SpecActCorr,
     SpecNC = SpecNC,
-    CompList = CompList,
-    Stoich = Stoich,
-    LogK = LogK,
-    DeltaH = DeltaH,
+    SpecCompList = SpecCompList,
+    SpecStoich = SpecStoich,
+    SpecLogK = SpecLogK,
+    SpecDeltaH = SpecDeltaH,
     SpecTemp = SpecTemp,
 
     # Phase List
