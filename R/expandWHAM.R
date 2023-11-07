@@ -23,6 +23,24 @@
 #'   activity corrections with this component (modified and returned)
 #' @param CompSiteDens numeric vector of length `NComp`; the binding site
 #'   density of each component (modified and returned)
+#' @param NDefComp integer; Number of defined components (modified and returned)
+#' @param DefCompName character vector of length `NDefComp`; defined component
+#'   names (modified and returned)
+#' @param DefCompFromNum numeric vector of length `NDefComp`; the number the
+#'   defined component is formed from (modified and returned)
+#' @param DefCompFromVar character vector of length `NDefComp`; the column used
+#'   to form the defined component (modified and returned)
+#' @param DefCompCharge integer vector of length `NDefComp`; the charge of the
+#'   defined components as free ions (modified and returned)
+#' @param DefCompMC integer vector of length `NDefComp`; Which mass compartment
+#'   the defined component belongs to (modified and returned)
+#' @param DefCompType character vector of length `NDefComp`; the type of defined
+#'   component (modified and returned)
+#' @param DefCompActCorr character vector of length `NDefComp`; the method to
+#'   use for activity corrections with this defined component (modified and
+#'   returned)
+#' @param DefCompSiteDens numeric vector of length `NDefComp`; the binding site
+#'   density of each defined component (modified and returned)
 #' @param NSpec Number of species (modified and returned)
 #' @param SpecName character vector of length `NSpec`; species names (modified
 #'   and returned)
@@ -61,11 +79,12 @@
 expandWHAM = function(NMass, MassName,
                       NInVar, InVarName, InVarMC, InVarType,
                       NComp, CompName, CompCharge, CompMC, CompType, CompActCorr, CompSiteDens,
-                      NSpec, SpecName, SpecMC, SpecActCorr, SpecNC,
-                      SpecCompList, SpecStoich, SpecLogK, SpecDeltaH, SpecTemp,
+                      NDefComp, DefCompName, DefCompFromNum, DefCompFromVar, DefCompCharge, DefCompMC, DefCompType, DefCompActCorr, DefCompSiteDens,
+                      NSpec, SpecName, SpecMC, SpecActCorr, SpecNC, SpecCompList, SpecStoich, SpecLogK, SpecDeltaH, SpecTemp,
                       NPhase, PhaseCompList, PhaseStoich,
-                      WHAMVer = c("V","VI","VII"), wdatFile=NULL
-                      ) {
+                      WHAMVer = c("V", "VI", "VII"),
+                      wdatFile = NULL) {
+
 
   # error catching and input cleanup
   if (is.null(wdatFile)){
@@ -201,6 +220,18 @@ expandWHAM = function(NMass, MassName,
         )
       }
     }
+    if ((InVarType[iInVar] %in% c("WHAM-FA","WHAM-HA")) &
+        any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercHA")) {
+      stop(
+        "PercHA input variable specified in mass compartment with WHAM-HA or WHAM-FA input variable."
+      )
+    }
+    if ((InVarType[iInVar] %in% c("WHAM-HA")) &
+        any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercAFA")) {
+      stop(
+        "PercAFA input variable specified in mass compartment with WHAM-HA input variable."
+      )
+    }
     nWHAMFracAdd = length(WHAMFracAdd)
 
     WHAMprefix = array(
@@ -237,6 +268,21 @@ expandWHAM = function(NMass, MassName,
     CompActCorr = c(CompActCorr, array("WHAM", wNComp, dimnames = list(wCompName)))
     CompSiteDens = c(CompSiteDens, array(NA, wNComp, dimnames = list(wCompName)))
 
+    startDefComp = NDefComp + 1L
+    NDefComp = NDefComp + wNComp
+    DefCompName = c(DefCompName, wCompName)
+    DefCompFromNum = c(DefCompFromNum, array(NA, dim = wNComp, dimnames = list(wCompName)))
+    # if (nWHAMFracAdd > 1){
+      DefCompFromVar = c(DefCompFromVar, array(rep(WHAMprefix, each = wNComp / nWHAMFracAdd), dim=wNComp, dimnames = list(wCompName)))
+    # } else {
+    #   DefCompFromVar = c(DefCompFromVar, array(InVarName[iInVar], dim=wNComp, dimnames = list(wCompName)))
+    # }
+    DefCompCharge = c(DefCompCharge, array(0L, dim = wNComp, dimnames = list(wCompName)))
+    DefCompMC = c(DefCompMC, array(iMass, dim = wNComp, dimnames = list(wCompName)))
+    DefCompType = c(DefCompType, array("MassBal", wNComp, dimnames = list(wCompName)))
+    DefCompActCorr = c(DefCompActCorr, array("WHAM", wNComp, dimnames = list(wCompName)))
+    DefCompSiteDens = c(DefCompSiteDens, array(NA, wNComp, dimnames = list(wCompName)))
+
     wNSpec = (nMS * (2L + nMP) + nBP * (4L + nMP) + nTG * (8L + nMP)) * nWHAMFracAdd
     startSpec = NSpec + 1L
     NSpec = NSpec + wNSpec
@@ -267,10 +313,12 @@ expandWHAM = function(NMass, MassName,
 
       # Monodentate sites
       newCompNum = startComp:(startComp + nMS - 1)
+      newDefCompNum = startDefComp:(startDefComp + nMS - 1)
       Monodent_pKH[1:4] = pKHA[OMType] + dpKHA[OMType] * (2 * MonodentTable$S[1:4] - 5) / 6
       Monodent_pKH[5:8] = pKHB[OMType] + dpKHB[OMType] * (2 * MonodentTable$S[5:8] - 13) / 6
       Monodent_Abundance = (1 - fprB[OMType] - fprT[OMType]) * nCOOH[OMType] / MonodentTable$AbundDenom
       CompSiteDens[newCompNum] = Monodent_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+      DefCompSiteDens[newDefCompNum] = Monodent_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 
       # - fully protonated (components)
       newSpecNum = startSpec:(startSpec + nMS - 1)
@@ -304,10 +352,13 @@ expandWHAM = function(NMass, MassName,
       # Bidentate sites
       if (nBP > 0){
         startComp = max(newCompNum) + 1
+        startDefComp = max(newDefCompNum) + 1
         startSpec = max(newSpecNum) + 1
         newCompNum = startComp:(startComp + nBP - 1)
+        newDefCompNum = startDefComp:(startDefComp + nBP - 1)
         Bident_Abundance = fprB[OMType] * nCOOH[OMType] / BidentTable$AbundDenom
         CompSiteDens[newCompNum] = Bident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        DefCompSiteDens[newDefCompNum] = Bident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 
         # - fully protonated
         newSpecNum = startSpec:(startSpec + nBP - 1)
@@ -360,10 +411,13 @@ expandWHAM = function(NMass, MassName,
       # Tridentate sites
       if (nTG > 0){
         startComp = max(newCompNum) + 1
+        startDefComp = max(newDefCompNum) + 1
         startSpec = max(newSpecNum) + 1
         newCompNum = startComp:(startComp + nTG - 1)
+        newDefCompNum = startDefComp:(startDefComp + nTG - 1)
         Trident_Abundance = fprT[OMType] * nCOOH[OMType] / TridentTable$AbundDenom
         CompSiteDens[newCompNum] = Trident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        DefCompSiteDens[newDefCompNum] = Trident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 
         # - fully protonated
         newSpecNum = startSpec:(startSpec + nTG - 1)
@@ -448,6 +502,7 @@ expandWHAM = function(NMass, MassName,
       }
 
       startComp = max(newCompNum) + 1
+      startDefComp = max(newDefCompNum) + 1
       startSpec = max(newSpecNum) + 1
 
     }
@@ -456,9 +511,10 @@ expandWHAM = function(NMass, MassName,
 
   # Cleanup
   names(CompSiteDens) = CompName
+  names(DefCompSiteDens) = DefCompName
   # names(SpecCharge) = SpecName
   names(SpecMC) = SpecName
-  names(SpecType) = SpecName
+  # names(SpecType) = SpecName
   names(SpecActCorr) = SpecName
   rownames(SpecStoich) = SpecName
   names(SpecLogK) = SpecName
@@ -515,6 +571,17 @@ expandWHAM = function(NMass, MassName,
     CompType = CompType,
     CompActCorr = CompActCorr,
     CompSiteDens = CompSiteDens,
+
+    # Defined Components
+    NDefComp = NDefComp,
+    DefCompName = DefCompName,
+    DefCompCharge = DefCompCharge,
+    DefCompFromNum = DefCompFromNum,
+    DefCompFromVar = DefCompFromVar,
+    DefCompMC = DefCompMC,
+    DefCompType = DefCompType,
+    DefCompActCorr = DefCompActCorr,
+    DefCompSiteDens = DefCompSiteDens,
 
     # Formation Reactions
     NSpec = NSpec,

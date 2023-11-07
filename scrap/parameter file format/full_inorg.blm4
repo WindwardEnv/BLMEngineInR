@@ -1,0 +1,4 @@
+1
+ID,            Temp,  pH,   Cu,           Ca,           Mg,           Na,           K,            SO4,          Cl,           CO3
+n/a,           deg C, SU,   mol/L,        mol/L,        mol/L,        mol/L,        mol/L,        mol/L,        mol/L,        mol/L
+Full_Inorg,    25,    7.57, 4.720990E-08, 2.994160E-04, 5.019540E-04, 1.100490E-03, 5.371080E-05, 7.994870E-04, 5.359210E-05, 1.099870E-03

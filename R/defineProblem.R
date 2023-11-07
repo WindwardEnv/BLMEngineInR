@@ -52,6 +52,7 @@ defineProblem = function(paramFile) {
   NPhase = tmp[7, 1]
   NSpecialDef = tmp[8, 1]
   NCAT = tmp[9, 1]
+  stopifnot(NMass>0, NInLab>0, NInVar>0, NInComp>0, NSpec>0)
 
   # read compartment list
   skipRows = skipRows + 9 + 2
@@ -67,7 +68,7 @@ defineProblem = function(paramFile) {
              skip = skipRows, quiet = T, strip.white = T)
   InLabName = as.character(tmp)
 
-  # read input variables
+  # read input variables -
   skipRows = skipRows + NInLab + 2
   tmp = read.csv(file = paramFile, header = TRUE, skip = skipRows,
                  nrows = NInVar, strip.white = T)
@@ -78,6 +79,7 @@ defineProblem = function(paramFile) {
   stopifnot(all(!is.na(InVarMC)))
   stopifnot(all(InVarType %in% c("Temperature","pH","WHAM-FA","WHAM-HA",
                                   "WHAM-HAFA","PercHA","PercAFA")))
+  stopifnot("Temperature" %in% InVarType)
   # - Temperature = the temperature in degrees C
   # - pH = the -log[H]...you know, pH
   # - WHAM-HA, -FA, -HAFA = Windemere Humic Aqueous Model organic matter (input
@@ -92,33 +94,13 @@ defineProblem = function(paramFile) {
   skipRows = skipRows + NInVar + 3
   tmp = read.csv(file = paramFile, header = TRUE, skip = skipRows,
                  nrows = NInComp, strip.white = T)
-  InCompName = as.character(trimws(tmp[, 1]))
+  NComp = NInComp
+  InCompName = CompName = as.character(trimws(tmp[, 1]))
   CompCharge = as.integer(tmp[, 2])
   CompMC = match(trimws(tmp[, 3]), MassName)
   CompType = as.character(trimws(tmp[, 4]))
   CompActCorr = as.character(trimws(tmp[, 5]))
   CompSiteDens = array(1.0, dim = NInComp)
-
-  # read defined component list and properties
-  skipRows = skipRows + NInComp + 3
-  tmp = read.csv(file = paramFile, header = TRUE, skip = skipRows,
-                 nrows = NDefComp, strip.white = T)
-  DefCompName = as.character(tmp[, 1])
-  DefCompFrom = as.numeric(tmp[, 2]) # we will eventually want to be able to read numbers or strings
-  DefCompCharge = as.integer(tmp[, 3])
-  DefCompMC = match(tmp[, 4], MassName)
-  DefCompType = as.character(tmp[, 5])
-  DefCompActCorr = as.character(tmp[, 6])
-  DefCompSiteDens = as.numeric(tmp[, 7])
-
-  # concatenate DefComp and Comp
-  NComp = NInComp + NDefComp
-  CompName = c(InCompName, DefCompName)
-  CompCharge = c(CompCharge, DefCompCharge)
-  CompMC = c(CompMC, DefCompMC)
-  CompType = c(CompType, DefCompType)
-  CompActCorr = c(CompActCorr, DefCompActCorr)
-  CompSiteDens = c(CompSiteDens, DefCompSiteDens)
 
   # Add pH to the component list, if needed
   for (iMass in 1:NMass){#Must have either pH or H in non-BL compartments
@@ -140,6 +122,41 @@ defineProblem = function(paramFile) {
       }
     }
   }
+
+  # read defined component list and properties
+  skipRows = skipRows + NInComp + 3
+  if (NDefComp > 0){
+    tmp = read.csv(file = paramFile, header = TRUE, skip = skipRows,
+                   nrows = NDefComp, strip.white = T)
+    DefCompName = as.character(tmp[, 1])
+    DefCompFromNum = as.numeric(tmp[, 2]) # we will eventually want to be able to read numbers or strings
+    DefCompFromVar = as.character(tmp[, 2]) # we will eventually want to be able to read numbers or strings
+    DefCompFromVar[!is.na(DefCompFromNum)] = NA
+    DefCompFromNum[!is.na(DefCompFromVar)] = NA
+    DefCompCharge = as.integer(tmp[, 3])
+    DefCompMC = match(tmp[, 4], MassName)
+    DefCompType = as.character(tmp[, 5])
+    DefCompActCorr = as.character(tmp[, 6])
+    DefCompSiteDens = as.numeric(tmp[, 7])
+  } else {
+    DefCompName = character()
+    DefCompFromNum = numeric()
+    DefCompFromVar = character()
+    DefCompCharge = integer()
+    DefCompMC = integer()
+    DefCompType = character()
+    DefCompActCorr = character()
+    DefCompSiteDens = numeric()
+  }
+
+  # concatenate DefComp and Comp
+  NComp = NComp + NDefComp
+  CompName = c(CompName, DefCompName)
+  CompCharge = c(CompCharge, DefCompCharge)
+  CompMC = c(CompMC, DefCompMC)
+  CompType = c(CompType, DefCompType)
+  CompActCorr = c(CompActCorr, DefCompActCorr)
+  CompSiteDens = c(CompSiteDens, DefCompSiteDens)
 
   # Create variables for species information
   SpecName = character(NSpec)
@@ -203,8 +220,12 @@ defineProblem = function(paramFile) {
 
   # -get Special definitions
   skipRows = skipRows + NPhase + 2
-  tmp = read.csv(file = paramFile, header = TRUE, skip = skipRows,
-                 nrows = NSpecialDef, strip.white = T)
+  if (NSpecialDef > 0){
+    tmp = read.csv(file = paramFile, header = TRUE, skip = skipRows,
+                   nrows = NSpecialDef, strip.white = T)
+  } else {
+    tmp = data.frame(matrix(nrow = 0, ncol = 2))
+  }
   # --name of metal
   NMetal = sum(tmp[,1] == "Metal")
   MetalName = as.character(trimws(tmp[tmp[,1] == "Metal",2]))
@@ -241,10 +262,18 @@ defineProblem = function(paramFile) {
 
   # -get critical accumulation information --> this part also needs to happen in listCAT function
   skipRows = skipRows + NSpecialDef + 3
-  CATab = read.csv(file = paramFile, header = TRUE, skip = skipRows,
-                   nrows = NCAT, strip.white = T)
-  colnames(CATab) = c("Num","CA","Species","Test.Type","Duration","Lifestage",
-                      "Endpoint","Quantifier","References","Miscellaneous")
+  if (NCAT > 0){
+    CATab = read.csv(file = paramFile, header = TRUE, skip = skipRows,
+                     nrows = NCAT, strip.white = T)
+    colnames(CATab) = c("Num","CA","Species","Test.Type","Duration","Lifestage",
+                        "Endpoint","Quantifier","References","Miscellaneous")
+  } else {
+    CATab = data.frame(Num=integer(), CA=numeric(), Species=character(),
+                       Test.Type=character(), Duration=character(),
+                       Lifestage=character(), Endpoint=character(),
+                       Quantifier=character(), References=character(),
+                       Miscellaneous=character())
+  }
 
   # Add components to the species list
   NSpec = NComp + NSpec
@@ -261,13 +290,15 @@ defineProblem = function(paramFile) {
   SpecDeltaH = c(rep(0, NComp), SpecDeltaH)
   SpecTemp = c(rep(0, NComp), SpecTemp)
 
-  # Trim down CompList...give it 2 extra columns in case any WHAM species need it
-  SpecCompList = SpecCompList[, 1:(max(which(colSums(SpecCompList)>0)) + 2)]
+  # Trim down CompList
+  SpecCompList = SpecCompList[, 1:max(which(colSums(SpecCompList)>0))]
 
   # error catching
-  stopifnot(all(!is.na(c(CompMC, SpecMC))))
-  stopifnot(all(CompType %in% c("MassBal","FixedAct","Substituted","ChargeBal","SurfPot")))
-  stopifnot(all(c(CompActCorr, SpecActCorr) %in% c("None","Debye","Davies","WHAM")))
+  stopifnot(
+    all(!is.na(c(CompMC, SpecMC))),
+    all(CompType %in% c("MassBal","FixedAct","Substituted","ChargeBal","SurfPot")),
+    all(c(CompActCorr, SpecActCorr) %in% c("None","Debye","Davies","WHAM"))
+  )
 
 
 
@@ -312,11 +343,13 @@ defineProblem = function(paramFile) {
 
     # Defined Components
     DefCompName = DefCompName,
-    DefCompFrom = DefCompFrom,
+    DefCompFromNum = DefCompFromNum,
+    DefCompFromVar = DefCompFromVar,
     DefCompCharge = DefCompCharge,
     DefCompMC = DefCompMC,
     DefCompType = DefCompType,
     DefCompActCorr = DefCompActCorr,
+    DefCompSiteDens = DefCompSiteDens,
 
     # Formation Reactions
     SpecName = SpecName,
@@ -357,7 +390,10 @@ defineProblem = function(paramFile) {
     out[names(out2)] = out2
   }
 
-  out$SpecCharge = out$CompCharge %*% out$Stoich
+  stopifnot(!any(duplicated(c(InLabName, InVarName, SpecName))))
+
+  SpecCharge = out$SpecStoich %*% out$CompCharge
+  out$SpecCharge = SpecCharge
 
   return(out)
 }
