@@ -76,17 +76,19 @@ std::vector<double> CppCalcSpecConc(std::vector<double> CompConc,
 //' # data(TestDataFreeConc, TestDataK, TestDataStoich)
 //' # Log_TestDataFreeConc = log10(TestDataFreeConc)
 //' # Log_TestDataK = log10(TestDataK)
-//' # 10^CppCalcLogSpecConc(LogCompConc = Log_TestDataFreeConc[1:2], LogK = Log_TestDataK[3:4], SpecStoich = TestDataStoich[3:4,])
+//' # 10^CppCalcLogSpecConc(LogCompConc = Log_TestDataFreeConc[1:2],
+//' #                       LogK = Log_TestDataK[3:4],
+//' #                       SpecStoich = TestDataStoich[3:4,])
 //'
 //' @noRd
 // [[Rcpp::export]]
-std::vector<double> CppCalcLogSpecConc(std::vector<double> LogCompConc,
-                                       std::vector<double> SpecLogK,
+Rcpp::NumericVector CppCalcLogSpecConc(Rcpp::NumericVector LogCompConc,
+                                       Rcpp::NumericVector SpecLogK,
                                        Rcpp::IntegerMatrix SpecStoich,
                                        unsigned int NComp,
                                        unsigned int NSpec){
-  /* Variable definitions */
-  std::vector<double> LogSpecConc(NSpec);//species concentrations
+  /*  Variable definitions */
+  Rcpp::NumericVector LogSpecConc(NSpec);//species concentrations
 
   for (unsigned int iSpec = 0; iSpec < NSpec; iSpec ++){
     LogSpecConc[iSpec] = SpecLogK[iSpec];
