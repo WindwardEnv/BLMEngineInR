@@ -1,98 +1,94 @@
 Column model parameter file, Ver 4.00
 --------------------------------------------------------------------------------
 2,  Number of Mass Compartments
-2,  Input Labels
-2,  Input Variables
-8,  Input Components
+5,  Input variables
+10, Input Components 
 1,  Defined Components
 21, Species
 0,  Phases
-4,  Number of Biotic Ligand Definitions
-1,  Number of Critical Values
 --------------------------------------------------------------------------------
 Mass Compartment List
 Compartment,   C to M,     Units label
-Water,         1,          L
+Water,         1,          L             
 BL,            0.1,        g wt
 --------------------------------------------------------------------------------
-Input Labels
-Site
-Sample
---------------------------------------------------------------------------------
 Input Variables
-Variable,  Compartment, Type
-Temp,      Water,       Temperature
-pH,        Water,       pH
+Variable,   Include
+Site,       true
+Sample,     true  
+Temp,       true
+HA,         true
+AFA,        false 
 --------------------------------------------------------------------------------
 Input Components
-Component, Charge, Compartment, Type,     Activity
-Cu,         2,     Water,       MassBal,  Debye
-Ca,         2,     Water,       MassBal,  Debye
-Mg,         2,     Water,       MassBal,  Debye
-Na,         1,     Water,       MassBal,  Debye
-K,          1,     Water,       MassBal,  Debye
-SO4,       -2,     Water,       MassBal,  Debye
-Cl,        -1,     Water,       MassBal,  Debye
-CO3,       -2,     Water,       MassBal,  Debye
+Component, Charge, Compartment, Type, Activity, Site Den         
+H,          1,     Water,       1,        2,        1            
+Cu,         2,     Water,       1,        2,        1            
+DOC-FA,    -1,     Water,       1,        1,        0.0006         
+Ca,         2,     Water,       1,        2,        1            
+Mg,         2,     Water,       1,        2,        1            
+Na,         1,     Water,       1,        2,        1
+K,          1,     Water,       1,        2,        1
+SO4,       -2,     Water,       1,        2,        1
+Cl,        -1,     Water,       1,        2,        1
+CO3,       -2,     Water,       1,        2,        1
 --------------------------------------------------------------------------------
 Defined components                                    
-Component,  From,     Charge,   Compartment, Type,    Activity,   Site Den 
-BL1,        1.78E-05, -1,       BL,          MassBal, None,       1
+Component,  From,    Charge,   Compartment, Type,   Activity,   Site Den 
+BL1,        1.78E-05,-1,       BL,          1,      1,          1
 --------------------------------------------------------------------------------      
 Formation Reactions
-Species,  Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,  Delta H,   Temp
-BL1-Cu,   BL,       None,  2,  BL1, 1,   Cu,  1,            7.400,    0.000,  0.000   
-BL1-CuOH, BL,       None,  3,  BL1, 1,   Cu,  1,  H,  -1,  -1.300,    0.000,  0.000
-BL1-Ca,   BL,       None,  2,  BL1, 1,   Ca,  1,            3.600,    0.000,  0.000
-BL1-Mg,   BL,       None,  2,  BL1, 1,   Mg,  1,            3.600,    0.000,  0.000
-BL1-H,    BL,       None,  2,  BL1, 1,    H,  1,            5.400,    0.000,  0.000
-BL1-Na,   BL,       None,  2,  BL1, 1,   Na,  1,            3.000,    0.000,  0.000
-HCO3,     Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,    0.000,  0.000
-H2CO3,    Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,    0.000,  0.000
-MgHCO3,   Water,    Debye, 3,  CO3, 1,   Mg,  1,  H,   1,  11.400,    0.000,  0.000
-MgCO3,    Water,    Debye, 2,  CO3, 1,   Mg,  1,            2.980,    0.000,  0.000
-MgSO4,    Water,    Debye, 2,  Mg,  1,  SO4,  1,            2.370,    0.000,  0.000
-CaHCO3,   Water,    Debye, 3,  Ca,  1,  CO3,  1,  H,   1,  11.440,    0.000,  0.000
-CaCO3,    Water,    Debye, 2,  Ca,  1,  CO3,  1,            3.220,    0.000,  0.000
-CaSO4,    Water,    Debye, 2,  Ca,  1,  SO4,  1,            2.300,    0.000,  0.000
-CuOH,     Water,    Debye, 2,  Cu,  1,    H, -1,           -7.520,    0.000,  0.000
-Cu(OH)2,  Water,    Debye, 2,  Cu,  1,    H, -2,          -16.220,    0.000,  0.000
-CuSO4,    Water,    Debye, 2,  Cu,  1,  SO4,  1,            2.360,    0.000,  0.000
-CuCO3,    Water,    Debye, 2,  Cu,  1,  CO3,  1,            6.750,    0.000,  0.000
-Cu(CO3)2, Water,    Debye, 2,  Cu,  1,  CO3,  2,            9.920,    0.000,  0.000
-CuCl,     Water,    Debye, 2,  Cu,  1,   Cl,  1,            0.400,    0.000,  0.000
-CuHCO3,   Water,    Debye, 3,  Cu,  1,  CO3,  1,   H,  1,  14.620,    0.000,  0.000
+Species, Compartment, Type, Act., NC, C1,  S1,  C2, S2, C3,  S3,   Log K,  Delta H,   Temp,       Conc
+BL1-Cu,  BL,          21,   1,    2,  BL1, 1,   Cu,  1,            7.400,    0.000,  0.000, 0.0000E+00   
+BL1-CuOH,BL,          21,   1,    3,  BL1, 1,   Cu,  1,  H,  -1,  -1.300,    0.000,  0.000, 0.0000E+00
+BL1-Ca,  BL,          21,   1,    2,  BL1, 1,   Ca,  1,            3.600,    0.000,  0.000, 0.0000E+00
+BL1-Mg,  BL,          21,   1,    2,  BL1, 1,   Mg,  1,            3.600,    0.000,  0.000, 0.0000E+00
+BL1-H,   BL,          21,   1,    2,  BL1, 1,    H,  1,            5.400,    0.000,  0.000, 0.0000E+00
+BL1-Na,  BL,          21,   1,    2,  BL1, 1,   Na,  1,            3.000,    0.000,  0.000, 0.0000E+00
+HCO3,    Water,       11,   1,    2,  CO3, 1,    H,  1,           10.329,    0.000,  0.000, 0.0000E+00
+H2CO3,   Water,       11,   1,    2,  CO3, 1,    H,  2,           16.681,    0.000,  0.000, 0.0000E+00
+MgHCO3,  Water,       11,   1,    3,  CO3, 1,   Mg,  1,  H,   1,  11.400,    0.000,  0.000, 0.0000E+00
+MgCO3,   Water,       11,   1,    2,  CO3, 1,   Mg,  1,            2.980,    0.000,  0.000, 0.0000E+00
+MgSO4,   Water,       11,   1,    2,  Mg,  1,  SO4,  1,            2.370,    0.000,  0.000, 0.0000E+00
+CaHCO3,  Water,       11,   1,    3,  Ca,  1,  CO3,  1,  H,   1,  11.440,    0.000,  0.000, 0.0000E+00
+CaCO3,   Water,       11,   1,    2,  Ca,  1,  CO3,  1,            3.220,    0.000,  0.000, 0.0000E+00
+CaSO4,   Water,       11,   1,    2,  Ca,  1,  SO4,  1,            2.300,    0.000,  0.000, 0.0000E+00
+CuOH,    Water,       11,   1,    2,  Cu,  1,    H, -1,           -7.520,    0.000,  0.000, 0.0000E+00
+Cu(OH)2, Water,       11,   1,    2,  Cu,  1,    H, -2,          -16.220,    0.000,  0.000, 0.0000E+00
+CuSO4,   Water,       11,   1,    2,  Cu,  1,  SO4,  1,            2.360,    0.000,  0.000, 0.0000E+00
+CuCO3,   Water,       11,   1,    2,  Cu,  1,  CO3,  1,            6.750,    0.000,  0.000, 0.0000E+00
+Cu(CO3)2,Water,       11,   1,    2,  Cu,  1,  CO3,  2,            9.920,    0.000,  0.000, 0.0000E+00
+CuCl,    Water,       11,   1,    2,  Cu,  1,   Cl,  1,            0.400,    0.000,  0.000, 0.0000E+00
+CuHCO3,  Water,       11,   1,    3,  Cu,  1,  CO3,  1,   H,  1,  14.620,    0.000,  0.000, 0.0000E+00
 --------------------------------------------------------------------------------
 Phase List
 Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles
 --------------------------------------------------------------------------------
 Biotic Ligand Definitions
-Definition, Species
-Metal,      Cu
-BL,         BL1
-BL-Metal,   BL1-Cu
-BL-Metal,   BL1-CuOH
---------------------------------------------------------------------------------
-Critical Accumulation Table
+[Metal]: Cu
+[BL]: BL1
+[BL-Metal]: BL1-Cu
+[BL-Metal]: BL1-CuOH
+
+[CRITICAL START]:
 #, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
 1, 0.016407677, Ceriodaphnia dubia, Acute,     48h,      Neonate (<24 hr), Mortality, EC50; LC50, WER Reference water, SMEA calculated by median
---------------------------------------------------------------------------------
+[CRITICAL END]
+
+[END]:
+
 -------Notes--------
-Component Types: 
-  PB  C++  R/PFile  
-  1   1     MassBal(Float previously)
-  2   2     FixedAct
-  3   -     Substituted (who knows what this is)
-  4   3     ChargeBal (not useful in BLM)
-  5   4     SurfPot (keep for now - double layer stuff)
-  6   5     WHAMV
-  -   6     WHAMVI
-  -   7     WHAMVII
+Types: 
+  1=Float
+  2=Fixed
+  3=Substituted
+  4=ChargeBal
+  5=SurfPOt
+  6=WHAM
 Activity Correction Methods: 
-  PB  C++   R/PFile  
-  1   1     None
-  2   2     Davies
-  3   3     Debye
-  4   4     MoleFraction
-  5   5     ChargeFraction
-  6   6     WHAM (usually internal use only)
+  1=None
+  2=Davies
+  3=Debye
+  4=MoleFraction
+  5=ChargeFraction
+  6=WHAM (usually internal use only)

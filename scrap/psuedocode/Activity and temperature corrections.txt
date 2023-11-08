@@ -1,0 +1,9 @@
+
+sub TempCorrrection
+  Inputs:
+	SysTemp 	: the tempature for the current simulation
+	LogKs[1..Ns]	: the log K values for the species formation reactions 
+	SpecTemp[1..Ns]	: the temperature that the log Ks were measured at
+	DeltaH[1..Ns]	: the change in enthalpy for each species formation reaction
+  Outputs:
+	HLogKs[1..Ns]	: the enthalpy corrected log Ks

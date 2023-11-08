@@ -171,7 +171,7 @@ defineProblem = function(paramFile) {
     }
     LogK[i] = as.numeric(trimws(tmp.split[[i]][5 + SpecNC[i] * 2]))
     DeltaH[i] = as.numeric(trimws(tmp.split[[i]][6 + SpecNC[i] * 2]))
-    SpecTemp = as.numeric(trimws(tmp.split[[i]][7 + SpecNC[i] * 2]))
+    SpecTemp[i] = as.numeric(trimws(tmp.split[[i]][7 + SpecNC[i] * 2]))
   }
 
   # -Get Phase information
