@@ -345,7 +345,9 @@ expandWHAM = function(NMass, MassName,
         SpecStoich[newSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nMS, ncol = NComp, byrow = T)
         diag(SpecStoich[newSpecNum, newCompNum]) = 1L
         SpecStoich[newSpecNum,iH] = SpecStoich[newSpecNum,iH] -1L
-        SpecLogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[MonodentTable$Strong1Weak2]])
+        SpecLogK[newSpecNum] = SpecLogK[iMetalSpec] -
+          as.numeric(MetalsTable[iMetal,pKM_cols[MonodentTable$Strong1Weak2]])
+
       }
 
 
@@ -402,8 +404,10 @@ expandWHAM = function(NMass, MassName,
           SpecStoich[newSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nBP, ncol = NComp, byrow = T)
           diag(SpecStoich[newSpecNum, newCompNum]) = 1L
           SpecStoich[newSpecNum,iH] = SpecStoich[newSpecNum,iH] -2L
-          SpecLogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[BidentTable$S1Strong1Weak2]] +
-                                               MetalsTable[iMetal,pKM_cols[BidentTable$S2Strong1Weak2]])
+          SpecLogK[newSpecNum] = SpecLogK[iMetalSpec] -
+            as.numeric(MetalsTable[iMetal,pKM_cols[BidentTable$S1Strong1Weak2]] +
+                         MetalsTable[iMetal,pKM_cols[BidentTable$S2Strong1Weak2]])
+
         }
 
       }
@@ -494,9 +498,11 @@ expandWHAM = function(NMass, MassName,
           SpecStoich[newSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nTG, ncol = NComp, byrow = T)
           diag(SpecStoich[newSpecNum, newCompNum]) = 1L
           SpecStoich[newSpecNum,iH] = SpecStoich[newSpecNum,iH] -3L
-          SpecLogK[newSpecNum] = -1 * as.numeric(MetalsTable[iMetal,pKM_cols[TridentTable$S1Strong1Weak2]] +
-                                               MetalsTable[iMetal,pKM_cols[TridentTable$S2Strong1Weak2]] +
-                                               MetalsTable[iMetal,pKM_cols[TridentTable$S3Strong1Weak2]])
+          SpecLogK[newSpecNum] = SpecLogK[iMetalSpec] -
+            as.numeric(MetalsTable[iMetal,pKM_cols[TridentTable$S1Strong1Weak2]] +
+                         MetalsTable[iMetal,pKM_cols[TridentTable$S2Strong1Weak2]] +
+                         MetalsTable[iMetal,pKM_cols[TridentTable$S3Strong1Weak2]])
+
         }
 
       }

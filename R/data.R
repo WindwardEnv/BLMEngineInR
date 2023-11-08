@@ -95,26 +95,26 @@
 #' @title Simple Test DAta with Full Inorganic Components
 #'
 #' @description A collection of chemistry inputs and outputs from an existing
-#'   BLM run with all inorganic components (H, Cu, DOC, Ca, Mg, Na, K, SO4, Cl,
+#'   BLM run with all inorganic components (H, Cu, Ca, Mg, Na, K, SO4, Cl,
 #'   CO3, BL).
 #'
 #' @details Windward BLM (Ver 3.57.2.49, build 2022-03-30)\cr Parameter File:
 #'   Cu_freshwater_acute_and_chronic_2017-01-17.dat\cr Switches: /W /Q /VER3.57
 #'   /O3\cr
 #' \itemize{
-#'    \item Temp. = 25
-#'    \item HA = 10
-#'    \item pH = 7
-#'    \item Cu = 1.57366E-028
-#'    \item DOC = 1E-008
-#'    \item Ca = 2.49513E-025
-#'    \item Mg = 4.11438E-025
-#'    \item Na = 4.34976E-025
-#'    \item K = 2.55766E-025
-#'    \item SO4 = 1.041E-025
-#'    \item Cl = 2.82064E-025
-#'    \item DIC = 0.0001
-#'    \item S = 3.11876E-025
+#'    \item Temp = 20 deg C
+#'    \item pH = 7.6 SU
+#'    \item Cu = 3 ug/L
+#'    \item DOC = 1E-006 mg C/L
+#'    \item HA = 10	%
+#'    \item Ca = 12	mg/L
+#'    \item Mg = 12.2	mg/L
+#'    \item Na = 25.3	mg/L
+#'    \item K = 2.1	mg/L
+#'    \item SO4 = 76.8 mg/L
+#'    \item Cl = 1.9 mg/L
+#'    \item Alk = 52.2 mg/L as CaCO3
+#'    \item S = 1E-009 mg/L
 #'  }
 #' @source Windward BLM (Ver 3.57.2.49, build 2022-03-30)
 #'
@@ -148,3 +148,45 @@
 #' @format \code{Full_InorgDataCharge} is an object of class \code{integer} of
 #'   length 32 containing species charges.
 "Full_InorgDataCharge"
+
+
+#' @rdname Full_OrganicData
+#'
+#' @docType data
+#'
+#' @title Simple Test Data with Full Organic Components
+#'
+#' @description A collection of chemistry inputs and outputs from an existing
+#'   BLM run with all organic components (H, Cu, DOC, Ca, Mg, Na, K, SO4, Cl,
+#'   CO3, BL).
+#'
+#' @details Windward BLM (Ver 3.57.2.49, build 2022-03-30)\cr Parameter File:
+#'   Cu_freshwater_acute_and_chronic_2017-01-17.dat\cr Switches: /W /Q /VER3.57
+#'   /O3\cr
+#' \itemize{
+#'    \item Temp = 20 deg C
+#'    \item pH = 7.6 SU
+#'    \item Cu = 3 ug/L
+#'    \item DOC = 2 mg C/L
+#'    \item HA = 0.001	%
+#'    \item Ca = 12	mg/L
+#'    \item Mg = 12.2	mg/L
+#'    \item Na = 25.3	mg/L
+#'    \item K = 2.1	mg/L
+#'    \item SO4 = 76.8 mg/L
+#'    \item Cl = 1.9 mg/L
+#'    \item Alk = 52.2 mg/L as CaCO3
+#'    \item S = 1E-009 mg/L
+#'  }
+#' @source Windward BLM (Ver 3.57.2.49, build 2022-03-30)
+#'
+#' @format \code{Full_OrganicDataTotalConc} is an object of class \code{numeric} of
+#'   length 11 containing total concentrations.
+#'
+#' @keywords datasets
+"Full_OrganicDataTotalConc"
+
+#' @rdname Full_OrganicData
+#' @format \code{Full_OrganicDataFreeConc} is an object of class \code{numeric} of
+#'   length 38 containing free concentrations.
+"Full_OrganicDataFreeConc"
