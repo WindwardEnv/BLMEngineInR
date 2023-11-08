@@ -57,21 +57,21 @@ BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity
   # Initialize thisInput as thisProblem, with one observation's worth of
   # concentrations
   thisInput = thisProblem
-  thisInput$obsLabels = array(character(thisProblem$NInLab),
-                              dimnames = list(thisProblem$InLabName))
-  thisInput$TotConcObs = array(numeric(NComp), dimnames = list(CompName))
-  thisInput$CConc = array(numeric(NComp), dimnames = list(CompName))
-  thisInput$SConc = array(numeric(NSpec), dimnames = list(SpecName))
+  thisInput$InLab = array(character(thisProblem$NInLab),
+                          dimnames = list(thisProblem$InLabName))
+  thisInput$TotConc = array(numeric(NComp), dimnames = list(CompName))
+  thisInput$CompConc = array(numeric(NComp), dimnames = list(CompName))
+  thisInput$SpecConc = array(numeric(NSpec), dimnames = list(SpecName))
 
   # Loop through each observation
   for (iObs in 1:allInput$NObs){
-    thisInput$obsLabels = allInput$obsLabels[iObs,]
-    thisInput$TotConcObs = allInput$TotConcObs[iObs,]
+    thisInput$InLab = allInput$InLabObs[iObs,]
+    thisInput$TotConc = allInput$TotConcObs[iObs,]
 
     # For now, we're going to use test data, setting the initial "guess" to the
     # actual component free ion concentrations
-    thisInput$CConc = do.call(initialGuess, args = thisInput[formalArgs(initialGuess)])
-    thisInput$LogCConc = log10(thisInput$CConc)
+    thisInput$CompConc = do.call(initialGuess, args = thisInput[formalArgs(initialGuess)])
+    thisInput$LogCompConc = log10(thisInput$CompConc)
 
     # 3. Run the speciation problem
     #   --> R variable defining problem from step 1

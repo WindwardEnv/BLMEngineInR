@@ -22,9 +22,12 @@
 #'  \item{\code{DeltaH}}{the enthalpy change for each formation reaction (species)}
 #' }
 #'
-#' @keywords internal
+#' @export
 #'
-#' @noRd
+#' @examples
+#' ## Not Run
+#' # thisProblem = defineProblem("my_parameter_file.dat")
+#' ## End Not Run
 defineProblem = function(paramFile) {
 
   # error catching

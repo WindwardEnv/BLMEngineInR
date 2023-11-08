@@ -8,15 +8,15 @@
 #'
 #' This is an internal function that will, for each species `i` in `NSpec`
 #' calculate the equilibrium concentration, which in its most basic form would
-#' be calculated as \eqn{SConc_{i} = K_{i} *
-#' \prod_{j=1}^{n}(CConc^SpecStoich_{i,j})}. Further modifications to these
+#' be calculated as \eqn{SpecConc_{i} = K_{i} *
+#' \prod_{j=1}^{n}(CompConc^SpecStoich_{i,j})}. Further modifications to these
 #' calculations would include temperature correction, ionic strength
 #' corrections, and diffuse double layer calculations for organic matter
 #' binding. As of 19-Oct-2023, none of these corrections have been implemented.
 #'
 #' This is the C++ version of this function.
 #'
-#' @param CConc A vector of component concentrations for each of `NComp` components.
+#' @param CompConc A vector of component concentrations for each of `NComp` components.
 #' @param K A vector of reaction equilibrium constants for each of `NSpec` reactions.
 #' @param SpecStoich A matrix of reaction stoichiometry, with `NSpec` rows and `NComp` columns.
 #' @param NComp The number of components in the equilibrium system.
@@ -26,11 +26,11 @@
 #'
 #' @examples
 #' # data(TestDataFreeConc, TestDataK, TestDataStoich)
-#' # CppCalcSpecConc(CConc = TestDataFreeConc[1:2], K = TestDataK[3:4], SpecStoich = TestDataStoich[3:4,])
+#' # CppCalcSpecConc(CompConc = TestDataFreeConc[1:2], K = TestDataK[3:4], SpecStoich = TestDataStoich[3:4,])
 #'
 #' @noRd
-CppCalcSpecConc <- function(CConc, K, SpecStoich, NComp, NSpec) {
-    .Call(`_BLMEngineInR_CppCalcSpecConc`, CConc, K, SpecStoich, NComp, NSpec)
+CppCalcSpecConc <- function(CompConc, K, SpecStoich, NComp, NSpec) {
+    .Call(`_BLMEngineInR_CppCalcSpecConc`, CompConc, K, SpecStoich, NComp, NSpec)
 }
 
 #' Calculate Species Concentrations
@@ -40,15 +40,15 @@ CppCalcSpecConc <- function(CConc, K, SpecStoich, NComp, NSpec) {
 #'
 #' This is an internal function that will, for each species `i` in `NSpec`
 #' calculate the equilibrium concentration, which in its most basic form would
-#' be calculated as \eqn{SConc_{i} = K_{i} *
-#' \prod_{j=1}^{n}(CConc^SpecStoich_{i,j})}. Further modifications to these
+#' be calculated as \eqn{SpecConc_{i} = K_{i} *
+#' \prod_{j=1}^{n}(CompConc^SpecStoich_{i,j})}. Further modifications to these
 #' calculations would include temperature correction, ionic strength
 #' corrections, and diffuse double layer calculations for organic matter
 #' binding. As of 19-Oct-2023, none of these corrections have been implemented.
 #'
 #' This is the C++ version of this function.
 #'
-#' @param LogCConc A vector of log10-transformed component concentrations for each of `NComp` components.
+#' @param LogCompConc A vector of log10-transformed component concentrations for each of `NComp` components.
 #' @param LogK A vector of log10-transformed reaction equilibrium constants for each of `NSpec` reactions.
 #' @param SpecStoich A matrix of reaction stoichiometry, with `NSpec` rows and `NComp` columns.
 #' @param NComp The number of components in the equilibrium system.
@@ -60,10 +60,10 @@ CppCalcSpecConc <- function(CConc, K, SpecStoich, NComp, NSpec) {
 #' # data(TestDataFreeConc, TestDataK, TestDataStoich)
 #' # Log_TestDataFreeConc = log10(TestDataFreeConc)
 #' # Log_TestDataK = log10(TestDataK)
-#' # 10^CppCalcLogSpecConc(LogCConc = Log_TestDataFreeConc[1:2], LogK = Log_TestDataK[3:4], SpecStoich = TestDataStoich[3:4,])
+#' # 10^CppCalcLogSpecConc(LogCompConc = Log_TestDataFreeConc[1:2], LogK = Log_TestDataK[3:4], SpecStoich = TestDataStoich[3:4,])
 #'
 #' @noRd
-CppCalcLogSpecConc <- function(LogCConc, SpecLogK, SpecStoich, NComp, NSpec) {
-    .Call(`_BLMEngineInR_CppCalcLogSpecConc`, LogCConc, SpecLogK, SpecStoich, NComp, NSpec)
+CppCalcLogSpecConc <- function(LogCompConc, SpecLogK, SpecStoich, NComp, NSpec) {
+    .Call(`_BLMEngineInR_CppCalcLogSpecConc`, LogCompConc, SpecLogK, SpecStoich, NComp, NSpec)
 }
 
