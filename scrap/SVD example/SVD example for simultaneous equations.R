@@ -2,14 +2,14 @@
 a = matrix(nrow=4, ncol=4, c(1, 3, 5, 3, 5, 1, 33, 4, 5, 1, 23, 4, 5, 6, 4, 2))
 x=c(5, 3, 7, 8)
 
-# create y 
+# create y
 y=a %*% x
 
 # now, we have a, x, and y such that a*x = y
 
 
 # ----------------------------------------------------
-# Here's the fun bit - 
+# Here's the fun bit -
 # pretend we don't know x, find it from a and y
 # ----------------------------------------------------
 
@@ -20,17 +20,17 @@ asvd = svd(a)
 d = diag(asvd$d)
 dinv = diag(1/asvd$d)
 U = asvd$u
-VT = asvd$v
+V = asvd$v
 
 UT = t(U)
-V = t(VT)
+VT = t(V)
 
-# verify that we can get matrix a back 
+# verify that we can get matrix a back
 acopy = asvd$u %*% diag(asvd$d) %*% t(asvd$v)
-acopy = U %*% d %*% V
+acopy = U %*% d %*% VT
 
 # find the matrix inverse of a by SVD
-ainv1 = VT %*% dinv %*% UT
+ainv1 = V %*% dinv %*% UT
 
 # find the matrix inverse of a by solve
 ainv2 = solve(a)
@@ -39,4 +39,16 @@ ainv2 = solve(a)
 
 # solve for x
 ainv1 %*% y
+
+
+
+
+
+
+
+
+
+
+
+
 
