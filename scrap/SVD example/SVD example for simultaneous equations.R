@@ -33,16 +33,33 @@ acopy = U %*% d %*% VT
 ainv1 = V %*% dinv %*% UT
 
 # find the matrix inverse of a by solve
+# solve is based on Gaussian elimination by partial pivoting, 
+# which is also what I use in CHESS
 ainv2 = solve(a)
 
 # which method is faster?
+time1 = Sys.time()
+for (i in 1: 10000) {
+  # store the SVD of a
+  asvd = svd(a)
+  ainv1 = asvd$v %*% diag(1/asvd$d) %*% t(asvd$u)
+}
+time2 = Sys.time()
 
-# solve for x
+for (i in 1: 10000) {
+  # inverse of a
+  ainv2 = solve(a)
+}
+time3 = Sys.time()
+
+time2-time1
+time3-time2
+
+# which method is faster?
+# answer: solve is more than twice as fast. WHAM!  ha ha
+
+# with either method we can solve for x
 ainv1 %*% y
-
-
-
-
 
 
 
