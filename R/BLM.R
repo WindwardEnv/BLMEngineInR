@@ -40,49 +40,44 @@ BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity
   # 2. Read inputFile
   #   --> input file name
   #   <-- R variable with component concentrations (total or free dep on paramFile)
-  allInput = do.call(getData, args = c(list(inputFile=inputFile), thisProblem[formalArgs(getDAta)]))
+  allInput = do.call(getData, args = c(list(inputFile=inputFile),
+                                       thisProblem[which(names(thisProblem) %in% formalArgs(getData))]))
   # globalVars = c(thisProblem, thisInput)
 
-  # Save some common variables for inializing arrays
+  # Save some common variables for initializing arrays
   NComp = thisProblem$NComp
-  CompNames = thisProblem$CompNames
+  CompName = thisProblem$CompName
   NSpec = thisProblem$NSpec
-  SpecNames = thisProblem$SpecNames
+  SpecName = thisProblem$SpecName
 
   # Initialize the output array
   out = array(numeric(1), dim = c(allInput$NObs, NSpec),
-              dimnames = list(1:allInput$NObs, SpecNames))
+              dimnames = list(1:allInput$NObs, SpecName))
 
   # Initialize thisInput as thisProblem, with one observation's worth of
   # concentrations
   thisInput = thisProblem
-  thisInput$obsLabels = array(character(2), dimnames = list(c("Site Label", "Sample Label")))
-  thisInput$totConcObs = array(numeric(NComp), dimnames = list(CompNames))
-  thisInput$CConc = array(numeric(NComp), dimnames = list(CompNames))
-  thisInput$SConc = array(numeric(NSpec), dimnames = list(SpecNames))
+  thisInput$InLab = array(character(thisProblem$NInLab),
+                          dimnames = list(thisProblem$InLabName))
+  thisInput$TotConc = array(numeric(NComp), dimnames = list(CompName))
+  thisInput$CompConc = array(numeric(NComp), dimnames = list(CompName))
+  thisInput$SpecConc = array(numeric(NSpec), dimnames = list(SpecName))
 
   # Loop through each observation
   for (iObs in 1:allInput$NObs){
-    thisInput$obsLabels = allInput$obsLabels[iObs,]
-    thisInput$totConcObs = allInput$totConcObs[iObs,]
+    thisInput$InLab = allInput$InLabObs[iObs,]
+    thisInput$TotConc = allInput$TotConcObs[iObs,]
 
     # For now, we're going to use test data, setting the initial "guess" to the
     # actual component free ion concentrations
-    if (inputFile == "Test") {
-      data("TestDataFreeConc", envir = environment())
-      thisInput$CConc = BLMEngineInR::TestDataFreeConc[1:NComp]
-    } else if (inputFile == "Full_Inorg"){
-      data("Full_InorgDataFreeConc", envir = environment())
-      thisInput$CConc = BLMEngineInR::Full_InorgDataFreeConc[1:NComp]
-    } else {
-      thisInput$CConc = do.call(initialGuess, args = thisInput[formalArgs(initialGuess)])
-    }
+    thisInput$CompConc = do.call(initialGuess, args = thisInput[formalArgs(initialGuess)])
+    thisInput$LogCompConc = log10(thisInput$CompConc)
 
     # 3. Run the speciation problem
     #   --> R variable defining problem from step 1
     #   --> R variable with inputs from step 2
     #   <-- R variable with speciation outputs
-    out[iObs,] = do.call("CppCalcSpecConc", args = thisInput[formalArgs("CppCalcSpecConc")])
+    out[iObs,] = 10^do.call("CppCalcLogSpecConc", args = thisInput[formalArgs("CppCalcLogSpecConc")])
 
   }
 
