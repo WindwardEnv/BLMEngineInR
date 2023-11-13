@@ -33,7 +33,7 @@ using namespace Rcpp;
 //' @noRd
 // [[Rcpp::export]]
 std::vector<double> CppCalcSpecConc(std::vector<double> CompConc,
-                                   std::vector<double> K,
+                                   std::vector<double> SpecK,
                                    Rcpp::IntegerMatrix SpecStoich,
                                    unsigned int NComp,
                                    unsigned int NSpec){
@@ -41,7 +41,7 @@ std::vector<double> CppCalcSpecConc(std::vector<double> CompConc,
  std::vector<double> SpecConc(NSpec);//species concentrations
 
  for (unsigned int iSpec = 0; iSpec < NSpec; iSpec ++){
-   SpecConc[iSpec] = K[iSpec];
+   SpecConc[iSpec] = SpecK[iSpec];
    for (unsigned int iComp = 0; iComp < NComp; iComp ++){
      SpecConc[iSpec] *= std::pow(CompConc[iComp], SpecStoich(iSpec, iComp));
    }

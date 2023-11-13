@@ -303,8 +303,6 @@ defineProblem = function(paramFile) {
     all(c(CompActCorr, SpecActCorr) %in% c("None","Debye","Davies","WHAM"))
   )
 
-
-
   # assemble output
   out = list(
     # Counts
@@ -395,6 +393,10 @@ defineProblem = function(paramFile) {
 
   stopifnot(!any(duplicated(c(InLabName, InVarName, SpecName))))
 
+  # Make SpecCtoM and SpecCharge
+  SpecCtoM = array(out$MassAmt[out$SpecMC], dim = out$NSpec,
+                   dimnames = list(out$SpecName))
+  out$SpecCtoM = SpecCtoM
   SpecCharge = out$SpecStoich %*% out$CompCharge
   out$SpecCharge = SpecCharge
 

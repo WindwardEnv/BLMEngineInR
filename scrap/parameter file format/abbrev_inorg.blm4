@@ -1,0 +1,5 @@
+1
+ID,            Temp,  pH,   Cu,           CO3
+n/a,           deg C, SU,   mol/L,        mol/L
+Full_Inorg,    25,    7.57, 4.720990E-08, 1.099870E-03
+Full_Inorg2,   25,    8.57, 4.720990E-08, 1.099870E-03
