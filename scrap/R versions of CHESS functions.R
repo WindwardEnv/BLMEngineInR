@@ -1,3 +1,17 @@
+RCalcSpecConc = function(CompConc, SpecK, SpecStoich, NComp = length(CompConc),
+                         NSpec = length(SpecK)){
+
+  SpecConc = rep(1, NSpec)
+  for (iSpec in 1:NSpec){
+    X = CompConc ^ SpecStoich[iSpec,]
+    SpecConc[iSpec] = prod(X) * SpecK[iSpec]
+  }
+
+  return(SpecConc)
+}
+
+
+
 RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM) {
   # inputs:
   #   NComp
@@ -26,10 +40,10 @@ RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM) {
       Sum = 0
       for (iSpec in 1:NSpec) {
         Sum = Sum + (SpecStoich[iSpec, iComp2] * SpecStoich[iSpec, iComp1] *
-          SpecConc[iSpec])# * SpecCtoM[iSpec])
+          SpecConc[iSpec] * SpecCtoM[iSpec])
       }
       if (SpecConc[iComp1] != 0) {
-        Z[iComp1, iComp2] = Sum / SpecConc[iComp1]
+        Z[iComp1, iComp2] = Sum / (SpecConc[iComp1])
       }
     }
   }
@@ -65,13 +79,14 @@ RCalcStep = function(Z, Resid, NComp, CompType){
 
 }
 
-RCompUpdate = function(X, CompConc){
+RCompUpdate = function(X, CompConc, CompCtoM){
 
 
   (oldCompConc = CompConc)
   # CompConc[X < oldCompConc] = (oldCompConc - X)[X < oldCompConc]
-  CompConc = (oldCompConc - X)
+  CompConc = (oldCompConc - X / CompCtoM)
   # CompConc[X >= oldCompConc] = oldCompConc[X >= oldCompConc] / 10
+  CompConc[CompConc <= 0] = oldCompConc[CompConc <= 0] / 10
 
 
   # for (iComp in 1:NComp){
@@ -103,7 +118,8 @@ RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotConc, SpecCtoM, 
   #   double CalcTotConc
   #   double ThisError
 
-  CalcTotConc = (SpecConc * SpecCtoM) %*% SpecStoich
+  CalcTotConc = as.numeric((SpecConc * SpecCtoM) %*% SpecStoich)
+  # CalcTotConc = as.numeric(matrix(SpecConc, nrow = 1, ncol = NSpec) %*% SpecStoich)
   Resid = CalcTotConc - TotConc
   Resid[CompType == "FixedAct"] = 0.0
   ThisError = abs(Resid / TotConc)
@@ -129,7 +145,7 @@ RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotConc, SpecCtoM, 
 
 # Get the problem set up
 {
-  paramFile = "scrap/parameter file format/abbrev_inorg.dat"
+  paramFile = "scrap/parameter file format/abbrev_inorg_wBL.dat"
   inputFile = "scrap/parameter file format/abbrev_inorg.blm4"
 
   thisProblem = defineProblem(paramFile = paramFile)
@@ -137,8 +153,6 @@ RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotConc, SpecCtoM, 
     thisProblem[names(thisProblem) %in% formalArgs("getData")],
     list(inputFile = inputFile)
   ))
-
-
 
   # Save some common variables for initializing arrays
   NComp = thisProblem$NComp
@@ -153,8 +167,9 @@ RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotConc, SpecCtoM, 
   TotConc = array(numeric(NComp), dimnames = list(CompName))
   # CompConc = array(numeric(NComp), dimnames = list(CompName))
 
-
   TotConc = allInput$TotConcObs[1,]
+  TotConc = TotConc * thisProblem$SpecCtoM[1:NComp]
+
   # SpecConc[1:NComp] = do.call(initialGuess, args = thisInput[formalArgs(initialGuess)])
   # SpecConc[c(thisProblem$InCompName,"H","BL1")] =
   #   Full_OrganicDataFreeConc[c(thisProblem$InCompName,"H","BL1")]
@@ -164,7 +179,7 @@ RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotConc, SpecCtoM, 
   CompConc = initialGuess(NComp = NComp, CompName = CompName,
                           TotConc = TotConc, CompType = CompType)
   LogCompConc = log10(CompConc)
-  SpecConc = CppCalcSpecConc(CompConc = CompConc,
+  SpecConc = RCalcSpecConc(CompConc = CompConc,
                              SpecK = 10^SpecLogK,
                              SpecStoich = SpecStoich,
                              NComp = NComp,
@@ -199,18 +214,19 @@ while ((MaxError > 0.0000001) & (Iter <= 50)){
   (X = RCalcStep(Z = Z, Resid = Resid, NComp = NComp, CompType = CompType))
 
   # Full Step
-  (CompConc_Full = RCompUpdate(X = X, CompConc = SpecConc[1:NComp]))
+  (CompConc_Full = RCompUpdate(X = X, CompConc = SpecConc[1:NComp],
+                               CompCtoM = SpecCtoM[1:NComp]))
 
   # SpecConc_Full = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Full),
   #                                       SpecLogK = SpecLogK,
   #                                       SpecStoich = SpecStoich,
   #                                       NComp = NComp,
   #                                       NSpec = NSpec)
-  SpecConc_Full = CppCalcSpecConc(CompConc = CompConc_Full,
-                             SpecK = 10^SpecLogK,
-                             SpecStoich = SpecStoich,
-                             NComp = NComp,
-                             NSpec = NSpec)
+  SpecConc_Full = RCalcSpecConc(CompConc = CompConc_Full,
+                                SpecK = 10^SpecLogK,
+                                SpecStoich = SpecStoich,
+                                NComp = NComp,
+                                NSpec = NSpec)
   TotConc_Full = TotConc
   for (iComp in which(CompType == "FixedAct")){
     TotConc_Full[iComp] = sum(SpecStoich[,iComp] * SpecConc_Full)
@@ -225,7 +241,7 @@ while ((MaxError > 0.0000001) & (Iter <= 50)){
   best_MaxError = 1L
   # if (RR_Full$MaxError > MaxError_Last){
   #   # Half Step
-  #   CompConc_Half = RCompUpdate(X = X * 0.5, CompConc = SpecConc[1:NComp])
+  #   CompConc_Half = RCompUpdate(X = X * 0.5, CompConc = SpecConc[1:NComp], CompCtoM = SpecCtoM[1:NComp])
   #
   #   # SpecConc_Half = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Half),
   #   #                                      SpecLogK = SpecLogK,
@@ -252,7 +268,7 @@ while ((MaxError > 0.0000001) & (Iter <= 50)){
   #
   #   # Best Step
   #   step_Best = 1 - RR_Full$MaxError * (1-0.5) / (RR_Full$MaxError - RR_Half$MaxError)
-  #   CompConc_Best = RCompUpdate(X = X * step_Best, CompConc = SpecConc[1:NComp])
+  #   CompConc_Best = RCompUpdate(X = X * step_Best, CompConc = SpecConc[1:NComp], CompCtoM = SpecCtoM[1:NComp])
   #
   #   # SpecConc_Best = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Best),
   #   #                                       SpecLogK = SpecLogK,
@@ -284,7 +300,7 @@ while ((MaxError > 0.0000001) & (Iter <= 50)){
   #   segments(x0 = step_Best, x1 = 0.5, y0 = 0, y1 = RR_Half$MaxError, col = "red", lwd = 1, lty = 2)
   #   segments(x0 = step_Best, x1 = 0.5, y0 = RR_Best$MaxError, y1 = RR_Half$MaxError, col = "red", lwd = 1)
   #   for(stepi in seq(0,1,by=0.01)){
-  #     CompConc_i = RCompUpdate(X = X * stepi, CompConc = SpecConc[1:NComp])
+  #     CompConc_i = RCompUpdate(X = X * stepi, CompConc = SpecConc[1:NComp], CompCtoM = SpecCtoM[1:NComp])
   #
   #     SpecConc_i = CppCalcSpecConc(CompConc = CompConc_i,
   #                                  SpecK = 10^SpecLogK,
@@ -381,12 +397,12 @@ while ((MaxError > 0.0000001) & (Iter <= 50)){
   LogCompConc = log10(CompConc)
 
 
-  print(paste0("Iter=",Iter, ", WhichMax=",CompName[WhichMax],
-               ", MaxError= ",format(x = MaxError, scientific = T)))
-  # print(paste0("Iter=",Iter,
-  #              ", WhichMax=",CompName[WhichMax],
-  #              ", Resid[WhichMax]= ",signif(Resid[WhichMax], 6),
-  #              ", SpecConc[WhichMax]= ",signif(SpecConc[WhichMax],6)))
+  # print(paste0("Iter=",Iter, ", WhichMax=",CompName[WhichMax],
+  #              ", MaxError=",format(x = MaxError, scientific = T)))
+  print(paste0("Iter=",Iter,
+               ", WhichMax=",CompName[WhichMax],
+               ", Resid[WhichMax]= ",signif(Resid[WhichMax], 6),
+               ", SpecConc[WhichMax]= ",signif(SpecConc[WhichMax],6)))
   # print(paste0("Iter=",Iter, ", Resid[",CompOfIntName,"]= ",Resid[CompOfInt],
   #              ", CalcTotConc[",CompOfIntName,"]=",CalcTotConc[CompOfInt],
   #              ", CompConc[",CompOfIntName,"]=",CompConc[CompOfInt]))

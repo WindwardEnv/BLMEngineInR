@@ -1,0 +1,77 @@
+Column model parameter file, Ver 4.00
+--------------------------------------------------------------------------------
+2,  Number of Mass Compartments
+1,  Input Labels
+2,  Input Variables
+2,  Input Components 
+1,  Defined Components
+6,  Species
+0,  Phases
+3,  Number of Special Definitions
+1,  Number of Critical Values     
+--------------------------------------------------------------------------------
+Mass Compartment List
+Compartment,   C to M,     Units label
+Water,         1,          L
+BL,            0.1,        g wt
+--------------------------------------------------------------------------------
+Input Labels
+ID
+--------------------------------------------------------------------------------
+Input Variables
+Variable,  Compartment, Type
+Temp,      Water,       Temperature 
+pH,        Water,       pH
+--------------------------------------------------------------------------------
+Input Components
+Component, Charge, Compartment, Type,     Activity
+Cu,         2,     Water,       MassBal,  Debye
+CO3,       -2,     Water,       MassBal,  Debye
+--------------------------------------------------------------------------------
+Defined components                                    
+Component,  From,     Charge,   Compartment, Type,    Activity,   Site Den 
+BL1,        1.78E-05, -1,       BL,          MassBal, None,       1
+--------------------------------------------------------------------------------      
+Formation Reactions
+Species, Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,  Delta H,   Temp
+BL1-Cu,  BL,       None,  2,  BL1, 1,   Cu,  1,            7.400,    0.000,  0.000
+BL1-H,   BL,       None,  2,  BL1, 1,    H,  1,            5.400,    0.000,  0.000
+OH,      Water,    Debye, 1,  H,  -1,                    -13.997,    0.000,  0.000
+HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,    0.000,  0.000
+H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,    0.000,  0.000
+CuHCO3,  Water,    Debye, 3,  Cu,  1,  CO3,  1,   H,  1,  14.620,    0.000,  0.000
+--------------------------------------------------------------------------------
+Phase List
+Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles
+--------------------------------------------------------------------------------
+Special Definitions
+Definition, Species
+Metal,      Cu
+BL,         BL1
+BL-Metal,   BL1-Cu
+--------------------------------------------------------------------------------
+Critical Accumulation Table
+#, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
+1, 0.016407677, Ceriodaphnia dubia, Acute,     48h,      Neonate (<24 hr), Mortality, EC50; LC50, WER Reference water, SMEA calculated by median
+--------------------------------------------------------------------------------
+-------Notes--------
+Types: 
+  PB  C++  R/PFile      Comment
+  1   1    MassBal     (Float previously)
+  2   2    FixedAct
+  3   3    Substituted 
+  4   4    ChargeBal   (not useful in BLM)
+  15  15   SurfPot     (keep for now - double layer stuff)
+  -   5    WHAMV
+  -   6    WHAMVI
+  -   7    WHAMVII
+  -   -    WHAMFile=Filename.wdat
+Activity Correction Methods: 
+  PB  C++   R/PFile  
+  1   1     None
+  2   2     Davies
+  3   3     Debye
+  4   4     MoleFraction
+  5   5     ChargeFraction
+  6   6     WHAM (usually internal use only)
+  
