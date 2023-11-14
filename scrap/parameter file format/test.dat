@@ -5,7 +5,7 @@ Column model parameter file, Ver 4.00
 2,  Input Variables
 1,  Input Components
 0,  Defined Components
-2,  Species
+3,  Species
 0,  Phases
 0,  Number of Biotic Ligand Definitions
 0,  Number of Critical Values
@@ -31,6 +31,7 @@ Component,  From,     Charge,   Compartment, Type,    Activity,   Site Den
 --------------------------------------------------------------------------------      
 Formation Reactions
 Species,  Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,  Delta H,   Temp
+OH,       Water,    Debye, 1,  H,   -1,                   -13.997,    0.000,  0.000
 HCO3,     Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,    0.000,  0.000
 H2CO3,    Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,    0.000,  0.000
 --------------------------------------------------------------------------------

@@ -13,7 +13,7 @@
 initialGuess = function(NComp, CompName, TotConc, CompType){
 
 
-  CompConc = TotConc / 1000
+  CompConc = TotConc / 100
   names(CompConc) = CompName
 
   CompConc[CompType == "FixedAct"] = TotConc[CompType == "FixedAct"]

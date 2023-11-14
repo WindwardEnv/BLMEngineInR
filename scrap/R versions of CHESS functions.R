@@ -40,27 +40,28 @@ RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM) {
 RCalcStep = function(Z, Resid, NComp, CompType){
 
   i.solve = which(CompType != "FixedAct")
+  n.solve = length(i.solve)
 
-  Resid = Resid[i.solve]
-  Z = Z[i.solve, i.solve]
+  Resid.solve = matrix(Resid[i.solve], nrow = n.solve, ncol = 1)
+  (Z.solve = Z[i.solve, i.solve, drop = F])
 
   # find the matrix inverse of Z by SVD
-  Zsvd = svd(Z)
-  dinv = diag(1/Zsvd$d)
+  Zsvd = svd(Z.solve)
+  dinv = diag(1/Zsvd$d, nrow = n.solve, ncol = n.solve)
   U = Zsvd$u
   V = Zsvd$v
   UT = t(U)
-  Zinv = V %*% dinv %*% UT
+  (Zinv = V %*% dinv %*% UT)
 
-  # Zinv = solve(Z)
-  (X = as.numeric(Resid %*% Zinv))
+  # Zinv = solve(Z.solve)
+  (X.solve = as.numeric(Zinv %*% Resid.solve))
 
-  out = array(0, dim = NComp)
-  out[i.solve] = X
+  X = array(0, dim = NComp)
+  X[i.solve] = X.solve
 
   # X[CompType == "FixedAct"] = 0
 
-  return(out)
+  return(X)
 
 }
 
@@ -128,8 +129,8 @@ RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotConc, SpecCtoM, 
 
 # Get the problem set up
 {
-  paramFile = "scrap/parameter file format/full_inorg.dat"
-  inputFile = "scrap/parameter file format/full_inorg.blm4"
+  paramFile = "scrap/parameter file format/abbrev_inorg.dat"
+  inputFile = "scrap/parameter file format/abbrev_inorg.blm4"
 
   thisProblem = defineProblem(paramFile = paramFile)
   allInput = do.call("getData", args = c(
@@ -216,106 +217,106 @@ while ((MaxError > 0.0000001) & (Iter <= 50)){
   }
 
   RR_Full = RCalcResidual(NComp = NComp, NSpec = NSpec,
-                           SpecConc = SpecConc_Full,
-                           SpecStoich = SpecStoich,
-                           TotConc = TotConc_Full,
-                           SpecCtoM = SpecCtoM,
-                           CompType = CompType)
-
-  if (RR_Full$MaxError > MaxError_Last){
-    # Half Step
-    CompConc_Half = RCompUpdate(X = X * 0.5, CompConc = SpecConc[1:NComp])
-
-    # SpecConc_Half = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Half),
-    #                                      SpecLogK = SpecLogK,
-    #                                      SpecStoich = SpecStoich,
-    #                                      NComp = NComp,
-    #                                      NSpec = NSpec)
-    SpecConc_Half = CppCalcSpecConc(CompConc = CompConc_Half,
-                                    SpecK = 10^SpecLogK,
-                                    SpecStoich = SpecStoich,
-                                    NComp = NComp,
-                                    NSpec = NSpec)
-
-    TotConc_Half = TotConc
-    for (iComp in which(CompType == "FixedAct")){
-      TotConc_Half[iComp] = sum(SpecStoich[,iComp] * SpecConc_Half)
-    }
-
-    RR_Half = RCalcResidual(NComp = NComp, NSpec = NSpec,
-                           SpecConc = SpecConc_Half,
-                           SpecStoich = SpecStoich,
-                           TotConc = TotConc_Half,
-                           SpecCtoM = SpecCtoM,
-                           CompType = CompType)
-
-    # Best Step
-    step_Best = 1 - RR_Full$MaxError * (1-0.5) / (RR_Full$MaxError - RR_Half$MaxError)
-    CompConc_Best = RCompUpdate(X = X * step_Best, CompConc = SpecConc[1:NComp])
-
-    # SpecConc_Best = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Best),
-    #                                       SpecLogK = SpecLogK,
-    #                                       SpecStoich = SpecStoich,
-    #                                       NComp = NComp,
-    #                                       NSpec = NSpec)
-    SpecConc_Best = CppCalcSpecConc(CompConc = CompConc_Best,
-                                    SpecK = 10^SpecLogK,
-                                    SpecStoich = SpecStoich,
-                                    NComp = NComp,
-                                    NSpec = NSpec)
-
-    TotConc_Best = TotConc
-    for (iComp in which(CompType == "FixedAct")){
-      TotConc_Best[iComp] = sum(SpecStoich[,iComp] * SpecConc_Best)
-    }
-
-    RR_Best = RCalcResidual(NComp = NComp, NSpec = NSpec,
-                            SpecConc = SpecConc_Best,
-                            SpecStoich = SpecStoich,
-                            TotConc = TotConc_Best,
-                            SpecCtoM = SpecCtoM,
-                            CompType = CompType)
-
-    plot(x=NA, y= NA, xlab = "step", ylab = "MaxError", main = paste("Iter =",Iter),
-         ylim = c(0,RR_Full$MaxError), xlim = c(0,1))
-    abline(h = MaxError_Last, col = "red")
-    segments(x0 = 1, x1 = 0.5, y0 = RR_Full$MaxError, y1 = RR_Half$MaxError, col = "red", lwd = 2)
-    segments(x0 = step_Best, x1 = 0.5, y0 = 0, y1 = RR_Half$MaxError, col = "red", lwd = 1, lty = 2)
-    segments(x0 = step_Best, x1 = 0.5, y0 = RR_Best$MaxError, y1 = RR_Half$MaxError, col = "red", lwd = 1)
-    for(stepi in seq(0,1,by=0.01)){
-      CompConc_i = RCompUpdate(X = X * stepi, CompConc = SpecConc[1:NComp])
-
-      SpecConc_i = CppCalcSpecConc(CompConc = CompConc_i,
-                                   SpecK = 10^SpecLogK,
-                                   SpecStoich = SpecStoich,
-                                   NComp = NComp,
-                                   NSpec = NSpec)
-      # SpecConc_i = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_i),
-      #                                      SpecLogK = SpecLogK,
-      #                                      SpecStoich = SpecStoich,
-      #                                      NComp = NComp,
-      #                                      NSpec = NSpec)
-
-      TotConc_i = TotConc
-      for (iComp in which(CompType == "FixedAct")){
-        TotConc_i[iComp] = sum(SpecStoich[,iComp] * SpecConc_i)
-      }
-
-      RR_i = RCalcResidual(NComp = NComp, NSpec = NSpec,
-                             SpecConc = SpecConc_i,
-                             SpecStoich = SpecStoich,
-                             TotConc = TotConc_i,
-                             SpecCtoM = SpecCtoM,
-                             CompType = CompType)
-      points(x = stepi, y = RR_i$MaxError)
-    }
-
-
-    best_MaxError = which.min(c(RR_Full$MaxError, RR_Half$MaxError, RR_Best$MaxError))
-
-  } else{
-    best_MaxError = 1L
-  }
+                          SpecConc = SpecConc_Full,
+                          SpecStoich = SpecStoich,
+                          TotConc = TotConc_Full,
+                          SpecCtoM = SpecCtoM,
+                          CompType = CompType)
+  best_MaxError = 1L
+  # if (RR_Full$MaxError > MaxError_Last){
+  #   # Half Step
+  #   CompConc_Half = RCompUpdate(X = X * 0.5, CompConc = SpecConc[1:NComp])
+  #
+  #   # SpecConc_Half = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Half),
+  #   #                                      SpecLogK = SpecLogK,
+  #   #                                      SpecStoich = SpecStoich,
+  #   #                                      NComp = NComp,
+  #   #                                      NSpec = NSpec)
+  #   SpecConc_Half = CppCalcSpecConc(CompConc = CompConc_Half,
+  #                                   SpecK = 10^SpecLogK,
+  #                                   SpecStoich = SpecStoich,
+  #                                   NComp = NComp,
+  #                                   NSpec = NSpec)
+  #
+  #   TotConc_Half = TotConc
+  #   for (iComp in which(CompType == "FixedAct")){
+  #     TotConc_Half[iComp] = sum(SpecStoich[,iComp] * SpecConc_Half)
+  #   }
+  #
+  #   RR_Half = RCalcResidual(NComp = NComp, NSpec = NSpec,
+  #                          SpecConc = SpecConc_Half,
+  #                          SpecStoich = SpecStoich,
+  #                          TotConc = TotConc_Half,
+  #                          SpecCtoM = SpecCtoM,
+  #                          CompType = CompType)
+  #
+  #   # Best Step
+  #   step_Best = 1 - RR_Full$MaxError * (1-0.5) / (RR_Full$MaxError - RR_Half$MaxError)
+  #   CompConc_Best = RCompUpdate(X = X * step_Best, CompConc = SpecConc[1:NComp])
+  #
+  #   # SpecConc_Best = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Best),
+  #   #                                       SpecLogK = SpecLogK,
+  #   #                                       SpecStoich = SpecStoich,
+  #   #                                       NComp = NComp,
+  #   #                                       NSpec = NSpec)
+  #   SpecConc_Best = CppCalcSpecConc(CompConc = CompConc_Best,
+  #                                   SpecK = 10^SpecLogK,
+  #                                   SpecStoich = SpecStoich,
+  #                                   NComp = NComp,
+  #                                   NSpec = NSpec)
+  #
+  #   TotConc_Best = TotConc
+  #   for (iComp in which(CompType == "FixedAct")){
+  #     TotConc_Best[iComp] = sum(SpecStoich[,iComp] * SpecConc_Best)
+  #   }
+  #
+  #   RR_Best = RCalcResidual(NComp = NComp, NSpec = NSpec,
+  #                           SpecConc = SpecConc_Best,
+  #                           SpecStoich = SpecStoich,
+  #                           TotConc = TotConc_Best,
+  #                           SpecCtoM = SpecCtoM,
+  #                           CompType = CompType)
+  #
+  #   plot(x=NA, y= NA, xlab = "step", ylab = "MaxError", main = paste("Iter =",Iter),
+  #        ylim = c(0,RR_Full$MaxError), xlim = c(0,1))
+  #   abline(h = MaxError_Last, col = "red")
+  #   segments(x0 = 1, x1 = 0.5, y0 = RR_Full$MaxError, y1 = RR_Half$MaxError, col = "red", lwd = 2)
+  #   segments(x0 = step_Best, x1 = 0.5, y0 = 0, y1 = RR_Half$MaxError, col = "red", lwd = 1, lty = 2)
+  #   segments(x0 = step_Best, x1 = 0.5, y0 = RR_Best$MaxError, y1 = RR_Half$MaxError, col = "red", lwd = 1)
+  #   for(stepi in seq(0,1,by=0.01)){
+  #     CompConc_i = RCompUpdate(X = X * stepi, CompConc = SpecConc[1:NComp])
+  #
+  #     SpecConc_i = CppCalcSpecConc(CompConc = CompConc_i,
+  #                                  SpecK = 10^SpecLogK,
+  #                                  SpecStoich = SpecStoich,
+  #                                  NComp = NComp,
+  #                                  NSpec = NSpec)
+  #     # SpecConc_i = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_i),
+  #     #                                      SpecLogK = SpecLogK,
+  #     #                                      SpecStoich = SpecStoich,
+  #     #                                      NComp = NComp,
+  #     #                                      NSpec = NSpec)
+  #
+  #     TotConc_i = TotConc
+  #     for (iComp in which(CompType == "FixedAct")){
+  #       TotConc_i[iComp] = sum(SpecStoich[,iComp] * SpecConc_i)
+  #     }
+  #
+  #     RR_i = RCalcResidual(NComp = NComp, NSpec = NSpec,
+  #                            SpecConc = SpecConc_i,
+  #                            SpecStoich = SpecStoich,
+  #                            TotConc = TotConc_i,
+  #                            SpecCtoM = SpecCtoM,
+  #                            CompType = CompType)
+  #     points(x = stepi, y = RR_i$MaxError)
+  #   }
+  #
+  #
+  #   best_MaxError = which.min(c(RR_Full$MaxError, RR_Half$MaxError, RR_Best$MaxError))
+  #
+  # } else{
+  #   best_MaxError = 1L
+  # }
 
   # plot(x=NA, y= NA, xlab = paste(CompOfIntName,"CompConc"),
   #      ylab = paste(CompOfIntName,"Resid"),
@@ -380,12 +381,12 @@ while ((MaxError > 0.0000001) & (Iter <= 50)){
   LogCompConc = log10(CompConc)
 
 
-  # print(paste0("Iter=",Iter, ", WhichMax=",CompName[WhichMax],
-  #              ", MaxError= ",format(x = MaxError, scientific = T)))
-  print(paste0("Iter=",Iter,
-               ", WhichMax=",CompName[WhichMax],
-               ", Resid[WhichMax]= ",signif(Resid[WhichMax], 6),
-               ", SpecConc[WhichMax]= ",signif(SpecConc[WhichMax],6)))
+  print(paste0("Iter=",Iter, ", WhichMax=",CompName[WhichMax],
+               ", MaxError= ",format(x = MaxError, scientific = T)))
+  # print(paste0("Iter=",Iter,
+  #              ", WhichMax=",CompName[WhichMax],
+  #              ", Resid[WhichMax]= ",signif(Resid[WhichMax], 6),
+  #              ", SpecConc[WhichMax]= ",signif(SpecConc[WhichMax],6)))
   # print(paste0("Iter=",Iter, ", Resid[",CompOfIntName,"]= ",Resid[CompOfInt],
   #              ", CalcTotConc[",CompOfIntName,"]=",CalcTotConc[CompOfInt],
   #              ", CompConc[",CompOfIntName,"]=",CompConc[CompOfInt]))
