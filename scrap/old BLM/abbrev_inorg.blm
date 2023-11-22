@@ -1,0 +1,26 @@
+3.0.0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+1
+
+TF  Site Name              Sample Name                 Temp.  HA     pH    Cu           DOC       Ca       Mg       Na       K        SO4      Cl       DIC         S             
+                                                       C      %            mol/L        mg C/L    mol/L    mol/L    mol/L    mol/L    mol/L    mol/L    mol/L       mol/L         
+"T","Abbrev_Inorg        ","orig Cu             ",     25     0.001  7.57  4.72099E-08  1.0E-20   1.0E-20  1.0E-20  1.0E-20  1.0E-20  1.0E-20  1.0E-20  0.00109977  1.0E-20  
+/*
+"Freshwater","Cu","1","Ceriodaphnia dubia Acute Neonate (<24 hr)  EC50; LC50","C:\Program Files (x86)\Biotic Ligand Model - Research Mode\Model\Cu_freshwater_acute_and_chronic_2017-01-17.dat"," /CA1","True"

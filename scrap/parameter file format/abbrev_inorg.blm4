@@ -1,5 +1,7 @@
-1
-ID,              Temp,  pH,   Cu,           CO3
-n/a,             deg C, SU,   mol/L,        mol/L
-Abbrev_Inorg,    25,    7.57, 4.720990E-08, 1.099870E-03
+2
+ID,               Temp,  pH,   Cu,           CO3
+n/a,              deg C, SU,   mol/L,        mol/L
+solution Cu Conc, 25,    7.57, 2.238306E-09, 1.099870E-03
+nominal Cu Conc,  25,    7.57, 4.720990E-08, 1.099870E-03
+
 

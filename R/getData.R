@@ -288,7 +288,7 @@ MatchInputsToProblem = function(
   NumDefCompName = DefCompName[!is.na(DefCompFromNum)]
   if (length(NumDefCompName) > 0){
     TotConcObs[,NumDefCompName] =
-      matrix(DefCompFromNum[!is.na(DefCompFromNum)], byrow = T,
+      matrix(DefCompFromNum[!is.na(DefCompFromNum)] * DefCompSiteDens[!is.na(DefCompFromNum)],  byrow = T,
              nrow = NObs, ncol = length(NumDefCompName),
              dimnames = list(Obs=1:NObs, Comp = NumDefCompName))
   }
