@@ -89,7 +89,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                               NComp = NComp, CompType = CompType, CompName=CompName))
 
     (CompConc = RCompUpdate(CompConcStep = CompConcStep, CompConc = SpecConc[1:NComp],
-                            CompCtoM = SpecCtoM[1:NComp], CompName = CompName))
+                            CompName = CompName))
 
     SpecConc = RCalcSpecConc(CompConc = CompConc,
                              SpecK = SpecK,
