@@ -84,7 +84,7 @@ BLM = function(paramFile = character(),
     # 3. Run the speciation problem
     #   --> R variable defining problem from step 1 and inputs from step 2
     #   <-- R variable with speciation outputs
-    out[iObs,] = 10^do.call("CppCalcLogSpecConc", args = thisInput[formalArgs("CppCalcLogSpecConc")])
+    out[iObs,] = do.call("RCHESS", args = thisInput[formalArgs("RCHESS")])
 
   }
 

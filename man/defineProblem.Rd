@@ -21,10 +21,46 @@ Returns whatever is needed for the speciation problem to be run. A
  \item{\code{CompActCorr}}{character vector of length `NComp`; the method to use for activity corrections with this component,  }
  \item{\code{SpecName}}{character vector of length `NSpec`; species names}
  \item{\code{SpecActCorr}}{integer vector of length `NSpec`; the method to use for activity corrections with this speies where 1 = ...}
- \item{\code{Stoich}}{the stoichiometry matrix of the reactions (integer matrix of size `NSpec` x `nComp`)}
- \item{\code{K}}{the equilibrium coefficients (numeric vector of length `NSpec`)}
- \item{\code{logK}}{the log10-transformed equilibrium coefficients (numeric vector of length `NSpec`)}
- \item{\code{DeltaH}}{the enthalpy change for each formation reaction (species)}
+ \item{\code{SpecStoich}}{the stoichiometry matrix of the reactions (integer matrix of size `NSpec` x `nComp`)}
+ \item{\code{SpecK}}{the equilibrium coefficients (numeric vector of length `NSpec`)}
+ \item{\code{SpeclogK}}{the log10-transformed equilibrium coefficients (numeric vector of length `NSpec`)}
+ \item{\code{SpecDeltaH}}{the enthalpy change for each formation reaction (species)}
+
+
+ \item{\code{NMass, NInLab, NInVar, NInComp, NDefComp, NComp, NSpec, NPhase,
+   NSpecialDef, NBL, NMetal, NBLMetal, NCAT}}{The counts of the mass
+   compartments, input label fields, input variables, input components,
+   defined components, total simulation components, species reactions,
+   phases, special definitions, biotic ligand components associated with
+   toxic effects, metal components associated with toxic effects, biotic
+   ligand-bound metal species associated with toxic effects, and critical
+   accumulations in the parameter file table.}
+ \item{\code{MassName, MassAmt, MassUnit}}{The name, amount, and units for
+   each mass compartment.}
+ \item{\code{InLabName}}{The names of the input label fields.}
+ \item{\code{InVarName, InVarMC, InVarType}}{The name, mass compartment
+   number, and type of each input variable.}
+ \item{\code{InCompName}}{The names of the input components.}
+ \item{\code{CompName, CompCharge, CompMC, CompType, CompActCorr,
+   CompSiteDens}}{The names, charges, mass compartments, types, activity
+   correction methods, and site densities of each component.}
+ \item{\code{DefCompName, DefCompFromNum, DefCompFromVar, DefCompCharge,
+   DefCompMC, DefCompType, DefCompActCorr, DefCompSiteDens}}{The ... of
+   defined components.}
+ \item{\code{SpecName, SpecMC, SpecActCorr, SpecNC, SpecCompList, SpecStoich,
+   SpecLogK, SpecDeltaH, SpecTemp, SpecCtoM, SpecCharge}}{The...of species formation reactions}
+ \item{\code{PhaseName, PhaseNC, PhaseCompList, PhaseStoich, PhaseLogK,
+   PhaseDeltaH, PhaseTemp, PhaseMoles}}{The...of phases in the phase list.}
+ \item{\code{BLName}}{The name of the component that corresponds to the
+   biotic ligand associated with toxic effects.}
+ \item{\code{MetalName}}{The name of the component that corresponds to the
+   metal associated with toxic effects.}
+ \item{\code{BLMetalName}}{The names of the species that are the
+   biotic ligand-bound metal associated with toxic effects.}
+ \item{\code{DoWHAM}}{logical, TRUE = there are WHAM species, FALSE = no WHAM
+   species}
+ \item{\code{CATab}}{data frame, the critical accumulation table from the
+   parameter file.}
 }
 }
 \description{

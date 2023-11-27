@@ -69,7 +69,36 @@ CppCalcLogSpecConc <- function(LogCompConc, SpecLogK, SpecStoich, NComp, NSpec) 
     .Call(`_BLMEngineInR_CppCalcLogSpecConc`, LogCompConc, SpecLogK, SpecStoich, NComp, NSpec)
 }
 
-Jacobian <- function(NComp, NSpec, SpecStoich, SpecConc, CtoM) {
-    .Call(`_BLMEngineInR_Jacobian`, NComp, NSpec, SpecStoich, SpecConc, CtoM)
+#' @title Calculate the Jacobian matrix
+#' @description Calculate the Jacobian matrix of the speciation problem
+#'
+#' @details This function calculates the Jacobian matrix of the speciation
+#'   problem. The Jacobian matrix is an (`NComp` x `NComp`) matrix of
+#'   derivatives, where each row gives the derivative of the residual each total
+#'   component concentration, dR[i], with respect to, in each column, the
+#'   component free concentration, dX[j]. (i.e., \eqn{Z_{i,j} = \delta Resid_{i}
+#'   / \delta CompConc_{j}}).
+#'
+#' @param NComp integer, the number of components
+#' @param NSpec integer, the number of species
+#' @param SpecStoich integer matrix (NSpec x NComp), the stoichiometry of
+#'   each reaction
+#' @param SpecConc numeric vector (NSpec), the concentrations of each species
+#' @param SpecCtoM numeric vector (NSpec), the factor to apply to
+#'   concentrations (i.e., units of mol/L or mol/kg) to convert to masses (i.e.,
+#'   units of mol).
+#' @param SpecName character vector (NSpec), the species names
+#' @param MetalComp integer, the position in component vectors of the toxic
+#'   metal component
+#' @param BLMetalSpecs integer vector, the position in the species vectors of
+#'   the metal-biotic ligand species associated with toxicity
+#' @param DoTox logical, if TRUE = toxicity run, FALSE = speciation run
+#'
+#' @return numeric matrix (NComp x NComp), the jacobian matrix (see details)
+#' @keywords internal
+NULL
+
+Jacobian <- function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, CompName, MetalComp, NBLMetal, BLMetalSpecs, DoTox) {
+    .Call(`_BLMEngineInR_Jacobian`, NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, CompName, MetalComp, NBLMetal, BLMetalSpecs, DoTox)
 }
 

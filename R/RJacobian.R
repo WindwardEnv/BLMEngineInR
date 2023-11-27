@@ -10,23 +10,23 @@
 #'
 #' @param NComp integer, the number of components
 #' @param NSpec integer, the number of species
-#' @param SpecStoich integer matrix (NSpec x NComp), the stoichiometry of
-#'   each reaction
+#' @param SpecStoich integer matrix (NSpec x NComp), the stoichiometry of each
+#'   reaction
 #' @param SpecConc numeric vector (NSpec), the concentrations of each species
-#' @param SpecCtoM numeric vector (NSpec), the factor to apply to
-#'   concentrations (i.e., units of mol/L or mol/kg) to convert to masses (i.e.,
-#'   units of mol).
-#' @param SpecName character vector (NSpec), the species names
+#' @param SpecCtoM numeric vector (NSpec), the factor to apply to concentrations
+#'   (i.e., units of mol/L or mol/kg) to convert to masses (i.e., units of mol).
+#' @param CompName character vector (NComp), the component names
 #' @param MetalComp integer, the position in component vectors of the toxic
 #'   metal component
-#' @param BLMetalSpecs integer vector, the position in the species vectors of
-#'   the metal-biotic ligand species associated with toxicity
+#' @param NBLMetal inteher, the number of BL-Metal species
+#' @param BLMetalSpecs integer vector (NBLMetal), the position in the species
+#'   vectors of the metal-biotic ligand species associated with toxicity
 #' @param DoTox logical, if TRUE = toxicity run, FALSE = speciation run
 #'
 #' @return numeric matrix (NComp x NComp), the jacobian matrix (see details)
 #' @export
-RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, SpecName,
-                     MetalComp, BLMetalSpecs, DoTox) {
+RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, CompName,
+                     MetalComp, NBLMetal, BLMetalSpecs, DoTox) {
 
   # output:
   # variables:
@@ -35,14 +35,15 @@ RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, SpecName,
 
 
   # Doing it the R way...
+  SpecName = rownames(SpecStoich)
   JacobianMatrix2 = matrix(data = 0, nrow = NComp, ncol = NComp,
-                           dimnames = list(SpecName[1:NComp], SpecName[1:NComp]))
+                           dimnames = list(CompName, CompName))
   SpecMoles = SpecConc * SpecCtoM
   SpecMolesByComp = matrix(SpecMoles, nrow = NSpec, ncol = NComp, byrow = F,
-                           dimnames = list(SpecName, SpecName[1:NComp])) * SpecStoich
+                           dimnames = list(SpecName, CompName)) * SpecStoich
   CompStoichDivMoles = SpecStoich *
     matrix(1 / SpecMoles[1:NComp], nrow = NSpec, ncol = NComp, byrow = T,
-           dimnames = list(SpecName, SpecName[1:NComp]))
+           dimnames = list(SpecName, CompName))
   JacobianMatrix2 = t(SpecMolesByComp) %*% CompStoichDivMoles
   if (DoTox){
     iComp1 = MetalComp
@@ -52,7 +53,7 @@ RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, SpecName,
         Sum = Sum + (SpecStoich[iSpec, iComp2] * SpecStoich[iSpec, iComp1] *
                        SpecConc[iSpec] * SpecCtoM[iSpec])
       }
-      if (SpecConc[iComp1] != 0) {
+      if (SpecConc[iComp2] != 0) {
         JacobianMatrix2[iComp1, iComp2] = Sum / (SpecConc[iComp2] * SpecCtoM[iComp2])
       }
     }
@@ -62,7 +63,7 @@ RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, SpecName,
 
   # # Doing it the loopy way
   # JacobianMatrix = matrix(data = 0, nrow = NComp, ncol = NComp,
-  #                         dimnames = list(SpecName[1:NComp], SpecName[1:NComp]))
+  #                         dimnames = list(CompName, CompName))
   # for (iComp1 in 1:NComp) {
   #   for (iComp2 in 1:NComp) {
   #     Sum = 0
@@ -77,7 +78,7 @@ RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, SpecName,
   #                        SpecConc[iSpec] * SpecCtoM[iSpec])
   #       }
   #     }
-  #     if (SpecConc[iComp1] != 0) {
+  #     if (SpecConc[iComp2] != 0) {
   #       JacobianMatrix[iComp1, iComp2] = Sum / (SpecConc[iComp2] * SpecCtoM[iComp2])
   #     }
   #   }

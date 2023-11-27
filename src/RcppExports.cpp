@@ -42,8 +42,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // Jacobian
-Rcpp::NumericMatrix Jacobian(unsigned int NComp, unsigned int NSpec, Rcpp::IntegerMatrix SpecStoich, Rcpp::NumericVector SpecConc, Rcpp::NumericVector CtoM);
-RcppExport SEXP _BLMEngineInR_Jacobian(SEXP NCompSEXP, SEXP NSpecSEXP, SEXP SpecStoichSEXP, SEXP SpecConcSEXP, SEXP CtoMSEXP) {
+Rcpp::NumericMatrix Jacobian(unsigned int NComp, unsigned int NSpec, Rcpp::IntegerMatrix SpecStoich, Rcpp::NumericVector SpecConc, Rcpp::NumericVector SpecCtoM, Rcpp::CharacterVector CompName, unsigned int MetalComp, unsigned int NBLMetal, Rcpp::IntegerVector BLMetalSpecs, bool DoTox);
+RcppExport SEXP _BLMEngineInR_Jacobian(SEXP NCompSEXP, SEXP NSpecSEXP, SEXP SpecStoichSEXP, SEXP SpecConcSEXP, SEXP SpecCtoMSEXP, SEXP CompNameSEXP, SEXP MetalCompSEXP, SEXP NBLMetalSEXP, SEXP BLMetalSpecsSEXP, SEXP DoToxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -51,8 +51,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type NSpec(NSpecSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type SpecStoich(SpecStoichSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecConc(SpecConcSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type CtoM(CtoMSEXP);
-    rcpp_result_gen = Rcpp::wrap(Jacobian(NComp, NSpec, SpecStoich, SpecConc, CtoM));
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecCtoM(SpecCtoMSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type CompName(CompNameSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type MetalComp(MetalCompSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type NBLMetal(NBLMetalSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type BLMetalSpecs(BLMetalSpecsSEXP);
+    Rcpp::traits::input_parameter< bool >::type DoTox(DoToxSEXP);
+    rcpp_result_gen = Rcpp::wrap(Jacobian(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, CompName, MetalComp, NBLMetal, BLMetalSpecs, DoTox));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -60,7 +65,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_BLMEngineInR_CppCalcSpecConc", (DL_FUNC) &_BLMEngineInR_CppCalcSpecConc, 5},
     {"_BLMEngineInR_CppCalcLogSpecConc", (DL_FUNC) &_BLMEngineInR_CppCalcLogSpecConc, 5},
-    {"_BLMEngineInR_Jacobian", (DL_FUNC) &_BLMEngineInR_Jacobian, 5},
+    {"_BLMEngineInR_Jacobian", (DL_FUNC) &_BLMEngineInR_Jacobian, 10},
     {NULL, NULL, 0}
 };
 

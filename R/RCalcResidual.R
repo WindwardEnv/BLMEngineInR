@@ -2,50 +2,64 @@
 #'
 #' @description Calculate the residuals of the speciation problem.
 #'
-#' @details The residuals of the speciation problem are the calculated total concentrations \eqn{\Sum()}
+#' @details The residuals of the speciation problem are the calculated total
+#'   moles for each component minus their known concentrations. In the case of a
+#'   toxicity run (DoTox = TRUE), the residual for the `MetalComp` component is
+#'   instead the sum of the `BLMetalSpecs` concentrations minus the `CATarget`.
+#'   This, paired with a modified set of derivatives for the `MetalComp` in the
+#'   Jacobian matrix, results in Newton-Rapshon changing the metal concentration
+#'   in order to produce chemical conditions that would result in the critical
+#'   accumulation known to cause a toxic effect.
 #'
+#' @param NComp integer, the number of components
+#' @param NSpec integer, the number of species
+#' @param SpecConc numeric vector (NSpec), the concentration of chemical species
+#' @param SpecStoich integer matrix (NSpec x NComp), the stoichiometry of
+#'   species formatin reactions
+#' @param TotMoles numeric vector (NComp), the total moles of each component
+#' @param SpecCtoM numeric vector (NSpec), the concentration-to-mass conversion
+#'   factor for each chemical species
+#' @param CompName character vector (NComp), the names of the components
+#' @param CompType character vector (NComp), the type of component. It should be
+#'   a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal, SurfPot)
+#' @param MetalComp integer, the position in component vectors of the toxic
+#'   metal component
+#' @param BLMetalSpecs integer vector, the position in the species vectors of
+#'   the metal-biotic ligand species associated with toxicity
+#' @param CATarget numeric, the target critical accumulation value for a
+#'   toxicity run, in mol/kg
+#' @param DoTox logical, if TRUE = toxicity run, FALSE = speciation run
 #'
-#' @param NComp
-#' @param NSpec
-#' @param SpecConc
-#' @param SpecStoich
-#' @param TotMoles
-#' @param SpecCtoM
-#' @param CompName
-#' @param CompType
-#' @param MetalComp
-#' @param BLMetalSpecs
-#' @param CATarget
-#' @param DoTox
+#' @return A `list` object with the following components:
+#' \describe{
+#'  \item{\code{MaxError}}{numeric, the highest absolute error fraction in this
+#'   iteration =max(abs(Resid / TotMoles))}
+#'  \item{\code{WhichMax}}{integer, the position in the component vectors of the
+#'    component with the highest absolute error}
+#'  \item{\code{Resid}}{numeric vector (NComp), the residuals =
+#'    calculated totals - known totals}
+#'  \item{\code{CompError}}{numeric vector (NComp), the absolute error fraction
+#'    for each component in this iteration =abs(Resid / TotMoles)}
+#'  \item{\code{CalcTotConc}}{numeric vector (NComp), the calculated total
+#'    concentration of each component = CalcTotMoles / CtoM}
+#'  \item{\code{CalcTotMoles}}{numeric vector (NComp), the calculated total
+#'    moles of each component = sum(SpecConc * SpecCtoM * SpecStoich[,j]) for
+#'    each component j}
+#' }
 #'
-#' @return
 #' @export
-#'
-#' @examples
 RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM,
-                         CompName, CompType, #CompSiteDens,
+                         CompName, CompType,
                          MetalComp, BLMetalSpecs, CATarget, DoTox){
-  # inputs:
-  #   NComp - number of components
-  #   NSpec - number of species
-  #   SpecConc - species free concentrations (mol/L or mol/gww)
-  #   SpecStoich - species stoichiometry
-  #   TotConc - component total concentrations (mol)
-  #   SpecCtoM - mass compartment concentration to mass conversion for each species (L or gww)
-  #   CompName - component names
-  #   CompType - component types
-  #   MetalComp - integer, position of the metal component in the component list
-  #   BLMetalSpecs - integer vector, positon of the metal-bound biotic ligand in the species list
-  #   CATarget - the target critical accumulation for toxicity runs
-  #   DoTox - boolean, TRUE means this is a toxicity run, FALSE means speciation run
   # outputs
-  #   Resid - vector(NComp) (maybe...useful for debugging)
-  Resid = array(dim=NComp, dimnames = list(CompName))
   #   MaxError - double - maximum of absolute ratios of residuals to totals
   #   WhichMax - which component has the highest absolute error
-  #   CalcTotConc - the calculated total concentrations (mol)
+  #   Resid - vector(NComp) (maybe...useful for debugging)
+  Resid = array(dim=NComp, dimnames = list(CompName))
+  #   CompError - the absolute ratios of residuals to totals
+  #   CalcTotConc - the calculated total concentrations (mol/L)
+  #   CalcTotMoles - the calculated total concentrations (mol)
   # variables:
-  #   double CalcTotConc
   #   double ThisError
 
   CalcTotMoles = array((SpecConc * SpecCtoM) %*% SpecStoich, dim = NComp, dimnames = list(CompName))
