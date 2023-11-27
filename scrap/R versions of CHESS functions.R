@@ -13,8 +13,23 @@ RCalcSpecConc = function(CompConc, SpecK, SpecStoich, NComp = length(CompConc),
 
 
 
-RCompUpdate = function(CompConcStep, CompConc, CompCtoM, CompName){
+#' @title Iterative step improvement in component concentrations
+#'
+#' @description
+#' RCompUpdate calculates an iterative improvement on the component concentrations based on the Newton-Raphson solution from the current iteration.
+#'
+#' @details
+#' If the iteration would cause the adjusted component concentrations to be less than zero, then the component concentration is simply divided by 10 for this iteration.
+#'
+#'
+#' @param CompConcStep : Vector (NComp) of adjustments to the component concentrations
+#' @param CompConc : Vector (NComp) of component concentrations, input values are from this iteration
+#' @param CompCtoM >>>>>>>>> I think we decided we don't need this <<<<<<<<<<<
+#' @param CompName : Vector (NComp) with the names of the components
+#'
+#' @return  Vector CompConc (NComp) modified for the next iteration
 
+RCompUpdate = function(CompConcStep, CompConc, CompCtoM, CompName){
 
   (oldCompConc = CompConc)
   # CompConc[CompConcStep < oldCompConc] = (oldCompConc - CompConcStep)[CompConcStep < oldCompConc]
