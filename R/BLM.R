@@ -21,10 +21,15 @@
 #' ## Not run:
 #' # BLM(paramFile = "path/mypfile.dat", inputFile = "path/myinputfile.blm")
 #' ## End(Not run)
-BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity"),
+BLM = function(paramFile = character(),
+               inputFile = character(),
+               DoTox = logical(),
+               iCA = 1L,
+               QuietFlag = c("Quiet","Very Quiet","Debug"),
                # writeOutputFile = F, outputFileName = NULL,
                # criticalSource = c("paramFile","inputFile"),
-               # convergenceCriteria = 0.001
+               ConvergenceCriteria = 0.001,
+               MaxIter = 30L
                ){
 
   # error catching
@@ -65,6 +70,9 @@ BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity
 
   # Loop through each observation
   for (iObs in 1:allInput$NObs){
+
+    if (QuietFlag != "Very Quiet"){ print(paste0("Obs=",iObs)) }
+
     thisInput$InLab = allInput$InLabObs[iObs,]
     thisInput$TotConc = allInput$TotConcObs[iObs,]
 
@@ -74,8 +82,7 @@ BLM = function(paramFile, inputFile#, quiet = T, mode = c("speciation","toxicity
     thisInput$LogCompConc = log10(thisInput$CompConc)
 
     # 3. Run the speciation problem
-    #   --> R variable defining problem from step 1
-    #   --> R variable with inputs from step 2
+    #   --> R variable defining problem from step 1 and inputs from step 2
     #   <-- R variable with speciation outputs
     out[iObs,] = 10^do.call("CppCalcLogSpecConc", args = thisInput[formalArgs("CppCalcLogSpecConc")])
 

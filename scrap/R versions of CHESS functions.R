@@ -13,109 +13,6 @@ RCalcSpecConc = function(CompConc, SpecK, SpecStoich, NComp = length(CompConc),
 
 
 
-RJacobian = function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, SpecName,
-                     iMetal, iBLMetal, iTox) {
-  # inputs:
-  #   NComp
-  #   NSpec
-  #   SpecStoich
-  #   SpecConc
-  #   SpecCtoM
-  # outputs:
-  JacobianMatrix2 = JacobianMatrix = matrix(data = 0, nrow = NComp, ncol = NComp,
-             dimnames = list(SpecName[1:NComp], SpecName[1:NComp]))
-  # variables:
-  #   Sum
-  #   iComp1, iComp2, iSpec
-
-
-  SpecMoles = SpecConc * SpecCtoM
-  SpecMolesByComp = matrix(SpecMoles, nrow = NSpec, ncol = NComp,
-                           byrow = F,
-                           dimnames = list(SpecName, SpecName[1:NComp])) * SpecStoich
-
-
-
-  CompStoichDivMoles = SpecStoich *
-    matrix(1/SpecMoles[1:NComp], nrow = NSpec, ncol = NComp, byrow = T,
-           dimnames = list(SpecName, SpecName[1:NComp]))
-
-
-  JacobianMatrix2 = t(SpecMolesByComp) %*% CompStoichDivMoles
-  JacobianMatrix2 - JacobianMatrix
-  JacobianMatrix2 / JacobianMatrix
-
-  # for (iComp1 in 1:NComp) {
-  #   for (iComp2 in 1:NComp) {
-  #     Sum = sum(SpecStoich[,iComp2] * SpecStoich[,iComp1] * SpecMoles)
-  #     if (SpecConc[iComp1] != 0) {
-  #       JacobianMatrix2[iComp1, iComp2] = Sum / (SpecMoles[iComp2])
-  #     }
-  #   }
-  #
-  #   iComp1SpecMoles = matrix((SpecStoich[,iComp1] * SpecMoles), nrow = 1, ncol = NSpec)
-  #   t(iComp1SpecMoles %*% SpecStoich) %*%
-  #     matrix(1/SpecMoles[1:NComp], nrow = 1, ncol = NComp, dimnames = list(NULL, CompName))
-  #
-  #
-  # }
-  #
-  # SpecStoich %*% SpecMoles
-  #
-
-  for (iComp1 in 1:NComp) {
-    for (iComp2 in 1:NComp) {
-      Sum = 0
-      if (iTox && (iComp1 == iMetal)){
-        for (iSpec in iBLMetal){
-          Sum = Sum + (SpecStoich[iSpec, iComp2] * SpecStoich[iSpec, iComp1] *
-                         SpecConc[iSpec] * SpecCtoM[iSpec])
-        }
-      } else {
-        for (iSpec in 1:NSpec) {
-          Sum = Sum + (SpecStoich[iSpec, iComp2] * SpecStoich[iSpec, iComp1] *
-                         SpecConc[iSpec] * SpecCtoM[iSpec])
-        }
-      }
-      if (SpecConc[iComp1] != 0) {
-        JacobianMatrix[iComp1, iComp2] = Sum / (SpecConc[iComp2] * SpecCtoM[iComp2])
-      }
-    }
-  }
-
-
-  return(JacobianMatrix)
-}
-
-RCalcStep = function(JacobianMatrix, Resid, NComp, CompType, SpecName){
-
-  i.solve = which(CompType != "FixedAct")
-  n.solve = length(i.solve)
-
-  (Resid.solve = matrix(Resid[i.solve], nrow = n.solve, ncol = 1,
-                        dimnames = list(SpecName[i.solve],NULL)))
-  (JacobianMatrix.solve = JacobianMatrix[i.solve, i.solve, drop = F])
-
-  # find the matrix inverse of JacobianMatrix by SVD
-  JacobianMatrixsvd = svd(JacobianMatrix.solve)
-  dinv = diag(1/JacobianMatrixsvd$d, nrow = n.solve, ncol = n.solve)
-  U = JacobianMatrixsvd$u
-  V = JacobianMatrixsvd$v
-  UT = t(U)
-  (JacobianMatrixinv = V %*% dinv %*% UT)
-
-  # JacobianMatrixinv = solve(JacobianMatrix.solve)
-  (CompConcStep.solve = as.numeric(JacobianMatrixinv %*% Resid.solve))
-
-  CompConcStep = array(0, dim = NComp, dimnames = list(SpecName[1:NComp]))
-  CompConcStep[i.solve] = CompConcStep.solve
-
-  # CompConcStep[CompType == "FixedAct"] = 0
-
-  return(CompConcStep)
-
-}
-
 RCompUpdate = function(CompConcStep, CompConc, CompCtoM, CompName){
 
 
@@ -143,75 +40,37 @@ RCompUpdate = function(CompConcStep, CompConc, CompCtoM, CompName){
 
 }
 
-RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM,
-                         CompName, CompType, #CompSiteDens,
-                         iMetal, iBLMetal, CATarget, iTox){
+
+RCHESSIter <- function(DoPartialSteps, QuietFlag,
+                       NComp, NSpec,
+                       SpecConc, SpecLogK, SpecStoich, SpecCtoM, SpecName,
+                       CompType, CompName, TotMoles, TotConc,
+                       DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
   # inputs:
-  #   NComp - number of components
-  #   NSpec - number of species
-  #   SpecConc - species free concentrations (mol/L or mol/gww)
-  #   SpecStoich - species stoichiometry
-  #   TotConc - component total concentrations (mol)
-  #   SpecCtoM - mass compartment concentration to mass conversion for each species (L or gww)
-  #   CompName - component names
-  #   CompType - component types
-  #   iMetal - integer, position of the metal component in the component list
-  #   iBLMetal - integer vector, positon of the metal-bound biotic ligand in the species list
-  #   CATarget - the target critical accumulation for toxicity runs
-  #   iTox - boolean, TRUE means this is a toxicity run, FALSE means speciation run
-  # outputs
-  #   Resid - vector(NComp) (maybe...useful for debugging)
-  Resid = array(dim=NComp, dimnames = list(CompName))
-  #   MaxError - double - maximum of absolute ratios of residuals to totals
-  #   WhichMax - which component has the highest absolute error
-  #   CalcTotConc - the calculated total concentrations (mol)
-  # variables:
-  #   double CalcTotConc
-  #   double ThisError
-
-  CalcTotMoles = array((SpecConc * SpecCtoM) %*% SpecStoich, dim = NComp, dimnames = list(CompName))
-  # CalcTotConc = as.numeric(matrix(SpecConc, nrow = 1, ncol = NSpec) %*% SpecStoich)
-  Resid = CalcTotMoles - TotMoles # * SpecCtoM[1:NComp]
-  Resid[CompType == "FixedAct"] = 0.0
-  ThisError = abs(Resid / TotMoles)
-  if(iTox){
-    Resid[iMetal] = sum(SpecConc[iBLMetal]) - CATarget
-    # sum( (mol/L or mol/gww) * (L or gww) ) - mol = sum(mol) - mol = mol
-    ThisError[iMetal] = abs(Resid[iMetal] / CATarget)
-  }
-  MaxError = max(ThisError)
-  WhichMax = which.max(ThisError)
-
-  CalcTotConc = CalcTotMoles / SpecCtoM[1:NComp]
-
-  return(list(
-    MaxError = MaxError,
-    WhichMax = WhichMax,
-    Resid = Resid,
-    CompError = ThisError,
-    CalcTotConc = CalcTotConc,
-    CalcTotMoles = CalcTotMoles
-  ))
-}
-
-RCHESSIter <- function(DoPartialSteps, QuietFlag, NComp, NSpec,
-                       CompConc, CompType, CompName,
-                       SpecLogK, SpecStoich, SpecName,
-                       SpecCtoM, TotMoles, TotConc,
-                       iTox, MetalName, iMetal, iBLMetal, CATarget) {
+  #   - DoPartialSteps: boolean, if TRUE, then will do partial Newton-Raphson steps
+  #   - QuietFlag: character, one of "Very Quiet" (only print out when run is done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)
+  #   - NComp: integer, number of components
+  #   - NSpec: integer, number of species reactions
+  #   - SpecConc: Species concentrations
+  #   - SpecLogK: log-transformed equilibrium coefficients for each reaction
+  #   - SpecStoich: (NSpec x NComp) stoichiometry matrix for each reaction
+  #   - SpecCtoM: concentration to mass conversion for each species
+  #   - SpecName: names of species
+  #   - CompType: component types
+  #   - CompName: names of components
+  #   - TotMoles: the total moles of each component
+  #   - DoTox: boolean
+  #   - MetalName: character string, the name of the toxic metal
+  #   - MetalComp: integer, the position of the metal in the component arrays (i.e., which is the toxic metal component)
+  #   - BLMetalSpecs: integer vector, the positions of the species in the arrays which contribute to toxicity (i.e., which species are the toxic metal bound to the relevant biotic ligand)
+  #   - CATarget
+  # outputs:
+  #   - SpecConc: species concentrations after optimization
 
   return()
 }
 
 
-SpecConc_BLMetal_old = c(
-  Cu = 7.43926E-11,
-  BL1 = 5.29446E-10,
-  `BL1-Cu` = 9.18887E-13,
-  `BL1-CuOH` = 6.83595E-14
-)
-all.BLMetalName = c(MetalName, BLName, BLMetalName)
-all.BLMetal = c(iMetal, iBL, iBLMetal)
 
 start.time = Sys.time()
 # Get the problem set up
@@ -219,8 +78,10 @@ paramFile = "scrap/parameter file format/full_organic.dat4"
 inputFile = "scrap/parameter file format/full_organic.blm4"
 QuietFlag = c("Very Quiet","Quiet","Debug")[3]
 iCA = 1
-iTox = T
+DoTox = T
 DoPartialSteps = F
+ConvergenceCriteria = 0.001
+MaxIter = 30L
 {
 
   thisProblem = defineProblem(paramFile = paramFile)
@@ -244,11 +105,12 @@ DoPartialSteps = F
   BLName = thisProblem$BLName
   MetalName = thisProblem$MetalName
   BLMetalName = thisProblem$BLMetalName
-  iBL = which(SpecName %in% BLName)
-  iMetal = which(SpecName %in% MetalName)
-  iBLMetal = which(SpecName %in% BLMetalName)
+  BLComps = which(SpecName %in% BLName)
+  MetalComp = which(SpecName %in% MetalName)
+  BLMetalSpecs = which(SpecName %in% BLMetalName)
   CATargetDefault = thisProblem$CATab$CA[iCA] * (10^-6) #thisProblem$DefCompFromNum[thisProblem$DefCompName == BLName]
-  # (mol bound / mol total) = (umol bound / umol total) * (1 mol / 10^6 umol)
+  # 5.541E-8      =  0.05541 * 10^-6
+  # (mol / kg) = (nmol / g) * (1 g-mol / 10^6 nmol-kg)
 
   TotConc = array(numeric(NComp), dimnames = list(CompName))
   TotMoles = array(numeric(NComp), dimnames = list(CompName))
@@ -267,8 +129,15 @@ for (iObs in 1:allInput$NObs){
   TotConc = allInput$TotConcObs[iObs,]# mol/L
   TotMoles = TotConc * SpecCtoM[1:NComp] # mol/L * L = mol
 
-  CATarget = CATargetDefault * TotConc[iBL] / CompSiteDens[iBL]
-  # (mol bound / kg) = (mol bound / mol total) * (mol available to bind / kg) * (mol total / mol available to bind)
+  CATarget = CATargetDefault * TotConc[BLComps] / CompSiteDens[BLComps]
+  # 9.86298E-13 = 5.541E-8 * 5.34E-10 / 3E-5
+  # (mol / kg) = (mol / kg) * (mol / kg) * (kg / mol)
+  #
+  # 5.34E-10 = 1.78E-5 * 3E-5
+  # (mol / kg) = (unitless) * (mol / kg)
+  #
+  # 9.86298E-13 = 5.541E-8 * 1.78E-5
+  # (mol / kg) = (mol / kg) * (unitless)
 
   CompConc = initialGuess(NComp = NComp, CompName = CompName,
                           TotConc = TotConc, # mol / L or mol / kgw
@@ -286,7 +155,7 @@ for (iObs in 1:allInput$NObs){
   SpecConc[1:NComp] = CompConc
 
   # Update Total Concentrations for Fixed Activity & Metal
-  for (iComp in which((CompType == "FixedAct") | (iTox & (CompName == MetalName)))){
+  for (iComp in which((CompType == "FixedAct") | (DoTox & (CompName == MetalName)))){
     TotMoles[iComp] = sum(SpecStoich[,iComp] * (SpecConc * SpecCtoM))
     TotConc[iComp] = TotMoles[iComp] * SpecCtoM[iComp]
   }
@@ -301,10 +170,10 @@ for (iObs in 1:allInput$NObs){
     SpecCtoM = SpecCtoM,
     CompName = CompName,
     CompType = CompType,
-    iMetal = iMetal,
-    iBLMetal = iBLMetal,
+    MetalComp = MetalComp,
+    BLMetalSpecs = BLMetalSpecs,
     CATarget = CATarget,
-    iTox = iTox
+    DoTox = DoTox
   )
   Resid = RR$Resid
   MaxError = RR$MaxError
@@ -314,17 +183,17 @@ for (iObs in 1:allInput$NObs){
 
   # Begin iterating
   Iter = 0
-  while ((MaxError > 0.00001) & (Iter <= 30)){
+  while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter)){
 
     Iter = Iter + 1
     (MaxError_Last = MaxError)
 
     (JacobianMatrix = RJacobian(NComp = NComp, NSpec = NSpec, SpecStoich = SpecStoich,
                                 SpecConc = SpecConc, SpecCtoM = SpecCtoM, SpecName = SpecName,
-                                iMetal = iMetal, iBLMetal = iBLMetal, iTox = iTox))
+                                MetalComp = MetalComp, BLMetalSpecs = BLMetalSpecs, DoTox = DoTox))
 
     (CompConcStep = RCalcStep(JacobianMatrix = JacobianMatrix, Resid = Resid,
-                              NComp = NComp, CompType = CompType, SpecName=SpecName))
+                              NComp = NComp, CompType = CompType, CompName=CompName))
 
     (CompConc = RCompUpdate(CompConcStep = CompConcStep, CompConc = SpecConc[1:NComp],
                             CompCtoM = SpecCtoM[1:NComp], CompName = CompName))
@@ -348,10 +217,10 @@ for (iObs in 1:allInput$NObs){
                        CompName = CompName,
                        CompType = CompType,
                        # CompSiteDens = CompSiteDens,
-                       iMetal = iMetal,
-                       iBLMetal = iBLMetal,
+                       MetalComp = MetalComp,
+                       BLMetalSpecs = BLMetalSpecs,
                        CATarget = CATarget,
-                       iTox = iTox)
+                       DoTox = DoTox)
 
     Resid = RR$Resid
     WhichMax = RR$WhichMax
@@ -393,10 +262,10 @@ for (iObs in 1:allInput$NObs){
                               CompName = CompName,
                               CompType = CompType,
                               # CompSiteDens = CompSiteDens,
-                              iMetal = iMetal,
-                              iBLMetal = iBLMetal,
+                              MetalComp = MetalComp,
+                              BLMetalSpecs = BLMetalSpecs,
                               CATarget = CATarget,
-                              iTox = iTox)
+                              DoTox = DoTox)
       best_MaxError = 1L
       if (RR_Full$MaxError > MaxError_Last){
         # Half Step
@@ -428,10 +297,10 @@ for (iObs in 1:allInput$NObs){
                                 SpecCtoM = SpecCtoM,
                                 CompType = CompType,
                                 CompName = CompName,
-                                iMetal = iMetal,
-                                iBLMetal = iBLMetal,
+                                MetalComp = MetalComp,
+                                BLMetalSpecs = BLMetalSpecs,
                                 CATarget = CATarget,
-                                iTox = iTox)
+                                DoTox = DoTox)
 
         # Best Step
         step_Best = 1 - RR_Full$MaxError * (1-0.5) / (RR_Full$MaxError - RR_Half$MaxError)
@@ -462,10 +331,10 @@ for (iObs in 1:allInput$NObs){
                                 SpecCtoM = SpecCtoM,
                                 CompType = CompType,
                                 CompName = CompName,
-                                iMetal = iMetal,
-                                iBLMetal = iBLMetal,
+                                MetalComp = MetalComp,
+                                BLMetalSpecs = BLMetalSpecs,
                                 CATarget = CATarget,
-                                iTox = iTox)
+                                DoTox = DoTox)
 
         # plot(x=NA, y= NA, xlab = "step", ylab = "MaxError", main = paste("Iter =",Iter),
         #      ylim = c(0,RR_Full$MaxError), xlim = c(0,1))
@@ -597,14 +466,22 @@ for (iObs in 1:allInput$NObs){
   results.tab$Iter[iObs] = Iter
   results.tab[iObs, paste0("T.",CompName)] = TotConc
 
-  # results.tab$TotCu[iObs] = CalcTotConc[iMetal]
+  # results.tab$TotCu[iObs] = CalcTotConc[MetalComp]
 
 }
 
-
-
 end.time = Sys.time()
 end.time - start.time
+
+
+SpecConc_BLMetal_old = c(
+  Cu = 7.43926E-11,
+  BL1 = 5.29446E-10,
+  `BL1-Cu` = 9.18887E-13,
+  `BL1-CuOH` = 6.83595E-14
+)
+all.BLMetalName = c(MetalName, BLName, BLMetalName)
+all.BLMetal = c(MetalComp, BLComps, BLMetalSpecs)
 
 (results.tab[,all.BLMetalName] - SpecConc_BLMetal_old) / SpecConc_BLMetal_old
 
@@ -613,5 +490,5 @@ results.tab[,all.BLMetalName]
 
 results.tab[,c("Cu","BL1","BL1-Cu","BL1-CuOH","T.Cu","T.BL1")]
 results.tab[,c("BL1","BL1-Cu","BL1-CuOH","BL1-Ca","BL1-Mg","BL1-Na","BL1-H","T.BL1")]
-sum(results.tab[,c("BL1-Cu","BL1-CuOH")]) * 10^6 / results.tab$T.BL1 * CompSiteDens[iBL]
+sum(results.tab[,c("BL1-Cu","BL1-CuOH")]) * 10^6 / results.tab$T.BL1 * CompSiteDens[BLComps]
 sum(results.tab[,c("BL1","BL1-Cu","BL1-CuOH","BL1-Ca","BL1-Mg","BL1-Na","BL1-H")])

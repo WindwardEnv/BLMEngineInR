@@ -4,7 +4,15 @@
 \alias{BLM}
 \title{Run the Biotic Ligand Model}
 \usage{
-BLM(paramFile, inputFile)
+BLM(
+  paramFile = character(),
+  inputFile = character(),
+  DoTox = logical(),
+  iCA = 1L,
+  QuietFlag = c("Quiet", "Very Quiet", "Debug"),
+  ConvergenceCriteria = 0.001,
+  MaxIter = 30L
+)
 }
 \arguments{
 \item{paramFile}{the path and file name of the parameter file}
