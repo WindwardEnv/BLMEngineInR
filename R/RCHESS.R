@@ -34,12 +34,12 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
   LogCompConc = log10(CompConc)
 
   # Initialize Species Concentrations
-  SpecConc = RCalcSpecConc(CompConc = CompConc,
-                           SpecK = SpecK,
-                           SpecStoich = SpecStoich,
-                           SpecName = SpecName,
-                           NComp = NComp,
-                           NSpec = NSpec)
+  SpecConc = CalcSpecConc(CompConc = CompConc,
+                          SpecK = SpecK,
+                          SpecStoich = SpecStoich,
+                          SpecName = SpecName,
+                          NComp = NComp,
+                          NSpec = NSpec)
   SpecConc[1:NComp] = CompConc
 
   # Update Total Concentrations for Fixed Activity & Metal
@@ -80,18 +80,22 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                                SpecConc = SpecConc, SpecCtoM = SpecCtoM, CompName = CompName,
                                MetalComp = MetalComp, NBLMetal = NBLMetal,
                                BLMetalSpecs = BLMetalSpecs, DoTox = DoTox))
-    (RJacobianMatrix = RJacobian(NComp = NComp, NSpec = NSpec, SpecStoich = SpecStoich,
-                                 SpecConc = SpecConc, SpecCtoM = SpecCtoM, CompName = CompName,
-                                 MetalComp = MetalComp, NBLMetal = NBLMetal,
-                                 BLMetalSpecs = BLMetalSpecs, DoTox = DoTox))
+    # (RJacobianMatrix = RJacobian(NComp = NComp, NSpec = NSpec, SpecStoich = SpecStoich,
+    #                              SpecConc = SpecConc, SpecCtoM = SpecCtoM, CompName = CompName,
+    #                              MetalComp = MetalComp, NBLMetal = NBLMetal,
+    #                              BLMetalSpecs = BLMetalSpecs, DoTox = DoTox))
 
-    (CompConcStep = RCalcStep(JacobianMatrix = JacobianMatrix, Resid = Resid,
+    (CompConcStep = CalcStep(JacobianMatrix = JacobianMatrix, Resid = Resid,
                               NComp = NComp, CompType = CompType, CompName=CompName))
+    # (RCompConcStep = RCalcStep(JacobianMatrix = JacobianMatrix, Resid = Resid,
+    #                           NComp = NComp, CompType = CompType, CompName=CompName))
 
-    (CompConc = RCompUpdate(CompConcStep = CompConcStep, CompConc = SpecConc[1:NComp],
+    (CompConc = CompUpdate(NComp = NComp, CompConcStep = CompConcStep, CompConc = SpecConc[1:NComp],
                             CompName = CompName))
+    # (RCompConc = RCompUpdate(CompConcStep = CompConcStep, CompConc = SpecConc[1:NComp],
+    #                         CompName = CompName))
 
-    SpecConc = RCalcSpecConc(CompConc = CompConc,
+    SpecConc = CalcSpecConc(CompConc = CompConc,
                              SpecK = SpecK,
                              SpecStoich = SpecStoich,
                              NComp = NComp,
@@ -122,20 +126,22 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
 
     if (DoPartialSteps) {
       # Full Step
-      (CompConc_Full = RCompUpdate(CompConcStep = CompConcStep, CompConc = SpecConc[1:NComp],
-                                   CompCtoM = SpecCtoM[1:NComp], CompName = CompName))
+      (CompConc_Full = CompUpdate(NComp = NComp,
+                                  CompConcStep = CompConcStep,
+                                  CompConc = SpecConc[1:NComp],
+                                  CompName = CompName))
 
       # SpecConc_Full = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Full),
       #                                       SpecLogK = SpecLogK,
       #                                       SpecStoich = SpecStoich,
       #                                       NComp = NComp,
       #                                       NSpec = NSpec)
-      SpecConc_Full = RCalcSpecConc(CompConc = CompConc_Full,
-                                    SpecK = SpecK,
-                                    SpecStoich = SpecStoich,
-                                    NComp = NComp,
-                                    NSpec = NSpec,
-                                    SpecName = SpecName)
+      SpecConc_Full = CalcSpecConc(CompConc = CompConc_Full,
+                                   SpecK = SpecK,
+                                   SpecStoich = SpecStoich,
+                                   NComp = NComp,
+                                   NSpec = NSpec,
+                                   SpecName = SpecName)
       TotConc_Full = TotConc
       TotMoles_Full = TotMoles
       for (iComp in which(CompType == "FixedAct")){
@@ -158,21 +164,22 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
       best_MaxError = 1L
       if (RR_Full$MaxError > MaxError_Last){
         # Half Step
-        CompConc_Half = RCompUpdate(CompConcStep = CompConcStep * 0.5,
-                                    CompConc = SpecConc[1:NComp],
-                                    CompCtoM = SpecCtoM[1:NComp],
-                                    CompName = CompName)
+        CompConc_Half = CompUpdate(NComp = NComp,
+                                   CompConcStep = CompConcStep * 0.5,
+                                   CompConc = SpecConc[1:NComp],
+                                   CompName = CompName)
 
         # SpecConc_Half = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Half),
         #                                      SpecLogK = SpecLogK,
         #                                      SpecStoich = SpecStoich,
         #                                      NComp = NComp,
         #                                      NSpec = NSpec)
-        SpecConc_Half = CppCalcSpecConc(CompConc = CompConc_Half,
-                                        SpecK = SpecK,
-                                        SpecStoich = SpecStoich,
-                                        NComp = NComp,
-                                        NSpec = NSpec)
+        SpecConc_Half = CalcSpecConc(CompConc = CompConc_Half,
+                                     SpecK = SpecK,
+                                     SpecStoich = SpecStoich,
+                                     NComp = NComp,
+                                     NSpec = NSpec,
+                                     SpecName = SpecName)
 
         TotConc_Half = TotConc
         TotMoles_Half = TotMoles
@@ -195,20 +202,22 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
 
         # Best Step
         step_Best = 1 - RR_Full$MaxError * (1-0.5) / (RR_Full$MaxError - RR_Half$MaxError)
-        CompConc_Best = RCompUpdate(CompConcStep = CompConcStep * step_Best,
-                                    CompName = CompName,
-                                    CompConc = SpecConc[1:NComp], CompCtoM = SpecCtoM[1:NComp])
+        CompConc_Best = CompUpdate(NComp = NComp,
+                                   CompConcStep = CompConcStep * step_Best,
+                                   CompName = CompName,
+                                   CompConc = SpecConc[1:NComp])
 
         # SpecConc_Best = 10^CppCalcLogSpecConc(LogCompConc = log10(CompConc_Best),
         #                                       SpecLogK = SpecLogK,
         #                                       SpecStoich = SpecStoich,
         #                                       NComp = NComp,
         #                                       NSpec = NSpec)
-        SpecConc_Best = RCalcSpecConc(CompConc = CompConc_Best,
-                                      SpecK = SpecK,
-                                      SpecStoich = SpecStoich,
-                                      NComp = NComp,
-                                      NSpec = NSpec)
+        SpecConc_Best = CalcSpecConc(CompConc = CompConc_Best,
+                                     SpecK = SpecK,
+                                     SpecStoich = SpecStoich,
+                                     NComp = NComp,
+                                     NSpec = NSpec,
+                                     SpecName = SpecName)
 
         TotConc_Best = TotConc
         TotMoles_Best = TotMoles

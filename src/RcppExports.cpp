@@ -11,33 +11,64 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// CppCalcSpecConc
-std::vector<double> CppCalcSpecConc(std::vector<double> CompConc, std::vector<double> SpecK, Rcpp::IntegerMatrix SpecStoich, unsigned int NComp, unsigned int NSpec);
-RcppExport SEXP _BLMEngineInR_CppCalcSpecConc(SEXP CompConcSEXP, SEXP SpecKSEXP, SEXP SpecStoichSEXP, SEXP NCompSEXP, SEXP NSpecSEXP) {
+// CalcSpecConc
+Rcpp::NumericVector CalcSpecConc(Rcpp::NumericVector CompConc, Rcpp::NumericVector SpecK, Rcpp::IntegerMatrix SpecStoich, Rcpp::CharacterVector SpecName, unsigned int NComp, unsigned int NSpec);
+RcppExport SEXP _BLMEngineInR_CalcSpecConc(SEXP CompConcSEXP, SEXP SpecKSEXP, SEXP SpecStoichSEXP, SEXP SpecNameSEXP, SEXP NCompSEXP, SEXP NSpecSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<double> >::type CompConc(CompConcSEXP);
-    Rcpp::traits::input_parameter< std::vector<double> >::type SpecK(SpecKSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type CompConc(CompConcSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecK(SpecKSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type SpecStoich(SpecStoichSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type SpecName(SpecNameSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type NComp(NCompSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type NSpec(NSpecSEXP);
-    rcpp_result_gen = Rcpp::wrap(CppCalcSpecConc(CompConc, SpecK, SpecStoich, NComp, NSpec));
+    rcpp_result_gen = Rcpp::wrap(CalcSpecConc(CompConc, SpecK, SpecStoich, SpecName, NComp, NSpec));
     return rcpp_result_gen;
 END_RCPP
 }
-// CppCalcLogSpecConc
-Rcpp::NumericVector CppCalcLogSpecConc(Rcpp::NumericVector LogCompConc, Rcpp::NumericVector SpecLogK, Rcpp::IntegerMatrix SpecStoich, unsigned int NComp, unsigned int NSpec);
-RcppExport SEXP _BLMEngineInR_CppCalcLogSpecConc(SEXP LogCompConcSEXP, SEXP SpecLogKSEXP, SEXP SpecStoichSEXP, SEXP NCompSEXP, SEXP NSpecSEXP) {
+// CalcLogSpecConc
+Rcpp::NumericVector CalcLogSpecConc(Rcpp::NumericVector LogCompConc, Rcpp::NumericVector SpecLogK, Rcpp::IntegerMatrix SpecStoich, Rcpp::CharacterVector SpecName, unsigned int NComp, unsigned int NSpec);
+RcppExport SEXP _BLMEngineInR_CalcLogSpecConc(SEXP LogCompConcSEXP, SEXP SpecLogKSEXP, SEXP SpecStoichSEXP, SEXP SpecNameSEXP, SEXP NCompSEXP, SEXP NSpecSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type LogCompConc(LogCompConcSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecLogK(SpecLogKSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type SpecStoich(SpecStoichSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type SpecName(SpecNameSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type NComp(NCompSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type NSpec(NSpecSEXP);
-    rcpp_result_gen = Rcpp::wrap(CppCalcLogSpecConc(LogCompConc, SpecLogK, SpecStoich, NComp, NSpec));
+    rcpp_result_gen = Rcpp::wrap(CalcLogSpecConc(LogCompConc, SpecLogK, SpecStoich, SpecName, NComp, NSpec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// CalcStep
+Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix, Rcpp::NumericVector Resid, unsigned int NComp, Rcpp::CharacterVector CompType, Rcpp::CharacterVector CompName);
+RcppExport SEXP _BLMEngineInR_CalcStep(SEXP JacobianMatrixSEXP, SEXP ResidSEXP, SEXP NCompSEXP, SEXP CompTypeSEXP, SEXP CompNameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type JacobianMatrix(JacobianMatrixSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type Resid(ResidSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type NComp(NCompSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type CompType(CompTypeSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type CompName(CompNameSEXP);
+    rcpp_result_gen = Rcpp::wrap(CalcStep(JacobianMatrix, Resid, NComp, CompType, CompName));
+    return rcpp_result_gen;
+END_RCPP
+}
+// CompUpdate
+Rcpp::NumericVector CompUpdate(unsigned int NComp, Rcpp::NumericVector CompConcStep, Rcpp::NumericVector CompConc, Rcpp::CharacterVector CompName);
+RcppExport SEXP _BLMEngineInR_CompUpdate(SEXP NCompSEXP, SEXP CompConcStepSEXP, SEXP CompConcSEXP, SEXP CompNameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type NComp(NCompSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type CompConcStep(CompConcStepSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type CompConc(CompConcSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type CompName(CompNameSEXP);
+    rcpp_result_gen = Rcpp::wrap(CompUpdate(NComp, CompConcStep, CompConc, CompName));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -63,8 +94,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BLMEngineInR_CppCalcSpecConc", (DL_FUNC) &_BLMEngineInR_CppCalcSpecConc, 5},
-    {"_BLMEngineInR_CppCalcLogSpecConc", (DL_FUNC) &_BLMEngineInR_CppCalcLogSpecConc, 5},
+    {"_BLMEngineInR_CalcSpecConc", (DL_FUNC) &_BLMEngineInR_CalcSpecConc, 6},
+    {"_BLMEngineInR_CalcLogSpecConc", (DL_FUNC) &_BLMEngineInR_CalcLogSpecConc, 6},
+    {"_BLMEngineInR_CalcStep", (DL_FUNC) &_BLMEngineInR_CalcStep, 5},
+    {"_BLMEngineInR_CompUpdate", (DL_FUNC) &_BLMEngineInR_CompUpdate, 4},
     {"_BLMEngineInR_Jacobian", (DL_FUNC) &_BLMEngineInR_Jacobian, 10},
     {NULL, NULL, 0}
 };

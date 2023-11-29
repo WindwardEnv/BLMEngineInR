@@ -3,8 +3,8 @@
 
 start.time = Sys.time()
 # Get the problem set up
-paramFile = "scrap/parameter file format/abbrev_inorg_wBL.dat4"
-inputFile = "scrap/parameter file format/abbrev_inorg.blm4"
+paramFile = "scrap/parameter file format/full_organic.dat4"
+inputFile = "scrap/parameter file format/full_organic.blm4"
 QuietFlag = c("Very Quiet","Quiet","Debug")[3]
 iCA = 1
 DoTox = T

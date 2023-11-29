@@ -1,6 +1,6 @@
 #' Set the initial guess for component concentrations
 #'
-#' @param NComp integer(1); the number of components
+#' @param NComp integer; the number of components
 #' @param CompName character vector (`NComp`); the names of the components
 #' @param TotConc numeric vector (`NComp`); the total concentrations of components
 #' @param CompType character vector (`NComp`); the component type

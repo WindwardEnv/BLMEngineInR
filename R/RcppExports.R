@@ -3,7 +3,7 @@
 
 #' Calculate Species Concentrations
 #'
-#' Use `CppCalcSpecConc` to calculate species concentrations from a known set of
+#' Use `CalcSpecConc` to calculate species concentrations from a known set of
 #' free component ion concentrations.
 #'
 #' This is an internal function that will, for each species `i` in `NSpec`
@@ -19,23 +19,20 @@
 #' @param CompConc A vector of component concentrations for each of `NComp` components.
 #' @param K A vector of reaction equilibrium constants for each of `NSpec` reactions.
 #' @param SpecStoich A matrix of reaction stoichiometry, with `NSpec` rows and `NComp` columns.
+#' @param SpecName character vector (NSpec), the names of the chemical species
 #' @param NComp The number of components in the equilibrium system.
 #' @param NSpec The number of species (reactions) in the equilibrium system.
 #'
 #' @returns A vector of `NSpec` species concentrations.
 #'
-#' @examples
-#' # data(TestDataFreeConc, TestDataK, TestDataStoich)
-#' # CppCalcSpecConc(CompConc = TestDataFreeConc[1:2], K = TestDataK[3:4], SpecStoich = TestDataStoich[3:4,])
-#'
 #' @noRd
-CppCalcSpecConc <- function(CompConc, SpecK, SpecStoich, NComp, NSpec) {
-    .Call(`_BLMEngineInR_CppCalcSpecConc`, CompConc, SpecK, SpecStoich, NComp, NSpec)
+CalcSpecConc <- function(CompConc, SpecK, SpecStoich, SpecName, NComp, NSpec) {
+    .Call(`_BLMEngineInR_CalcSpecConc`, CompConc, SpecK, SpecStoich, SpecName, NComp, NSpec)
 }
 
 #' Calculate Species Concentrations
 #'
-#' Use `CppCalcLogSpecConc` to calculate species concentrations from a known set of
+#' Use `CalcLogSpecConc` to calculate species concentrations from a known set of
 #' free component ion concentrations.
 #'
 #' This is an internal function that will, for each species `i` in `NSpec`
@@ -51,22 +48,47 @@ CppCalcSpecConc <- function(CompConc, SpecK, SpecStoich, NComp, NSpec) {
 #' @param LogCompConc A vector of log10-transformed component concentrations for each of `NComp` components.
 #' @param LogK A vector of log10-transformed reaction equilibrium constants for each of `NSpec` reactions.
 #' @param SpecStoich A matrix of reaction stoichiometry, with `NSpec` rows and `NComp` columns.
+#' @param SpecName character vector (NSpec), the names of the chemical species
 #' @param NComp The number of components in the equilibrium system.
 #' @param NSpec The number of species (reactions) in the equilibrium system.
 #'
 #' @returns A vector of `NSpec` log10-transformed species concentrations.
 #'
-#' @examples
-#' # data(TestDataFreeConc, TestDataK, TestDataStoich)
-#' # Log_TestDataFreeConc = log10(TestDataFreeConc)
-#' # Log_TestDataK = log10(TestDataK)
-#' # 10^CppCalcLogSpecConc(LogCompConc = Log_TestDataFreeConc[1:2],
-#' #                       LogK = Log_TestDataK[3:4],
-#' #                       SpecStoich = TestDataStoich[3:4,])
-#'
 #' @noRd
-CppCalcLogSpecConc <- function(LogCompConc, SpecLogK, SpecStoich, NComp, NSpec) {
-    .Call(`_BLMEngineInR_CppCalcLogSpecConc`, LogCompConc, SpecLogK, SpecStoich, NComp, NSpec)
+CalcLogSpecConc <- function(LogCompConc, SpecLogK, SpecStoich, SpecName, NComp, NSpec) {
+    .Call(`_BLMEngineInR_CalcLogSpecConc`, LogCompConc, SpecLogK, SpecStoich, SpecName, NComp, NSpec)
+}
+
+#' Calculate the Newton-Raphson step
+NULL
+
+CalcStep <- function(JacobianMatrix, Resid, NComp, CompType, CompName) {
+    .Call(`_BLMEngineInR_CalcStep`, JacobianMatrix, Resid, NComp, CompType, CompName)
+}
+
+#' @title Iterative step improvement in component concentrations
+#'
+#' @description CompUpdate calculates an iterative improvement on the component
+#' concentrations based on the Newton-Raphson solution from the current
+#' iteration.
+#'
+#' @details If the iteration would cause the adjusted component concentrations
+#' to be less than zero, then the component concentration is simply divided by
+#' 10 for this iteration.
+#'
+#' @param NComp integer, the number of components
+#' @param CompConcStep numeric vector (NComp) of adjustments to the component
+#'   concentrations
+#' @param CompConc numeric vector (NComp) of component concentrations, input values
+#'   are from this iteration
+#' @param CompName numeric vector (NComp) with the names of the components
+#'
+#' @return  numeric cector CompConc (NComp) modified for the next iteration
+#'
+NULL
+
+CompUpdate <- function(NComp, CompConcStep, CompConc, CompName) {
+    .Call(`_BLMEngineInR_CompUpdate`, NComp, CompConcStep, CompConc, CompName)
 }
 
 #' @title Calculate the Jacobian matrix

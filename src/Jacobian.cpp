@@ -1,5 +1,4 @@
 #include <Rcpp.h>
-#include <vector>
 using namespace Rcpp;
 
 //' @title Calculate the Jacobian matrix
@@ -36,7 +35,7 @@ Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
                               Rcpp::IntegerMatrix SpecStoich, //formation reaction stoichiometry (NSpec x NComp)
                               Rcpp::NumericVector SpecConc, //species concentrations
                               Rcpp::NumericVector SpecCtoM, //concentration to mass conversion for each species
-                              Rcpp::CharacterVector CompName,
+                              Rcpp::CharacterVector CompName, //names of components
                               unsigned int MetalComp, //position of the metal component
                               unsigned int NBLMetal, //number of BL-Metal species
                               Rcpp::IntegerVector BLMetalSpecs, //positions of BL-metal species
@@ -57,7 +56,7 @@ Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
       if (DoTox && (iComp1 == (MetalComp - 1))){//subtract 1 because C++ is 0-based
         /* Toxicity mode the metal's derivatives are relative to the CA error */
         for (i = 0; i < NBLMetal; i++) {
-          iSpec = BLMetalSpecs[i] - 1;
+          iSpec = BLMetalSpecs(i) - 1;
           Sum += (SpecStoich(iSpec, iComp2) * SpecStoich(iSpec, iComp1) *
             SpecConc(iSpec) * SpecCtoM(iSpec));
         };//NEXT iSpec
@@ -68,7 +67,7 @@ Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
             SpecConc(iSpec) * SpecCtoM(iSpec));
         };//NEXT iSpec
       }
-      if (SpecConc[iComp2] != 0) {
+      if (SpecConc(iComp2) != 0) {
         JacobianMatrix(iComp1, iComp2) = Sum / (SpecConc(iComp2) * SpecCtoM(iComp2));
       }
     };//NEXT iComp2
