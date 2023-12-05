@@ -11,6 +11,29 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// CalcResidual
+Rcpp::List CalcResidual(unsigned int NComp, unsigned int NSpec, Rcpp::NumericVector SpecConc, Rcpp::IntegerMatrix SpecStoich, Rcpp::NumericVector TotMoles, Rcpp::NumericVector SpecCtoM, Rcpp::CharacterVector CompName, Rcpp::CharacterVector CompType, unsigned int MetalComp, unsigned int NBLMetal, Rcpp::IntegerVector BLMetalSpecs, double CATarget, bool DoTox);
+RcppExport SEXP _BLMEngineInR_CalcResidual(SEXP NCompSEXP, SEXP NSpecSEXP, SEXP SpecConcSEXP, SEXP SpecStoichSEXP, SEXP TotMolesSEXP, SEXP SpecCtoMSEXP, SEXP CompNameSEXP, SEXP CompTypeSEXP, SEXP MetalCompSEXP, SEXP NBLMetalSEXP, SEXP BLMetalSpecsSEXP, SEXP CATargetSEXP, SEXP DoToxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type NComp(NCompSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type NSpec(NSpecSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecConc(SpecConcSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type SpecStoich(SpecStoichSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type TotMoles(TotMolesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecCtoM(SpecCtoMSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type CompName(CompNameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type CompType(CompTypeSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type MetalComp(MetalCompSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type NBLMetal(NBLMetalSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type BLMetalSpecs(BLMetalSpecsSEXP);
+    Rcpp::traits::input_parameter< double >::type CATarget(CATargetSEXP);
+    Rcpp::traits::input_parameter< bool >::type DoTox(DoToxSEXP);
+    rcpp_result_gen = Rcpp::wrap(CalcResidual(NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM, CompName, CompType, MetalComp, NBLMetal, BLMetalSpecs, CATarget, DoTox));
+    return rcpp_result_gen;
+END_RCPP
+}
 // CalcSpecConc
 Rcpp::NumericVector CalcSpecConc(Rcpp::NumericVector CompConc, Rcpp::NumericVector SpecK, Rcpp::IntegerMatrix SpecStoich, Rcpp::CharacterVector SpecName, unsigned int NComp, unsigned int NSpec);
 RcppExport SEXP _BLMEngineInR_CalcSpecConc(SEXP CompConcSEXP, SEXP SpecKSEXP, SEXP SpecStoichSEXP, SEXP SpecNameSEXP, SEXP NCompSEXP, SEXP NSpecSEXP) {
@@ -94,6 +117,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_BLMEngineInR_CalcResidual", (DL_FUNC) &_BLMEngineInR_CalcResidual, 13},
     {"_BLMEngineInR_CalcSpecConc", (DL_FUNC) &_BLMEngineInR_CalcSpecConc, 6},
     {"_BLMEngineInR_CalcLogSpecConc", (DL_FUNC) &_BLMEngineInR_CalcLogSpecConc, 6},
     {"_BLMEngineInR_CalcStep", (DL_FUNC) &_BLMEngineInR_CalcStep, 5},

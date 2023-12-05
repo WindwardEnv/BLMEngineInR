@@ -49,7 +49,22 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
   }
 
   # Calculate Residuals for the first time
-  RR = RCalcResidual(
+  RR = CalcResidual(
+    NComp = NComp,
+    NSpec = NSpec,
+    SpecConc = SpecConc,
+    SpecStoich = SpecStoich,
+    TotMoles = TotMoles,
+    SpecCtoM = SpecCtoM,
+    CompName = CompName,
+    CompType = CompType,
+    MetalComp = MetalComp,
+    NBLMetal = NBLMetal,
+    BLMetalSpecs = BLMetalSpecs,
+    CATarget = CATarget,
+    DoTox = DoTox
+  )
+  RRR = RCalcResidual(
     NComp = NComp,
     NSpec = NSpec,
     SpecConc = SpecConc,

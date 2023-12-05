@@ -78,11 +78,11 @@ RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM,
   CalcTotConc = CalcTotMoles / SpecCtoM[1:NComp]
 
   return(list(
-    MaxError = MaxError,
-    WhichMax = WhichMax,
-    Resid = Resid,
+    MaxError = MaxError,#needed - double
+    WhichMax = WhichMax,#could be int or string
+    Resid = Resid,#needed - vector of double
     CompError = ThisError,
-    CalcTotConc = CalcTotConc,
+    CalcTotConc = CalcTotConc,#needed - vector of double
     CalcTotMoles = CalcTotMoles
   ))
 }

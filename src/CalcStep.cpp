@@ -1,6 +1,5 @@
-#include <RcppArmadillo.h>
 #include "RcppArmaHelper.h"
-using namespace Rcpp;
+#include <RcppArmadillo.h>
 
 //' Calculate the Newton-Raphson step
  //'
