@@ -83,7 +83,7 @@ for (iObs in 1:allInput$NObs){
   # END CHESS ------------------------
 
   results.tab[iObs, SpecName] = SpecConc
-  results.tab$Iter[iObs] = Iter
+  #results.tab$Iter[iObs] = Iter
   results.tab[iObs, paste0("T.",CompName)] = TotConc
 
   # results.tab$TotCu[iObs] = CalcTotConc[MetalComp]

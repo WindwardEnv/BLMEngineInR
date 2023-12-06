@@ -27,9 +27,17 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
 
   SpecK = 10 ^ SpecLogK
 
-  CompConc = initialGuess(NComp = NComp, CompName = CompName,
-                          TotConc = TotConc, # mol / L or mol / kgw
-                          CompType = CompType)
+  # CompConc = initialGuess(NComp = NComp, CompName = CompName,
+  #                         TotConc = TotConc, # mol / L or mol / kgw
+  #                         CompType = CompType)
+  CompConc = initialGuessV2(TotConc = TotConc,
+                            CompType = CompType,
+                            CompName = CompName,
+                            SpecK = SpecK,
+                            SpecStoich = SpecStoich,
+                            NComp = NComp,
+                            NSpec = NSpec,
+                            SpecName = SpecName)
 
   LogCompConc = log10(CompConc)
 
