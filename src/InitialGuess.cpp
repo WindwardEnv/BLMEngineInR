@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <cmath>
+#include "CHESSFunctions.h"
 //' Set the initial guess for component concentrations
 //'
 //' The initial guess is calculated by first assuming that component
@@ -22,6 +23,7 @@
 //' @keywords internal
 //'
 //' @noRd
+//[[Rcpp::export]]
 Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
                                     Rcpp::CharacterVector CompType,
 									                  Rcpp::NumericVector SpecK,

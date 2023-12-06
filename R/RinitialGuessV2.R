@@ -10,7 +10,7 @@
 #' @keywords internal
 #'
 #' @noRd
-initialGuessV2 = function(TotConc, CompType, CompName, SpecK, SpecStoich, NComp = length(CompConc),
+RinitialGuessV2 = function(TotConc, CompType, CompName, SpecK, SpecStoich, NComp = length(CompConc),
                           NSpec = length(SpecK), SpecName = names(SpecK)){
   SpecConc = rep(1, NSpec)  # initialize an array of len NSpec with a value of 1
 

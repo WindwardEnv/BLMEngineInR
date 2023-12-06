@@ -1,21 +1,22 @@
-#include "RcppArmaHelper.h"
 #include <RcppArmadillo.h>
+#include "RcppArmaHelper.h"
+#include "CHESSFunctions.h"
 
-//' Calculate the Newton-Raphson step
- //'
- //' @param JacobianMatrix numeric matrix (NComp x NComp), the Jacobian matrix
- //'   ("Z")
- //' @param Resid numeric vector (NComp), the residuals = calculated totals -
- //'   known totals
- //' @param NComp integer, the number of components
- //' @param CompType character vector (NComp), the type of component. It should be
- //'   a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal, SurfPot)
- //' @param CompName character vector (NComp), the names of the components
- //'
- //' @return numeric vector (NComp), the N-R step to take for each component ("X"
- //'   in C(i+1) = C(i) - X)
- //'
- // [[Rcpp::export]]
+//' @title Calculate the Newton-Raphson step
+//'
+//' @param JacobianMatrix numeric matrix (NComp x NComp), the Jacobian matrix
+//'   ("Z")
+//' @param Resid numeric vector (NComp), the residuals = calculated totals -
+//'   known totals
+//' @param NComp integer, the number of components
+//' @param CompType character vector (NComp), the type of component. It should be
+//'   a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal, SurfPot)
+//' @param CompName character vector (NComp), the names of the components
+//'
+//' @return numeric vector (NComp), the N-R step to take for each component ("X"
+//'   in C(i+1) = C(i) - X)
+//'
+// [[Rcpp::export]]
  Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
                               Rcpp::NumericVector Resid,
                               unsigned int NComp,

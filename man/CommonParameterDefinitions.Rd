@@ -58,6 +58,7 @@ repository of their definitions is helpful.
   \item{SpecTemp}{numeric vector (NSpec), the temperature associated with K/logK and DeltaH of the formation reactions}
   \item{SpecStoich}{signed integer matrix (NSpec x NComp), the reaction stoichiometry of the formation reactions}
   \item{SpecConc}{numeric vector (NSpec), the concentrations of each species for which we have formation reactions}
+  \item{SpecMoles}{numeric vector (NSpec), the moles of each species for which we have formation reactions}
 
   \item{NPhase}{integer, the number of phases in the phase list}
   \item{PhaseName}{character vector (NPhase), the name of the phases for which we have phase reactions}

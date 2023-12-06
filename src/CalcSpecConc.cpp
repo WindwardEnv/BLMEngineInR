@@ -1,6 +1,6 @@
 #include <Rcpp.h>
 #include <cmath>
-using namespace Rcpp;
+#include "CHESSFunctions.h"
 
 //' Calculate Species Concentrations
 //'
@@ -18,7 +18,7 @@ using namespace Rcpp;
 //' This is the C++ version of this function.
 //'
 //' @param CompConc A vector of component concentrations for each of `NComp` components.
-//' @param K A vector of reaction equilibrium constants for each of `NSpec` reactions.
+//' @param SpecK A vector of reaction equilibrium constants for each of `NSpec` reactions.
 //' @param SpecStoich A matrix of reaction stoichiometry, with `NSpec` rows and `NComp` columns.
 //' @param SpecName character vector (NSpec), the names of the chemical species
 //' @param NComp The number of components in the equilibrium system.

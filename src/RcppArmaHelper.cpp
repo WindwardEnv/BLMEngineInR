@@ -1,5 +1,7 @@
-#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+
 #include <vector>
+#include <RcppArmadillo.h>
 #include "RcppArmaHelper.h"
 
 // Rcpp to armadillo conversion functions
@@ -25,14 +27,14 @@ arma::mat RcppMatrixToMatrix(Rcpp::NumericMatrix XRcppMat){
   return Xmat;
 }
 
-// arma::mat RcppIntMatrixToMatrix(Rcpp::IntegerMatrix XRcppMat){
-//   int Xrows = XRcppMat.nrow();
-//   int Xcols = XRcppMat.ncol();
-//   std::vector<int> Xstd = Rcpp::as<std::vector<int>>(XRcppMat);//Rcpp::NumericMatrix -> std::vector<double>
-//   arma::vec Xvec(Xstd); //std::vector -> arma::vec
-//   arma::mat Xmat = arma::reshape(Xvec, Xrows, Xcols);//arma::vec -> arma::mat
-//   return Xmat;
-// }
+arma::mat RcppIntMatrixToMatrix(Rcpp::IntegerMatrix XRcppMat){
+  int Xrows = XRcppMat.nrow();
+  int Xcols = XRcppMat.ncol();
+  std::vector<double> Xstd = Rcpp::as<std::vector<double>>(XRcppMat);//Rcpp::NumericMatrix -> std::vector<double>
+  arma::vec Xvec(Xstd); //std::vector -> arma::vec
+  arma::mat Xmat = arma::reshape(Xvec, Xrows, Xcols);//arma::vec -> arma::mat
+  return Xmat;
+}
 
 //armadillo to Rcpp conversion functions
 Rcpp::NumericVector VectorToRcppVector(arma::vec Xvec){

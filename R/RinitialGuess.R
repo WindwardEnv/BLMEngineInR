@@ -10,7 +10,7 @@
 #' @keywords internal
 #'
 #' @noRd
-initialGuess = function(NComp, CompName, TotConc, CompType){
+RinitialGuess = function(NComp, CompName, TotConc, CompType){
 
 
   CompConc = TotConc / 2

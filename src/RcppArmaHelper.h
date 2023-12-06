@@ -2,14 +2,16 @@
 #define __RCPPARMAHELPER_H_INCLUDED__
 
 //should these be #included in the header file??
-#include <RcppArmadillo.h>
+#ifndef RcppArmadillo__RcppArmadillo__h
+  #include <RcppArmadillo.h>
+#endif
 #include <vector>
 
 // Rcpp to armadillo conversion functions
 // arma::vec RcppVectorToVector(Rcpp::NumericVector XRcppVec);
 arma::mat RcppVectorToMatrix(Rcpp::NumericVector XRcppVec);//used in CalcResidual.cpp and RcppArmaHelper.cpp
 arma::mat RcppMatrixToMatrix(Rcpp::NumericMatrix XRcppMat);//used in RcppArmaHelper.cpp
-// arma::mat RcppIntMatrixToMatrix(Rcpp::IntegerMatrix XRcppMat);//wants to be used in CalcResidual.cpp
+arma::mat RcppIntMatrixToMatrix(Rcpp::IntegerMatrix XRcppMat);//wants to be used in CalcResidual.cpp
 
 //armadillo to Rcpp conversion functions
 // Rcpp::NumericVector VectorToRcppVector(arma::vec Xvec);

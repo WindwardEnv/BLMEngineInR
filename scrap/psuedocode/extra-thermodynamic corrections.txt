@@ -1,0 +1,23 @@
+Temperature correction
+  - adjusts the SpecK variable 
+    --> let's save SpecKTempAdj as a new adjusted version of the SpecK variable
+    --> TODO: change SpecK references in CHESS functions to SpecKTempAdj
+  - TODO: write TempCorrection function
+      TempCorrection = function(Temp, NSpec, SpecK, SpecDeltaH, SpecTemp){
+        ...{look this up in PB program}
+        return(SpecKTempAdj)
+      }
+  - TODO: compile deltaH and Temp values for test parameter files
+  
+Ionic strength adjustments
+  - this involves calculating activity coefficients and applying the corrections to the concentrations when calculating species concentrations
+  - we'll have a new vector SpecActivities...this will need to be used when we do CalcSpecConc
+    - TODO: write CalcIonicStrength function
+    - TODO: will need to have a function for each option...at a minimum Ext D-H
+    - TODO: write functions for applying and un-applying activity corrections
+    - TODO: change references of CompConc to CompActivities and SpecConc to SpecActivities in CalcSpecConc
+
+Diffuse double layer 
+  - TODO: look back at marine Ni project...how far we got, what we learned
+  
+  

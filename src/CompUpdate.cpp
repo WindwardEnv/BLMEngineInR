@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-using namespace Rcpp;
+#include "CHESSFunctions.h"
 
 //' @title Iterative step improvement in component concentrations
 //'
@@ -20,7 +20,6 @@ using namespace Rcpp;
 //'
 //' @return  numeric cector CompConc (NComp) modified for the next iteration
 //'
-
 // [[Rcpp::export]]
 Rcpp::NumericVector CompUpdate(unsigned int NComp,
                                Rcpp::NumericVector CompConcStep,

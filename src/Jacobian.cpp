@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-using namespace Rcpp;
+#include "CHESSFunctions.h"
 
 //' @title Calculate the Jacobian matrix
 //' @description Calculate the Jacobian matrix of the speciation problem
@@ -28,7 +28,6 @@ using namespace Rcpp;
 //'
 //' @return numeric matrix (NComp x NComp), the jacobian matrix (see details)
 //' @keywords internal
-
 // [[Rcpp::export]]
 Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
                               unsigned int NSpec, //number of species

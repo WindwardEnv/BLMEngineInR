@@ -1,45 +1,83 @@
+#' @title CHemical Equilibria in Soils and Solutions
+#'
+#' @description Given a chemical system, equilibria equations, and total
+#'   concentrations of components, calculate the species concentrations of each
+#'   chemical product in the system.
+#'
+#' @param DoPartialSteps logical, TRUE = do partial Newton-Raphson steps when a
+#'   full step would send the MaxError higher; FALSE = only do full steps
+#' @param QuietFlag character, one of "Very Quiet" (only print out when run is
+#'   done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)
+#' @param ConvergenceCriteria numeric, the maximum value of MaxError that counts
+#'   as convergence by the Newton-Raphson root-finding algorithm
+#' @param MaxIter integer, the maximum number of iterations the Newton-Raphson
+#'   root-finding algorithm should do before giving up
+#' @param NComp integer, number of components
+#' @param NSpec integer, number of species reactions
+#' @param NBLMetal integer, the number of biotic ligand-bound metal species that
+#'   are associated with toxic effects.
+#' @param SpecK numeric vector (NSpec), the equilibrium coefficient of the
+#'   formation reactions
+#' @param SpecStoich signed integer matrix (NSpec x NComp), the reaction
+#'   stoichiometry of the formation reactions
+#' @param SpecCtoM numeric vector (NSpec), the concentration to mass conversion
+#'   factor of the chemical species for which we have formation reactions
+#' @param SpecName character vector (NSpec), the name of the chemical species
+#'   for which we have formation reactions
+#' @param CompType character vector (NComp), the type of each component in the
+#'   simulation
+#' @param CompName character vector (NComp), the name of each component in the
+#'   simulation
+#' @param TotMoles numeric vector (NComp), the total moles of each component in
+#'   the simulation (units of mol)
+#' @param TotConc numeric vector (NComp), the total concentrations of each
+#'   component in the simulation (units of e.g., mol/L and mol/kg)
+#' @param DoTox logical, TRUE for toxicity mode where the MetalName component
+#'   concentration is adjusted to try to match the CATarget with BLMetalSpecs
+#' @param MetalName character string, the name of the toxic metal
+#' @param MetalComp integer, the position of the metal in the component arrays
+#'   (i.e., which is the toxic metal component) Note: this are base-1 indexed.
+#' @param BLMetalSpecs integer vector, the positions of the species in the
+#'   arrays which contribute to toxicity (i.e., which species are the toxic
+#'   metal bound to the relevant biotic ligand) Note: these are base-1 indexed.
+#' @param CATarget numeric, the target critical accumulation in units of mol /
+#'   kg (only used when DoTox == TRUE)
+#'
+#' @return list with the following elements:
+#'   \desribe{
+#'     \item{SpecConc}{numeric vector (NSpec), the concentrations of each
+#'       species for which we have formation reactions}
+#'     \item{Iter}{integer, the number of Newton-Raphson iterations that we
+#'       needed to reach convergence}
+#'     \item{MaxError}{numeric, the highest final absolute error fraction
+#'       =max(abs(Resid / TotMoles))}
+#'     \item{CalcTotConc}{numeric vector (NComp), the calculated total
+#'       concentrations of each component in the simulation (units of e.g.,
+#'       mol/L and mol/kg)}
+#'   }
+#' @export
+#'
 RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                   NComp, NSpec, NBLMetal,
-                  SpecConc, SpecLogK, SpecStoich, SpecCtoM, SpecName,
+                  SpecK, SpecStoich, SpecCtoM, SpecName,
                   CompType, CompName, TotMoles, TotConc,
                   DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
-  # inputs:
-  #   - DoPartialSteps: boolean, if TRUE, then will do partial Newton-Raphson steps
-  #   - QuietFlag: character, one of "Very Quiet" (only print out when run is done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)
-  #   - NComp: integer, number of components
-  #   - NSpec: integer, number of species reactions
-  #   - SpecConc: Species concentrations
-  #   - SpecLogK: log-transformed equilibrium coefficients for each reaction
-  #   - SpecStoich: (NSpec x NComp) stoichiometry matrix for each reaction
-  #   - SpecCtoM: concentration to mass conversion for each species
-  #   - SpecName: names of species
-  #   - CompType: component types
-  #   - CompName: names of components
-  #   - TotMoles: the total moles of each component
-  #   - DoTox: boolean
-  #   - MetalName: character string, the name of the toxic metal
-  #   - MetalComp: integer, the position of the metal in the component arrays (i.e., which is the toxic metal component)
-  #   - BLMetalSpecs: integer vector, the positions of the species in the arrays which contribute to toxicity (i.e., which species are the toxic metal bound to the relevant biotic ligand)
-  #   - CATarget
   # outputs:
   #   - SpecConc: species concentrations after optimization
 
 
-  SpecK = 10 ^ SpecLogK
 
   # CompConc = initialGuess(NComp = NComp, CompName = CompName,
   #                         TotConc = TotConc, # mol / L or mol / kgw
   #                         CompType = CompType)
-  CompConc = initialGuessV2(TotConc = TotConc,
-                            CompType = CompType,
-                            CompName = CompName,
-                            SpecK = SpecK,
-                            SpecStoich = SpecStoich,
-                            NComp = NComp,
-                            NSpec = NSpec,
-                            SpecName = SpecName)
-
-  LogCompConc = log10(CompConc)
+  CompConc = InitialGuess(TotConc = TotConc,
+                          CompType = CompType,
+                          # CompName = CompName,
+                          SpecK = SpecK,
+                          SpecStoich = SpecStoich,
+                          NComp = NComp,
+                          NSpec = NSpec)#,
+                          #SpecName = SpecName)
 
   # Initialize Species Concentrations
   SpecConc = CalcSpecConc(CompConc = CompConc,
@@ -68,20 +106,6 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
     CompType = CompType,
     MetalComp = MetalComp,
     NBLMetal = NBLMetal,
-    BLMetalSpecs = BLMetalSpecs,
-    CATarget = CATarget,
-    DoTox = DoTox
-  )
-  RRR = RCalcResidual(
-    NComp = NComp,
-    NSpec = NSpec,
-    SpecConc = SpecConc,
-    SpecStoich = SpecStoich,
-    TotMoles = TotMoles,
-    SpecCtoM = SpecCtoM,
-    CompName = CompName,
-    CompType = CompType,
-    MetalComp = MetalComp,
     BLMetalSpecs = BLMetalSpecs,
     CATarget = CATarget,
     DoTox = DoTox
@@ -129,7 +153,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
       TotConc[iComp] = sum(SpecStoich[,iComp] * SpecConc)
     }
 
-    RR = RCalcResidual(NComp = NComp, NSpec = NSpec,
+    RR = CalcResidual(NComp = NComp, NSpec = NSpec,
                        SpecConc = SpecConc,
                        SpecStoich = SpecStoich,
                        TotMoles = TotMoles,
@@ -137,6 +161,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                        CompName = CompName,
                        CompType = CompType,
                        MetalComp = MetalComp,
+                      NBLMetal = NBLMetal,
                        BLMetalSpecs = BLMetalSpecs,
                        CATarget = CATarget,
                        DoTox = DoTox)
@@ -172,7 +197,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
         TotConc_Full[iComp] = sum(SpecStoich[,iComp] * SpecConc_Full)
       }
 
-      RR_Full = RCalcResidual(NComp = NComp, NSpec = NSpec,
+      RR_Full = CalcResidual(NComp = NComp, NSpec = NSpec,
                               SpecConc = SpecConc_Full,
                               SpecStoich = SpecStoich,
                               TotMoles = TotMoles_Full,
@@ -181,6 +206,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                               CompType = CompType,
                               # CompSiteDens = CompSiteDens,
                               MetalComp = MetalComp,
+                              NBLMetal = NBLMetal,
                               BLMetalSpecs = BLMetalSpecs,
                               CATarget = CATarget,
                               DoTox = DoTox)
@@ -211,7 +237,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
           TotConc_Half[iComp] = sum(SpecStoich[,iComp] * SpecConc_Half)
         }
 
-        RR_Half = RCalcResidual(NComp = NComp, NSpec = NSpec,
+        RR_Half = CalcResidual(NComp = NComp, NSpec = NSpec,
                                 SpecConc = SpecConc_Half,
                                 SpecStoich = SpecStoich,
                                 TotMoles = TotMoles_Half,
@@ -219,6 +245,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                                 CompType = CompType,
                                 CompName = CompName,
                                 MetalComp = MetalComp,
+                                NBLMetal = NBLMetal,
                                 BLMetalSpecs = BLMetalSpecs,
                                 CATarget = CATarget,
                                 DoTox = DoTox)
@@ -249,7 +276,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
           TotConc_Best[iComp] = sum(SpecStoich[,iComp] * SpecConc_Best)
         }
 
-        RR_Best = RCalcResidual(NComp = NComp, NSpec = NSpec,
+        RR_Best = CalcResidual(NComp = NComp, NSpec = NSpec,
                                 SpecConc = SpecConc_Best,
                                 SpecStoich = SpecStoich,
                                 TotMoles = TotMoles_Best,
@@ -257,6 +284,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                                 CompType = CompType,
                                 CompName = CompName,
                                 MetalComp = MetalComp,
+                                NBLMetal = NBLMetal,
                                 BLMetalSpecs = BLMetalSpecs,
                                 CATarget = CATarget,
                                 DoTox = DoTox)

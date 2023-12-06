@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
-// #include "RcppArmaHelper.h"
+//#include "RcppArmaHelper.h"
+#include "CHESSFunctions.h"
 
 //' @title Calculate the Residual
 //'
@@ -53,20 +54,20 @@
 //'    each component j}
 //' }
 //'
- // [[Rcpp::export]]
- Rcpp::List CalcResidual (unsigned int NComp,
-                          unsigned int NSpec,
-                          Rcpp::NumericVector SpecConc,
-                          Rcpp::IntegerMatrix SpecStoich,
-                          Rcpp::NumericVector TotMoles,
-                          Rcpp::NumericVector SpecCtoM,
-                          Rcpp::CharacterVector CompName,
-                          Rcpp::CharacterVector CompType,
-                          unsigned int MetalComp,
-                          unsigned int NBLMetal,
-                          Rcpp::IntegerVector BLMetalSpecs,
-                          double CATarget,
-                          bool DoTox){
+// [[Rcpp::export]]
+Rcpp::List CalcResidual (unsigned int NComp,
+                         unsigned int NSpec,
+                         Rcpp::NumericVector SpecConc,
+                         Rcpp::IntegerMatrix SpecStoich,
+                         Rcpp::NumericVector TotMoles,
+                         Rcpp::NumericVector SpecCtoM,
+                         Rcpp::CharacterVector CompName,
+                         Rcpp::CharacterVector CompType,
+                         unsigned int MetalComp,
+                         unsigned int NBLMetal,
+                         Rcpp::IntegerVector BLMetalSpecs,
+                         double CATarget,
+                         bool DoTox){
   /* outputs */
   double MaxError;// maximum of absolute ratios of residuals to totals
   unsigned int WhichMax;// which component has the highest absolute error

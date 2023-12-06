@@ -1,5 +1,5 @@
-
-
+# devtools::clean_dll()
+devtools::load_all()
 
 start.time = Sys.time()
 # Get the problem set up
@@ -73,7 +73,7 @@ for (iObs in 1:allInput$NObs){
 
   out = RCHESS(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                NComp, NSpec, NBLMetal,
-               SpecConc, SpecLogK, SpecStoich, SpecCtoM, SpecName,
+               SpecConc, SpecK, SpecStoich, SpecCtoM, SpecName,
                CompType, CompName, TotMoles, TotConc,
                DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
 

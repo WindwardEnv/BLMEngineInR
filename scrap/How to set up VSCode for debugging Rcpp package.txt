@@ -35,3 +35,6 @@ https://blog.davisvaughan.com/posts/2022-03-11-using-vs-code-to-debug-r-packages
       "stopOnEntry": false
   }
 7. Set breakpoints and hit the green arrow that say "(lldb) Launch" next to it.
+
+
+note: there is un unexported function in the usethis package that should do a lot of this setup for you (in theory)...you would type "usethis:::use_vscode_debug()" into the R console....however, it seems to set things up for a Mac...why the R developers seem obsesses with development on a Mac, I have no idea.
