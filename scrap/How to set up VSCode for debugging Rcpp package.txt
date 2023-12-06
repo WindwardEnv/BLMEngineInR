@@ -1,0 +1,37 @@
+Super helpful blog post:
+https://blog.davisvaughan.com/posts/2022-03-11-using-vs-code-to-debug-r-packages-with-c-code/
+
+1. Install VS Code (https://code.visualstudio.com/)
+2. Install C/C++ Extension Pack, R Extension, and either CodeLLDB
+3. (optional) Edit system path variable to include the the following paths (go to settings and start type in "Edit system environment variables", then select "Environment Variables..." and from the lower box "Path" then "Edit..."):
+  C:\Program Files\R\R-4.3.1\bin\x64
+  C:\RBuildTools\4.3\x86_64-w64-mingw32.static.posix\bin
+4. Make a file that starts with "devtools::load_all()" (and optionally "devtools::clean_dll()" before load_all if you want to recompile everything...may or may not be necessary) and then goes on to call the function that is messing up.
+5. In the search bar at the top of VSCode, type ">C/C++:Edit Configurations (UI)"
+  a. If you need to, Add a new configuration for Windows names "Win32"
+  b. Change the compiler path to R's compiler "C:/RBuildTools/4.3/x86_64-w64-mingw32.static.posix/bin/g++.exe"
+  c. Add these to the include paths: 
+      C:/Program Files/R/R-4.3.1/include
+      C:/RBuildTools/4.3/x86_64-w64-mingw32.static.posix/include
+      ...any package include files such as:
+        C:/Users/kellyc/AppData/Local/R/win-library/4.3/Rcpp/include
+        C:/Users/kellyc/AppData/Local/R/win-library/4.3/RcppArmadillo/include
+  d. Adjust the C and C++ standard to match R if needed...these (as well as necessary include paths) can be found by looking at the R console output when compiling.
+6. Go to the "Run and Debug" tab on the left in VSCode, and there should be some info there saying that you need to make a launch.json file. Make this, and set a configuration up with the following settings:
+  {
+      "name": "(lldb) Launch",
+      "type": "lldb",
+      "request": "launch",
+      "program": "C:/Program Files/R/R-4.3.1/bin/x64/Rscript",
+      "args": [
+          "--vanilla",
+          "-e",
+          "source('tools/debug.R')"
+      ],
+      "env": {
+          "R_HOME" : "C:/Program Files/R/R-4.3.1"
+      },
+      "terminal" : "console",
+      "stopOnEntry": false
+  }
+7. Set breakpoints and hit the green arrow that say "(lldb) Launch" next to it.

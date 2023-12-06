@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(lldb) Launch",
+            "type": "lldb",
+            "request": "launch",
+            "program": "C:/Program Files/R/R-4.3.1/bin/x64/Rscript",
+            "args": [
+                "--vanilla",
+                "-e",
+                "source('tools/debug.R')"
+            ],
+            "env": {
+                "R_HOME" : "C:/Program Files/R/R-4.3.1"
+            },
+            "terminal" : "console",
+            "stopOnEntry": false
+        }
+    ]
+}

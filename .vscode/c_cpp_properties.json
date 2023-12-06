@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Program Files/R/R-4.3.1/include",
+                "C:/RBuildTools/4.3/x86_64-w64-mingw32.static.posix/include",
+                "C:/Users/kellyc/AppData/Local/R/win-library/4.3/Rcpp/include",
+                "C:/Users/kellyc/AppData/Local/R/win-library/4.3/RcppArmadillo/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:/RBuildTools/4.3/x86_64-w64-mingw32.static.posix/bin/g++.exe",
+            "cStandard": "c11",
+            "cppStandard": "gnu++11"
+        }
+    ],
+    "version": 4
+}
