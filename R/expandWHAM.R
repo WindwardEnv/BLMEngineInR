@@ -341,7 +341,7 @@ ExpandWHAM = function(NMass, MassName,
     Monodent_Abundance = numeric(nMS)
     Bident_Abundance = numeric(nBP)
     Trident_Abundance = numeric(nTG)
-    for(OMType in WHAMFracAdd){
+    for (OMType in WHAMFracAdd) {
 
       pKM_cols = paste0("pKM",c("A","B"),OMType)
 

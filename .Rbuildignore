@@ -3,3 +3,5 @@
 ^scrap$
 ^data-raw$
 ^tools$
+^.vscode$
+^\.lintr$

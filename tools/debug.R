@@ -1,4 +1,4 @@
-devtools::clean_dll()
+# devtools::clean_dll()
 devtools::load_all()
 
 # test stuff

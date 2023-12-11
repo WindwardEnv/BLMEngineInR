@@ -7,8 +7,6 @@
 #'   concentrations of components, calculate the species concentrations of each
 #'   chemical product in the system.
 #'
-#' @param DoPartialSteps logical, TRUE = do partial Newton-Raphson steps when a
-#'   full step would send the MaxError higher; FALSE = only do full steps
 #' @param QuietFlag character, one of "Very Quiet" (only print out when run is
 #'   done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)
 #' @param ConvergenceCriteria numeric, the maximum value of MaxError that counts
@@ -60,8 +58,8 @@
 #'   }
 #' @export
 #'
-CHESS <- function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
-    .Call(`_BLMEngineInR_CHESS`, DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
+CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
+    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
 }
 
 #' @title Calculate the Residual

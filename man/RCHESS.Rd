@@ -31,8 +31,8 @@ RCHESS(
 \item{DoPartialSteps}{logical, TRUE = do partial Newton-Raphson steps when a
 full step would send the MaxError higher; FALSE = only do full steps}
 
-\item{QuietFlag}{character, one of "Very Quiet" (only print out when run is
-done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)}
+\item{QuietFlag}{character, one of "Very Quiet" (only print Out when run is
+done), "Quiet" (print Out Obs=iObs), or "Debug" (print Out lots of info)}
 
 \item{ConvergenceCriteria}{numeric, the maximum value of MaxError that counts
 as convergence by the Newton-Raphson root-finding algorithm}

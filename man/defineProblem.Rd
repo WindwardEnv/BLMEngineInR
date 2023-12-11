@@ -28,9 +28,12 @@ Returns whatever is needed for the speciation problem to be run. A
    use for activity corrections with this speies where 1 = ...}
  \item{\code{SpecStoich}}{the stoichiometry matrix of the reactions
    (integer matrix of size `NSpec` x `nComp`)}
- \item{\code{SpecK}}{the equilibrium coefficients (numeric vector of length `NSpec`)}
- \item{\code{SpeclogK}}{the log10-transformed equilibrium coefficients (numeric vector of length `NSpec`)}
- \item{\code{SpecDeltaH}}{the enthalpy change for each formation reaction (species)}
+ \item{\code{SpecK}}{the equilibrium coefficients (numeric vector of length
+   `NSpec`)}
+ \item{\code{SpeclogK}}{the log10-transformed equilibrium coefficients
+   (numeric vector of length `NSpec`)}
+ \item{\code{SpecDeltaH}}{the enthalpy change for each formation reaction
+   (species)}
 
 
  \item{\code{NMass, NInLab, NInVar, NInComp, NDefComp, NComp, NSpec, NPhase,
@@ -54,7 +57,8 @@ Returns whatever is needed for the speciation problem to be run. A
    DefCompMC, DefCompType, DefCompActCorr, DefCompSiteDens}}{The ... of
    defined components.}
  \item{\code{SpecName, SpecMC, SpecActCorr, SpecNC, SpecCompList, SpecStoich,
-   SpecLogK, SpecDeltaH, SpecTemp, SpecCtoM, SpecCharge}}{The...of species formation reactions}
+   SpecLogK, SpecDeltaH, SpecTemp, SpecCtoM, SpecCharge}}{The...of species
+   formation reactions}
  \item{\code{PhaseName, PhaseNC, PhaseCompList, PhaseStoich, PhaseLogK,
    PhaseDeltaH, PhaseTemp, PhaseMoles}}{The...of phases in the phase list.}
  \item{\code{BLName}}{The name of the component that corresponds to the
