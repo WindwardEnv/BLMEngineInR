@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // CHESS
-Rcpp::List CHESS(Rcpp::String QuietFlag, double ConvergenceCriteria, unsigned int MaxIter, unsigned int NComp, unsigned int NSpec, unsigned int NBLMetal, Rcpp::NumericVector SpecK, Rcpp::IntegerMatrix SpecStoich, Rcpp::NumericVector SpecCtoM, Rcpp::CharacterVector SpecName, Rcpp::CharacterVector CompType, Rcpp::CharacterVector CompName, Rcpp::NumericVector TotMoles, Rcpp::NumericVector TotConc, bool DoTox, Rcpp::String MetalName, unsigned int MetalComp, Rcpp::IntegerVector BLMetalSpecs, double CATarget);
-RcppExport SEXP _BLMEngineInR_CHESS(SEXP QuietFlagSEXP, SEXP ConvergenceCriteriaSEXP, SEXP MaxIterSEXP, SEXP NCompSEXP, SEXP NSpecSEXP, SEXP NBLMetalSEXP, SEXP SpecKSEXP, SEXP SpecStoichSEXP, SEXP SpecCtoMSEXP, SEXP SpecNameSEXP, SEXP CompTypeSEXP, SEXP CompNameSEXP, SEXP TotMolesSEXP, SEXP TotConcSEXP, SEXP DoToxSEXP, SEXP MetalNameSEXP, SEXP MetalCompSEXP, SEXP BLMetalSpecsSEXP, SEXP CATargetSEXP) {
+Rcpp::List CHESS(Rcpp::String QuietFlag, double ConvergenceCriteria, unsigned int MaxIter, unsigned int NComp, unsigned int NSpec, unsigned int NBLMetal, Rcpp::NumericVector SpecK, Rcpp::NumericVector SpecTemp, Rcpp::NumericVector SpecDeltaH, Rcpp::IntegerMatrix SpecStoich, Rcpp::NumericVector SpecCtoM, Rcpp::CharacterVector SpecName, Rcpp::CharacterVector CompType, Rcpp::CharacterVector CompName, Rcpp::NumericVector TotMoles, Rcpp::NumericVector TotConc, double SysTemp, bool DoTox, Rcpp::String MetalName, unsigned int MetalComp, Rcpp::IntegerVector BLMetalSpecs, double CATarget);
+RcppExport SEXP _BLMEngineInR_CHESS(SEXP QuietFlagSEXP, SEXP ConvergenceCriteriaSEXP, SEXP MaxIterSEXP, SEXP NCompSEXP, SEXP NSpecSEXP, SEXP NBLMetalSEXP, SEXP SpecKSEXP, SEXP SpecTempSEXP, SEXP SpecDeltaHSEXP, SEXP SpecStoichSEXP, SEXP SpecCtoMSEXP, SEXP SpecNameSEXP, SEXP CompTypeSEXP, SEXP CompNameSEXP, SEXP TotMolesSEXP, SEXP TotConcSEXP, SEXP SysTempSEXP, SEXP DoToxSEXP, SEXP MetalNameSEXP, SEXP MetalCompSEXP, SEXP BLMetalSpecsSEXP, SEXP CATargetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,6 +24,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type NSpec(NSpecSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type NBLMetal(NBLMetalSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecK(SpecKSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecTemp(SpecTempSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecDeltaH(SpecDeltaHSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type SpecStoich(SpecStoichSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecCtoM(SpecCtoMSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type SpecName(SpecNameSEXP);
@@ -31,12 +33,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type CompName(CompNameSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type TotMoles(TotMolesSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type TotConc(TotConcSEXP);
+    Rcpp::traits::input_parameter< double >::type SysTemp(SysTempSEXP);
     Rcpp::traits::input_parameter< bool >::type DoTox(DoToxSEXP);
     Rcpp::traits::input_parameter< Rcpp::String >::type MetalName(MetalNameSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type MetalComp(MetalCompSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type BLMetalSpecs(BLMetalSpecsSEXP);
     Rcpp::traits::input_parameter< double >::type CATarget(CATargetSEXP);
-    rcpp_result_gen = Rcpp::wrap(CHESS(QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget));
+    rcpp_result_gen = Rcpp::wrap(CHESS(QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecTemp, SpecDeltaH, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, SysTemp, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -184,7 +187,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BLMEngineInR_CHESS", (DL_FUNC) &_BLMEngineInR_CHESS, 19},
+    {"_BLMEngineInR_CHESS", (DL_FUNC) &_BLMEngineInR_CHESS, 22},
     {"_BLMEngineInR_CalcResidual", (DL_FUNC) &_BLMEngineInR_CalcResidual, 13},
     {"_BLMEngineInR_CalcSpecConc", (DL_FUNC) &_BLMEngineInR_CalcSpecConc, 6},
     {"_BLMEngineInR_CalcLogSpecConc", (DL_FUNC) &_BLMEngineInR_CalcLogSpecConc, 6},

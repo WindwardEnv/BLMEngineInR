@@ -56,6 +56,7 @@ for (iComp in 1:NComp){ResultsTable[,paste0("T.",CompName[iComp])] = NA}
 # for (iObs in 1:AllInput$NObs){
 iObs = 1; {
 
+  SysTemp = AllInput$SysTempObs[iObs]
   if (QuietFlag != "Very Quiet"){print(paste0("Obs=",iObs))}
 
   TotConc = AllInput$TotConcObs[iObs,]# mol/L
@@ -75,8 +76,9 @@ iObs = 1; {
 
   ChessResults = CHESS(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                        NComp, NSpec, NBLMetal,
-                       SpecK, SpecStoich, SpecCtoM, SpecName,
-                       CompType, CompName, TotMoles, TotConc,
+                       SpecK, SpecTemp, SpecDeltaH, SpecStoich, 
+                       SpecCtoM, SpecName,
+                       CompType, CompName, TotMoles, TotConc, SysTemp,
                        DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
 
   # END CHESS ------------------------

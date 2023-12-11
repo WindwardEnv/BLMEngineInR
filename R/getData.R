@@ -120,7 +120,7 @@ ReadInputsFromFile = function(
 #'
 #' @return Returns a \code{list} object with the following components:
 #' \describe{
-#'  \item{\code{SysTemp}}{numeric vector of length \code{NObs}; input
+#'  \item{\code{SysTempObs}}{numeric vector of length \code{NObs}; input
 #'    temperatures, in Celsius}
 #'  \item{\code{pH}}{numeric vector (\code{NObs}); input pH for each
 #'    observation}
@@ -146,7 +146,7 @@ MatchInputsToProblem = function(
   TotConcObs[, InCompName] = as.matrix(InCompObs)
 
   # -get temperatures
-  SysTemp = as.numeric(InVarObs[, InVarName[InVarType == "Temperature"]])
+  SysTempObs = as.numeric(InVarObs[, InVarName[InVarType == "Temperature"]])
 
   # -get pH - from InVarObs or InCompObs
   if (any(InVarType == "pH")) {
@@ -232,7 +232,7 @@ MatchInputsToProblem = function(
   }
 
   Out = list(
-    SysTemp = SysTemp,
+    SysTempObs = SysTempObs,
     pH = pH,
     TotConcObs = TotConcObs
   )
@@ -278,7 +278,7 @@ MatchInputsToProblem = function(
 #'    columns; the label columns for each observation}
 #'  \item{\code{InVarObs}}{matrix with \code{NObs} rows and \code{NInVar}
 #'    columns; the input variables for each observation}
-#'  \item{\code{SysTemp}}{numeric vector of length \code{NObs}; input
+#'  \item{\code{SysTempObs}}{numeric vector of length \code{NObs}; input
 #'    temperatures, in Celsius}
 #'  \item{\code{pH}}{numeric vector (\code{NObs}); input pH for each
 #'    observation}

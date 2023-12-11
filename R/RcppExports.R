@@ -58,8 +58,8 @@
 #'   }
 #' @export
 #'
-CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
-    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
+CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecTemp, SpecDeltaH, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, SysTemp, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
+    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecTemp, SpecDeltaH, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, SysTemp, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
 }
 
 #' @title Calculate the Residual

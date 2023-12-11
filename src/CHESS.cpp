@@ -66,6 +66,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  unsigned int NSpec,
                  unsigned int NBLMetal,
                  Rcpp::NumericVector SpecK,
+                 Rcpp::NumericVector SpecTemp,
+                 Rcpp::NumericVector SpecDeltaH,
                  Rcpp::IntegerMatrix SpecStoich,
                  Rcpp::NumericVector SpecCtoM,
                  Rcpp::CharacterVector SpecName,
@@ -73,6 +75,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::CharacterVector CompName,
                  Rcpp::NumericVector TotMoles,
                  Rcpp::NumericVector TotConc,
+                 double SysTemp,
                  bool DoTox,
                  Rcpp::String MetalName,
                  unsigned int MetalComp,
@@ -89,10 +92,13 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
    Rcpp::NumericMatrix JacobianMatrix(NComp);
    Rcpp::NumericVector CompConcStep(NComp);
    Rcpp::NumericVector CompConc(NComp);
+   Rcpp::NumericVector SpecKTempAdj(NSpec);
    Rcpp::List ResidResults;
    Rcpp::NumericVector Resid (NComp);
    unsigned int WhichMax;
    Rcpp::NumericVector CalcTotMoles(NComp);
+
+   SpecKTempAdj = TempCorrection(SysTemp, NSpec, SpecK, SpecTemp, SpecDeltaH);
 
    // Get initial values for component concentrations
    CompConc = InitialGuess(TotConc = TotConc,

@@ -85,4 +85,10 @@ Rcpp::List UpdateTotalsList(unsigned int NComp,
                             Rcpp::NumericVector TotConc, 
                             Rcpp::NumericVector SpecCtoM, 
                             bool DoTox);
+
+Rcpp::NumericVector TempCorrection(double SysTemp,
+                                   unsigned int NSpec,
+                                   Rcpp::NumericVector SpecK,
+                                   Rcpp::NumericVector SpecTemp,
+                                   Rcpp::NumericVector SpecDeltaH);
 #endif //__CHESSFUNCTIONS_H__
