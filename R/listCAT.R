@@ -4,38 +4,43 @@
 #' which CAT number they should specify for a toxicity run where the critical
 #' value is coming from the table in the parameter file.
 #'
-#' @param paramFile character string; the file name and path of the parameter
+#' @param ParamFile character string; the file name and path of the parameter
 #'   file.
 #'
 #' @return A \code{data.frame} object with the CAT table in the given parameter
 #'   file. Columns include:
 #' \describe{
 #'    \item{\code{Num}}{the number or index in the table}
-#'    \item{\code{`CA (nmol/gw)`}}{the critical accumulation in units of nmol/gw}
-#'    \item{\code{Species}}{species name or CA significance, such as HC5 or FAV}
+#'    \item{\code{`CA (nmol/gw)`}}{the critical accumulation in units of 
+#'      nmol/gw}
+#'    \item{\code{Species}}{species name or CA significance, such as HC5 or 
+#'      FAV}
 #'    \item{\code{`Test Type`}}{acute or chronic}
 #'    \item{\code{Duration}}{test duration (e.g., 48 h)}
 #'    \item{\code{Lifestage}}{age or size of the organisms}
 #'    \item{\code{Endpoint}}{toxicity endpoint (e.g., mortality, reproduction)}
-#'    \item{\code{Quantifier}}{endpoint quanifier or effect level (e.g., LC50, EC10, NOEC)}
-#'    \item{\code{References}}{citations of sources with the toxicity data that went into calculating the CA, or the citation of the HC5 or FAV}
-#'    \item{\code{Miscellanous}}{other notes or comments (e.g., number of data points or methods of calculating)}
+#'    \item{\code{Quantifier}}{endpoint quanifier or effect level (e.g., LC50, 
+#'      EC10, NOEC)}
+#'    \item{\code{References}}{citations of sources with the toxicity data that
+#'      went into calculating the CA, or the citation of the HC5 or FAV}
+#'    \item{\code{Miscellanous}}{other notes or comments (e.g., number of data
+#'      points or methods of calculating)}
 #' }
 #'
 #' @export
 #'
 #' @examples
 #' ## Not Run
-#' # listCAT("my_parameter_file.dat")
+#' # ListCAT("my_parameter_file.dat")
 #' ## End Not Run
-listCAT = function(paramFile){
+ListCAT = function(ParamFile){
 
   # error catching
-  stopifnot(file.exists(paramFile))
+  stopifnot(file.exists(ParamFile))
 
   # read the dimensions of the various elements of the reaction list
   skipRows = 2
-  tmp = read.csv(file = paramFile, header = FALSE, skip = skipRows,
+  tmp = read.csv(file = ParamFile, header = FALSE, skip = skipRows,
                  nrows = 9, strip.white = T)
   NMass = tmp[1, 1]
   NInLab = tmp[2, 1]
@@ -59,10 +64,11 @@ listCAT = function(paramFile){
   skipRows = skipRows + NSpecialDef + 3
 
   # Read in CAT table from parameter file
-  CATab = read.csv(file = paramFile, header = TRUE, skip = skipRows,
+  CATab = read.csv(file = ParamFile, header = TRUE, skip = skipRows,
                    nrows = NCAT, strip.white = T)
-  colnames(CATab) = c("Num","CA (nmol/gw)","Species","Test Type","Duration","Lifestage",
-                      "Endpoint","Quantifier","References","Miscellaneous")
+  colnames(CATab) = c("Num","CA (nmol/gw)","Species","Test Type","Duration",
+                      "Lifestage","Endpoint","Quantifier","References",
+                      "Miscellaneous")
 
   # Return that table for the user
   return(CATab)

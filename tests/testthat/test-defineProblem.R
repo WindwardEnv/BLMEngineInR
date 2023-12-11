@@ -1,6 +1,6 @@
-test_that("defineProblem works", {
-  expect_error(defineProblem())
-  # TestResult = defineProblem("Test")
+test_that("DefineProblem works", {
+  expect_error(DefineProblem())
+  # TestResult = DefineProblem("Test")
   # expect_type(TestResult, "list")
   # expect_identical(names(TestResult),
   #                  c("NComp", "NSpec","CompNames","SpecNames",

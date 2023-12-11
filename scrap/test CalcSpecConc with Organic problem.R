@@ -1,10 +1,10 @@
-paramFile = "scrap/parameter file format/full_organic.dat"
-inputFile = "scrap/parameter file format/full_organic.blm4"
+ParamFile = "scrap/parameter file format/full_organic.dat"
+InputFile = "scrap/parameter file format/full_organic.blm4"
 
-thisProblem = defineProblem(paramFile = paramFile)
-allInput = do.call("getData", args = c(
-  thisProblem[names(thisProblem) %in% formalArgs("getData")],
-  list(inputFile = inputFile)
+thisProblem = defineProblem(ParamFile = ParamFile)
+allInput = do.call("GetData", args = c(
+  thisProblem[names(thisProblem) %in% formalArgs("GetData")],
+  list(InputFile = InputFile)
 ))
 
 

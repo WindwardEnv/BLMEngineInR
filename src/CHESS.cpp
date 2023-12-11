@@ -1,4 +1,3 @@
-#include <string>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -63,7 +62,7 @@
 //'
 //[[Rcpp::export]]
 Rcpp::List CHESS(bool DoPartialSteps,
-                 std::string QuietFlag,
+                 Rcpp::String QuietFlag,
                  double ConvergenceCriteria,
                  unsigned int MaxIter,
                  unsigned int NComp,
@@ -78,19 +77,19 @@ Rcpp::List CHESS(bool DoPartialSteps,
                  Rcpp::NumericVector TotMoles,
                  Rcpp::NumericVector TotConc,
                  bool DoTox,
-                 std::string MetalName,
+                 Rcpp::String MetalName,
                  unsigned int MetalComp,
                  Rcpp::IntegerVector BLMetalSpecs,
                  double CATarget) {
-   /*outputs*/ 
+   /*outputs*/
    Rcpp::NumericVector SpecConc(NSpec); // species concentrations after optimization
    unsigned int Iter = 0;
    double MaxError;
    Rcpp::NumericVector CalcTotConc; //the calculated total concentrations of each component in the simulation (units of e.g., mol/L and mol/kg)}
-   
+
    /*variables*/
    double MaxError_Last;
-   Rcpp::NumericMatrix JacobianMatrix(NComp, NComp);
+   Rcpp::NumericMatrix JacobianMatrix(NComp);
    Rcpp::NumericVector CompConcStep(NComp);
    Rcpp::NumericVector CompConc(NComp);
    Rcpp::NumericVector SpecMoles = (SpecConc * SpecCtoM);
@@ -116,9 +115,10 @@ Rcpp::List CHESS(bool DoPartialSteps,
                            SpecName = SpecName,
                            NComp = NComp,
                            NSpec = NSpec);
-     
+
    // Update Total Concentrations for Fixed Activity & Metal
-   UpdateTotals(NComp, NSpec, CompType, CompName, MetalName, TotMoles, SpecStoich, SpecMoles, TotConc, SpecCtoM, DoTox);
+   UpdateTotals(NComp, NSpec, CompType, CompName, MetalName, TotMoles, 
+                SpecStoich, SpecMoles, TotConc, SpecCtoM, DoTox);
 
    // Calculate Residuals for the first time
    RR = CalcResidual(
@@ -136,11 +136,11 @@ Rcpp::List CHESS(bool DoPartialSteps,
      CATarget = CATarget,
      DoTox = DoTox
    );
-    Resid = RR['Resid'];
-    MaxError = RR['MaxError'];
-    WhichMax = RR['WhichMax'];
-    CalcTotConc = RR['CalcTotConc'];
-    CalcTotMoles = RR['CalcTotMoles'];
+    Resid = RR["Resid"];
+    MaxError = RR["MaxError"];
+    WhichMax = RR["WhichMax"];
+    CalcTotConc = RR["CalcTotConc"];
+    CalcTotMoles = RR["CalcTotMoles"];
 
    // Begin iterating
    Iter = 0;
@@ -156,10 +156,10 @@ Rcpp::List CHESS(bool DoPartialSteps,
 
      CompConcStep = CalcStep(JacobianMatrix = JacobianMatrix, Resid = Resid,
                              NComp = NComp, CompType = CompType, CompName=CompName);
- 
-     CompConc = CompUpdate(NComp = NComp, 
-                           CompConcStep = CompConcStep, 
-                           CompConc = SpecConc(Rcpp::Range(0,NComp-1)),
+
+     CompConc = CompUpdate(NComp = NComp,
+                           CompConcStep = CompConcStep,
+                           CompConc = SpecConc.import(SpecConc.begin(), SpecConc.begin() + NComp),
                            CompName = CompName);
 
      SpecConc = CalcSpecConc(CompConc = CompConc,
@@ -169,8 +169,8 @@ Rcpp::List CHESS(bool DoPartialSteps,
                              NComp = NComp,
                              NSpec = NSpec);
      // Update Total Concentrations for Fixed Activity & Metal
-     UpdateTotals(NComp, NSpec, CompType, CompName, MetalName, TotMoles, 
-                  SpecStoich, SpecMoles, TotConc, SpecCtoM, DoTox);
+     UpdateTotals(NComp, NSpec, CompType, CompName, MetalName, TotMoles,
+                 SpecStoich, SpecMoles, TotConc, SpecCtoM, DoTox);
 
     RR = CalcResidual(
         NComp = NComp,
@@ -187,11 +187,11 @@ Rcpp::List CHESS(bool DoPartialSteps,
         CATarget = CATarget,
         DoTox = DoTox
     );
-    Resid = RR['Resid'];
-    MaxError = RR['MaxError'];
-    WhichMax = RR['WhichMax'];
-    CalcTotConc = RR['CalcTotConc'];
-    CalcTotMoles = RR['CalcTotMoles'];
+    Resid = RR["Resid"];
+    MaxError = RR["MaxError"];
+    WhichMax = RR["WhichMax"];
+    CalcTotConc = RR["CalcTotConc"];
+    CalcTotMoles = RR["CalcTotMoles"];
 
 /*
      if (DoPartialSteps) {
@@ -365,10 +365,10 @@ Rcpp::List CHESS(bool DoPartialSteps,
    }//while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
 
     return Rcpp::List::create(
-        Rcpp::Named(SpecConc) = SpecConc,
-        Rcpp::Named(Iter) = Iter,
-        Rcpp::Named(MaxError) = MaxError,
-        Rcpp::Named(CalcTotConc) = CalcTotConc
+        Rcpp::Named("SpecConc") = SpecConc,
+        Rcpp::Named("Iter") = Iter,
+        Rcpp::Named("MaxError") = MaxError,
+        Rcpp::Named("CalcTotConc") = CalcTotConc
     );
 }
 

@@ -5,8 +5,8 @@
 \title{Run the Biotic Ligand Model}
 \usage{
 BLM(
-  paramFile = character(),
-  inputFile = character(),
+  ParamFile = character(),
+  InputFile = character(),
   DoTox = logical(),
   iCA = 1L,
   QuietFlag = c("Quiet", "Very Quiet", "Debug"),
@@ -15,9 +15,9 @@ BLM(
 )
 }
 \arguments{
-\item{paramFile}{the path and file name of the parameter file}
+\item{ParamFile}{the path and file name of the parameter file}
 
-\item{inputFile}{the path and file name of the chemistry input file}
+\item{InputFile}{the path and file name of the chemistry input file}
 }
 \value{
 A data frame with chemistry speciation information, including total
@@ -29,6 +29,6 @@ provided parameter file, input file, and options.
 }
 \examples{
 ## Not run:
-# BLM(paramFile = "path/mypfile.dat", inputFile = "path/myinputfile.blm")
+# BLM(ParamFile = "path/mypfile.dat", InputFile = "path/myinputfile.blm")
 ## End(Not run)
 }

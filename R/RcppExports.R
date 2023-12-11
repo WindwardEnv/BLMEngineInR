@@ -275,3 +275,7 @@ Jacobian <- function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, CompName, Met
     .Call(`_BLMEngineInR_Jacobian`, NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, CompName, MetalComp, NBLMetal, BLMetalSpecs, DoTox)
 }
 
+UpdateTotalsList <- function(NComp, NSpec, CompType, CompName, MetalName, TotMoles, SpecStoich, SpecMoles, TotConc, SpecCtoM, DoTox) {
+    .Call(`_BLMEngineInR_UpdateTotalsList`, NComp, NSpec, CompType, CompName, MetalName, TotMoles, SpecStoich, SpecMoles, TotConc, SpecCtoM, DoTox)
+}
+

@@ -12,13 +12,13 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // CHESS
-Rcpp::List CHESS(bool DoPartialSteps, std::string QuietFlag, double ConvergenceCriteria, unsigned int MaxIter, unsigned int NComp, unsigned int NSpec, unsigned int NBLMetal, Rcpp::NumericVector SpecK, Rcpp::IntegerMatrix SpecStoich, Rcpp::NumericVector SpecCtoM, Rcpp::CharacterVector SpecName, Rcpp::CharacterVector CompType, Rcpp::CharacterVector CompName, Rcpp::NumericVector TotMoles, Rcpp::NumericVector TotConc, bool DoTox, std::string MetalName, unsigned int MetalComp, Rcpp::IntegerVector BLMetalSpecs, double CATarget);
+Rcpp::List CHESS(bool DoPartialSteps, Rcpp::String QuietFlag, double ConvergenceCriteria, unsigned int MaxIter, unsigned int NComp, unsigned int NSpec, unsigned int NBLMetal, Rcpp::NumericVector SpecK, Rcpp::IntegerMatrix SpecStoich, Rcpp::NumericVector SpecCtoM, Rcpp::CharacterVector SpecName, Rcpp::CharacterVector CompType, Rcpp::CharacterVector CompName, Rcpp::NumericVector TotMoles, Rcpp::NumericVector TotConc, bool DoTox, Rcpp::String MetalName, unsigned int MetalComp, Rcpp::IntegerVector BLMetalSpecs, double CATarget);
 RcppExport SEXP _BLMEngineInR_CHESS(SEXP DoPartialStepsSEXP, SEXP QuietFlagSEXP, SEXP ConvergenceCriteriaSEXP, SEXP MaxIterSEXP, SEXP NCompSEXP, SEXP NSpecSEXP, SEXP NBLMetalSEXP, SEXP SpecKSEXP, SEXP SpecStoichSEXP, SEXP SpecCtoMSEXP, SEXP SpecNameSEXP, SEXP CompTypeSEXP, SEXP CompNameSEXP, SEXP TotMolesSEXP, SEXP TotConcSEXP, SEXP DoToxSEXP, SEXP MetalNameSEXP, SEXP MetalCompSEXP, SEXP BLMetalSpecsSEXP, SEXP CATargetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< bool >::type DoPartialSteps(DoPartialStepsSEXP);
-    Rcpp::traits::input_parameter< std::string >::type QuietFlag(QuietFlagSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type QuietFlag(QuietFlagSEXP);
     Rcpp::traits::input_parameter< double >::type ConvergenceCriteria(ConvergenceCriteriaSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type MaxIter(MaxIterSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type NComp(NCompSEXP);
@@ -33,7 +33,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type TotMoles(TotMolesSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type TotConc(TotConcSEXP);
     Rcpp::traits::input_parameter< bool >::type DoTox(DoToxSEXP);
-    Rcpp::traits::input_parameter< std::string >::type MetalName(MetalNameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type MetalName(MetalNameSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type MetalComp(MetalCompSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type BLMetalSpecs(BLMetalSpecsSEXP);
     Rcpp::traits::input_parameter< double >::type CATarget(CATargetSEXP);
@@ -162,6 +162,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// UpdateTotalsList
+Rcpp::List UpdateTotalsList(unsigned int NComp, unsigned int NSpec, Rcpp::CharacterVector CompType, Rcpp::CharacterVector CompName, Rcpp::String MetalName, Rcpp::NumericVector TotMoles, Rcpp::IntegerMatrix SpecStoich, Rcpp::NumericVector SpecMoles, Rcpp::NumericVector TotConc, Rcpp::NumericVector SpecCtoM, bool DoTox);
+RcppExport SEXP _BLMEngineInR_UpdateTotalsList(SEXP NCompSEXP, SEXP NSpecSEXP, SEXP CompTypeSEXP, SEXP CompNameSEXP, SEXP MetalNameSEXP, SEXP TotMolesSEXP, SEXP SpecStoichSEXP, SEXP SpecMolesSEXP, SEXP TotConcSEXP, SEXP SpecCtoMSEXP, SEXP DoToxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type NComp(NCompSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type NSpec(NSpecSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type CompType(CompTypeSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type CompName(CompNameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type MetalName(MetalNameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type TotMoles(TotMolesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type SpecStoich(SpecStoichSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecMoles(SpecMolesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type TotConc(TotConcSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecCtoM(SpecCtoMSEXP);
+    Rcpp::traits::input_parameter< bool >::type DoTox(DoToxSEXP);
+    rcpp_result_gen = Rcpp::wrap(UpdateTotalsList(NComp, NSpec, CompType, CompName, MetalName, TotMoles, SpecStoich, SpecMoles, TotConc, SpecCtoM, DoTox));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BLMEngineInR_CHESS", (DL_FUNC) &_BLMEngineInR_CHESS, 20},
@@ -172,6 +193,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BLMEngineInR_CompUpdate", (DL_FUNC) &_BLMEngineInR_CompUpdate, 4},
     {"_BLMEngineInR_InitialGuess", (DL_FUNC) &_BLMEngineInR_InitialGuess, 7},
     {"_BLMEngineInR_Jacobian", (DL_FUNC) &_BLMEngineInR_Jacobian, 10},
+    {"_BLMEngineInR_UpdateTotalsList", (DL_FUNC) &_BLMEngineInR_UpdateTotalsList, 11},
     {NULL, NULL, 0}
 };
 

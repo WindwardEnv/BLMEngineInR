@@ -1,8 +1,8 @@
-test_that("getData works", {
-  expect_error(getData())
+test_that("GetData works", {
+  expect_error(GetData)
   # NComp = as.integer(2)
   # CompNames = c("H","CO3")
-  # TestResult = getData("Test",NComp,CompNames)
+  # TestResult = GetData("Test",NComp,CompNames)
   # expect_type(TestResult, "list")
   # expect_identical(names(TestResult),
   #                  c("NObs","obsLabels","totConcObs"))

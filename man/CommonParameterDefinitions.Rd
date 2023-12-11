@@ -33,7 +33,7 @@ repository of their definitions is helpful.
   \item{DefCompActCorr}{character vector (NDefComp), the activity correction method to use with each defined component}
   \item{DefCompSiteDens}{numeric vector (NDefComp), the site density of each defined component}
 
-  \item{NComp}{integer, the combined number of components in the simulation, including the input components, defined components (and including the defined components that get added by expandWHAM)}
+  \item{NComp}{integer, the combined number of components in the simulation, including the input components, defined components (and including the defined components that get added by ExpandWHAM)}
   \item{CompName}{character vector (NComp), the name of each component in the simulation}
   \item{CompCharge}{signed integer vector (NComp), the charge of each component in the simulation}
   \item{CompMC}{integer vector (NComp), the mass compartment of each component in the simulation}

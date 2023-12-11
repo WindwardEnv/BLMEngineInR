@@ -1,0 +1,13 @@
+linters: linters_with_defaults(
+    commented_code_linter = NULL,
+    trailing_whitespace_linter(allow_empty_lines = TRUE),
+    brace_linter = NULL,
+    object_name_linter(styles = "CamelCase"),
+    assignment_linter = NULL,
+    cyclocomp_linter(30L)
+  )
+exclusions: list(
+    "tools",
+    "scrap"
+  )
+encoding: "UTF-8"

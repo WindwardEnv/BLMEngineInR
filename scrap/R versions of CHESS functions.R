@@ -3,8 +3,8 @@ devtools::load_all()
 
 start.time = Sys.time()
 # Get the problem set up
-paramFile = "scrap/parameter file format/full_organic.dat4"
-inputFile = "scrap/parameter file format/full_organic.blm4"
+ParamFile = "scrap/parameter file format/full_organic.dat4"
+InputFile = "scrap/parameter file format/full_organic.blm4"
 QuietFlag = c("Very Quiet","Quiet","Debug")[3]
 iCA = 1
 DoTox = T
@@ -13,10 +13,10 @@ ConvergenceCriteria = 0.001
 MaxIter = 30L
 {
 
-  thisProblem = defineProblem(paramFile = paramFile)
-  allInput = do.call("getData", args = c(
-    thisProblem[names(thisProblem) %in% formalArgs("getData")],
-    list(inputFile = inputFile)
+  thisProblem = DefineProblem(ParamFile = ParamFile)
+  allInput = do.call("GetData", args = c(
+    thisProblem[names(thisProblem) %in% formalArgs("GetData")],
+    list(inputFile = InputFile)
   ))
 
   # Save some common variables for initializing arrays

@@ -59,7 +59,7 @@
 #'   equilibrium coefficients (modified and returned)
 #' @param SpecDeltaH numeric vector of length `NSpec`; the enthalpy change for
 #'   each formation reaction/species (modified and returned)
-#' @param SpecTemp numeric vector of length `NSpec`; temperature at which the
+#' @param SpecTemp numeric vector of length `NSpec`; Tmperature at which the
 #'   logK/deltaH were measured (modified and returned)
 #' @param NPhase integer; Number of phases
 #' @param PhaseCompList integer matrix of `NPhase` rows and `max(PhaseNC)+2`
@@ -68,37 +68,44 @@
 #' @param PhaseStoich integer matrix of `NPhase` rows and `NComp` columns; the
 #'   stoichiometry matrix of the phase reactions (modified and returned)
 #' @param WHAMVer a character string specifying the WHAM version to use, must be
-#'   one of `"V"` (default), `"VI"`, or `"VII"`. Ignored if `wdatFile` is not
+#'   one of `"V"` (default), `"VI"`, or `"VII"`. Ignored if `WdatFile` is not
 #'   `NULL`.
-#' @param wdatFile (optional) a character string specifying the file path of a
+#' @param WdatFile (optional) a character string specifying the file path of a
 #'   WHAM parameter file
 #'
 #' @keywords internal
 #'
 #' @noRd
-expandWHAM = function(NMass, MassName,
+ExpandWHAM = function(NMass, MassName,
                       NInVar, InVarName, InVarMC, InVarType,
-                      NComp, CompName, CompCharge, CompMC, CompType, CompActCorr, CompSiteDens,
-                      NDefComp, DefCompName, DefCompFromNum, DefCompFromVar, DefCompCharge, DefCompMC, DefCompType, DefCompActCorr, DefCompSiteDens,
-                      NSpec, SpecName, SpecMC, SpecActCorr, SpecNC, SpecCompList, SpecStoich, SpecLogK, SpecDeltaH, SpecTemp,
+                      NComp, CompName, CompCharge, CompMC, CompType,
+                      CompActCorr, CompSiteDens,
+                      NDefComp, DefCompName, DefCompFromNum, DefCompFromVar,
+                      DefCompCharge, DefCompMC, DefCompType, DefCompActCorr,
+                      DefCompSiteDens,
+                      NSpec, SpecName, SpecMC, SpecActCorr, SpecNC,
+                      SpecCompList, SpecStoich, SpecLogK, SpecDeltaH, SpecTemp,
                       NPhase, PhaseCompList, PhaseStoich,
                       WHAMVer = c("V", "VI", "VII"),
-                      wdatFile = NULL) {
+                      WdatFile = NULL) {
 
 
   # error catching and input cleanup
-  if (is.null(wdatFile)){
+  if (is.null(WdatFile)) {
     WHAMVer = match.arg(WHAMVer)
-    if(WHAMVer == "V"){
-      wdatFile = system.file("extdata/WHAM_V.wdat", package = "BLMEngineInR", mustWork = T)
-    } else if (WHAMVer == "VI"){
-      wdatFile = system.file("extdata/WHAM_VI.wdat", package = "BLMEngineInR", mustWork = T)
-    } else if (WHAMVer  == "VII"){
-      wdatFile = system.file("extdata/WHAM_VII.wdat", package = "BLMEngineInR", mustWork = T)
+    if (WHAMVer == "V") {
+      WdatFile = system.file("extdata/WHAM_V.wdat", package = "BLMEngineInR",
+                             mustWork = TRUE)
+    } else if (WHAMVer == "VI") {
+      WdatFile = system.file("extdata/WHAM_VI.wdat", package = "BLMEngineInR",
+                             mustWork = TRUE)
+    } else if (WHAMVer  == "VII") {
+      WdatFile = system.file("extdata/WHAM_VII.wdat", package = "BLMEngineInR",
+                             mustWork = TRUE)
     }
   } else {
-    wdatFile = normalizePath(wdatFile)
-    stopifnot(file.exists(wdatFile))
+    WdatFile = normalizePath(WdatFile)
+    stopifnot(file.exists(WdatFile))
   }
 
 
@@ -106,90 +113,98 @@ expandWHAM = function(NMass, MassName,
   {
 
     # header info
-    skipRows = 2
-    temp = read.delim(file = wdatFile, header = F, sep = ",",
-                      skip = skipRows, nrows = 7)
-    nMS = as.integer(temp[1,2])#Number of monodentate sites
-    nBP = as.integer(temp[2,2])#Number of bidentate pairs
-    nTG = as.integer(temp[3,2])#Number of tridentate groups
-    nMP = as.integer(temp[4,2])#Number of metals-OM parameters
-    wDLF = as.numeric(temp[5,2])#Double layer overlap factor
-    wKZED = as.numeric(temp[6,2])#Constant to control DDL at low ZED
-    wKsel = as.numeric(temp[7,2])#Selectivity coefficient Ksel
+    SkipRows = 2
+    Tmp = read.delim(file = WdatFile, header = FALSE, sep = ",",
+                     skip = SkipRows, nrows = 7)
+    nMS = as.integer(Tmp[1, 2])#Number of monodentate sites
+    nBP = as.integer(Tmp[2, 2])#Number of bidentate pairs
+    nTG = as.integer(Tmp[3, 2])#Number of tridentate groups
+    nMP = as.integer(Tmp[4, 2])#Number of metals-OM parameters
+    wDLF = as.numeric(Tmp[5, 2])#Double layer overlap factor
+    wKZED = as.numeric(Tmp[6, 2])#Constant to control DDL at low ZED
+    wKsel = as.numeric(Tmp[7, 2])#Selectivity coefficient Ksel
 
     # Parameters
-    skipRows = skipRows + 7 + 1
-    temp = read.delim(file = wdatFile, header = T, sep = ",",
-                      skip = skipRows, nrows = 12)
-    nCOOH = array(as.numeric(temp[1,3:4]), dimnames = list(c("HA","FA")))
-    pKHA = array(as.numeric(temp[2,3:4]), dimnames = list(c("HA","FA")))
-    pKHB = array(as.numeric(temp[3,3:4]), dimnames = list(c("HA","FA")))
-    dpKHA = array(as.numeric(temp[4,3:4]), dimnames = list(c("HA","FA")))
-    dpKHB = array(as.numeric(temp[5,3:4]), dimnames = list(c("HA","FA")))
-    fprB = array(as.numeric(temp[6,3:4]), dimnames = list(c("HA","FA")))
-    fprT = array(as.numeric(temp[7,3:4]), dimnames = list(c("HA","FA")))
-    dLK1A = array(as.numeric(temp[8,3:4]), dimnames = list(c("HA","FA")))
-    dLK1B = array(as.numeric(temp[9,3:4]), dimnames = list(c("HA","FA")))
-    wP = array(as.numeric(temp[10,3:4]), dimnames = list(c("HA","FA")))
-    wRadius = array(as.numeric(temp[11,3:4]), dimnames = list(c("HA","FA")))
-    wMolWt = array(as.numeric(temp[12,3:4]), dimnames = list(c("HA","FA")))
+    SkipRows = SkipRows + 7 + 1
+    Tmp = read.delim(file = WdatFile, header = TRUE, sep = ",",
+                     skip = SkipRows, nrows = 12)
+    nCOOH = array(as.numeric(Tmp[1, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    pKHA = array(as.numeric(Tmp[2, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    pKHB = array(as.numeric(Tmp[3, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    dpKHA = array(as.numeric(Tmp[4, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    dpKHB = array(as.numeric(Tmp[5, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    fprB = array(as.numeric(Tmp[6, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    fprT = array(as.numeric(Tmp[7, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    dLK1A = array(as.numeric(Tmp[8, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    dLK1B = array(as.numeric(Tmp[9, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    wP = array(as.numeric(Tmp[10, 3 :4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    wRadius = array(as.numeric(Tmp[11, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
+    wMolWt = array(as.numeric(Tmp[12, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
 
     # Monodentate Sites - these should always be the same, but we'll set things
     # up like this so we can add in this section if it's ever needed.
     # MonodentTable = data.frame(S=1:8, AbundDenom = c(rep(4,4),rep(8,4)))
-    skipRows = skipRows + 12 + 3
-    MonodentTable = read.delim(file = wdatFile, header = T, sep = ",",
-                               skip = skipRows, nrows = nMS)
-    MonodentTable$FullyProt = paste0(MonodentTable$S,"H")
+    SkipRows = SkipRows + 12 + 3
+    MonodentTable = read.delim(file = WdatFile, header = TRUE, sep = ",",
+                               skip = SkipRows, nrows = nMS)
+    MonodentTable$FullyProt = paste0(MonodentTable$S, "H")
     MonodentTable$FullyDeprot = paste0(MonodentTable$S)
-    MonodentTable$Strong1Weak2 = c(rep(1L,4),rep(2L,4))
+    MonodentTable$Strong1Weak2 = c(rep(1L, 4), rep(2L, 4))
 
     # Bidentate Pairs
-    skipRows = skipRows + nMS + 3
-    if (nBP > 0){
-      BidentTable = read.delim(file = wdatFile, header = T, sep = ",",
-                               skip = skipRows, nrows = nBP)
-      names(BidentTable) = c("S1","S2","AbundDenom")
-      BidentTable$FullyProt = paste0(BidentTable$S1,BidentTable$S2,"H")
-      BidentTable$S1Deprot = paste0(BidentTable$S1,"-",BidentTable$S2,"H")
-      BidentTable$S2Deprot = paste0(BidentTable$S2,"-",BidentTable$S1,"H")
-      BidentTable$FullyDeprot = paste0(BidentTable$S1,BidentTable$S2)
-      BidentTable$S1Strong1Weak2 = ifelse(BidentTable$S1<=4,1,2)
-      BidentTable$S2Strong1Weak2 = ifelse(BidentTable$S2<=4,1,2)
+    SkipRows = SkipRows + nMS + 3
+    if (nBP > 0) {
+      BidentTable = read.delim(file = WdatFile, header = TRUE, sep = ",",
+                               skip = SkipRows, nrows = nBP)
+      names(BidentTable) = c("S1", "S2", "AbundDenom")
+      BidentTable$FullyProt = paste0(BidentTable$S1, BidentTable$S2, "H")
+      BidentTable$S1Deprot = paste0(BidentTable$S1, "-", BidentTable$S2, "H")
+      BidentTable$S2Deprot = paste0(BidentTable$S2, "-", BidentTable$S1, "H")
+      BidentTable$FullyDeprot = paste0(BidentTable$S1, BidentTable$S2)
+      BidentTable$S1Strong1Weak2 = ifelse(BidentTable$S1 <= 4, 1, 2)
+      BidentTable$S2Strong1Weak2 = ifelse(BidentTable$S2 <= 4, 1, 2)
     } else {
       BidentTable = data.frame()
     }
 
 
     # Tridentate Groups
-    skipRows = skipRows + nBP + 3
-    if (nTG > 0){
-      TridentTable = read.delim(file = wdatFile, header = T, sep = ",",
-                                skip = skipRows, nrows = nTG)
-      names(TridentTable) = c("S1","S2","S3","AbundDenom")
-      TridentTable$FullyProt = paste0(TridentTable$S1,TridentTable$S2,TridentTable$S3,"H")
-      TridentTable$S1Deprot = paste0(TridentTable$S1,"-",TridentTable$S2,TridentTable$S3,"H")
-      TridentTable$S2Deprot = paste0(TridentTable$S2,"-",TridentTable$S1,TridentTable$S3,"H")
-      TridentTable$S3Deprot = paste0(TridentTable$S3,"-",TridentTable$S1,TridentTable$S2,"H")
-      TridentTable$S12Deprot = paste0(TridentTable$S1,TridentTable$S2,"-",TridentTable$S3,"H")
-      TridentTable$S13Deprot = paste0(TridentTable$S1,TridentTable$S3,"-",TridentTable$S2,"H")
-      TridentTable$S23Deprot = paste0(TridentTable$S2,TridentTable$S3,"-",TridentTable$S1,"H")
-      TridentTable$FullyDeprot = paste0(TridentTable$S1,TridentTable$S2,TridentTable$S3)
-      TridentTable$S1Strong1Weak2 = ifelse(TridentTable$S1<=4,1,2)
-      TridentTable$S2Strong1Weak2 = ifelse(TridentTable$S2<=4,1,2)
-      TridentTable$S3Strong1Weak2 = ifelse(TridentTable$S3<=4,1,2)
+    SkipRows = SkipRows + nBP + 3
+    if (nTG > 0) {
+      TridentTable = read.delim(file = WdatFile, header = TRUE, sep = ",",
+                                skip = SkipRows, nrows = nTG)
+      names(TridentTable) = c("S1", "S2", "S3", "AbundDenom")
+      TridentTable$FullyProt = paste0(TridentTable$S1, TridentTable$S2,
+                                      TridentTable$S3, "H")
+      TridentTable$S1Deprot = paste0(TridentTable$S1, "-", TridentTable$S2,
+                                     TridentTable$S3, "H")
+      TridentTable$S2Deprot = paste0(TridentTable$S2, "-", TridentTable$S1,
+                                     TridentTable$S3, "H")
+      TridentTable$S3Deprot = paste0(TridentTable$S3, "-", TridentTable$S1,
+                                     TridentTable$S2, "H")
+      TridentTable$S12Deprot = paste0(TridentTable$S1, TridentTable$S2, "-",
+                                      TridentTable$S3, "H")
+      TridentTable$S13Deprot = paste0(TridentTable$S1, TridentTable$S3, "-",
+                                      TridentTable$S2, "H")
+      TridentTable$S23Deprot = paste0(TridentTable$S2, TridentTable$S3, "-",
+                                      TridentTable$S1, "H")
+      TridentTable$FullyDeprot = paste0(TridentTable$S1, TridentTable$S2,
+                                        TridentTable$S3)
+      TridentTable$S1Strong1Weak2 = ifelse(TridentTable$S1 <= 4, 1, 2)
+      TridentTable$S2Strong1Weak2 = ifelse(TridentTable$S2 <= 4, 1, 2)
+      TridentTable$S3Strong1Weak2 = ifelse(TridentTable$S3 <= 4, 1, 2)
     } else {
       TridentTable = data.frame()
     }
 
     # Metals Parameters Table
-    skipRows = skipRows + nTG + 3
-    if (nMP > 0){
-      MetalsTable = read.delim(file = wdatFile, header = T, sep = ",",
-                               skip = skipRows, nrows = nMP)
-      names(MetalsTable) = c("Metal","pKMAHA","pKMAFA","dLK2")
-      MetalsTable = MetalsTable[MetalsTable$Metal %in% c(CompName,SpecName),]
-      nMP = nrow(MetalsTable)
+    SkipRows = SkipRows + nTG + 3
+    if (nMP > 0) {
+      MetalsTable = read.delim(file = WdatFile, header = TRUE, sep = ",",
+                               skip = SkipRows, nrows = nMP)
+      names(MetalsTable) = c("Metal", "pKMAHA", "pKMAFA", "dLK2")
+      MetalsTable = MetalsTable[MetalsTable$Metal %in% c(CompName, SpecName), ]
+      nMP = nrow(MetalsTable) # nolint: object_name_linter.
       MetalsTable$pKMBHA = 3 * MetalsTable$pKMAHA - 3
       MetalsTable$pKMBFA = 3.96 * MetalsTable$pKMAFA
     } else {
@@ -199,14 +214,14 @@ expandWHAM = function(NMass, MassName,
   }
 
   # Initialize variables
-  iH = which(CompName == "H")
+  iH = which(CompName == "H") # nolint: object_name_linter.
 
   # Figure out the number of DOC components we're adding, and what fraction
-  InVarWHAM = which(grepl("WHAM",InVarType))
+  InVarWHAM = which(grepl("WHAM", InVarType))
 
   for (iInVar in InVarWHAM){
 
-    iMass = InVarMC[iInVar]
+    iMass = InVarMC[iInVar] # nolint: object_name_linter.
 
     if (InVarType[iInVar] == "WHAM-HA") {
       WHAMFracAdd = c("HA")
@@ -215,35 +230,30 @@ expandWHAM = function(NMass, MassName,
     } else if (InVarType[iInVar] == "WHAM-HAFA") {
       WHAMFracAdd = c("HA", "FA")
       if (!any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercHA")) {
-        stop(
-          "Must have PercHA input variable in mass compartment if specifying a WHAM-HAFA input variable."
-        )
+        stop("Must have PercHA input variable in mass compartment if specifying a WHAM-HAFA input variable.") # nolint: line_length_linter.
       }
     }
-    if ((InVarType[iInVar] %in% c("WHAM-FA","WHAM-HA")) &
-        any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercHA")) {
-      stop(
-        "PercHA input variable specified in mass compartment with WHAM-HA or WHAM-FA input variable."
-      )
+    if ((InVarType[iInVar] %in% c("WHAM-FA", "WHAM-HA")) &&
+          any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercHA")) {
+      stop("PercHA input variable specified in mass compartment with WHAM-HA or WHAM-FA input variable.") # nolint: line_length_linter.
     }
-    if ((InVarType[iInVar] %in% c("WHAM-HA")) &
-        any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercAFA")) {
-      stop(
-        "PercAFA input variable specified in mass compartment with WHAM-HA input variable."
-      )
+    if ((InVarType[iInVar] %in% c("WHAM-HA")) &&
+          any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercAFA")) {
+      stop("PercAFA input variable specified in mass compartment with WHAM-HA input variable.") # nolint: line_length_linter.
     }
-    nWHAMFracAdd = length(WHAMFracAdd)
+    NWHAMFracAdd = length(WHAMFracAdd)
 
     WHAMprefix = array(
       paste0(InVarName[iInVar], "-", WHAMFracAdd, "_"),
-      dim = nWHAMFracAdd,
+      dim = NWHAMFracAdd,
       dimnames = list(WHAMFracAdd)
     )
 
 
 
     # * Each component has the fully protonated species as the component
-    # * Each component will have every possible combination of binding sites deprotonated
+    # * Each component will have every possible combination of binding sites
+    #   deprotonated
     # * Each component, when fully deprotonated, will bind to each metal nMP.
     #     monodentate example:
     #      component: FA1H
@@ -253,55 +263,79 @@ expandWHAM = function(NMass, MassName,
     #      species: FA12H, FA1-2H, FA2-1H, FA12, FA12-Mg, FA12-Ca, ...
     #     tridentate example:
     #      component: FA123H
-    #      species: FA123H, FA1-23H, FA2-13H, FA3-12H, FA23-1H, FA13-2H, FA12-3H, FA123, FA123-Mg, FA123-Ca, ...
-    wNComp = (nMS + nBP + nTG) * nWHAMFracAdd
-    startComp = NComp + 1L
-    NComp = NComp + wNComp
-    wCompName = paste0(rep(WHAMprefix, each = wNComp / nWHAMFracAdd),
+    #      species: FA123H, FA1-23H, FA2-13H, FA3-12H, FA23-1H, FA13-2H,
+    #               FA12-3H, FA123, FA123-Mg, FA123-Ca, ...
+    WNComp = (nMS + nBP + nTG) * NWHAMFracAdd
+    StartComp = NComp + 1L
+    NComp = NComp + WNComp
+    WCompName = paste0(rep(WHAMprefix, each = WNComp / NWHAMFracAdd),
                        rep(c(MonodentTable$FullyProt,
                              BidentTable$FullyProt,
-                             TridentTable$FullyProt), times = nWHAMFracAdd))
-    CompName = c(CompName, wCompName)
-    CompCharge = c(CompCharge, array(0L, dim = wNComp, dimnames = list(wCompName)))
-    CompMC = c(CompMC, array(iMass, dim = wNComp, dimnames = list(wCompName)))
-    CompType = c(CompType, array("MassBal", wNComp, dimnames = list(wCompName)))
-    CompActCorr = c(CompActCorr, array("WHAM", wNComp, dimnames = list(wCompName)))
-    CompSiteDens = c(CompSiteDens, array(NA, wNComp, dimnames = list(wCompName)))
+                             TridentTable$FullyProt), times = NWHAMFracAdd))
+    CompName = c(CompName, WCompName)
+    CompCharge = c(CompCharge,
+                   array(0L, dim = WNComp, dimnames = list(WCompName)))
+    CompMC = c(CompMC, array(iMass, dim = WNComp, dimnames = list(WCompName)))
+    CompType = c(CompType,
+                 array("MassBal", WNComp, dimnames = list(WCompName)))
+    CompActCorr = c(CompActCorr,
+                    array("WHAM", WNComp, dimnames = list(WCompName)))
+    CompSiteDens = c(CompSiteDens,
+                     array(NA, WNComp, dimnames = list(WCompName)))
 
-    startDefComp = NDefComp + 1L
-    NDefComp = NDefComp + wNComp
-    DefCompName = c(DefCompName, wCompName)
-    DefCompFromNum = c(DefCompFromNum, array(NA, dim = wNComp, dimnames = list(wCompName)))
-    # if (nWHAMFracAdd > 1){
-      DefCompFromVar = c(DefCompFromVar, array(rep(WHAMprefix, each = wNComp / nWHAMFracAdd), dim=wNComp, dimnames = list(wCompName)))
-    # } else {
-    #   DefCompFromVar = c(DefCompFromVar, array(InVarName[iInVar], dim=wNComp, dimnames = list(wCompName)))
-    # }
-    DefCompCharge = c(DefCompCharge, array(0L, dim = wNComp, dimnames = list(wCompName)))
-    DefCompMC = c(DefCompMC, array(iMass, dim = wNComp, dimnames = list(wCompName)))
-    DefCompType = c(DefCompType, array("MassBal", wNComp, dimnames = list(wCompName)))
-    DefCompActCorr = c(DefCompActCorr, array("WHAM", wNComp, dimnames = list(wCompName)))
-    DefCompSiteDens = c(DefCompSiteDens, array(NA, wNComp, dimnames = list(wCompName)))
+    StartDefComp = NDefComp + 1L
+    NDefComp = NDefComp + WNComp
+    DefCompName = c(DefCompName, WCompName)
+    DefCompFromNum = c(DefCompFromNum,
+                       array(NA, dim = WNComp, dimnames = list(WCompName)))
+    DefCompFromVar = c(DefCompFromVar,
+                       array(rep(WHAMprefix, each = WNComp / NWHAMFracAdd),
+                             dim = WNComp, dimnames = list(WCompName)))
+    DefCompCharge = c(DefCompCharge,
+                      array(0L, dim = WNComp, dimnames = list(WCompName)))
+    DefCompMC = c(DefCompMC,
+                  array(iMass, dim = WNComp, dimnames = list(WCompName)))
+    DefCompType = c(DefCompType,
+                    array("MassBal", WNComp, dimnames = list(WCompName)))
+    DefCompActCorr = c(DefCompActCorr,
+                       array("WHAM", WNComp, dimnames = list(WCompName)))
+    DefCompSiteDens = c(DefCompSiteDens,
+                        array(NA, WNComp, dimnames = list(WCompName)))
 
-    wNSpec = (nMS * (2L + nMP) + nBP * (4L + nMP) + nTG * (8L + nMP)) * nWHAMFracAdd
-    startSpec = NSpec + 1L
-    NSpec = NSpec + wNSpec
-    SpecName = c(SpecName, array(paste0("newOCSpecies",1:wNSpec),wNSpec))
-    SpecMC = c(SpecMC, array(iMass, dim = wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))#this should always be water
-    # SpecType = c(SpecType, array(1L, wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
-    SpecActCorr = c(SpecActCorr, array("WHAM", wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
-    # SpecCharge = c(SpecCharge, array(NA, wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
-    SpecNC = c(SpecNC, array(NA, wNSpec, dimnames=list(paste0("newOCSpecies",1:wNSpec))))
-    SpecCompList = rbind(SpecCompList, matrix(0L, nrow = wNSpec, ncol = ncol(SpecCompList)))
-    SpecStoich = rbind(cbind(SpecStoich,
-                         matrix(0L,nrow=NSpec-wNSpec, ncol = wNComp,
-                                dimnames = list(SpecName[1:(NSpec-wNSpec)],wCompName))),
-                   matrix(0L, nrow = wNSpec, ncol = NComp,
-                          dimnames = list(paste0("newOCSpecies",1:wNSpec),
-                                          CompName)))
-    SpecLogK = c(SpecLogK, array(NA,wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))
-    SpecDeltaH = c(SpecDeltaH, array(0.0,wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))
-    SpecTemp = c(SpecTemp, array(0.0,wNSpec,dimnames=list(paste0("newOCSpecies",1:wNSpec))))
+    WNSpec = (nMS * (2L + nMP) +
+                nBP * (4L + nMP) +
+                nTG * (8L + nMP)) * NWHAMFracAdd
+    StartSpec = NSpec + 1L
+    NSpec = NSpec + WNSpec
+    SpecName = c(SpecName, array(paste0("newOCSpecies", 1:WNSpec), WNSpec))
+    SpecMC = c(SpecMC,
+               # this should always be water
+               array(iMass, dim = WNSpec,
+                     dimnames = list(paste0("newOCSpecies", 1:WNSpec))))
+    SpecActCorr = c(SpecActCorr,
+                    array("WHAM", dim = WNSpec,
+                          dimnames = list(paste0("newOCSpecies", 1:WNSpec))))
+    SpecNC = c(SpecNC,
+               array(NA, WNSpec,
+                     dimnames = list(paste0("newOCSpecies", 1:WNSpec))))
+    SpecCompList = rbind(SpecCompList,
+                         matrix(0L, nrow = WNSpec, ncol = ncol(SpecCompList)))
+    SpecStoich = rbind(
+      cbind(SpecStoich,
+            matrix(0L, nrow = NSpec - WNSpec, ncol = WNComp,
+                   dimnames = list(SpecName[1:(NSpec - WNSpec)], WCompName))),
+      matrix(0L, nrow = WNSpec, ncol = NComp,
+             dimnames = list(paste0("newOCSpecies", 1:WNSpec), CompName))
+    )
+    SpecLogK = c(SpecLogK,
+                 array(NA, dim = WNSpec,
+                       dimnames = list(paste0("newOCSpecies", 1:WNSpec))))
+    SpecDeltaH = c(SpecDeltaH,
+                   array(0.0, dim = WNSpec,
+                         dimnames = list(paste0("newOCSpecies", 1:WNSpec))))
+    SpecTemp = c(SpecTemp,
+                 array(0.0, dim = WNSpec,
+                       dimnames = list(paste0("newOCSpecies", 1:WNSpec))))
 
     Monodent_pKH = numeric(nMS)
     Monodent_Abundance = numeric(nMS)
@@ -312,99 +346,99 @@ expandWHAM = function(NMass, MassName,
       pKM_cols = paste0("pKM",c("A","B"),OMType)
 
       # Monodentate sites
-      newCompNum = startComp:(startComp + nMS - 1)
-      newDefCompNum = startDefComp:(startDefComp + nMS - 1)
+      NewCompNum = StartComp:(StartComp + nMS - 1)
+      newDefCompNum = StartDefComp:(StartDefComp + nMS - 1)
       Monodent_pKH[1:4] = pKHA[OMType] + dpKHA[OMType] * (2 * MonodentTable$S[1:4] - 5) / 6
       Monodent_pKH[5:8] = pKHB[OMType] + dpKHB[OMType] * (2 * MonodentTable$S[5:8] - 13) / 6
       Monodent_Abundance = (1 - fprB[OMType] - fprT[OMType]) * nCOOH[OMType] / MonodentTable$AbundDenom
-      CompSiteDens[newCompNum] = Monodent_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+      CompSiteDens[NewCompNum] = Monodent_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
       DefCompSiteDens[newDefCompNum] = Monodent_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 
       # - fully protonated (components)
-      newSpecNum = startSpec:(startSpec + nMS - 1)
-      SpecName[newSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyProt)
-      # SpecCharge[newSpecNum] = 0L
-      diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-      SpecLogK[newSpecNum] = 0.0
+      NewSpecNum = StartSpec:(StartSpec + nMS - 1)
+      SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyProt)
+      # SpecCharge[NewSpecNum] = 0L
+      diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+      SpecLogK[NewSpecNum] = 0.0
 
       # - fully deprot
-      newSpecNum = newSpecNum + nMS
-      SpecName[newSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot)
-      # SpecCharge[newSpecNum] = -1L
-      diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-      SpecStoich[newSpecNum,iH] = -1L
-      SpecLogK[newSpecNum] = -1 * Monodent_pKH
+      NewSpecNum = NewSpecNum + nMS
+      SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot)
+      # SpecCharge[NewSpecNum] = -1L
+      diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+      SpecStoich[NewSpecNum,iH] = -1L
+      SpecLogK[NewSpecNum] = -1 * Monodent_pKH
 
       # bound to each metal
       for(iMetal in 1:nMP){
         iMetalSpec = which(MetalsTable$Metal[iMetal] == SpecName)
-        newSpecNum = newSpecNum + nMS
-        # SpecCharge[newSpecNum] = -1L + SpecCharge[iMetalSpec]
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot, "-",
+        NewSpecNum = NewSpecNum + nMS
+        # SpecCharge[NewSpecNum] = -1L + SpecCharge[iMetalSpec]
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot, "-",
                                       MetalsTable$Metal[iMetal])
-        SpecStoich[newSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nMS, ncol = NComp, byrow = T)
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = SpecStoich[newSpecNum,iH] -1L
-        SpecLogK[newSpecNum] = SpecLogK[iMetalSpec] -
+        SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nMS, ncol = NComp, byrow = T)
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum,iH] = SpecStoich[NewSpecNum, iH] - 1L
+        SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
           as.numeric(MetalsTable[iMetal,pKM_cols[MonodentTable$Strong1Weak2]])
 
       }
 
 
       # Bidentate sites
-      if (nBP > 0){
-        startComp = max(newCompNum) + 1
-        startDefComp = max(newDefCompNum) + 1
-        startSpec = max(newSpecNum) + 1
-        newCompNum = startComp:(startComp + nBP - 1)
-        newDefCompNum = startDefComp:(startDefComp + nBP - 1)
+      if (nBP > 0) {
+        StartComp = max(NewCompNum) + 1
+        StartDefComp = max(newDefCompNum) + 1
+        StartSpec = max(NewSpecNum) + 1
+        NewCompNum = StartComp:(StartComp + nBP - 1)
+        newDefCompNum = StartDefComp:(StartDefComp + nBP - 1)
         Bident_Abundance = fprB[OMType] * nCOOH[OMType] / BidentTable$AbundDenom
-        CompSiteDens[newCompNum] = Bident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        CompSiteDens[NewCompNum] = Bident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
         DefCompSiteDens[newDefCompNum] = Bident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 
         # - fully protonated
-        newSpecNum = startSpec:(startSpec + nBP - 1)
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyProt)
-        # SpecCharge[newSpecNum] = 0L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecLogK[newSpecNum] = 0.0
+        NewSpecNum = StartSpec:(StartSpec + nBP - 1)
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyProt)
+        # SpecCharge[NewSpecNum] = 0L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecLogK[NewSpecNum] = 0.0
 
         # - first site deprotonated
-        newSpecNum = newSpecNum + nBP
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$S1Deprot)
-        # SpecCharge[newSpecNum] = -1L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -1L
-        SpecLogK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S1]
+        NewSpecNum = NewSpecNum + nBP
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$S1Deprot)
+        # SpecCharge[NewSpecNum] = -1L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum, iH] = -1L
+        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[BidentTable$S1]
 
         # - second site deprotonated
-        newSpecNum = newSpecNum + nBP
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$S2Deprot)
-        # SpecCharge[newSpecNum] = -1L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -1L
-        SpecLogK[newSpecNum] = -1 * Monodent_pKH[BidentTable$S2]
+        NewSpecNum = NewSpecNum + nBP
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$S2Deprot)
+        # SpecCharge[NewSpecNum] = -1L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum, iH] = -1L
+        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[BidentTable$S2]
 
         # - fully deprot
-        newSpecNum = newSpecNum + nBP
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyDeprot)
-        # SpecCharge[newSpecNum] = -2L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -2L
-        SpecLogK[newSpecNum] = -1 * (Monodent_pKH[BidentTable$S1] +
-                                   Monodent_pKH[BidentTable$S2])
+        NewSpecNum = NewSpecNum + nBP
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyDeprot)
+        # SpecCharge[NewSpecNum] = -2L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum,iH] = -2L
+        SpecLogK[NewSpecNum] = -1 * (Monodent_pKH[BidentTable$S1] +
+                                     Monodent_pKH[BidentTable$S2])
 
         # bound to each metal
         for(iMetal in 1:nMP){
           iMetalSpec = which(MetalsTable$Metal[iMetal] == SpecName)
-          newSpecNum = newSpecNum + nBP
-          # SpecCharge[newSpecNum] = -2L + SpecCharge[iMetalSpec]
-          SpecName[newSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyDeprot, "-",
+          NewSpecNum = NewSpecNum + nBP
+          # SpecCharge[NewSpecNum] = -2L + SpecCharge[iMetalSpec]
+          SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyDeprot, "-",
                                         MetalsTable$Metal[iMetal])
-          SpecStoich[newSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nBP, ncol = NComp, byrow = T)
-          diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-          SpecStoich[newSpecNum,iH] = SpecStoich[newSpecNum,iH] -2L
-          SpecLogK[newSpecNum] = SpecLogK[iMetalSpec] -
+          SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nBP, ncol = NComp, byrow = T)
+          diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+          SpecStoich[NewSpecNum,iH] = SpecStoich[NewSpecNum,iH] -2L
+          SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
             as.numeric(MetalsTable[iMetal,pKM_cols[BidentTable$S1Strong1Weak2]] +
                          MetalsTable[iMetal,pKM_cols[BidentTable$S2Strong1Weak2]])
 
@@ -414,91 +448,91 @@ expandWHAM = function(NMass, MassName,
 
       # Tridentate sites
       if (nTG > 0){
-        startComp = max(newCompNum) + 1
-        startDefComp = max(newDefCompNum) + 1
-        startSpec = max(newSpecNum) + 1
-        newCompNum = startComp:(startComp + nTG - 1)
-        newDefCompNum = startDefComp:(startDefComp + nTG - 1)
+        StartComp = max(NewCompNum) + 1
+        StartDefComp = max(newDefCompNum) + 1
+        StartSpec = max(NewSpecNum) + 1
+        NewCompNum = StartComp:(StartComp + nTG - 1)
+        newDefCompNum = StartDefComp:(StartDefComp + nTG - 1)
         Trident_Abundance = fprT[OMType] * nCOOH[OMType] / TridentTable$AbundDenom
-        CompSiteDens[newCompNum] = Trident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        CompSiteDens[NewCompNum] = Trident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
         DefCompSiteDens[newDefCompNum] = Trident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 
         # - fully protonated
-        newSpecNum = startSpec:(startSpec + nTG - 1)
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyProt)
-        # SpecCharge[newSpecNum] = 0L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecLogK[newSpecNum] = 0.0
+        NewSpecNum = StartSpec:(StartSpec + nTG - 1)
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyProt)
+        # SpecCharge[NewSpecNum] = 0L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecLogK[NewSpecNum] = 0.0
 
         # - first site deprotonated
-        newSpecNum = newSpecNum + nTG
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S1Deprot)
-        # SpecCharge[newSpecNum] = -1L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -1L
-        SpecLogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S1]
+        NewSpecNum = NewSpecNum + nTG
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S1Deprot)
+        # SpecCharge[NewSpecNum] = -1L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum,iH] = -1L
+        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[TridentTable$S1]
 
         # - second site deprotonated
-        newSpecNum = newSpecNum + nTG
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S2Deprot)
-        # SpecCharge[newSpecNum] = -1L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -1L
-        SpecLogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S2]
+        NewSpecNum = NewSpecNum + nTG
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S2Deprot)
+        # SpecCharge[NewSpecNum] = -1L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum,iH] = -1L
+        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[TridentTable$S2]
 
         # - third site deprotonated
-        newSpecNum = newSpecNum + nTG
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S3Deprot)
-        # SpecCharge[newSpecNum] = -1L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -1L
-        SpecLogK[newSpecNum] = -1 * Monodent_pKH[TridentTable$S3]
+        NewSpecNum = NewSpecNum + nTG
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S3Deprot)
+        # SpecCharge[NewSpecNum] = -1L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum,iH] = -1L
+        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[TridentTable$S3]
 
         # - first & second sites deprotonated
-        newSpecNum = newSpecNum + nTG
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S12Deprot)
-        # SpecCharge[newSpecNum] = -2L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -2L
-        SpecLogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S2])
+        NewSpecNum = NewSpecNum + nTG
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S12Deprot)
+        # SpecCharge[NewSpecNum] = -2L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum,iH] = -2L
+        SpecLogK[NewSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S2])
 
         # - first & third sites deprotonated
-        newSpecNum = newSpecNum + nTG
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S13Deprot)
-        # SpecCharge[newSpecNum] = -2L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -2L
-        SpecLogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S3])
+        NewSpecNum = NewSpecNum + nTG
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S13Deprot)
+        # SpecCharge[NewSpecNum] = -2L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum,iH] = -2L
+        SpecLogK[NewSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S3])
 
         # - second & third sites deprotonated
-        newSpecNum = newSpecNum + nTG
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S23Deprot)
-        # SpecCharge[newSpecNum] = -2L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -2L
-        SpecLogK[newSpecNum] = -1 * (Monodent_pKH[TridentTable$S2] + Monodent_pKH[TridentTable$S3])
+        NewSpecNum = NewSpecNum + nTG
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S23Deprot)
+        # SpecCharge[NewSpecNum] = -2L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum,iH] = -2L
+        SpecLogK[NewSpecNum] = -1 * (Monodent_pKH[TridentTable$S2] + Monodent_pKH[TridentTable$S3])
 
         # - fully deprot
-        newSpecNum = newSpecNum + nTG
-        SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyDeprot)
-        # SpecCharge[newSpecNum] = -3L
-        diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-        SpecStoich[newSpecNum,iH] = -3L
-        SpecLogK[newSpecNum] = -1 *(Monodent_pKH[TridentTable$S1] +
+        NewSpecNum = NewSpecNum + nTG
+        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyDeprot)
+        # SpecCharge[NewSpecNum] = -3L
+        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+        SpecStoich[NewSpecNum,iH] = -3L
+        SpecLogK[NewSpecNum] = -1 *(Monodent_pKH[TridentTable$S1] +
                                   Monodent_pKH[TridentTable$S2] +
                                   Monodent_pKH[TridentTable$S3])
 
         # bound to each metal
         for(iMetal in 1:nMP){
           iMetalSpec = which(MetalsTable$Metal[iMetal] == SpecName)
-          newSpecNum = newSpecNum + nTG
-          # SpecCharge[newSpecNum] = -3L + SpecCharge[iMetalSpec]
-          SpecName[newSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyDeprot, "-",
+          NewSpecNum = NewSpecNum + nTG
+          # SpecCharge[NewSpecNum] = -3L + SpecCharge[iMetalSpec]
+          SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyDeprot, "-",
                                         MetalsTable$Metal[iMetal])
-          SpecStoich[newSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nTG, ncol = NComp, byrow = T)
-          diag(SpecStoich[newSpecNum, newCompNum]) = 1L
-          SpecStoich[newSpecNum,iH] = SpecStoich[newSpecNum,iH] -3L
-          SpecLogK[newSpecNum] = SpecLogK[iMetalSpec] -
+          SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nTG, ncol = NComp, byrow = T)
+          diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
+          SpecStoich[NewSpecNum,iH] = SpecStoich[NewSpecNum,iH] -3L
+          SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
             as.numeric(MetalsTable[iMetal,pKM_cols[TridentTable$S1Strong1Weak2]] +
                          MetalsTable[iMetal,pKM_cols[TridentTable$S2Strong1Weak2]] +
                          MetalsTable[iMetal,pKM_cols[TridentTable$S3Strong1Weak2]])
@@ -507,9 +541,9 @@ expandWHAM = function(NMass, MassName,
 
       }
 
-      startComp = max(newCompNum) + 1
-      startDefComp = max(newDefCompNum) + 1
-      startSpec = max(newSpecNum) + 1
+      StartComp = max(NewCompNum) + 1
+      StartDefComp = max(newDefCompNum) + 1
+      StartSpec = max(NewSpecNum) + 1
 
     }
   }

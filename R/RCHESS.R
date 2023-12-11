@@ -6,8 +6,8 @@
 #'
 #' @param DoPartialSteps logical, TRUE = do partial Newton-Raphson steps when a
 #'   full step would send the MaxError higher; FALSE = only do full steps
-#' @param QuietFlag character, one of "Very Quiet" (only print out when run is
-#'   done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)
+#' @param QuietFlag character, one of "Very Quiet" (only print Out when run is
+#'   done), "Quiet" (print Out Obs=iObs), or "Debug" (print Out lots of info)
 #' @param ConvergenceCriteria numeric, the maximum value of MaxError that counts
 #'   as convergence by the Newton-Raphson root-finding algorithm
 #' @param MaxIter integer, the maximum number of iterations the Newton-Raphson
@@ -62,22 +62,17 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                   SpecK, SpecStoich, SpecCtoM, SpecName,
                   CompType, CompName, TotMoles, TotConc,
                   DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
-  # outputs:
+  # Outputs:
   #   - SpecConc: species concentrations after optimization
 
-
-
-  # CompConc = initialGuess(NComp = NComp, CompName = CompName,
-  #                         TotConc = TotConc, # mol / L or mol / kgw
-  #                         CompType = CompType)
   CompConc = InitialGuess(TotConc = TotConc,
                           CompType = CompType,
                           # CompName = CompName,
                           SpecK = SpecK,
                           SpecStoich = SpecStoich,
+                          SpecName = SpecName,
                           NComp = NComp,
-                          NSpec = NSpec)#,
-                          #SpecName = SpecName)
+                          NSpec = NSpec)
 
   # Initialize Species Concentrations
   SpecConc = CalcSpecConc(CompConc = CompConc,
@@ -89,13 +84,22 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
   SpecConc[1:NComp] = CompConc
 
   # Update Total Concentrations for Fixed Activity & Metal
-  for (iComp in which((CompType == "FixedAct") | (DoTox & (CompName == MetalName)))){
-    TotMoles[iComp] = sum(SpecStoich[,iComp] * (SpecConc * SpecCtoM))
-    TotConc[iComp] = TotMoles[iComp] * SpecCtoM[iComp]
-  }
+  UpdateResult = UpdateTotalsList(NComp = NComp,
+                                  NSpec = NSpec,
+                                  CompType = CompType,
+                                  CompName = CompName,
+                                  MetalName = MetalName,
+                                  TotMoles = TotMoles,
+                                  SpecStoich = SpecStoich,
+                                  SpecMoles = SpecConc * SpecCtoM,
+                                  TotConc = TotConc,
+                                  SpecCtoM = SpecCtoM,
+                                  DoTox = DoTox)
+  TotMoles = UpdateResult[["TotMoles"]]
+  TotConc = UpdateResult[["TotConc"]]
 
   # Calculate Residuals for the first time
-  RR = CalcResidual(
+  ResidResults = CalcResidual(
     NComp = NComp,
     NSpec = NSpec,
     SpecConc = SpecConc,
@@ -110,21 +114,23 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
     CATarget = CATarget,
     DoTox = DoTox
   )
-  Resid = RR$Resid
-  MaxError = RR$MaxError
-  WhichMax = RR$WhichMax
-  CalcTotConc = RR$CalcTotConc
-  CalcTotMoles = RR$CalcTotMoles
+  Resid = ResidResults$Resid
+  MaxError = ResidResults$MaxError
+  WhichMax = ResidResults$WhichMax
+  CalcTotConc = ResidResults$CalcTotConc
+  CalcTotMoles = ResidResults$CalcTotMoles
 
   # Begin iterating
   Iter = 0
-  while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter)){
+  while ((MaxError > ConvergenceCriteria) && (Iter <= MaxIter)) {
 
     Iter = Iter + 1
     (MaxError_Last = MaxError)
 
-    (JacobianMatrix = Jacobian(NComp = NComp, NSpec = NSpec, SpecStoich = SpecStoich,
-                               SpecConc = SpecConc, SpecCtoM = SpecCtoM, CompName = CompName,
+    (JacobianMatrix = Jacobian(NComp = NComp, NSpec = NSpec,
+                               SpecStoich = SpecStoich,
+                               SpecConc = SpecConc, SpecCtoM = SpecCtoM,
+                               CompName = CompName,
                                MetalComp = MetalComp, NBLMetal = NBLMetal,
                                BLMetalSpecs = BLMetalSpecs, DoTox = DoTox))
     # (RJacobianMatrix = RJacobian(NComp = NComp, NSpec = NSpec, SpecStoich = SpecStoich,
@@ -149,28 +155,28 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                              NSpec = NSpec,
                              SpecName = SpecName)
     for (iComp in which(CompType == "FixedAct")){
-      TotMoles[iComp] = sum(SpecStoich[,iComp] * (SpecConc * SpecCtoM))
-      TotConc[iComp] = sum(SpecStoich[,iComp] * SpecConc)
+      TotMoles[iComp] = sum(SpecStoich[, iComp] * (SpecConc * SpecCtoM))
+      TotConc[iComp] = sum(SpecStoich[, iComp] * SpecConc)
     }
 
-    RR = CalcResidual(NComp = NComp, NSpec = NSpec,
-                       SpecConc = SpecConc,
-                       SpecStoich = SpecStoich,
-                       TotMoles = TotMoles,
-                       SpecCtoM = SpecCtoM,
-                       CompName = CompName,
-                       CompType = CompType,
-                       MetalComp = MetalComp,
-                      NBLMetal = NBLMetal,
-                       BLMetalSpecs = BLMetalSpecs,
-                       CATarget = CATarget,
-                       DoTox = DoTox)
+    ResidResults = CalcResidual(NComp = NComp, NSpec = NSpec,
+                                SpecConc = SpecConc,
+                                SpecStoich = SpecStoich,
+                                TotMoles = TotMoles,
+                                SpecCtoM = SpecCtoM,
+                                CompName = CompName,
+                                CompType = CompType,
+                                MetalComp = MetalComp,
+                                NBLMetal = NBLMetal,
+                                BLMetalSpecs = BLMetalSpecs,
+                                CATarget = CATarget,
+                                DoTox = DoTox)
 
-    Resid = RR$Resid
-    WhichMax = RR$WhichMax
-    MaxError = RR$MaxError
-    CalcTotConc = RR$CalcTotConc
-    CalcTotMoles = RR$CalcTotMoles
+    Resid = ResidResults$Resid
+    WhichMax = ResidResults$WhichMax
+    MaxError = ResidResults$MaxError
+    CalcTotConc = ResidResults$CalcTotConc
+    CalcTotMoles = ResidResults$CalcTotMoles
 
     if (DoPartialSteps) {
       # Full Step
@@ -197,7 +203,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
         TotConc_Full[iComp] = sum(SpecStoich[,iComp] * SpecConc_Full)
       }
 
-      RR_Full = CalcResidual(NComp = NComp, NSpec = NSpec,
+      ResidResults_Full = CalcResidual(NComp = NComp, NSpec = NSpec,
                               SpecConc = SpecConc_Full,
                               SpecStoich = SpecStoich,
                               TotMoles = TotMoles_Full,
@@ -211,7 +217,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                               CATarget = CATarget,
                               DoTox = DoTox)
       best_MaxError = 1L
-      if (RR_Full$MaxError > MaxError_Last){
+      if (ResidResults_Full$MaxError > MaxError_Last){
         # Half Step
         CompConc_Half = CompUpdate(NComp = NComp,
                                    CompConcStep = CompConcStep * 0.5,
@@ -237,7 +243,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
           TotConc_Half[iComp] = sum(SpecStoich[,iComp] * SpecConc_Half)
         }
 
-        RR_Half = CalcResidual(NComp = NComp, NSpec = NSpec,
+        ResidResults_Half = CalcResidual(NComp = NComp, NSpec = NSpec,
                                 SpecConc = SpecConc_Half,
                                 SpecStoich = SpecStoich,
                                 TotMoles = TotMoles_Half,
@@ -251,7 +257,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                                 DoTox = DoTox)
 
         # Best Step
-        step_Best = 1 - RR_Full$MaxError * (1-0.5) / (RR_Full$MaxError - RR_Half$MaxError)
+        step_Best = 1 - ResidResults_Full$MaxError * (1-0.5) / (ResidResults_Full$MaxError - ResidResults_Half$MaxError)
         CompConc_Best = CompUpdate(NComp = NComp,
                                    CompConcStep = CompConcStep * step_Best,
                                    CompName = CompName,
@@ -276,7 +282,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
           TotConc_Best[iComp] = sum(SpecStoich[,iComp] * SpecConc_Best)
         }
 
-        RR_Best = CalcResidual(NComp = NComp, NSpec = NSpec,
+        ResidResults_Best = CalcResidual(NComp = NComp, NSpec = NSpec,
                                 SpecConc = SpecConc_Best,
                                 SpecStoich = SpecStoich,
                                 TotMoles = TotMoles_Best,
@@ -289,7 +295,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                                 CATarget = CATarget,
                                 DoTox = DoTox)
 
-        best_MaxError = which.min(c(RR_Full$MaxError, RR_Half$MaxError, RR_Best$MaxError))
+        best_MaxError = which.min(c(ResidResults_Full$MaxError, ResidResults_Half$MaxError, ResidResults_Best$MaxError))
 
       } else{
         best_MaxError = 1L
@@ -298,38 +304,36 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
       if (best_MaxError == 1L){
         CompConc = CompConc_Full
         SpecConc = SpecConc_Full
-        Resid = RR_Full$Resid
-        WhichMax = RR_Full$WhichMax
-        MaxError = RR_Full$MaxError
-        CalcTotConc = RR_Full$CalcTotConc
-        CalcTotMoles = RR_Full$CalcTotMoles
+        Resid = ResidResults_Full$Resid
+        WhichMax = ResidResults_Full$WhichMax
+        MaxError = ResidResults_Full$MaxError
+        CalcTotConc = ResidResults_Full$CalcTotConc
+        CalcTotMoles = ResidResults_Full$CalcTotMoles
         # print("Full Step")
       } else if (best_MaxError == 2L){
         CompConc = CompConc_Half
         SpecConc = SpecConc_Half
-        Resid = RR_Half$Resid
-        WhichMax = RR_Half$WhichMax
-        MaxError = RR_Half$MaxError
-        CalcTotConc = RR_Half$CalcTotConc
-        CalcTotMoles = RR_Half$CalcTotMoles
+        Resid = ResidResults_Half$Resid
+        WhichMax = ResidResults_Half$WhichMax
+        MaxError = ResidResults_Half$MaxError
+        CalcTotConc = ResidResults_Half$CalcTotConc
+        CalcTotMoles = ResidResults_Half$CalcTotMoles
         # print("Half Step")
       } else if (best_MaxError == 3L){
         CompConc = CompConc_Best
         SpecConc = SpecConc_Best
-        Resid = RR_Best$Resid
-        WhichMax = RR_Best$WhichMax
-        MaxError = RR_Best$MaxError
-        CalcTotConc = RR_Best$CalcTotConc
-        CalcTotMoles = RR_Best$CalcTotMoles
+        Resid = ResidResults_Best$Resid
+        WhichMax = ResidResults_Best$WhichMax
+        MaxError = ResidResults_Best$MaxError
+        CalcTotConc = ResidResults_Best$CalcTotConc
+        CalcTotMoles = ResidResults_Best$CalcTotMoles
         print("Best Step")
       }
     }
 
-    LogCompConc = log10(CompConc)
-
-    if(QuietFlag %in% c("Very Quiet","Quiet") == F){
+    if(QuietFlag %in% c("Very Quiet","Quiet") == FALSE){
       print(paste0("Iter=",Iter, ", WhichMax=",CompName[WhichMax],
-                   ", MaxError=",format(x = MaxError, scientific = T)))
+                   ", MaxError=",format(x = MaxError, scientific = TRUE)))
     }
 
     # print(paste0("Iter=",Iter,
@@ -343,11 +347,11 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
 
   }
 
-  out = list(SpecConc = SpecConc,
+  Out = list(SpecConc = SpecConc,
              Iter = Iter,
              MaxError = MaxError,
              CalcTotConc = CalcTotConc)
 
-  return(out)
+  return(Out)
 }
 
