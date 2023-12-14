@@ -82,117 +82,101 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::IntegerVector BLMetalSpecs,
                  double CATarget) {
 
-   /*outputs*/
-   Rcpp::NumericVector SpecConc(NSpec); // species concentrations after optimization
-   unsigned int Iter = 0;
-   double MaxError;
-   Rcpp::NumericVector CalcTotConc; //the calculated total concentrations of each component in the simulation (units of e.g., mol/L and mol/kg)}
+  /*outputs*/
+  Rcpp::NumericVector SpecConc(NSpec); // species concentrations after optimization
+  unsigned int Iter = 0;
+  double MaxError;
+  Rcpp::NumericVector CalcTotConc(NComp); //the calculated total concentrations of each component in the simulation (units of e.g., mol/L and mol/kg)}
 
-   /*variables*/
-   Rcpp::NumericMatrix JacobianMatrix(NComp);
-   Rcpp::NumericVector CompConcStep(NComp);
-   Rcpp::NumericVector CompConc(NComp);
-   Rcpp::NumericVector SpecKTempAdj(NSpec);
-   Rcpp::List ResidResults;
-   Rcpp::NumericVector Resid (NComp);
-   unsigned int WhichMax;
-   Rcpp::NumericVector CalcTotMoles(NComp);
+  /*variables*/
+  Rcpp::NumericMatrix JacobianMatrix(NComp);
+  Rcpp::NumericVector CompConcStep(NComp);
+  Rcpp::NumericVector CompConc(NComp);
+  Rcpp::NumericVector SpecKTempAdj(NSpec);
+  Rcpp::List ResidResults;
+  unsigned int WhichMax;
+  Rcpp::NumericVector Resid (NComp);
+  Rcpp::NumericVector CompError(NComp); // the absolute ratios of residuals to totals
+  Rcpp::NumericVector CalcTotMoles(NComp); // the calculated total concentrations (mol)
+  Resid.names() = CompName;
+  CompError.names() = CompName;
+  CalcTotConc.names() = CompName;
+  CalcTotMoles.names() = CompName;
 
    SpecKTempAdj = TempCorrection(SysTemp, NSpec, SpecK, SpecTemp, SpecDeltaH);
 
    // Get initial values for component concentrations
-   CompConc = InitialGuess(TotConc = TotConc,
-                          CompType = CompType,
-                          SpecK = SpecK,
-                          SpecStoich = SpecStoich,
-                          SpecName = SpecName,
-                          NComp = NComp,
-                          NSpec = NSpec);
+   CompConc = InitialGuess(TotConc, CompType, SpecKTempAdj, SpecStoich,
+                           SpecName, NComp, NSpec);
 
    // Initialize Species Concentrations
-   SpecConc = CalcSpecConc(CompConc = CompConc,
-                           SpecK = SpecK,
-                           SpecStoich = SpecStoich,
-                           SpecName = SpecName,
-                           NComp = NComp,
-                           NSpec = NSpec);
+   SpecConc = CalcSpecConc(CompConc, SpecKTempAdj, SpecStoich, SpecName,
+                           NComp, NSpec);
 
    // Update Total Concentrations for Fixed Activity & Metal
    UpdateTotals(NComp, NSpec, CompType, CompName, MetalName, TotMoles, 
                 SpecStoich, (SpecConc * SpecCtoM), TotConc, SpecCtoM, DoTox);
    
-   // Calculate Residuals for the first time
-   ResidResults = CalcResidual(
-     NComp = NComp,
-     NSpec = NSpec,
-     SpecConc = SpecConc,
-     SpecStoich = SpecStoich,
-     TotMoles = TotMoles,
-     SpecCtoM = SpecCtoM,
-     CompName = CompName,
-     CompType = CompType,
-     MetalComp = MetalComp,
-     NBLMetal = NBLMetal,
-     BLMetalSpecs = BLMetalSpecs,
-     CATarget = CATarget,
-     DoTox = DoTox
-   );
-    Resid = ResidResults["Resid"];
-    MaxError = ResidResults["MaxError"];
-    WhichMax = ResidResults["WhichMax"];
-    CalcTotConc = ResidResults["CalcTotConc"];
-    CalcTotMoles = ResidResults["CalcTotMoles"];
+  // Calculate Residuals for the first time...
 
-   // Begin iterating
-   Iter = 0;
-   while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter)){
+  // Calculate the total moles & conc from species concentrations
+  CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoM, SpecStoich, 
+                      CalcTotMoles, CalcTotConc);
 
+  // Calculate the residuals and error fraction for each component
+  CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, Resid, CompError);
+
+  // Adjust Resid and CompError for toxicity mode
+  if (DoTox) {
+    AdjustForToxMode(NBLMetal, BLMetalSpecs, MetalComp, CATarget, SpecConc, 
+                     Resid, CompError);
+  }
+
+  // Determine which component has the highest error fraction
+  MaxError = MaxCompError(NComp, CompError, WhichMax);
+
+  // Begin iterating
+  Iter = 0;
+  while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter)) {
+
+    // update the iteration counter
     Iter++;
 
-    JacobianMatrix = Jacobian(NComp = NComp, NSpec = NSpec, SpecStoich = SpecStoich,
-                              SpecConc = SpecConc, SpecCtoM = SpecCtoM, CompName = CompName,
-                              MetalComp = MetalComp, NBLMetal = NBLMetal,
-                              BLMetalSpecs = BLMetalSpecs, DoTox = DoTox);
+    // Calculate the Jacobian Matrix
+    JacobianMatrix = Jacobian(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, 
+                              CompName, MetalComp, NBLMetal, BLMetalSpecs, DoTox);
 
+    // Calculate the Newton-Raphson step
     CompConcStep = CalcStep(JacobianMatrix = JacobianMatrix, Resid = Resid,
                             NComp = NComp, CompType = CompType, CompName=CompName);
 
-    CompConc = CompUpdate(
-      NComp = NComp,
-      CompConcStep = CompConcStep,
-      CompConc = SpecConc.import(SpecConc.begin(), SpecConc.begin() + NComp),
-      CompName = CompName);
+    //Update the component free concentrations
+    CompConc = SpecConc.import(SpecConc.begin(), SpecConc.begin() + NComp);
+    CompUpdate(NComp, CompConcStep, CompConc);
 
-    SpecConc = CalcSpecConc(CompConc = CompConc,
-                            SpecK = SpecK,
-                            SpecStoich = SpecStoich,
-                            SpecName = SpecName,
-                            NComp = NComp,
-                            NSpec = NSpec);
+    // Calculate the species concentrations
+    SpecConc = CalcSpecConc(CompConc, SpecKTempAdj, SpecStoich, SpecName, NComp, 
+                            NSpec);
+
     // Update Total Concentrations for Fixed Activity & Metal
     UpdateTotals(NComp, NSpec, CompType, CompName, MetalName, TotMoles,
-                 SpecStoich, (SpecConc * SpecCtoM), TotConc, SpecCtoM, DoTox);
+                SpecStoich, (SpecConc * SpecCtoM), TotConc, SpecCtoM, DoTox);
+  
+    // Calculate the total moles & conc from species concentrations
+    CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoM, SpecStoich, 
+                        CalcTotMoles, CalcTotConc);
 
-    ResidResults = CalcResidual(
-        NComp = NComp,
-        NSpec = NSpec,
-        SpecConc = SpecConc,
-        SpecStoich = SpecStoich,
-        TotMoles = TotMoles,
-        SpecCtoM = SpecCtoM,
-        CompName = CompName,
-        CompType = CompType,
-        MetalComp = MetalComp,
-        NBLMetal = NBLMetal,
-        BLMetalSpecs = BLMetalSpecs,
-        CATarget = CATarget,
-        DoTox = DoTox
-    );
-    Resid = ResidResults["Resid"];
-    MaxError = ResidResults["MaxError"];
-    WhichMax = ResidResults["WhichMax"];
-    CalcTotConc = ResidResults["CalcTotConc"];
-    CalcTotMoles = ResidResults["CalcTotMoles"];
+    // Calculate the residuals and error fraction for each component
+    CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, Resid, CompError);
+
+    // Adjust Resid and CompError for toxicity mode
+    if (DoTox) {
+      AdjustForToxMode(NBLMetal, BLMetalSpecs, MetalComp, CATarget, SpecConc, 
+                      Resid, CompError);
+    }
+
+    // Determine which component has the highest error fraction
+    MaxError = MaxCompError(NComp, CompError, WhichMax);
 
     if(QuietFlag == "Debug"){
       Rcpp::Rcout << "Iter=" << Iter << 
@@ -202,14 +186,15 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                   ", MaxError=" << MaxError << std::endl;
     }
 
-   }//while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
+  }//while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
 
-    return Rcpp::List::create(
-        Rcpp::Named("SpecConc") = SpecConc,
-        Rcpp::Named("Iter") = Iter,
-        Rcpp::Named("MaxError") = MaxError,
-        Rcpp::Named("CalcTotConc") = CalcTotConc
-    );
+  return Rcpp::List::create(
+      Rcpp::Named("SpecConc") = SpecConc,
+      Rcpp::Named("Iter") = Iter,
+      Rcpp::Named("MaxError") = MaxError,
+      Rcpp::Named("CalcTotConc") = CalcTotConc
+  );
+
 }
 
 

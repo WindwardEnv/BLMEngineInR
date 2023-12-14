@@ -1,3 +1,4 @@
+rm(list = ls())
 # devtools::clean_dll()
 devtools::load_all()
 
@@ -28,6 +29,8 @@ MaxIter = 30L
   SpecStoich = ThisProblem$SpecStoich
   SpecLogK = ThisProblem$SpecLogK
   SpecK = array(10^SpecLogK, dim = NSpec, dimnames = list(SpecName))
+  SpecTemp = ThisProblem$SpecTemp
+  SpecDeltaH = ThisProblem$SpecDeltaH
   SpecCtoM = ThisProblem$SpecCtoM
   CompType = ThisProblem$CompType
   CompSiteDens = ThisProblem$CompSiteDens
@@ -74,7 +77,7 @@ iObs = 1; {
 
   # START CHESS ------------------------
 
-  ChessResults = CHESS(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
+  ChessResults = CHESS(QuietFlag, ConvergenceCriteria, MaxIter,
                        NComp, NSpec, NBLMetal,
                        SpecK, SpecTemp, SpecDeltaH, SpecStoich, 
                        SpecCtoM, SpecName,
@@ -93,3 +96,5 @@ iObs = 1; {
 
 end.time = Sys.time()
 end.time - start.time
+
+

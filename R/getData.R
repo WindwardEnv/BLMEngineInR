@@ -3,7 +3,7 @@
 #' `ReadInputsFromFile` will read a BLM input file, assuming it matches the
 #' problem as defined by the input arguments.
 #'
-#' @param inputFile character; the path and file name to a BLM input file
+#' @param InputFile character; the path and file name to a BLM input file
 #' @param NInLab integer; number of input label columns
 #' @param InLabName character vector of length `NInLab`; names of input columns
 #' @param NInVar integer; Number of input variables

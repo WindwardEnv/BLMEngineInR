@@ -5,7 +5,6 @@
 \title{CHemical Equilibria in Soils and Solutions}
 \usage{
 CHESS(
-  DoPartialSteps,
   QuietFlag,
   ConvergenceCriteria,
   MaxIter,
@@ -13,6 +12,8 @@ CHESS(
   NSpec,
   NBLMetal,
   SpecK,
+  SpecTemp,
+  SpecDeltaH,
   SpecStoich,
   SpecCtoM,
   SpecName,
@@ -20,6 +21,7 @@ CHESS(
   CompName,
   TotMoles,
   TotConc,
+  SysTemp,
   DoTox,
   MetalName,
   MetalComp,
@@ -28,9 +30,6 @@ CHESS(
 )
 }
 \arguments{
-\item{DoPartialSteps}{logical, TRUE = do partial Newton-Raphson steps when a
-full step would send the MaxError higher; FALSE = only do full steps}
-
 \item{QuietFlag}{character, one of "Very Quiet" (only print out when run is
 done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)}
 

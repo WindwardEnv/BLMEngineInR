@@ -4,20 +4,51 @@
 #include <string>
 #include <Rcpp.h>
 
-Rcpp::List CalcResidual (unsigned int NComp,
+Rcpp::List CalcResidualList (unsigned int NComp,
+                             unsigned int NSpec,
+                             Rcpp::NumericVector SpecConc,
+                             Rcpp::IntegerMatrix SpecStoich,
+                             Rcpp::NumericVector TotMoles,
+                             Rcpp::NumericVector SpecCtoM,
+                             Rcpp::CharacterVector CompName,
+                             Rcpp::CharacterVector CompType,
+                             unsigned int MetalComp,
+                             unsigned int NBLMetal,
+                             Rcpp::IntegerVector BLMetalSpecs,
+                             double CATarget,
+                             bool DoTox);
+
+void CalcIterationTotals(unsigned int NComp,
                          unsigned int NSpec,
                          Rcpp::NumericVector SpecConc,
-                         Rcpp::IntegerMatrix SpecStoich,
-                         Rcpp::NumericVector TotMoles,
                          Rcpp::NumericVector SpecCtoM,
-                         Rcpp::CharacterVector CompName,
-                         Rcpp::CharacterVector CompType,
-                         unsigned int MetalComp,
-                         unsigned int NBLMetal,
-                         Rcpp::IntegerVector BLMetalSpecs,
-                         double CATarget,
-                         bool DoTox);
+                         Rcpp::IntegerMatrix SpecStoich,
+                         Rcpp::NumericVector &CalcTotMoles,
+                         Rcpp::NumericVector &CalcTotConc);
 
+Rcpp::NumericVector CalcResidualsOnly(unsigned int NComp,
+                                      Rcpp::NumericVector CalcTotMoles,
+                                      Rcpp::NumericVector TotMoles,
+                                      Rcpp::CharacterVector CompType);
+
+void CalcResidAndError(unsigned int NComp,
+                       Rcpp::NumericVector CalcTotMoles,
+                       Rcpp::NumericVector TotMoles,
+                       Rcpp::CharacterVector CompType,
+                       Rcpp::NumericVector &Resid,
+                       Rcpp::NumericVector &CompError);
+
+void AdjustForToxMode(unsigned int NBLMetal, 
+                      Rcpp::IntegerVector BLMetalSpecs, 
+                      unsigned int MetalComp,
+                      double CATarget,
+                      Rcpp::NumericVector SpecConc,
+                      Rcpp::NumericVector &Resid,
+                      Rcpp::NumericVector &CompError);
+
+double MaxCompError(unsigned int NComp, Rcpp::NumericVector CompError, 
+                    unsigned int &WhichMax);
+                    
 Rcpp::NumericVector CalcSpecConc(Rcpp::NumericVector CompConc,
                                  Rcpp::NumericVector SpecK,
                                  Rcpp::IntegerMatrix SpecStoich,
@@ -38,10 +69,9 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
                               Rcpp::CharacterVector CompType,
                               Rcpp::CharacterVector CompName);
 
-Rcpp::NumericVector CompUpdate(unsigned int NComp,
-                               Rcpp::NumericVector CompConcStep,
-                               Rcpp::NumericVector CompConc,
-                               Rcpp::CharacterVector CompName);
+void CompUpdate(unsigned int NComp, 
+                Rcpp::NumericVector CompConcStep,
+                Rcpp::NumericVector &CompConc);
 
 Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
                                     Rcpp::CharacterVector CompType,
