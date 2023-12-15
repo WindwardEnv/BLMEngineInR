@@ -9,14 +9,14 @@
 #'
 #' @param QuietFlag character, one of "Very Quiet" (only print out when run is
 #'   done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)
-#' @param ConvergenceCriteria numeric, the maximum value of MaxError that counts
-#'   as convergence by the Newton-Raphson root-finding algorithm
+#' @param ConvergenceCriteria numeric, the maximum value of MaxError that 
+#'   counts as convergence by the Newton-Raphson root-finding algorithm
 #' @param MaxIter integer, the maximum number of iterations the Newton-Raphson
 #'   root-finding algorithm should do before giving up
 #' @param NComp integer, number of components
 #' @param NSpec integer, number of species reactions
-#' @param NBLMetal integer, the number of biotic ligand-bound metal species that
-#'   are associated with toxic effects.
+#' @param NBLMetal integer, the number of biotic ligand-bound metal species 
+#'   that are associated with toxic effects.
 #' @param SpecK numeric vector (NSpec), the equilibrium coefficient of the
 #'   formation reactions
 #' @param SpecStoich signed integer matrix (NSpec x NComp), the reaction
@@ -45,7 +45,7 @@
 #'   kg (only used when DoTox == TRUE)
 #'
 #' @return list with the following elements:
-#'   \desribe{
+#'   \describe{
 #'     \item{SpecConc}{numeric vector (NSpec), the concentrations of each
 #'       species for which we have formation reactions}
 #'     \item{Iter}{integer, the number of Newton-Raphson iterations that we
@@ -58,8 +58,8 @@
 #'   }
 #' @export
 #'
-CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecTemp, SpecDeltaH, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, SysTemp, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
-    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecTemp, SpecDeltaH, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, SysTemp, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
+CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecTemp, SpecDeltaH, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotConc, SysTemp, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
+    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecTemp, SpecDeltaH, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotConc, SysTemp, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
 }
 
 #' @title Calculate the Moles and Concentrations For This Iteration
@@ -384,7 +384,7 @@ Jacobian <- function(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, CompName, Met
     .Call(`_BLMEngineInR_Jacobian`, NComp, NSpec, SpecStoich, SpecConc, SpecCtoM, CompName, MetalComp, NBLMetal, BLMetalSpecs, DoTox)
 }
 
-UpdateTotalsList <- function(NComp, NSpec, CompType, CompName, MetalName, TotMoles, SpecStoich, SpecMoles, TotConc, SpecCtoM, DoTox) {
-    .Call(`_BLMEngineInR_UpdateTotalsList`, NComp, NSpec, CompType, CompName, MetalName, TotMoles, SpecStoich, SpecMoles, TotConc, SpecCtoM, DoTox)
+UpdateTotalsList <- function(NComp, NSpec, DoTox, CompType, CompName, MetalName, SpecStoich, SpecMoles, CompCtoM, TotMoles, TotConc) {
+    .Call(`_BLMEngineInR_UpdateTotalsList`, NComp, NSpec, DoTox, CompType, CompName, MetalName, SpecStoich, SpecMoles, CompCtoM, TotMoles, TotConc)
 }
 

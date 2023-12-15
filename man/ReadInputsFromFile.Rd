@@ -15,6 +15,8 @@ ReadInputsFromFile(
 )
 }
 \arguments{
+\item{InputFile}{character; the path and file name to a BLM input file}
+
 \item{NInLab}{integer; number of input label columns}
 
 \item{InLabName}{character vector of length `NInLab`; names of input columns}
@@ -28,8 +30,6 @@ variables}
 
 \item{InCompName}{character vector of length `NInComp`; names of input
 components}
-
-\item{inputFile}{character; the path and file name to a BLM input file}
 }
 \value{
 Returns a \code{list} object with the following components:

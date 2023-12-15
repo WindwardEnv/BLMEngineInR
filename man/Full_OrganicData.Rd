@@ -6,11 +6,11 @@
 \alias{Full_OrganicDataFreeConc}
 \title{Simple Test Data with Full Organic Components}
 \format{
-\code{Full_OrganicDataTotalConc} is an object of class \code{numeric} of
-  length 11 containing total concentrations.
+\code{Full_OrganicDataTotalConc} is an object of class
+  \code{numeric} of length 11 containing total concentrations.
 
-\code{Full_OrganicDataFreeConc} is an object of class \code{numeric} of
-  length 38 containing free concentrations.
+\code{Full_OrganicDataFreeConc} is an object of class \code{numeric}
+  of length 38 containing free concentrations.
 }
 \source{
 Windward BLM (Ver 3.57.2.49, build 2022-03-30)

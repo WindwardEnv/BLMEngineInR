@@ -37,6 +37,7 @@ repository of their definitions is helpful.
   \item{CompName}{character vector (NComp), the name of each component in the simulation}
   \item{CompCharge}{signed integer vector (NComp), the charge of each component in the simulation}
   \item{CompMC}{integer vector (NComp), the mass compartment of each component in the simulation}
+  \item{CompCtoM}{numeric vector (NSpec), the concentration to mass conversion factor of the components}
   \item{CompType}{character vector (NComp), the type of each component in the simulation}
   \item{CompActCorr}{character vector (NComp), the activity correction method of each component in the simulation}
   \item{CompSiteDens}{numeric vector (NComp), the site density of each component in the simulation}

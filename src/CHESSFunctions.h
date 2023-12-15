@@ -94,27 +94,27 @@ Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
 
 void UpdateTotals(unsigned int NComp, 
                   unsigned int NSpec, 
+                  bool DoTox, 
                   Rcpp::CharacterVector CompType, 
                   Rcpp::CharacterVector CompName, 
                   Rcpp::String MetalName, 
-                  Rcpp::NumericVector &TotMoles, 
                   Rcpp::IntegerMatrix SpecStoich, 
                   Rcpp::NumericVector SpecMoles, 
-                  Rcpp::NumericVector &TotConc, 
-                  Rcpp::NumericVector SpecCtoM, 
-                  bool DoTox);
+                  Rcpp::NumericVector CompCtoM, 
+                  Rcpp::NumericVector &TotMoles, 
+                  Rcpp::NumericVector &TotConc);
 
 Rcpp::List UpdateTotalsList(unsigned int NComp, 
                             unsigned int NSpec, 
+                            bool DoTox, 
                             Rcpp::CharacterVector CompType, 
                             Rcpp::CharacterVector CompName, 
                             Rcpp::String MetalName, 
-                            Rcpp::NumericVector TotMoles, 
                             Rcpp::IntegerMatrix SpecStoich, 
                             Rcpp::NumericVector SpecMoles, 
-                            Rcpp::NumericVector TotConc, 
-                            Rcpp::NumericVector SpecCtoM, 
-                            bool DoTox);
+                            Rcpp::NumericVector CompCtoM, 
+                            Rcpp::NumericVector TotMoles, 
+                            Rcpp::NumericVector TotConc);
 
 Rcpp::NumericVector TempCorrection(double SysTemp,
                                    unsigned int NSpec,
