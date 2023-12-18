@@ -9,8 +9,8 @@
 \alias{Full_InorgDataCharge}
 \title{Simple Test DAta with Full Inorganic Components}
 \format{
-\code{Full_InorgDataTotalConc} is an object of class \code{numeric} of
-  length 11 containing total concentrations.
+\code{Full_InorgDataTotalConc} is an object of class \code{numeric}
+  of length 11 containing total concentrations.
 
 \code{Full_InorgDataFreeConc} is an object of class \code{numeric} of
   length 32 containing free concentrations.
@@ -18,9 +18,9 @@
 \code{Full_InorgDataK} is an object of class \code{numeric} of
   length 31 containing equilibrium coefficients.
 
-\code{Full_InorgDataStoich} is An object of class \code{matrix} (inherits
-  from \code{array}) with 32 rows and 11 columns containing stoichiometry
-  information for each reaction.
+\code{Full_InorgDataStoich} is An object of class \code{matrix}
+  (inherits from \code{array}) with 32 rows and 11 columns containing
+  stoichiometry information for each reaction.
   \describe{
     \item{\code{rows}}{Species reactions.}
     \item{\code{cols}}{Components.}

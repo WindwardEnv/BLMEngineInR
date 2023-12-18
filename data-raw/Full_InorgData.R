@@ -14,7 +14,7 @@ Full_InorgDataTotalConc = c(
   T.CO3 =  1.099870E-03,
   T.BL  =  1.780000E-05
 )
-usethis::use_data(Full_InorgDataTotalConc, overwrite = T)
+usethis::use_data(Full_InorgDataTotalConc, overwrite = TRUE)
 
 # Free ion species concentrations
 Full_InorgDataFreeConc = c(
@@ -51,7 +51,7 @@ Full_InorgDataFreeConc = c(
   CuCl     =  2.048608E-13,
   CuHCO3   =  2.894471E-08
 )
-usethis::use_data(Full_InorgDataFreeConc, overwrite = T)
+usethis::use_data(Full_InorgDataFreeConc, overwrite = TRUE)
 
 # Reaction stoichiometry
 Full_InorgDataStoich = matrix(
@@ -89,7 +89,7 @@ Full_InorgDataStoich = matrix(
     0,   1,   0,   0,   0,   0,   0,   0,   0,   2,   0,  #Cu(CO3)2 = Cu + 2*CO3
     0,   1,   0,   0,   0,   0,   0,   0,   1,   0,   0,  #CuCl     = Cu + Cl
     1,   1,   0,   0,   0,   0,   0,   0,   0,   1,   0   #CuHCO3   = H + Cu + CO3
-  ), byrow = T, nrow = 32, ncol = 11,
+  ), byrow = TRUE, nrow = 32, ncol = 11,
   dimnames = list(Spec = c("H","Cu","DOC","Ca","Mg","Na","K","SO4","Cl","CO3","BL",
                            "BL-Cu" ,"BL-CuOH" ,"BL-Ca" ,"BL-Mg" ,"BL-H" ,"BL-Na" ,
                            "HCO3" ,"H2CO3" ,"MgHCO3" ,"MgCO3" ,"MgSO4" ,"CaHCO3" ,
@@ -97,7 +97,7 @@ Full_InorgDataStoich = matrix(
                            "Cu(CO3)2" ,"CuCl" ,"CuHCO3"),
                   Comp = c("H","Cu","DOC","Ca","Mg","Na","K","SO4","Cl","CO3","BL"))
 )
-usethis::use_data(Full_InorgDataStoich, overwrite = T)
+usethis::use_data(Full_InorgDataStoich, overwrite = TRUE)
 
 # Reaction Equilibrium constants
 Full_InorgDataK = 10^c(
@@ -134,7 +134,7 @@ Full_InorgDataK = 10^c(
   CuCl     =   0.4,
   CuHCO3   =  14.62
 )
-usethis::use_data(Full_InorgDataK, overwrite = T)
+usethis::use_data(Full_InorgDataK, overwrite = TRUE)
 
 Full_InorgDataCharge = c(
   H          =  1L,
@@ -170,4 +170,4 @@ Full_InorgDataCharge = c(
   CuCl       =  1L,
   CuHCO3     =  1L
 )
-usethis::use_data(Full_InorgDataCharge, overwrite = T)
+usethis::use_data(Full_InorgDataCharge, overwrite = TRUE)

@@ -19,7 +19,6 @@ CHESS(
   SpecName,
   CompType,
   CompName,
-  TotMoles,
   TotConc,
   SysTemp,
   DoTox,
@@ -33,8 +32,8 @@ CHESS(
 \item{QuietFlag}{character, one of "Very Quiet" (only print out when run is
 done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)}
 
-\item{ConvergenceCriteria}{numeric, the maximum value of MaxError that counts
-as convergence by the Newton-Raphson root-finding algorithm}
+\item{ConvergenceCriteria}{numeric, the maximum value of MaxError that 
+counts as convergence by the Newton-Raphson root-finding algorithm}
 
 \item{MaxIter}{integer, the maximum number of iterations the Newton-Raphson
 root-finding algorithm should do before giving up}
@@ -43,8 +42,8 @@ root-finding algorithm should do before giving up}
 
 \item{NSpec}{integer, number of species reactions}
 
-\item{NBLMetal}{integer, the number of biotic ligand-bound metal species that
-are associated with toxic effects.}
+\item{NBLMetal}{integer, the number of biotic ligand-bound metal species 
+that are associated with toxic effects.}
 
 \item{SpecK}{numeric vector (NSpec), the equilibrium coefficient of the
 formation reactions}
@@ -64,9 +63,6 @@ simulation}
 \item{CompName}{character vector (NComp), the name of each component in the
 simulation}
 
-\item{TotMoles}{numeric vector (NComp), the total moles of each component in
-the simulation (units of mol)}
-
 \item{TotConc}{numeric vector (NComp), the total concentrations of each
 component in the simulation (units of e.g., mol/L and mol/kg)}
 
@@ -84,10 +80,13 @@ metal bound to the relevant biotic ligand) Note: these are base-1 indexed.}
 
 \item{CATarget}{numeric, the target critical accumulation in units of mol /
 kg (only used when DoTox == TRUE)}
+
+\item{TotMoles}{numeric vector (NComp), the total moles of each component in
+the simulation (units of mol)}
 }
 \value{
 list with the following elements:
-  \desribe{
+  \describe{
     \item{SpecConc}{numeric vector (NSpec), the concentrations of each
       species for which we have formation reactions}
     \item{Iter}{integer, the number of Newton-Raphson iterations that we

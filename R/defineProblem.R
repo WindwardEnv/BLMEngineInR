@@ -284,14 +284,17 @@ DefineProblem = function(ParamFile) {
   NMetal = sum(Tmp[, 1] == "Metal")
   MetalName = as.character(trimws(Tmp[Tmp[, 1] == "Metal", 2]))
   stopifnot(all(MetalName %in% CompName))
+
   # --name of biotic ligand
   NBL = sum(Tmp[, 1] == "BL")
   BLName = as.character(trimws(Tmp[Tmp[, 1] == "BL", 2]))
   stopifnot(all(BLName %in% CompName))
+
   # --name of BL-metal complex(es)
   NBLMetal = sum(Tmp[, 1] == "BL-Metal")
   BLMetalName = as.character(trimws(Tmp[Tmp[, 1] == "BL-Metal", 2]))
   stopifnot(all(BLMetalName %in% SpecName))
+
   #--Name of WHAM file or WHAM version
   if (any(grepl("WHAM", InVarType))) {
     if ("WHAM" %in% Tmp[, 1] == FALSE) {
@@ -348,6 +351,11 @@ DefineProblem = function(ParamFile) {
 
   # Trim down CompList
   SpecCompList = SpecCompList[, 1:max(which(colSums(SpecCompList) > 0))]
+
+  # Final positions of special definition parameters
+  BLMetalSpecs = which(SpecName %in% BLMetalName)
+  MetalComp = which(SpecName %in% MetalName)
+  BLComp = which(SpecName %in% BLName)
 
   # error catching
   stopifnot(
@@ -429,8 +437,11 @@ DefineProblem = function(ParamFile) {
 
     # Special Definitions
     BLName = BLName,
+    BLComp = BLComp,
     MetalName = MetalName,
+    MetalComp = MetalComp,
     BLMetalName = BLMetalName,
+    BLMetalSpecs = BLMetalSpecs,
     DoWHAM = DoWHAM,
 
     # Critical Accumulation Table
@@ -454,6 +465,10 @@ DefineProblem = function(ParamFile) {
   Out$SpecCtoM = SpecCtoM
   SpecCharge = Out$SpecStoich %*% Out$CompCharge
   Out$SpecCharge = SpecCharge
+  Out$SpecK = array(10 ^ Out$SpecLogK, dim = Out$NSpec,
+                    dimnames = list(Out$SpecName))
+
+
 
   return(Out)
 }
