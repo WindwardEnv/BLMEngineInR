@@ -118,8 +118,8 @@
 #'  }
 #' @source Windward BLM (Ver 3.57.2.49, build 2022-03-30)
 #'
-#' @format \code{Full_InorgDataTotalConc} is an object of class \code{numeric} of
-#'   length 11 containing total concentrations.
+#' @format \code{Full_InorgDataTotalConc} is an object of class \code{numeric}
+#'   of length 11 containing total concentrations.
 #'
 #' @keywords datasets
 "Full_InorgDataTotalConc"
@@ -135,9 +135,9 @@
 "Full_InorgDataK"
 
 #' @rdname Full_InorgData
-#' @format \code{Full_InorgDataStoich} is An object of class \code{matrix} (inherits
-#'   from \code{array}) with 32 rows and 11 columns containing stoichiometry
-#'   information for each reaction.
+#' @format \code{Full_InorgDataStoich} is An object of class \code{matrix}
+#'   (inherits from \code{array}) with 32 rows and 11 columns containing
+#'   stoichiometry information for each reaction.
 #'   \describe{
 #'     \item{\code{rows}}{Species reactions.}
 #'     \item{\code{cols}}{Components.}
@@ -180,13 +180,13 @@
 #'  }
 #' @source Windward BLM (Ver 3.57.2.49, build 2022-03-30)
 #'
-#' @format \code{Full_OrganicDataTotalConc} is an object of class \code{numeric} of
-#'   length 11 containing total concentrations.
+#' @format \code{Full_OrganicDataTotalConc} is an object of class
+#'   \code{numeric} of length 11 containing total concentrations.
 #'
 #' @keywords datasets
 "Full_OrganicDataTotalConc"
 
 #' @rdname Full_OrganicData
-#' @format \code{Full_OrganicDataFreeConc} is an object of class \code{numeric} of
-#'   length 38 containing free concentrations.
+#' @format \code{Full_OrganicDataFreeConc} is an object of class \code{numeric}
+#'   of length 38 containing free concentrations.
 "Full_OrganicDataFreeConc"

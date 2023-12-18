@@ -337,22 +337,22 @@ ExpandWHAM = function(NMass, MassName,
                  array(0.0, dim = WNSpec,
                        dimnames = list(paste0("newOCSpecies", 1:WNSpec))))
 
-    Monodent_pKH = numeric(nMS)
-    Monodent_Abundance = numeric(nMS)
-    Bident_Abundance = numeric(nBP)
-    Trident_Abundance = numeric(nTG)
-    for(OMType in WHAMFracAdd){
+    MonodentpKH = numeric(nMS)
+    MonodentAbundance = numeric(nMS)
+    BidentAbundance = numeric(nBP)
+    TridentAbundance = numeric(nTG)
+    for (OMType in WHAMFracAdd) {
 
-      pKM_cols = paste0("pKM",c("A","B"),OMType)
+      ColspKM = paste0("pKM", c("A", "B"), OMType)
 
       # Monodentate sites
       NewCompNum = StartComp:(StartComp + nMS - 1)
-      newDefCompNum = StartDefComp:(StartDefComp + nMS - 1)
-      Monodent_pKH[1:4] = pKHA[OMType] + dpKHA[OMType] * (2 * MonodentTable$S[1:4] - 5) / 6
-      Monodent_pKH[5:8] = pKHB[OMType] + dpKHB[OMType] * (2 * MonodentTable$S[5:8] - 13) / 6
-      Monodent_Abundance = (1 - fprB[OMType] - fprT[OMType]) * nCOOH[OMType] / MonodentTable$AbundDenom
-      CompSiteDens[NewCompNum] = Monodent_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
-      DefCompSiteDens[newDefCompNum] = Monodent_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+      NewDefCompNum = StartDefComp:(StartDefComp + nMS - 1)
+      MonodentpKH[1:4] = pKHA[OMType] + dpKHA[OMType] * (2 * MonodentTable$S[1:4] - 5) / 6
+      MonodentpKH[5:8] = pKHB[OMType] + dpKHB[OMType] * (2 * MonodentTable$S[5:8] - 13) / 6
+      MonodentAbundance = (1 - fprB[OMType] - fprT[OMType]) * nCOOH[OMType] / MonodentTable$AbundDenom
+      CompSiteDens[NewCompNum] = MonodentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+      DefCompSiteDens[NewDefCompNum] = MonodentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 
       # - fully protonated (components)
       NewSpecNum = StartSpec:(StartSpec + nMS - 1)
@@ -366,21 +366,21 @@ ExpandWHAM = function(NMass, MassName,
       SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot)
       # SpecCharge[NewSpecNum] = -1L
       diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-      SpecStoich[NewSpecNum,iH] = -1L
-      SpecLogK[NewSpecNum] = -1 * Monodent_pKH
+      SpecStoich[NewSpecNum, iH] = -1L
+      SpecLogK[NewSpecNum] = -1 * MonodentpKH
 
       # bound to each metal
-      for(iMetal in 1:nMP){
+      for (iMetal in 1:nMP) {
         iMetalSpec = which(MetalsTable$Metal[iMetal] == SpecName)
         NewSpecNum = NewSpecNum + nMS
         # SpecCharge[NewSpecNum] = -1L + SpecCharge[iMetalSpec]
         SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot, "-",
                                       MetalsTable$Metal[iMetal])
-        SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nMS, ncol = NComp, byrow = T)
+        SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec, ], nrow = nMS, ncol = NComp, byrow = TRUE)
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum,iH] = SpecStoich[NewSpecNum, iH] - 1L
+        SpecStoich[NewSpecNum, iH] = SpecStoich[NewSpecNum, iH] - 1L
         SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
-          as.numeric(MetalsTable[iMetal,pKM_cols[MonodentTable$Strong1Weak2]])
+          as.numeric(MetalsTable[iMetal, ColspKM[MonodentTable$Strong1Weak2]])
 
       }
 
@@ -388,13 +388,13 @@ ExpandWHAM = function(NMass, MassName,
       # Bidentate sites
       if (nBP > 0) {
         StartComp = max(NewCompNum) + 1
-        StartDefComp = max(newDefCompNum) + 1
+        StartDefComp = max(NewDefCompNum) + 1
         StartSpec = max(NewSpecNum) + 1
         NewCompNum = StartComp:(StartComp + nBP - 1)
-        newDefCompNum = StartDefComp:(StartDefComp + nBP - 1)
-        Bident_Abundance = fprB[OMType] * nCOOH[OMType] / BidentTable$AbundDenom
-        CompSiteDens[NewCompNum] = Bident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
-        DefCompSiteDens[newDefCompNum] = Bident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        NewDefCompNum = StartDefComp:(StartDefComp + nBP - 1)
+        BidentAbundance = fprB[OMType] * nCOOH[OMType] / BidentTable$AbundDenom
+        CompSiteDens[NewCompNum] = BidentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        DefCompSiteDens[NewDefCompNum] = BidentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 
         # - fully protonated
         NewSpecNum = StartSpec:(StartSpec + nBP - 1)
@@ -409,7 +409,7 @@ ExpandWHAM = function(NMass, MassName,
         # SpecCharge[NewSpecNum] = -1L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
         SpecStoich[NewSpecNum, iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[BidentTable$S1]
+        SpecLogK[NewSpecNum] = -1 * MonodentpKH[BidentTable$S1]
 
         # - second site deprotonated
         NewSpecNum = NewSpecNum + nBP
@@ -417,45 +417,44 @@ ExpandWHAM = function(NMass, MassName,
         # SpecCharge[NewSpecNum] = -1L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
         SpecStoich[NewSpecNum, iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[BidentTable$S2]
+        SpecLogK[NewSpecNum] = -1 * MonodentpKH[BidentTable$S2]
 
         # - fully deprot
         NewSpecNum = NewSpecNum + nBP
         SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyDeprot)
         # SpecCharge[NewSpecNum] = -2L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum,iH] = -2L
-        SpecLogK[NewSpecNum] = -1 * (Monodent_pKH[BidentTable$S1] +
-                                     Monodent_pKH[BidentTable$S2])
+        SpecStoich[NewSpecNum, iH] = -2L
+        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[BidentTable$S1] + MonodentpKH[BidentTable$S2])
 
         # bound to each metal
-        for(iMetal in 1:nMP){
+        for (iMetal in 1:nMP) {
           iMetalSpec = which(MetalsTable$Metal[iMetal] == SpecName)
           NewSpecNum = NewSpecNum + nBP
           # SpecCharge[NewSpecNum] = -2L + SpecCharge[iMetalSpec]
           SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyDeprot, "-",
                                         MetalsTable$Metal[iMetal])
-          SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nBP, ncol = NComp, byrow = T)
+          SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec, ], nrow = nBP, ncol = NComp, byrow = TRUE)
           diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-          SpecStoich[NewSpecNum,iH] = SpecStoich[NewSpecNum,iH] -2L
+          SpecStoich[NewSpecNum, iH] = SpecStoich[NewSpecNum, iH] - 2L
           SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
-            as.numeric(MetalsTable[iMetal,pKM_cols[BidentTable$S1Strong1Weak2]] +
-                         MetalsTable[iMetal,pKM_cols[BidentTable$S2Strong1Weak2]])
+            as.numeric(MetalsTable[iMetal, ColspKM[BidentTable$S1Strong1Weak2]] +
+                         MetalsTable[iMetal, ColspKM[BidentTable$S2Strong1Weak2]])
 
         }
 
       }
 
       # Tridentate sites
-      if (nTG > 0){
+      if (nTG > 0) {
         StartComp = max(NewCompNum) + 1
-        StartDefComp = max(newDefCompNum) + 1
+        StartDefComp = max(NewDefCompNum) + 1
         StartSpec = max(NewSpecNum) + 1
         NewCompNum = StartComp:(StartComp + nTG - 1)
-        newDefCompNum = StartDefComp:(StartDefComp + nTG - 1)
-        Trident_Abundance = fprT[OMType] * nCOOH[OMType] / TridentTable$AbundDenom
-        CompSiteDens[NewCompNum] = Trident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
-        DefCompSiteDens[newDefCompNum] = Trident_Abundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        NewDefCompNum = StartDefComp:(StartDefComp + nTG - 1)
+        TridentAbundance = fprT[OMType] * nCOOH[OMType] / TridentTable$AbundDenom
+        CompSiteDens[NewCompNum] = TridentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        DefCompSiteDens[NewDefCompNum] = TridentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 
         # - fully protonated
         NewSpecNum = StartSpec:(StartSpec + nTG - 1)
@@ -469,80 +468,80 @@ ExpandWHAM = function(NMass, MassName,
         SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S1Deprot)
         # SpecCharge[NewSpecNum] = -1L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum,iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[TridentTable$S1]
+        SpecStoich[NewSpecNum, iH] = -1L
+        SpecLogK[NewSpecNum] = - 1 * MonodentpKH[TridentTable$S1]
 
         # - second site deprotonated
         NewSpecNum = NewSpecNum + nTG
         SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S2Deprot)
         # SpecCharge[NewSpecNum] = -1L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum,iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[TridentTable$S2]
+        SpecStoich[NewSpecNum, iH] = -1L
+        SpecLogK[NewSpecNum] = -1 * MonodentpKH[TridentTable$S2]
 
         # - third site deprotonated
         NewSpecNum = NewSpecNum + nTG
         SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S3Deprot)
         # SpecCharge[NewSpecNum] = -1L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum,iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * Monodent_pKH[TridentTable$S3]
+        SpecStoich[NewSpecNum, iH] = -1L
+        SpecLogK[NewSpecNum] = -1 * MonodentpKH[TridentTable$S3]
 
         # - first & second sites deprotonated
         NewSpecNum = NewSpecNum + nTG
         SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S12Deprot)
         # SpecCharge[NewSpecNum] = -2L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum,iH] = -2L
-        SpecLogK[NewSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S2])
+        SpecStoich[NewSpecNum, iH] = -2L
+        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[TridentTable$S1] + MonodentpKH[TridentTable$S2])
 
         # - first & third sites deprotonated
         NewSpecNum = NewSpecNum + nTG
         SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S13Deprot)
         # SpecCharge[NewSpecNum] = -2L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum,iH] = -2L
-        SpecLogK[NewSpecNum] = -1 * (Monodent_pKH[TridentTable$S1] + Monodent_pKH[TridentTable$S3])
+        SpecStoich[NewSpecNum, iH] = -2L
+        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[TridentTable$S1] + MonodentpKH[TridentTable$S3])
 
         # - second & third sites deprotonated
         NewSpecNum = NewSpecNum + nTG
         SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S23Deprot)
         # SpecCharge[NewSpecNum] = -2L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum,iH] = -2L
-        SpecLogK[NewSpecNum] = -1 * (Monodent_pKH[TridentTable$S2] + Monodent_pKH[TridentTable$S3])
+        SpecStoich[NewSpecNum, iH] = -2L
+        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[TridentTable$S2] + MonodentpKH[TridentTable$S3])
 
         # - fully deprot
         NewSpecNum = NewSpecNum + nTG
         SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyDeprot)
         # SpecCharge[NewSpecNum] = -3L
         diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum,iH] = -3L
-        SpecLogK[NewSpecNum] = -1 *(Monodent_pKH[TridentTable$S1] +
-                                  Monodent_pKH[TridentTable$S2] +
-                                  Monodent_pKH[TridentTable$S3])
+        SpecStoich[NewSpecNum, iH] = -3L
+        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[TridentTable$S1] +
+                                     MonodentpKH[TridentTable$S2] +
+                                     MonodentpKH[TridentTable$S3])
 
         # bound to each metal
-        for(iMetal in 1:nMP){
+        for (iMetal in 1:nMP) {
           iMetalSpec = which(MetalsTable$Metal[iMetal] == SpecName)
           NewSpecNum = NewSpecNum + nTG
           # SpecCharge[NewSpecNum] = -3L + SpecCharge[iMetalSpec]
           SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyDeprot, "-",
                                         MetalsTable$Metal[iMetal])
-          SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec,], nrow = nTG, ncol = NComp, byrow = T)
+          SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec, ], nrow = nTG, ncol = NComp, byrow = TRUE)
           diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-          SpecStoich[NewSpecNum,iH] = SpecStoich[NewSpecNum,iH] -3L
+          SpecStoich[NewSpecNum, iH] = SpecStoich[NewSpecNum, iH] - 3L
           SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
-            as.numeric(MetalsTable[iMetal,pKM_cols[TridentTable$S1Strong1Weak2]] +
-                         MetalsTable[iMetal,pKM_cols[TridentTable$S2Strong1Weak2]] +
-                         MetalsTable[iMetal,pKM_cols[TridentTable$S3Strong1Weak2]])
+            as.numeric(MetalsTable[iMetal, ColspKM[TridentTable$S1Strong1Weak2]] +
+                         MetalsTable[iMetal, ColspKM[TridentTable$S2Strong1Weak2]] +
+                         MetalsTable[iMetal, ColspKM[TridentTable$S3Strong1Weak2]])
 
         }
 
       }
 
       StartComp = max(NewCompNum) + 1
-      StartDefComp = max(newDefCompNum) + 1
+      StartDefComp = max(NewDefCompNum) + 1
       StartSpec = max(NewSpecNum) + 1
 
     }
@@ -562,16 +561,16 @@ ExpandWHAM = function(NMass, MassName,
   names(SpecTemp) = SpecName
 
   # Re-ordering species so components are in front
-  reorder = match(c(CompName, SpecName[SpecName %in% CompName == F]), SpecName)
-  SpecName = SpecName[reorder]
-  SpecMC = SpecMC[reorder]
-  SpecActCorr = SpecActCorr[reorder]
-  SpecNC = SpecNC[reorder]
-  SpecCompList = SpecCompList[reorder,]
-  SpecStoich = SpecStoich[reorder,]
-  SpecLogK = SpecLogK[reorder]
-  SpecDeltaH = SpecDeltaH[reorder]
-  SpecTemp = SpecTemp[reorder]
+  Reorder = match(c(CompName, SpecName[SpecName %in% CompName == FALSE]), SpecName)
+  SpecName = SpecName[Reorder]
+  SpecMC = SpecMC[Reorder]
+  SpecActCorr = SpecActCorr[Reorder]
+  SpecNC = SpecNC[Reorder]
+  SpecCompList = SpecCompList[Reorder, ]
+  SpecStoich = SpecStoich[Reorder, ]
+  SpecLogK = SpecLogK[Reorder]
+  SpecDeltaH = SpecDeltaH[Reorder]
+  SpecTemp = SpecTemp[Reorder]
 
   SpecNC = rowSums(SpecStoich != 0L)
   names(SpecNC) = SpecName
@@ -579,12 +578,13 @@ ExpandWHAM = function(NMass, MassName,
     SpecStoich,
     MARGIN = 1,
     FUN = function(X) {
-      tmp = sort(which(X != 0L))
-      if (length(tmp) < max(SpecNC)){
-        tmp = c(tmp, rep(0,max(SpecNC) - length(tmp)))
+      Tmp = sort(which(X != 0L))
+      if (length(Tmp) < max(SpecNC)) {
+        Tmp = c(Tmp, rep(0, max(SpecNC) - length(Tmp)))
       }
-      return(tmp)
-    }))
+      return(Tmp)
+    }
+  ))
   rownames(SpecCompList) = SpecName
   # CompNS = colSums(Stoich != 0L)
   # names(CompNS) = CompName
@@ -592,16 +592,16 @@ ExpandWHAM = function(NMass, MassName,
   #   Stoich,
   #   MARGIN = 2,
   #   FUN = function(X) {
-  #     tmp = sort(which(X != 0L))
-  #     if (length(tmp) < max(CompNS)){
-  #       tmp = c(tmp, rep(0,max(CompNS)-length(tmp)))
+  #     Tmp = sort(which(X != 0L))
+  #     if (length(Tmp) < max(CompNS)){
+  #       Tmp = c(Tmp, rep(0,max(CompNS)-length(Tmp)))
   #     }
-  #     return(tmp)
+  #     return(Tmp)
   #   }))
   # rownames(SpecList) = CompName
 
   # Assemble output list
-  out = list(
+  return(list(
 
     # Components
     NComp = NComp,
@@ -647,7 +647,6 @@ ExpandWHAM = function(NMass, MassName,
     wRadius = wRadius,
     wMolWt = wMolWt
 
-  )
-  return(out)
+  ))
 
 }

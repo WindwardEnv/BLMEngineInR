@@ -20,18 +20,12 @@
 //'
 //' @return  numeric cector CompConc (NComp) modified for the next iteration
 //'
-// [[Rcpp::export]]
-Rcpp::NumericVector CompUpdate(unsigned int NComp,
-                               Rcpp::NumericVector CompConcStep,
-                               Rcpp::NumericVector CompConc,
-                               Rcpp::CharacterVector CompName){
-
-  /* outputs */
-  Rcpp::NumericVector newCompConc(NComp);
-  newCompConc.names() = CompName;
+void CompUpdate(unsigned int NComp, 
+                Rcpp::NumericVector CompConcStep,
+                Rcpp::NumericVector &CompConc){
 
   /* variables */
-  // Rcpp::NumericVector newCompConc(NComp); //oldCompConc = CompConc;
+  Rcpp::NumericVector oldCompConc(NComp); //oldCompConc = CompConc;
   // Rcpp::LogicalVector ltzero(NComp);
   unsigned int iComp;
 
@@ -40,13 +34,12 @@ Rcpp::NumericVector CompUpdate(unsigned int NComp,
   // newCompConc[ltzero] = CompConc[ltzero] / 10;
 
   for (iComp = 0; iComp < NComp; iComp++){
-    if (CompConcStep(iComp) >= CompConc(iComp)) {
-      newCompConc(iComp) = CompConc(iComp) / 10;
+    oldCompConc(iComp) = CompConc(iComp);
+    if (CompConcStep(iComp) >= oldCompConc(iComp)) {
+      CompConc(iComp) = oldCompConc(iComp) / 10;
     } else {
-      newCompConc(iComp) = CompConc(iComp) - CompConcStep(iComp);
+      CompConc(iComp) = oldCompConc(iComp) - CompConcStep(iComp);
     }
   }//NEXT iComp
-
-  return newCompConc;
 
 }

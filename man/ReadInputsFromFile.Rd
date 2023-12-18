@@ -35,9 +35,12 @@ components}
 Returns a \code{list} object with the following components:
 \describe{
  \item{\code{NObs}}{integer; the number of chemistry observations}
- \item{\code{InLabObs}}{matrix with \code{Obs} rows and \code{InLab} columns; the input labels for each observation}
- \item{\code{InVarObs}}{matrix with \code{Obs} rows and \code{InVar} columns; the input variables for each observation}
- \item{\code{InCompObs}}{matrix with \code{Obs} rows and \code{InComp} columns; the input component concentrations for each observation}
+ \item{\code{InLabObs}}{matrix with \code{Obs} rows and \code{InLab}
+   columns; the input labels for each observation}
+ \item{\code{InVarObs}}{matrix with \code{Obs} rows and \code{InVar}
+   columns; the input variables for each observation}
+ \item{\code{InCompObs}}{matrix with \code{Obs} rows and \code{InComp}
+   columns; the input component concentrations for each observation}
 }
 }
 \description{
@@ -49,7 +52,8 @@ problem as defined by the input arguments.
 # thisProblem = DefineProblem("my_parameter_file.dat")
 # do.call(
 #   "ReadInputsFromFile",
-#   args = c(thisProblem[names(thisProblem) \%in\% formalArgs("ReadInputsFromFile")],
+#   args = c(thisProblem[names(thisProblem) \%in\%
+               formalArgs("ReadInputsFromFile")],
 #            list(InputFile="my_input_file.dat"))
 # )
 ## End Not Run

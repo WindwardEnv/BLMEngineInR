@@ -7,8 +7,6 @@
 #'   concentrations of components, calculate the species concentrations of each
 #'   chemical product in the system.
 #'
-#' @param DoPartialSteps logical, TRUE = do partial Newton-Raphson steps when a
-#'   full step would send the MaxError higher; FALSE = only do full steps
 #' @param QuietFlag character, one of "Very Quiet" (only print out when run is
 #'   done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)
 #' @param ConvergenceCriteria numeric, the maximum value of MaxError that counts
@@ -60,13 +58,147 @@
 #'   }
 #' @export
 #'
-CHESS <- function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
-    .Call(`_BLMEngineInR_CHESS`, DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
+CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecTemp, SpecDeltaH, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, SysTemp, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
+    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecK, SpecTemp, SpecDeltaH, SpecStoich, SpecCtoM, SpecName, CompType, CompName, TotMoles, TotConc, SysTemp, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
 }
+
+#' @title Calculate the Moles and Concentrations For This Iteration
+#' 
+#' @description Sum the relevant species concentrations to calculate the 
+#'   resulting total concentrations and moles for each component.
+#'
+#' @param NComp integer, the number of components
+#' @param NSpec integer, the number of species
+#' @param SpecConc numeric vector (NSpec), the concentration of chemical
+#'   species
+#' @param SpecStoich integer matrix (NSpec x NComp), the stoichiometry of
+#'   species formatin reactions
+#' @param SpecCtoM numeric vector (NSpec), the concentration-to-mass conversion
+#'   factor for each chemical species
+#' @param CalcTotConc (return parameter) numeric vector (NComp), the 
+#'   calculated total concentration of each component = CalcTotMoles / CtoM
+#' @param CalcTotMoles (return parameter) numeric vector (NComp), the 
+#'   calculated total moles of each component = sum(SpecConc * SpecCtoM * 
+#'   SpecStoich[,j]) for each component j
+#' 
+#' @return void
+#' 
+#' @name CalcIterationTotals
+#' @usage CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoM, SpecStoich, 
+#'   CalcTotMoles, CalcTotConc);
+NULL
+
+#' @title Calculate the Residual - and only the residual
+#'
+#' @description Calculate the residuals of the speciation problem.
+#'
+#' @details The residuals of the speciation problem are the calculated total
+#'   moles for each component minus their known concentrations. This function
+#'   does not account for the different toxic metal residual needed in a 
+#'   toxicity run.
+#'
+#' @param NComp integer, the number of components
+#' @param TotMoles numeric vector (NComp), the total moles of each component
+#' @param CalcTotMoles numeric vector (NComp), the calculated total moles of 
+#'   each component = sum(SpecConc * SpecCtoM * SpecStoich[,j]) for each 
+#'   component j
+#' @param CompType character vector (NComp), the type of component. It should
+#'   be a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal,
+#'   SurfPot)
+#'
+#' @return numeric vector (NComp), the residuals = calculated totals - known 
+#'   totals
+#' 
+#' @name CalcResidualsOnly
+#' @usage CalcResidualsOnly(NComp, CalcTotMoles, TotMoles, CompType)
+NULL
+
+#' @title Calculate the Resid and CompError
+#'
+#' @description Calculate the residuals of the speciation problem, and the
+#'   component Error.
+#'
+#' @details The residuals of the speciation problem are the calculated total
+#'   moles for each component minus their known concentrations. This function
+#'   does not account for the different toxic metal residual needed in a 
+#'   toxicity run.
+#'
+#' @param NComp integer, the number of components
+#' @param TotMoles numeric vector (NComp), the total moles of each component
+#' @param CalcTotMoles numeric vector (NComp), the calculated total moles of 
+#'   each component = sum(SpecConc * SpecCtoM * SpecStoich[,j]) for each 
+#'   component j
+#' @param CompType character vector (NComp), the type of component. It should
+#'   be a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal,
+#'   SurfPot)
+#' @param Resid (return value) numeric vector (NComp), the residuals = 
+#'   calculated totals - known totals
+#' @param CompError (return value) numeric vector (NComp), the absolute error
+#'   fraction for each component in this iteration = abs(Resid / TotMoles)
+#'
+#' return void
+#'
+#' @name CalcResidualAndError
+#' @usage CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, Resid, CompError);
+NULL
+
+#' @title Adjust the residual and error for toxicity mode
+#'
+#' @description Calculate a new residual and error value for the toxic metal
+#'   component, based instead on the difference between the target and 
+#'   calculated critical accumulations.
+#'
+#' @details This should only be run when DoTox = TRUE. The residual for the
+#'   `MetalComp` component is instead the sum of the `BLMetalSpecs`
+#'   concentrations minus the `CATarget`. This, paired with a modified set of 
+#'   derivatives for the `MetalComp` in the Jacobian matrix, results in 
+#'   Newton-Rapshon changing the metal concentration in order to produce
+#'   chemical conditions that would result in the critical accumulation known
+#'   to cause a toxic effect.
+#'
+#' @param NBLMetal integer, the number of biotic ligand-bound metal species
+#' @param SpecConc numeric vector (NSpec), the concentration of chemical
+#'   species
+#' @param MetalComp integer, the position in component vectors of the toxic
+#'   metal component
+#' @param BLMetalSpecs integer vector, the position in the species vectors of
+#'   the metal-biotic ligand species associated with toxicity
+#' @param CATarget numeric, the target critical accumulation value for a
+#'   toxicity run, in mol/kg
+#' @param Resid (return value) numeric vector (NComp), the residuals =
+#'   calculated totals - known totals, modified for toxicity mode upon return
+#' @param CompError (return value) numeric vector (NComp), the absolute error
+#'   fraction for each component in this iteration =abs(Resid / TotMoles),
+#'   modified for toxicity mode upon return
+#'
+#' @name AdjustForToxMode
+#' @usage AdjustForToxMode(NBLMetal, BLMetalSpecs, MetalComp, CATarget, 
+#'   SpecConc, Resid, CompError)
+NULL
+
+#' @title Find the MaxError and WhichMax
+#'
+#' @description Determine which component has the maximum absolute error 
+#'   fraction.
+#'
+#' @param NComp integer, the number of components
+#' @param CompError numeric vector (NComp), the absolute error fraction for
+#'   each component in this iteration =abs(Resid / TotMoles)
+#' @param MaxError (return value) numeric, the highest absolute error fraction in this
+#'   iteration =max(abs(Resid / TotMoles))
+#' @param WhichMax (return value) integer, the position in the component vectors of the
+#'    component with the highest absolute error
+#' 
+#' @return void
+#'
+#' @name MaxCompError
+#' @usage MaxError = MaxCompError(NComp, CompError, WhichMax)
+NULL
 
 #' @title Calculate the Residual
 #'
-#' @description Calculate the residuals of the speciation problem.
+#' @description 
+#'   Calculate the residuals of the speciation problem - returns a list.
 #'
 #' @details The residuals of the speciation problem are the calculated total
 #'   moles for each component minus their known concentrations. In the case of
@@ -115,8 +247,8 @@ CHESS <- function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter, NComp
 #'    each component j}
 #' }
 #'
-CalcResidual <- function(NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM, CompName, CompType, MetalComp, NBLMetal, BLMetalSpecs, CATarget, DoTox) {
-    .Call(`_BLMEngineInR_CalcResidual`, NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM, CompName, CompType, MetalComp, NBLMetal, BLMetalSpecs, CATarget, DoTox)
+CalcResidualList <- function(NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM, CompName, CompType, MetalComp, NBLMetal, BLMetalSpecs, CATarget, DoTox) {
+    .Call(`_BLMEngineInR_CalcResidualList`, NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM, CompName, CompType, MetalComp, NBLMetal, BLMetalSpecs, CATarget, DoTox)
 }
 
 #' Calculate Species Concentrations
@@ -193,29 +325,6 @@ CalcLogSpecConc <- function(LogCompConc, SpecLogK, SpecStoich, SpecName, NComp, 
 #'
 CalcStep <- function(JacobianMatrix, Resid, NComp, CompType, CompName) {
     .Call(`_BLMEngineInR_CalcStep`, JacobianMatrix, Resid, NComp, CompType, CompName)
-}
-
-#' @title Iterative step improvement in component concentrations
-#'
-#' @description CompUpdate calculates an iterative improvement on the component
-#' concentrations based on the Newton-Raphson solution from the current
-#' iteration.
-#'
-#' @details If the iteration would cause the adjusted component concentrations
-#' to be less than zero, then the component concentration is simply divided by
-#' 10 for this iteration.
-#'
-#' @param NComp integer, the number of components
-#' @param CompConcStep numeric vector (NComp) of adjustments to the component
-#'   concentrations
-#' @param CompConc numeric vector (NComp) of component concentrations, input values
-#'   are from this iteration
-#' @param CompName numeric vector (NComp) with the names of the components
-#'
-#' @return  numeric cector CompConc (NComp) modified for the next iteration
-#'
-CompUpdate <- function(NComp, CompConcStep, CompConc, CompName) {
-    .Call(`_BLMEngineInR_CompUpdate`, NComp, CompConcStep, CompConc, CompName)
 }
 
 #' Set the initial guess for component concentrations
