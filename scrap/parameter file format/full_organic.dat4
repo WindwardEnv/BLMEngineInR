@@ -60,9 +60,9 @@ CaSO4,   Water,    Debye, 2,  Ca,  1,  SO4,  1,            2.300,     7100, 298.
 CuOH,    Water,    Debye, 2,  Cu,  1,    H, -1,           -7.520,    50200, 298.15
 Cu(OH)2, Water,    Debye, 2,  Cu,  1,    H, -2,          -16.220,    92100, 298.15
 CuSO4,   Water,    Debye, 2,  Cu,  1,  SO4,  1,            2.360,     8700, 298.15
+CuCl,    Water,    Debye, 2,  Cu,  1,   Cl,  1,            0.400,     8300, 298.15
 CuCO3,   Water,    Debye, 2,  Cu,  1,  CO3,  1,            6.750,    13000, 298.15
 Cu(CO3)2,Water,    Debye, 2,  Cu,  1,  CO3,  2,            9.920,        0, 298.15
-CuCl,    Water,    Debye, 2,  Cu,  1,   Cl,  1,            0.400,     8300, 298.15
 CuHCO3,  Water,    Debye, 3,  Cu,  1,  CO3,  1,   H,  1,  14.620,        0, 298.15
 --------------------------------------------------------------------------------
 Phase List

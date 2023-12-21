@@ -49,19 +49,13 @@ void AdjustForToxMode(unsigned int NBLMetal,
 double MaxCompError(unsigned int NComp, Rcpp::NumericVector CompError, 
                     unsigned int &WhichMax);
                     
-Rcpp::NumericVector CalcSpecConc(Rcpp::NumericVector CompConc,
+Rcpp::NumericVector CalcSpecConc(unsigned int NComp,
+                                 unsigned int NSpec,
+                                 Rcpp::NumericVector CompConc,
                                  Rcpp::NumericVector SpecK,
                                  Rcpp::IntegerMatrix SpecStoich,
                                  Rcpp::CharacterVector SpecName,
-                                 unsigned int NComp,
-                                 unsigned int NSpec);
-
-Rcpp::NumericVector CalcLogSpecConc(Rcpp::NumericVector LogCompConc,
-                                    Rcpp::NumericVector SpecLogK,
-                                    Rcpp::IntegerMatrix SpecStoich,
-                                    Rcpp::CharacterVector SpecName,
-                                    unsigned int NComp,
-                                    unsigned int NSpec);
+                                 Rcpp::NumericVector SpecActivityCoef);
 
 Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
                               Rcpp::NumericVector Resid,

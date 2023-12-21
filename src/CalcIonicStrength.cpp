@@ -24,7 +24,7 @@ double CalcIonicStrength(unsigned int NSpec,
                          Rcpp::IntegerVector SpecCharge,
                          Rcpp::IntegerVector SpecMC) {
   /* output */
-  double IonicStrength;
+  double IonicStrength = 0;
 
   /* variables */
   unsigned int iSpec;
@@ -65,12 +65,12 @@ Rcpp::NumericVector ExtDebyeHuckel(double IonicStrength,
 /* This is what's done in the PB code...Is this even necessary?? Doesn't the 
    math work out to these same equations if you just use the last one? 
   switch(E) {
-    case 0: ActivityCoef = 1;
-    case 1: ActivityCoef = pow(10, C / (1 + (3 * D)));
-    case 2: ActivityCoef = pow(10, 4 * C / (1 + (6 * D)));
-    case 3: ActivityCoef = pow(10, 9 * C / (1 + (9 * D)));
-    case 4: ActivityCoef = pow(10, 16 * C / (1 + (12 * D)));
-    default : ActivityCoef = pow(10, F * C / (1 + (3 * E * D)));
+    case 0: SpecActivityCoef = 1;
+    case 1: SpecActivityCoef = pow(10, C / (1 + (3 * D)));
+    case 2: SpecActivityCoef = pow(10, 4 * C / (1 + (6 * D)));
+    case 3: SpecActivityCoef = pow(10, 9 * C / (1 + (9 * D)));
+    case 4: SpecActivityCoef = pow(10, 16 * C / (1 + (12 * D)));
+    default : SpecActivityCoef = pow(10, F * C / (1 + (3 * E * D)));
   }
 */
   return ActivityCoefDebye;
@@ -83,7 +83,7 @@ Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
                                      double SysTempKelvin) {
 
   /* outputs */
-  Rcpp::NumericVector ActivityCoef(NSpec);
+  Rcpp::NumericVector SpecActivityCoef(NSpec);
 
   /* variables */
   unsigned int iSpec;
@@ -91,17 +91,18 @@ Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
   Rcpp::NumericVector ActivityCoefDebye;
   
   ActivityCoefDebye = ExtDebyeHuckel(IonicStrength, MaxCharge, SysTempKelvin);
+  //Rcpp::Rcout << "ActivityCoefDebye = " << ActivityCoefDebye << std::endl;
 
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if (SpecActCorr(iSpec) == "None") {
-      ActivityCoef(iSpec) = 1.0;
+    if (SpecActCorr(iSpec) == "Debye") {
+      SpecActivityCoef(iSpec) = ActivityCoefDebye(abs(SpecCharge(iSpec)));
     //} else if (SpecActCorr(iSpec) == "Davies") {
-    //  ActivityCoef(iSpec) = Davies(IonicStrength, SpecCharge(iSpec));
-    } else if (SpecActCorr(iSpec) == "Debye") {
-      ActivityCoef(iSpec) = ActivityCoefDebye(abs(SpecCharge(iSpec)));
+    //  SpecActivityCoef(iSpec) = Davies(IonicStrength, SpecCharge(iSpec));
+    } else {//if (SpecActCorr(iSpec) == "None") {
+      SpecActivityCoef(iSpec) = 1.0;
     }
   }
 
-  return ActivityCoef;
+  return SpecActivityCoef;
 
 }

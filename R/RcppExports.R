@@ -251,64 +251,6 @@ CalcResidualList <- function(NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecC
     .Call(`_BLMEngineInR_CalcResidualList`, NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM, CompName, CompType, MetalComp, NBLMetal, BLMetalSpecs, CATarget, DoTox)
 }
 
-#' Calculate Species Concentrations
-#'
-#' Use `CalcSpecConc` to calculate species concentrations from a known set of
-#' free component ion concentrations.
-#'
-#' This is an internal function that will, for each species `i` in `NSpec`
-#' calculate the equilibrium concentration, which in its most basic form would
-#' be calculated as \eqn{SpecConc_{i} = K_{i} *
-#' \prod_{j=1}^{n}(CompConc^SpecStoich_{i,j})}. Further modifications to these
-#' calculations would include temperature correction, ionic strength
-#' corrections, and diffuse double layer calculations for organic matter
-#' binding. As of 19-Oct-2023, none of these corrections have been implemented.
-#'
-#' This is the C++ version of this function.
-#'
-#' @param CompConc A vector of component concentrations for each of `NComp` components.
-#' @param SpecK A vector of reaction equilibrium constants for each of `NSpec` reactions.
-#' @param SpecStoich A matrix of reaction stoichiometry, with `NSpec` rows and `NComp` columns.
-#' @param SpecName character vector (NSpec), the names of the chemical species
-#' @param NComp The number of components in the equilibrium system.
-#' @param NSpec The number of species (reactions) in the equilibrium system.
-#'
-#' @returns A vector of `NSpec` species concentrations.
-#'
-#' @noRd
-CalcSpecConc <- function(CompConc, SpecK, SpecStoich, SpecName, NComp, NSpec) {
-    .Call(`_BLMEngineInR_CalcSpecConc`, CompConc, SpecK, SpecStoich, SpecName, NComp, NSpec)
-}
-
-#' Calculate Species Concentrations
-#'
-#' Use `CalcLogSpecConc` to calculate species concentrations from a known set of
-#' free component ion concentrations.
-#'
-#' This is an internal function that will, for each species `i` in `NSpec`
-#' calculate the equilibrium concentration, which in its most basic form would
-#' be calculated as \eqn{SpecConc_{i} = K_{i} *
-#' \prod_{j=1}^{n}(CompConc^SpecStoich_{i,j})}. Further modifications to these
-#' calculations would include temperature correction, ionic strength
-#' corrections, and diffuse double layer calculations for organic matter
-#' binding. As of 19-Oct-2023, none of these corrections have been implemented.
-#'
-#' This is the C++ version of this function.
-#'
-#' @param LogCompConc A vector of log10-transformed component concentrations for each of `NComp` components.
-#' @param LogK A vector of log10-transformed reaction equilibrium constants for each of `NSpec` reactions.
-#' @param SpecStoich A matrix of reaction stoichiometry, with `NSpec` rows and `NComp` columns.
-#' @param SpecName character vector (NSpec), the names of the chemical species
-#' @param NComp The number of components in the equilibrium system.
-#' @param NSpec The number of species (reactions) in the equilibrium system.
-#'
-#' @returns A vector of `NSpec` log10-transformed species concentrations.
-#'
-#' @noRd
-CalcLogSpecConc <- function(LogCompConc, SpecLogK, SpecStoich, SpecName, NComp, NSpec) {
-    .Call(`_BLMEngineInR_CalcLogSpecConc`, LogCompConc, SpecLogK, SpecStoich, SpecName, NComp, NSpec)
-}
-
 #' @title Calculate the Newton-Raphson step
 #'
 #' @param JacobianMatrix numeric matrix (NComp x NComp), the Jacobian matrix

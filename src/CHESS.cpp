@@ -103,32 +103,41 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::NumericVector Resid(NComp);
   Rcpp::NumericVector CompError(NComp);
   Rcpp::NumericVector CalcTotMoles(NComp);
-  //double IonicStrength;
-  Rcpp::NumericVector ActivityCoef(NSpec);
+  double IonicStrength;
+  Rcpp::NumericVector SpecActivityCoef(NSpec);
+  Rcpp::IntegerVector CompPosInSpec(NComp);
+  unsigned int iComp;
   TotMoles.names() = CompName;
   Resid.names() = CompName;
   CompError.names() = CompName;
   CalcTotConc.names() = CompName;
   CalcTotMoles.names() = CompName;
 
-  CompCtoM = SpecCtoM.import(SpecCtoM.begin(), SpecCtoM.begin() + NComp);
+  for (iComp = 0; iComp < NComp; iComp++){
+    CompPosInSpec(iComp) = iComp;
+  }
+
+  CompCtoM = SpecCtoM[CompPosInSpec];
   TotMoles = TotConc * CompCtoM;
 
-  SpecKTempAdj = TempCorrection(SysTempKelvin, NSpec, SpecK, SpecTempKelvin, SpecDeltaH);
-  Rcpp::NumericVector TmpVector = SpecKTempAdj / SpecK;
-  Rcpp::Rcout << TmpVector << std::endl;
+  SpecKTempAdj = TempCorrection(SysTempKelvin, NSpec, SpecK, SpecTempKelvin, 
+                                SpecDeltaH);
+  /*Rcpp::NumericVector TmpVector = SpecKTempAdj / SpecK;
+  Rcpp::Rcout << TmpVector << std::endl;*/
 
   // Get initial values for component concentrations
   CompConc = InitialGuess(TotConc, CompType, SpecKTempAdj, SpecStoich,
                           SpecName, NComp, NSpec);
+  SpecConc[CompPosInSpec] = CompConc;
 
-  /*IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
-  ActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, IonicStrength, 
-                                  SysTempKelvin);
-*/
+  // Calculate the ionic strength and activity coefficients
+  IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
+  SpecActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, 
+                                      IonicStrength, SysTempKelvin);
+
   // Initialize Species Concentrations
-  SpecConc = CalcSpecConc(CompConc, SpecKTempAdj, SpecStoich, SpecName,
-                          NComp, NSpec);
+  SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 
+                          SpecName, SpecActivityCoef);
 
   // Update Total Concentrations for Fixed Activity & Metal
   UpdateTotals(NComp, NSpec, DoTox, CompType, CompName, MetalName,
@@ -168,12 +177,18 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     CompConcStep = CalcStep(JacobianMatrix, Resid, NComp, CompType, CompName);
 
     // Update the component free concentrations
-    CompConc = SpecConc.import(SpecConc.begin(), SpecConc.begin() + NComp);
+    CompConc = SpecConc[CompPosInSpec];
     CompUpdate(NComp, CompConcStep, CompConc);
+    SpecConc[CompPosInSpec] = CompConc;
+    
+    // Calculate the ionic strength and activity coefficients
+    IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
+    SpecActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, 
+                                        IonicStrength, SysTempKelvin);
 
     // Calculate the species concentrations
-    SpecConc = CalcSpecConc(CompConc, SpecKTempAdj, SpecStoich, SpecName, NComp,
-                            NSpec);
+    SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 
+                            SpecName, SpecActivityCoef);
 
     // Update Total Concentrations for Fixed Activity & Metal
     UpdateTotals(NComp, NSpec, DoTox, CompType, CompName, MetalName,

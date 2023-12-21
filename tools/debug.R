@@ -51,3 +51,13 @@ ResultsTable[, c("Obs","ID","ID2","T.Cu","Cu")]
 # 5   5 Full_Organic Hard ser 5 1.342391e-08 5.397773e-10
 # 6   6 Full_Organic Hard ser 6 2.432579e-08 1.035269e-09
 # 7   7 Full_Organic Hard ser 7 3.764053e-08 1.677717e-09
+
+# With TempCorrection (15C) and Activity Correction (Debye only)
+#   Obs           ID        ID2         T.Cu           Cu
+# 1   1 Full_Organic Hard ser 1 2.672889e-09 1.054182e-10
+# 2   2 Full_Organic Hard ser 2 3.374221e-09 1.375028e-10
+# 3   3 Full_Organic Hard ser 3 5.221387e-09 2.281308e-10
+# 4   4 Full_Organic Hard ser 4 7.834061e-09 3.683141e-10
+# 5   5 Full_Organic Hard ser 5 1.214413e-08 6.282100e-10
+# 6   6 Full_Organic Hard ser 6 2.194183e-08 1.335361e-09
+# 7   7 Full_Organic Hard ser 7 3.428998e-08 2.415803e-09
