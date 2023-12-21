@@ -1,9 +1,12 @@
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
-//'
-//' @brief Update the totals that change with each iteration - the totals for 
-//'   fixed activity components, and the metal component during tox mode.
+//' @name UpdateTotals
+//' 
+//' @title Update Fixed Activity and Metal Totals
+//' 
+//' @description Update the totals that change with each iteration - the totals 
+//'   for fixed activity components, and the metal component during tox mode.
 //'
 //' @param NComp integer, the combined number of components in the simulation, 
 //'   including the input components, defined components (and including the 
@@ -55,9 +58,10 @@ void UpdateTotals(unsigned int NComp,
     }
 }
 
+//' @title Update Fixed Activity and Metal Totals
 //' 
-//' @brief Update the totals that change with each iteration - the totals for 
-//'   fixed activity components, and the metal component during tox mode. 
+//' @description Update the totals that change with each iteration - the totals 
+//'   for fixed activity components, and the metal component during tox mode. 
 //'   (returns a list)
 //'  
 //' @param NComp integer, the combined number of components in the simulation, 

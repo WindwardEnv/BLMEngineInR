@@ -45,17 +45,17 @@
 //'   kg (only used when DoTox == TRUE)
 //'
 //' @return list with the following elements:
-//'   \describe{
-//'     \item{SpecConc}{numeric vector (NSpec), the concentrations of each
-//'       species for which we have formation reactions}
-//'     \item{Iter}{integer, the number of Newton-Raphson iterations that we
-//'       needed to reach convergence}
-//'     \item{MaxError}{numeric, the highest final absolute error fraction
-//'       =max(abs(Resid / TotMoles))}
-//'     \item{CalcTotConc}{numeric vector (NComp), the calculated total
-//'       concentrations of each component in the simulation (units of e.g.,
-//'       mol/L and mol/kg)}
-//'   }
+//' \describe{
+//'   \item{SpecConc}{numeric vector (NSpec), the concentrations of each species
+//'     for which we have formation reactions}
+//'   \item{FinalIter}{integer, the number of Newton-Raphson iterations that we
+//'     needed to reach convergence}
+//'   \item{FinalMaxError}{numeric, the highest final absolute error fraction  
+//'     =max(abs(Resid / TotMoles))}
+//'   \item{CalcTotConc}{numeric vector (NComp), the calculated total
+//'     concentrations of each component in the simulation (units of e.g., mol/L
+//'     and mol/kg)}
+//' }
 //' @export
 //'
 //[[Rcpp::export]]
@@ -65,16 +65,19 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  unsigned int NComp,
                  unsigned int NSpec,
                  unsigned int NBLMetal,
+                 Rcpp::IntegerVector SpecMC,
                  Rcpp::NumericVector SpecK,
-                 Rcpp::NumericVector SpecTemp,
+                 Rcpp::NumericVector SpecTempKelvin,
                  Rcpp::NumericVector SpecDeltaH,
                  Rcpp::IntegerMatrix SpecStoich,
+                 Rcpp::IntegerVector SpecCharge,
+                 Rcpp::CharacterVector SpecActCorr,
                  Rcpp::NumericVector SpecCtoM,
                  Rcpp::CharacterVector SpecName,
                  Rcpp::CharacterVector CompType,
                  Rcpp::CharacterVector CompName,
                  Rcpp::NumericVector TotConc,
-                 double SysTemp,
+                 double SysTempKelvin,
                  bool DoTox,
                  Rcpp::String MetalName,
                  unsigned int MetalComp,
@@ -98,8 +101,10 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::List ResidResults;
   unsigned int WhichMax;
   Rcpp::NumericVector Resid(NComp);
-  Rcpp::NumericVector CompError(NComp);    // the absolute ratios of residuals to totals
-  Rcpp::NumericVector CalcTotMoles(NComp); // the calculated total concentrations (mol)
+  Rcpp::NumericVector CompError(NComp);
+  Rcpp::NumericVector CalcTotMoles(NComp);
+  //double IonicStrength;
+  Rcpp::NumericVector ActivityCoef(NSpec);
   TotMoles.names() = CompName;
   Resid.names() = CompName;
   CompError.names() = CompName;
@@ -109,12 +114,18 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   CompCtoM = SpecCtoM.import(SpecCtoM.begin(), SpecCtoM.begin() + NComp);
   TotMoles = TotConc * CompCtoM;
 
-  SpecKTempAdj = TempCorrection(SysTemp, NSpec, SpecK, SpecTemp, SpecDeltaH);
+  SpecKTempAdj = TempCorrection(SysTempKelvin, NSpec, SpecK, SpecTempKelvin, SpecDeltaH);
+  Rcpp::NumericVector TmpVector = SpecKTempAdj / SpecK;
+  Rcpp::Rcout << TmpVector << std::endl;
 
   // Get initial values for component concentrations
   CompConc = InitialGuess(TotConc, CompType, SpecKTempAdj, SpecStoich,
                           SpecName, NComp, NSpec);
 
+  /*IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
+  ActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, IonicStrength, 
+                                  SysTempKelvin);
+*/
   // Initialize Species Concentrations
   SpecConc = CalcSpecConc(CompConc, SpecKTempAdj, SpecStoich, SpecName,
                           NComp, NSpec);
@@ -198,7 +209,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
   return Rcpp::List::create(
       Rcpp::Named("SpecConc") = SpecConc,
-      Rcpp::Named("Iter") = Iter,
-      Rcpp::Named("MaxError") = MaxError,
+      Rcpp::Named("FinalIter") = Iter,
+      Rcpp::Named("FinalMaxError") = MaxError,
       Rcpp::Named("CalcTotConc") = CalcTotConc);
 }

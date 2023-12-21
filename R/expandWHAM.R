@@ -59,8 +59,8 @@
 #'   equilibrium coefficients (modified and returned)
 #' @param SpecDeltaH numeric vector of length `NSpec`; the enthalpy change for
 #'   each formation reaction/species (modified and returned)
-#' @param SpecTemp numeric vector of length `NSpec`; Tmperature at which the
-#'   logK/deltaH were measured (modified and returned)
+#' @param SpecTempKelvin numeric vector of length `NSpec`; Tmperature at which
+#'   the logK/deltaH were measured (modified and returned) in Kelvin
 #' @param NPhase integer; Number of phases
 #' @param PhaseCompList integer matrix of `NPhase` rows and `max(PhaseNC)+2`
 #'   columns; the list of components used to create a given phase (modified and
@@ -107,7 +107,7 @@ ExpandWHAM = function(NMass,
                       SpecStoich,
                       SpecLogK,
                       SpecDeltaH,
-                      SpecTemp,
+                      SpecTempKelvin,
                       NPhase,
                       PhaseCompList,
                       PhaseStoich,
@@ -434,8 +434,8 @@ ExpandWHAM = function(NMass,
                          dimnames = list(paste0(
                            "newOCSpecies", 1:WNSpec
                          ))))
-    SpecTemp = c(SpecTemp,
-                 array(0.0, dim = WNSpec,
+    SpecTempKelvin = c(SpecTempKelvin,
+                 array(298.15, dim = WNSpec,
                        dimnames = list(paste0(
                          "newOCSpecies", 1:WNSpec
                        ))))
@@ -677,7 +677,7 @@ ExpandWHAM = function(NMass,
   rownames(SpecStoich) = SpecName
   names(SpecLogK) = SpecName
   names(SpecDeltaH) = SpecName
-  names(SpecTemp) = SpecName
+  names(SpecTempKelvin) = SpecName
 
   # Re-ordering species so components are in front
   Reorder = match(c(CompName, SpecName[SpecName %in% CompName == FALSE]), SpecName)
@@ -689,7 +689,7 @@ ExpandWHAM = function(NMass,
   SpecStoich = SpecStoich[Reorder, ]
   SpecLogK = SpecLogK[Reorder]
   SpecDeltaH = SpecDeltaH[Reorder]
-  SpecTemp = SpecTemp[Reorder]
+  SpecTempKelvin = SpecTempKelvin[Reorder]
 
   SpecNC = rowSums(SpecStoich != 0L)
   names(SpecNC) = SpecName
@@ -752,7 +752,7 @@ ExpandWHAM = function(NMass,
     SpecStoich = SpecStoich,
     SpecLogK = SpecLogK,
     SpecDeltaH = SpecDeltaH,
-    SpecTemp = SpecTemp,
+    SpecTempKelvin = SpecTempKelvin,
 
     # Phase List
     PhaseCompList = PhaseCompList,

@@ -83,12 +83,13 @@ BLM = function(ParamFile = character(),
     formalArgs("CHESS") %in% names(FunctionInputs) == FALSE]
 
   # Initialize the output array
-  MiscOutputCols = c("Iter", "MaxError")
+  MiscOutputCols = c("FinalIter", "FinalMaxError")
   TotConcCols = paste0("T.", CompName)
   Out = data.frame(Obs = 1:AllInput$NObs)
-  Out[,MiscOutputCols] = NA
-  Out[,SpecName] = NA
-  Out[,TotConcCols] = NA
+  Out = cbind(Out, AllInput$InLabObs)
+  Out[, MiscOutputCols] = NA
+  Out[, SpecName] = NA
+  Out[, TotConcCols] = NA
   # Out = array(
   #   NA,
   #   dim = c(AllInput$NObs, NSpec + NComp + length(MiscOutputCols)),
@@ -103,11 +104,11 @@ BLM = function(ParamFile = character(),
     }
 
     ThisInput$InLab = AllInput$InLabObs[iObs, ]
-    ThisInput$SysTemp = AllInput$SysTempObs[iObs]
-    ThisInput$TotConc = AllInput$TotConcObs[iObs, ]
+    ThisInput$SysTempKelvin = AllInput$SysTempKelvinObs[iObs]
+    ThisInput$TotConc = AllInput$TotConcObs[iObs, CompName]
 
     if (DoTox) {
-      FunctionInputs$CATarget = CATargetDefault * AllInput$TotConc[BLComp]
+      FunctionInputs$CATarget = CATargetDefault * ThisInput$TotConc[BLComp]
     }
 
     # 3. Run the speciation problem

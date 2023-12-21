@@ -116,9 +116,26 @@ Rcpp::List UpdateTotalsList(unsigned int NComp,
                             Rcpp::NumericVector TotMoles, 
                             Rcpp::NumericVector TotConc);
 
-Rcpp::NumericVector TempCorrection(double SysTemp,
+Rcpp::NumericVector TempCorrection(double SysTempKelvin,
                                    unsigned int NSpec,
                                    Rcpp::NumericVector SpecK,
-                                   Rcpp::NumericVector SpecTemp,
+                                   Rcpp::NumericVector SpecTempKelvin,
                                    Rcpp::NumericVector SpecDeltaH);
+
+double CalcIonicStrength(unsigned int NSpec,
+                         Rcpp::NumericVector SpecMoles,
+                         Rcpp::IntegerVector SpecCharge,
+                         Rcpp::IntegerVector SpecMC);
+
+double CalcChargeBalance(unsigned int NSpec,
+                         Rcpp::NumericVector SpecMoles,
+                         Rcpp::IntegerVector SpecCharge,
+                         Rcpp::IntegerVector SpecMC);
+
+Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
+                                     Rcpp::CharacterVector SpecActCorr,
+                                     Rcpp::IntegerVector SpecCharge,
+                                     double IonicStrength,
+                                     double SysTempKelvin);
+
 #endif //__CHESSFUNCTIONS_H__

@@ -5,8 +5,8 @@
 #'
 #' @param ParamFile the path and file name to a parameter file
 #'
-#' @returns Returns whatever is needed for the speciation problem to be run. A
-#' `list` object with the following components:
+#' @returns Returns a `list` object with each list item named according to
+#'
 #' \describe{
 #'  \item{\code{NComp}}{integer; the number of components}
 #'  \item{\code{NSpec}}{integer; the number of species}
@@ -52,7 +52,7 @@
 #'    DefCompMC, DefCompType, DefCompActCorr, DefCompSiteDens}}{The ... of
 #'    defined components.}
 #'  \item{\code{SpecName, SpecMC, SpecActCorr, SpecNC, SpecCompList, SpecStoich,
-#'    SpecLogK, SpecDeltaH, SpecTemp, SpecCtoM, SpecCharge}}{The...of species
+#'    SpecLogK, SpecDeltaH, SpecTempKelvin, SpecCtoM, SpecCharge}}{The...of species
 #'    formation reactions}
 #'  \item{\code{PhaseName, PhaseNC, PhaseCompList, PhaseStoich, PhaseLogK,
 #'    PhaseDeltaH, PhaseTemp, PhaseMoles}}{The...of phases in the phase list.}
@@ -103,13 +103,16 @@ DefineProblem = function(ParamFile) {
   NCAT = Tmp[9, 1]
   stopifnot(NMass > 0, NInLab > 0, NInVar > 0, NInComp > 0, NSpec > 0)
 
-  # read compartment list
+  # read mass compartment list
   SkipRows = SkipRows + 9 + 2
   Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                  nrows = NMass, strip.white = TRUE)
   MassName = as.character(Tmp[, 1])
   MassAmt = as.numeric(Tmp[, 2])
   MassUnit = as.character(Tmp[, 3])
+  AqueousMC = which(tolower(MassName) %in% c("water", "aqueous"))
+  BioticLigMC = which(grepl("BL", MassName, ignore.case = TRUE) |
+                        grepl("gill", MassName, ignore.case = TRUE))
 
   # read input Labels
   SkipRows = SkipRows + NMass + 3
@@ -217,7 +220,7 @@ DefineProblem = function(ParamFile) {
   SpecStoich = matrix(data = 0, nrow = NSpec, ncol = NComp)
   SpecLogK = numeric(NSpec)
   SpecDeltaH = numeric(NSpec)
-  SpecTemp = numeric(NSpec)
+  SpecTempKelvin = numeric(NSpec)
 
   # read species information including stoichiometry, log Ks, etc.
   SkipRows = SkipRows + NDefComp + 4
@@ -237,7 +240,7 @@ DefineProblem = function(ParamFile) {
     }
     SpecLogK[i] = as.numeric(trimws(TmpSplit[[i]][5 + SpecNC[i] * 2]))
     SpecDeltaH[i] = as.numeric(trimws(TmpSplit[[i]][6 + SpecNC[i] * 2]))
-    SpecTemp[i] = as.numeric(trimws(TmpSplit[[i]][7 + SpecNC[i] * 2]))
+    SpecTempKelvin[i] = as.numeric(trimws(TmpSplit[[i]][7 + SpecNC[i] * 2]))
   }
 
   # -Get Phase information
@@ -347,13 +350,12 @@ DefineProblem = function(ParamFile) {
   dimnames(SpecStoich) = list(Spec = SpecName, Comp = CompName)
   SpecLogK = c(rep(0, NComp), SpecLogK)
   SpecDeltaH = c(rep(0, NComp), SpecDeltaH)
-  SpecTemp = c(rep(0, NComp), SpecTemp)
+  SpecTempKelvin = c(rep(0, NComp), SpecTempKelvin)
 
   # Trim down CompList
   SpecCompList = SpecCompList[, 1:max(which(colSums(SpecCompList) > 0))]
 
   # Final positions of special definition parameters
-  BLMetalSpecs = which(SpecName %in% BLMetalName)
   MetalComp = which(SpecName %in% MetalName)
   BLComp = which(SpecName %in% BLName)
 
@@ -367,6 +369,7 @@ DefineProblem = function(ParamFile) {
 
   # assemble Output
   Out = list(
+
     # Counts
     NMass = NMass,
     NInLab = NInLab,
@@ -386,6 +389,8 @@ DefineProblem = function(ParamFile) {
     MassName = MassName,
     MassAmt = MassAmt,
     MassUnit = MassUnit,
+    AqueousMC = AqueousMC,
+    BioticLigMC = BioticLigMC,
 
     # Input Labels
     InLabName = InLabName,
@@ -423,7 +428,7 @@ DefineProblem = function(ParamFile) {
     SpecStoich = SpecStoich,
     SpecLogK = SpecLogK,
     SpecDeltaH = SpecDeltaH,
-    SpecTemp = SpecTemp,
+    SpecTempKelvin = SpecTempKelvin,
 
     # Phase List
     PhaseName = PhaseName,
@@ -441,7 +446,7 @@ DefineProblem = function(ParamFile) {
     MetalName = MetalName,
     MetalComp = MetalComp,
     BLMetalName = BLMetalName,
-    BLMetalSpecs = BLMetalSpecs,
+    # BLMetalSpecs = BLMetalSpecs,#this needs to be figured out after ExpandWHAM
     DoWHAM = DoWHAM,
 
     # Critical Accumulation Table
@@ -459,7 +464,7 @@ DefineProblem = function(ParamFile) {
 
   stopifnot(!any(duplicated(c(InLabName, InVarName, SpecName))))
 
-  # Make SpecCtoM and SpecCharge
+  # Make SpecCtoM, SpecCharge, SpecK
   SpecCtoM = array(Out$MassAmt[Out$SpecMC], dim = Out$NSpec,
                    dimnames = list(Out$SpecName))
   Out$SpecCtoM = SpecCtoM
@@ -468,7 +473,9 @@ DefineProblem = function(ParamFile) {
   Out$SpecK = array(10 ^ Out$SpecLogK, dim = Out$NSpec,
                     dimnames = list(Out$SpecName))
 
-
+  # Final positions of special definition parameters
+  BLMetalSpecs = which(Out$SpecName %in% BLMetalName)
+  Out$BLMetalSpecs = BLMetalSpecs
 
   return(Out)
 }

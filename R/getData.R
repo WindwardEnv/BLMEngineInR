@@ -24,6 +24,8 @@
 #'    columns; the input component concentrations for each observation}
 #' }
 #'
+#' @family BLMEngine Functions
+#'
 #' @export
 #'
 #' @examples
@@ -120,16 +122,18 @@ ReadInputsFromFile = function(
 #'
 #' @return Returns a \code{list} object with the following components:
 #' \describe{
-#'  \item{\code{SysTempObs}}{numeric vector of length \code{NObs}; input
+#'  \item{\code{SysTempCelsiusObs}}{numeric vector of length \code{NObs}; input
 #'    temperatures, in Celsius}
 #'  \item{\code{pH}}{numeric vector (\code{NObs}); input pH for each
 #'    observation}
-#'  \item{\cdoe{TotConcObs}}{numeric matrix with \code{NObs} rows and
+#'  \item{\code{TotConcObs}}{numeric matrix with \code{NObs} rows and
 #'    \code{NComp} columns; the total concentrations of each component,
 #'    including derived components}
 #' }
 #'
 #' @keywords internal
+#'
+#' @family BLMEngine Functions
 #'
 #' @noRd
 MatchInputsToProblem = function(
@@ -146,7 +150,7 @@ MatchInputsToProblem = function(
   TotConcObs[, InCompName] = as.matrix(InCompObs)
 
   # -get temperatures
-  SysTempObs = as.numeric(InVarObs[, InVarName[InVarType == "Temperature"]])
+  SysTempCelsiusObs = as.numeric(InVarObs[, InVarName[InVarType == "Temperature"]])
 
   # -get pH - from InVarObs or InCompObs
   if (any(InVarType == "pH")) {
@@ -162,7 +166,7 @@ MatchInputsToProblem = function(
     OM = as.matrix(InVarObs[, InVarName[InVarType %in% c("Temperature", "pH") == FALSE], drop = FALSE]) # nolint: line_length_linter.
     for (i in which(grepl("WHAM", InVarType))) {
       OMColI = OM[, InVarName[i], drop = FALSE]
-      
+
       # Initialize FracAFA and FracHA with the needed values
       FracAFACol = matrix(1, nrow = NObs, ncol = 1)
       FracHACol = matrix(NA, nrow = NObs, ncol = 1)
@@ -176,7 +180,7 @@ MatchInputsToProblem = function(
                                      (InVarType %in% "PercHA")],
                        drop = FALSE] / 100
       }
-      
+
       # Pull out relevant HA and FA components
       FAComps = which(DefCompFromVar %in% paste0(InVarName[i], "-FA_"))
       FACompName = DefCompName[FAComps]
@@ -184,7 +188,7 @@ MatchInputsToProblem = function(
       HAComps = which(DefCompFromVar %in% paste0(InVarName[i], "-HA_"))
       HACompName = DefCompName[HAComps]
       HACompSiteDens = DefCompSiteDens[HAComps]
-      
+
       # Calculate the component concentrations
       if (InVarType[i] == "WHAM-FA") {
         # This is a FA-only input variable
@@ -232,7 +236,8 @@ MatchInputsToProblem = function(
   }
 
   Out = list(
-    SysTempObs = SysTempObs,
+    SysTempCelsiusObs = SysTempCelsiusObs,
+    SysTempKelvinObs = SysTempCelsiusObs + 273.15,
     pH = pH,
     TotConcObs = TotConcObs
   )
@@ -273,21 +278,23 @@ MatchInputsToProblem = function(
 #'
 #' @return Returns a `list` object with the following components:
 #' \describe{
-#'  \item{\code{NObs}}{integer; the number of chemistry observations}
-#'  \item{\code{Labels}}{matrix with \code{NObs} rows and \code{NInLab}
-#'    columns; the label columns for each observation}
-#'  \item{\code{InVarObs}}{matrix with \code{NObs} rows and \code{NInVar}
-#'    columns; the input variables for each observation}
-#'  \item{\code{SysTempObs}}{numeric vector of length \code{NObs}; input
-#'    temperatures, in Celsius}
-#'  \item{\code{pH}}{numeric vector (\code{NObs}); input pH for each
-#'    observation}
-#'  \item{\cdoe{TotConcObs}}{numeric matrix with \code{NObs} rows and
-#'    \code{NComp} columns; the total concentrations of each component,
-#'    including derived components}
+#'   \item{NObs}{integer; the number of chemistry observations}
+#'   \item{InLabObs}{matrix with NObs rows and InLab columns; the input labels
+#'     for each observation}
+#'   \item{InVarObs}{matrix with NObs rows and InVar columns; the input
+#'     variables for each observation}
+#'   \item{InCompObs}{matrix with NObs rows and InComp columns; the input
+#'     component concentrations for each observation}
+#'   \item{SysTempCelsiusObs}{numeric vector of length NObs; input temperatures, in
+#'     Celsius}
+#'   \item{pH}{numeric vector NObs; input pH for each observation}
+#'   \item{TotConcObs}{numeric matrix with NObs rows and NComp columns; the
+#'     total concentrations of each component, including derived components}}
 #' }
 #'
 #' @keywords internal
+#'
+#' @family BLMEngine Functions
 #'
 #' @noRd
 GetData = function(InputFile,
