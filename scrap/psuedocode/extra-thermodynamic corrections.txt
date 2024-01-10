@@ -15,7 +15,7 @@ Ionic strength adjustments
     - DONE: write CalcIonicStrength function
     - TODO: will need to have a function for each option
       - DONE: Ext D-H
-      - TODO: Davies?
+      - DONE: Davies?
       - TODO: WHAM?        
       - TODO: MoleFraction?
       - TODO: ChargeFraction?
