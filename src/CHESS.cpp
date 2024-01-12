@@ -77,6 +77,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::CharacterVector CompType,
                  Rcpp::CharacterVector CompName,
                  Rcpp::NumericVector TotConc,
+                 Rcpp::NumericVector SolHS,
                  double SysTempKelvin,
                  bool DoTox,
                  Rcpp::String MetalName,
@@ -134,6 +135,9 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
+
+  // Calculate Donnan Layer effects
+  
 
   // Initialize Species Concentrations
   SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 

@@ -22,7 +22,8 @@
 double CalcChargeBalance(unsigned int NSpec,
                          Rcpp::NumericVector SpecMoles,
                          Rcpp::IntegerVector SpecCharge,
-                         Rcpp::IntegerVector SpecMC) {
+                         Rcpp::IntegerVector SpecMC,
+                         integer) {
   /* output */
   double ChargeBal;
 
@@ -36,4 +37,22 @@ double CalcChargeBalance(unsigned int NSpec,
   }
 
   return ChargeBal;
+}
+
+
+Rcpp::NumericVector CalcWHAMSpecCharge(unsigned int NSpec, 
+                                       Rcpp::NumericVector SpecMoles,
+                                       Rcpp::IntegerVector SpecCharge,
+                                       Rcpp::IntegerVector SpecMC) {
+  /* output */
+  Rcpp::NumericVector WHAMSpecCharge(2);
+
+  /* variables */
+  unsigned int iSpec;
+
+  for (iSpec = 0; iSpec < NSpec, iSpe++) {
+    if (SpecMC(iSpec) == Aq)
+  }
+
+  return WHAMSpecCharge;
 }

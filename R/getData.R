@@ -162,6 +162,8 @@ MatchInputsToProblem = function(
   }
 
   # -get organic matter and parse into components
+  SolHSObs = array(0.0, dim = c(NObs, 2),
+                   dimnames = list(Obs = 1:NObs, c("HA", "FA")))
   if (any(grepl("WHAM", InVarType))) {
     OM = as.matrix(InVarObs[, InVarName[InVarType %in% c("Temperature", "pH") == FALSE], drop = FALSE]) # nolint: line_length_linter.
     for (i in which(grepl("WHAM", InVarType))) {
@@ -202,6 +204,18 @@ MatchInputsToProblem = function(
         TotConcObs[, FACompName] =
           (OMColI * (1 - FracHACol) * FracAFACol) %*% FACompSiteDens
       }
+      # TotConcObs[, HACompName] = SolHAObs %*% HACompSiteDens
+      # TotConcObs[, FACompName] = SolFAObs %*% FACompSiteDens
+
+      # # Calculate the moles of each OM component in solution...this doesn't
+      # # make sense...why would we multiply by the site density AGAIN?
+      # SolHAObs = TotConcObs[, HACompName] %*% HACompSiteDens
+      # SolFAObs = TotConcObs[, FACompName] %*% FACompSiteDens
+      SolHSObs = array(c(rowSums(TotConcObs[, HACompName]),
+                         rowSums(TotConcObs[, FACompName])),
+                       dim = c(NObs, 2),
+                       dimnames = list(Obs = 1:NObs, c("HA", "FA")))
+
     }
   }
 
@@ -239,7 +253,8 @@ MatchInputsToProblem = function(
     SysTempCelsiusObs = SysTempCelsiusObs,
     SysTempKelvinObs = SysTempCelsiusObs + 273.15,
     pH = pH,
-    TotConcObs = TotConcObs
+    TotConcObs = TotConcObs,
+    SolHSObs = SolHSObs
   )
 
   return(Out)
@@ -285,8 +300,8 @@ MatchInputsToProblem = function(
 #'     variables for each observation}
 #'   \item{InCompObs}{matrix with NObs rows and InComp columns; the input
 #'     component concentrations for each observation}
-#'   \item{SysTempCelsiusObs}{numeric vector of length NObs; input temperatures, in
-#'     Celsius}
+#'   \item{SysTempCelsiusObs}{numeric vector of length NObs; input temperatures,
+#'     in Celsius}
 #'   \item{pH}{numeric vector NObs; input pH for each observation}
 #'   \item{TotConcObs}{numeric matrix with NObs rows and NComp columns; the
 #'     total concentrations of each component, including derived components}}

@@ -6,8 +6,8 @@ devtools::load_all()
 start.time = Sys.time()
 
 ResultsTable = BLM(
-  ParamFile = "scrap/parameter file format/full_organic.dat4",
-  InputFile = "scrap/parameter file format/full_organic.blm4",
+  ParamFile = "scrap/parameter file format/abbrev_organic.dat4",
+  InputFile = "scrap/parameter file format/abbrev_organic.blm4",
   DoTox = T,
   iCA = 1L,
   QuietFlag ="Quiet",

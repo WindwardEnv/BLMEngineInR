@@ -92,24 +92,24 @@ DefineProblem = function(ParamFile) {
   SkipRows = 2
   Tmp = read.csv(file = ParamFile, header = FALSE, skip = SkipRows,
                  nrows = 9, strip.white = TRUE)
-  NMass = Tmp[1, 1]
-  NInLab = Tmp[2, 1]
-  NInVar = Tmp[3, 1]
-  NInComp = Tmp[4, 1]
-  NDefComp = Tmp[5, 1]
-  NSpec = Tmp[6, 1]
-  NPhase = Tmp[7, 1]
-  NSpecialDef = Tmp[8, 1]
-  NCAT = Tmp[9, 1]
+  NMass = as.numeric(Tmp[1, 1])
+  NInLab = as.numeric(Tmp[2, 1])
+  NInVar = as.numeric(Tmp[3, 1])
+  NInComp = as.numeric(Tmp[4, 1])
+  NDefComp = as.numeric(Tmp[5, 1])
+  NSpec = as.numeric(Tmp[6, 1])
+  NPhase = as.numeric(Tmp[7, 1])
+  NSpecialDef = as.numeric(Tmp[8, 1])
+  NCAT = as.numeric(Tmp[9, 1])
   stopifnot(NMass > 0, NInLab > 0, NInVar > 0, NInComp > 0, NSpec > 0)
 
   # read mass compartment list
   SkipRows = SkipRows + 9 + 2
   Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                  nrows = NMass, strip.white = TRUE)
-  MassName = as.character(Tmp[, 1])
+  MassName = as.character(trimws(Tmp[, 1]))
   MassAmt = as.numeric(Tmp[, 2])
-  MassUnit = as.character(Tmp[, 3])
+  MassUnit = as.character(trimws(Tmp[, 3]))
   AqueousMC = which(tolower(MassName) %in% c("water", "aqueous"))
   BioticLigMC = which(grepl("BL", MassName, ignore.case = TRUE) |
                         grepl("gill", MassName, ignore.case = TRUE))
@@ -124,9 +124,10 @@ DefineProblem = function(ParamFile) {
   SkipRows = SkipRows + NInLab + 2
   Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                  nrows = NInVar, strip.white = TRUE)
-  InVarName = as.character(Tmp[, 1])
-  InVarMC = match(Tmp[, 2], MassName)
-  InVarType = as.character(Tmp[, 3])
+  InVarName = as.character(trimws(Tmp[, 1]))
+  InVarMC = as.character(trimws(Tmp[, 2]))
+  InVarMC = match(trimws(Tmp[, 2]), MassName)
+  InVarType = as.character(trimws(Tmp[, 3]))
   stopifnot(!any(duplicated(InVarName)))
   stopifnot(all(!is.na(InVarMC)))
   stopifnot(all(InVarType %in% c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
@@ -149,6 +150,7 @@ DefineProblem = function(ParamFile) {
   NComp = NInComp
   InCompName = CompName = as.character(trimws(Tmp[, 1]))
   CompCharge = as.integer(Tmp[, 2])
+  # CompMCName = as.character(trimws(Tmp[, 3]))
   CompMC = match(trimws(Tmp[, 3]), MassName)
   CompType = as.character(trimws(Tmp[, 4]))
   CompActCorr = as.character(trimws(Tmp[, 5]))
@@ -164,6 +166,7 @@ DefineProblem = function(ParamFile) {
         CompName = c(CompName, "H")
         CompCharge = c(CompCharge, 1L)
         CompMC = c(CompMC, iMass)
+        # CompMCName = c(CompMCName, MassName[iMass])
         CompType = c(CompType, "FixedAct")
         CompActCorr = c(CompActCorr, "Debye")
         CompSiteDens = c(CompSiteDens, 1.0)
@@ -181,21 +184,23 @@ DefineProblem = function(ParamFile) {
   if (NDefComp > 0) {
     Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                    nrows = NDefComp, strip.white = TRUE)
-    DefCompName = as.character(Tmp[, 1])
+    DefCompName = as.character(trimws(Tmp[, 1]))
     DefCompFromNum = as.numeric(Tmp[, 2])
-    DefCompFromVar = as.character(Tmp[, 2])
+    DefCompFromVar = as.character(trimws(Tmp[, 2]))
     DefCompFromVar[!is.na(DefCompFromNum)] = NA
     DefCompFromNum[!is.na(DefCompFromVar)] = NA
     DefCompCharge = as.integer(Tmp[, 3])
-    DefCompMC = match(Tmp[, 4], MassName)
-    DefCompType = as.character(Tmp[, 5])
-    DefCompActCorr = as.character(Tmp[, 6])
+    # DefCompMCName = as.character(trimws(Tmp[, 4]))
+    DefCompMC = match(trimws(Tmp[, 4]), MassName)
+    DefCompType = as.character(trimws(Tmp[, 5]))
+    DefCompActCorr = as.character(trimws(Tmp[, 6]))
     DefCompSiteDens = as.numeric(Tmp[, 7])
   } else {
     DefCompName = character()
     DefCompFromNum = numeric()
     DefCompFromVar = character()
     DefCompCharge = integer()
+    # DefCompMCName = character()
     DefCompMC = integer()
     DefCompType = character()
     DefCompActCorr = character()
@@ -207,6 +212,7 @@ DefineProblem = function(ParamFile) {
   CompName = c(CompName, DefCompName)
   CompCharge = c(CompCharge, DefCompCharge)
   CompMC = c(CompMC, DefCompMC)
+  # CompMCName = c(CompMCName, DefCompMCName)
   CompType = c(CompType, DefCompType)
   CompActCorr = c(CompActCorr, DefCompActCorr)
   CompSiteDens = c(CompSiteDens, DefCompSiteDens)
@@ -214,6 +220,7 @@ DefineProblem = function(ParamFile) {
   # Create variables for species information
   SpecName = character(NSpec)
   SpecMC = integer(NSpec)
+  # SpecMCName = character(NSpec)
   SpecActCorr = integer(NSpec)
   SpecNC = integer(NSpec)
   SpecCompList = matrix(data = 0, nrow = NSpec, ncol = NComp)
@@ -230,6 +237,7 @@ DefineProblem = function(ParamFile) {
   for (i in 1:NSpec) {
     SpecName[i] = as.character(trimws(TmpSplit[[i]][1]))
     SpecMC[i] = as.integer(match(trimws(TmpSplit[[i]][2]), MassName))
+    # SpecMCName[i] = as.character(trimws(TmpSplit[[i]][2]))
     SpecActCorr[i] = as.character(trimws(TmpSplit[[i]][3]))
     SpecNC[i] = as.integer(trimws(TmpSplit[[i]][4]))
     for (j in 1:SpecNC[i]) {
@@ -341,6 +349,7 @@ DefineProblem = function(ParamFile) {
   NSpec = NComp + NSpec
   SpecName = c(CompName, SpecName)
   SpecMC = c(CompMC, SpecMC)
+  # SpecMCName = c(CompMCName, SpecMCName)
   SpecActCorr = c(CompActCorr, SpecActCorr)
   SpecNC = c(array(1L, NComp), SpecNC)
   Tmp = matrix(0, nrow = NComp, ncol = NComp)
@@ -405,6 +414,7 @@ DefineProblem = function(ParamFile) {
     CompName = CompName,
     CompCharge = CompCharge,
     CompMC = CompMC,
+    # CompMCName = CompMCName,
     CompType = CompType,
     CompActCorr = CompActCorr,
     CompSiteDens = CompSiteDens,
@@ -415,6 +425,7 @@ DefineProblem = function(ParamFile) {
     DefCompFromVar = DefCompFromVar,
     DefCompCharge = DefCompCharge,
     DefCompMC = DefCompMC,
+    # DefCompMCName = DefCompMCName,
     DefCompType = DefCompType,
     DefCompActCorr = DefCompActCorr,
     DefCompSiteDens = DefCompSiteDens,
@@ -422,6 +433,7 @@ DefineProblem = function(ParamFile) {
     # Formation Reactions
     SpecName = SpecName,
     SpecMC = SpecMC,
+    # SpecMCName = SpecMCName,
     SpecActCorr = SpecActCorr,
     SpecNC = SpecNC,
     SpecCompList = SpecCompList,
