@@ -62,6 +62,7 @@
 Rcpp::List CHESS(Rcpp::String QuietFlag,
                  double ConvergenceCriteria,
                  unsigned int MaxIter,
+                 unsigned int NMass,
                  unsigned int NComp,
                  unsigned int NSpec,
                  unsigned int NBLMetal,
@@ -77,14 +78,20 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::CharacterVector CompType,
                  Rcpp::CharacterVector CompName,
                  Rcpp::NumericVector TotConc,
+                 bool DoWHAM,
+                 int AqueousMC,
+                 Rcpp::IntegerVector DonnanMC,
                  Rcpp::NumericVector SolHS,
+                 Rcpp::NumericVector wMolWt,
+                 Rcpp::NumericVector wRadius,
+                 double wDLF,
+                 double wKZED,
                  double SysTempKelvin,
                  bool DoTox,
                  Rcpp::String MetalName,
                  unsigned int MetalComp,
                  Rcpp::IntegerVector BLMetalSpecs,
-                 double CATarget)
-{
+                 double CATarget) {
 
   /*outputs*/
   Rcpp::NumericVector SpecConc(NSpec); // species concentrations after optimization
@@ -107,6 +114,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   double IonicStrength;
   Rcpp::NumericVector SpecActivityCoef(NSpec);
   Rcpp::IntegerVector CompPosInSpec(NComp);
+  Rcpp::NumericVector WHAMSpecCharge(2);
   unsigned int iComp;
   TotMoles.names() = CompName;
   Resid.names() = CompName;
@@ -136,8 +144,14 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
 
-  // Calculate Donnan Layer effects
-  
+  // Calculate Donnan Layer effects  
+  if (DoWHAM) {
+    WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
+                                        SpecCharge, SpecMC, AqueousMC);
+    SpecCtoM = CalcDonnanLayer(NSpec, IonicStrength, SpecCtoM, SpecMC,
+                               AqueousMC, DonnanMC, wMolWt, wRadius, wDLF,
+                               wKZED, WHAMSpecCharge, SolHS);
+  }  
 
   // Initialize Species Concentrations
   SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 
@@ -189,6 +203,15 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
     SpecActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, 
                                         IonicStrength, SysTempKelvin);
+
+    // Calculate Donnan Layer effects  
+    if (DoWHAM) {
+      WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
+                                          SpecCharge, SpecMC, AqueousMC);
+      SpecCtoM = CalcDonnanLayer(NSpec, IonicStrength, SpecCtoM, SpecMC, AqueousMC, 
+                                DonnanMC, wMolWt, wRadius, wDLF, wKZED, 
+                                WHAMSpecCharge, SolHS);
+    }    
 
     // Calculate the species concentrations
     SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 

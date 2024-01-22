@@ -58,8 +58,8 @@
 #' }
 #' @export
 #'
-CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecMC, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, SpecCtoM, SpecName, CompType, CompName, TotConc, SysTempKelvin, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
-    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NComp, NSpec, NBLMetal, SpecMC, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, SpecCtoM, SpecName, CompType, CompName, TotConc, SysTempKelvin, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
+CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NMass, NComp, NSpec, NBLMetal, SpecMC, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, SpecCtoM, SpecName, CompType, CompName, TotConc, DoWHAM, AqueousMC, DonnanMC, SolHS, wMolWt, wRadius, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget) {
+    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NMass, NComp, NSpec, NBLMetal, SpecMC, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, SpecCtoM, SpecName, CompType, CompName, TotConc, DoWHAM, AqueousMC, DonnanMC, SolHS, wMolWt, wRadius, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalComp, BLMetalSpecs, CATarget)
 }
 
 #' @title Calculate the Moles and Concentrations For This Iteration

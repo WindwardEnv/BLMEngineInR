@@ -1,20 +1,19 @@
 #include <Rcpp.h>
 #include <cmath>
+#include "CHESSFunctions.h"
 
-Rcpp::NumericVector CalcDonnanLayer (
-  unsigned int NSpec,
-  double IonicStrength,
-  Rcpp::NumericVector SpecCtoM,
-  Rcpp::IntegerVector SpecMC,
-  int AqueousMC,
-  Rcpp::IntegerVector DonnanMC,
-  Rcpp::NumericVector wMolWt,
-  Rcpp::NumericVector wRadius,
-  double wDLF,
-  double wKZED,
-  Rcpp::NumericVector WHAMSpecCharge,
-  Rcpp::NumericVector SolHS
-) {
+Rcpp::NumericVector CalcDonnanLayer (unsigned int NSpec,
+                                     double IonicStrength,
+                                     Rcpp::NumericVector SpecCtoM,
+                                     Rcpp::IntegerVector SpecMC,
+                                     int AqueousMC,
+                                     Rcpp::IntegerVector DonnanMC,
+                                     Rcpp::NumericVector wMolWt,
+                                     Rcpp::NumericVector wRadius,
+                                     double wDLF,
+                                     double wKZED,
+                                     Rcpp::NumericVector WHAMSpecCharge,
+                                     Rcpp::NumericVector SolHS) {
 
   /* outputs */
   Rcpp::NumericVector DonnanLayerSpecCtoM = SpecCtoM;
@@ -58,7 +57,7 @@ Rcpp::NumericVector CalcDonnanLayer (
       DonnanLayerSpecCtoM(iSpec) = DonnanLayerSpecCtoM(iSpec) - VD_CtoM(0) - VD_CtoM(1);
     } else if (SpecMC(iSpec) == DonnanMC(0)) {
       DonnanLayerSpecCtoM(iSpec) = VD_CtoM(0);
-      } else if (SpecMC(iSpec) == DonnanMC(1)) {
+    } else if (SpecMC(iSpec) == DonnanMC(1)) {
       DonnanLayerSpecCtoM(iSpec) = VD_CtoM(1);
     }
   }

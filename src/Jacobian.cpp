@@ -66,7 +66,9 @@ Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
             SpecConc(iSpec) * SpecCtoM(iSpec));
         };//NEXT iSpec
       }
-      if (SpecConc(iComp2) != 0) {
+      if ((SpecConc(iComp2) == 0.0) || (SpecCtoM(iComp2) == 0.0)) {
+        JacobianMatrix(iComp1, iComp2) = 0.0;
+      } else {
         JacobianMatrix(iComp1, iComp2) = Sum / (SpecConc(iComp2) * SpecCtoM(iComp2));
       }
     };//NEXT iComp2

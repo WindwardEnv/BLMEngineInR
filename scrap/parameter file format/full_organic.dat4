@@ -2,7 +2,7 @@ Column model parameter file, Ver 4.00
 --------------------------------------------------------------------------------
 2,  Number of Mass Compartments
 2,  Input Labels
-3,  Input Variables
+4,  Input Variables
 8,  Input Components 
 1,  Defined Components
 22, Species
@@ -23,7 +23,8 @@ Input Variables
 Variable,  Compartment, Type
 Temp,      Water,       Temperature 
 pH,        Water,       pH
-DOC,       Water,       WHAM-FA
+DOC,       Water,       WHAM-HAFA
+HA,        Water,       PercHA
 --------------------------------------------------------------------------------
 Input Components
 Component, Charge, Compartment, Type,     Activity

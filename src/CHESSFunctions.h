@@ -132,4 +132,24 @@ Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
                                      double IonicStrength,
                                      double SysTempKelvin);
 
+Rcpp::NumericVector CalcWHAMSpecCharge(unsigned int NSpec, 
+                                       Rcpp::CharacterVector SpecActCorr,
+                                       Rcpp::NumericVector SpecMoles,
+                                       Rcpp::IntegerVector SpecCharge,
+                                       Rcpp::IntegerVector SpecMC,
+                                       int AqueousMC);
+
+Rcpp::NumericVector CalcDonnanLayer (unsigned int NSpec,
+                                     double IonicStrength,
+                                     Rcpp::NumericVector SpecCtoM,
+                                     Rcpp::IntegerVector SpecMC,
+                                     int AqueousMC,
+                                     Rcpp::IntegerVector DonnanMC,
+                                     Rcpp::NumericVector wMolWt,
+                                     Rcpp::NumericVector wRadius,
+                                     double wDLF,
+                                     double wKZED,
+                                     Rcpp::NumericVector WHAMSpecCharge,
+                                     Rcpp::NumericVector SolHS);
+
 #endif //__CHESSFUNCTIONS_H__

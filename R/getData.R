@@ -195,14 +195,17 @@ MatchInputsToProblem = function(
       if (InVarType[i] == "WHAM-FA") {
         # This is a FA-only input variable
         TotConcObs[, FACompName] = (OMColI * FracAFACol) %*% FACompSiteDens
+        TotConcObs[, "DonnanFA"] = 0.0
       } else if (InVarType[i] == "WHAM-HA") {
         # This is a HA-only input variable
         TotConcObs[, HACompName] = OMColI %*% HACompSiteDens
+        TotConcObs[, "DonnanHA"] = 0.0
       } else if (InVarType[i]  == "WHAM-HAFA") {
         # This is a combined HA + FA component, and % HA is needed
         TotConcObs[, HACompName] = (OMColI * FracHACol) %*% HACompSiteDens
         TotConcObs[, FACompName] =
           (OMColI * (1 - FracHACol) * FracAFACol) %*% FACompSiteDens
+        TotConcObs[, c("DonnanHA", "DonnanFA")] = 0.0
       }
       # TotConcObs[, HACompName] = SolHAObs %*% HACompSiteDens
       # TotConcObs[, FACompName] = SolFAObs %*% FACompSiteDens

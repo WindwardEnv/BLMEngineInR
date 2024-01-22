@@ -77,7 +77,7 @@ BLM = function(ParamFile = character(),
     ConvergenceCriteria = ConvergenceCriteria,
     MaxIter = MaxIter,
     DoTox = DoTox,
-    MetalComp = ThisProblem$MetalComp,
+    # MetalComp = ThisProblem$MetalComp,
     CATarget = NA
   )
   ObsFunctionInputNames = formalArgs("CHESS")[

@@ -89,9 +89,9 @@ Rcpp::List CalcResidualList (unsigned int NComp,
 
   // Rcpp::Rcout << "Calculate CalcTotMoles" << std::endl;
   SpecMoles = SpecConc * SpecCtoM;
-  for (iComp = 0; iComp < NComp; iComp++){
+  for (iComp = 0; iComp < NComp; iComp++) {
     CalcTotMoles(iComp) = 0;
-    for (iSpec = 0; iSpec < NSpec; iSpec++){
+    for (iSpec = 0; iSpec < NSpec; iSpec++) {
       if (SpecStoich(iSpec, iComp) != 0){
         CalcTotMoles(iComp) += SpecMoles(iSpec) * SpecStoich(iSpec, iComp);
       }
@@ -105,7 +105,7 @@ Rcpp::List CalcResidualList (unsigned int NComp,
 
   // Rcpp::Rcout << "Calculate Resid" << std::endl;
   Resid = CalcTotMoles - TotMoles;
-  for (iComp = 0; iComp < NComp; iComp++){
+  for (iComp = 0; iComp < NComp; iComp++) {
     if (CompType(iComp) == "FixedAct"){
       Resid(iComp) = 0.0;
     }
@@ -117,7 +117,7 @@ Rcpp::List CalcResidualList (unsigned int NComp,
     // Rcpp::Rcout << "DoTox" << std::endl;
     // CalcCA = sum(SpecConc(BLMetalSpecs - 1));
     CalcCA = 0;
-    for (i = 0; i < NBLMetal; i++){
+    for (i = 0; i < NBLMetal; i++) {
       iSpec = BLMetalSpecs(i) - 1;
       CalcCA += SpecConc(iSpec);
     }

@@ -6,8 +6,8 @@ devtools::load_all()
 start.time = Sys.time()
 
 ResultsTable = BLM(
-  ParamFile = "scrap/parameter file format/abbrev_organic.dat4",
-  InputFile = "scrap/parameter file format/abbrev_organic.blm4",
+  ParamFile = "scrap/parameter file format/full_organic.dat4",
+  InputFile = "scrap/parameter file format/full_organic.blm4",
   DoTox = T,
   iCA = 1L,
   QuietFlag ="Quiet",
@@ -61,3 +61,14 @@ ResultsTable[, c("Obs","ID","ID2","T.Cu","Cu")]
 # 5   5 Full_Organic Hard ser 5 1.214413e-08 6.282100e-10
 # 6   6 Full_Organic Hard ser 6 2.194183e-08 1.335361e-09
 # 7   7 Full_Organic Hard ser 7 3.428998e-08 2.415803e-09
+
+# With TempCorrection (15C), Activity Correction (Debye & Davies), and the start
+# of Double layer corrections
+#   Obs           ID        ID2         T.Cu           Cu
+# 1   1 Full_Organic Hard ser 1 3.358391e-09 1.054186e-10
+# 2   2 Full_Organic Hard ser 2 4.182023e-09 1.375034e-10
+# 3   3 Full_Organic Hard ser 3 6.290904e-09 2.281302e-10
+# 4   4 Full_Organic Hard ser 4 9.181675e-09 3.683168e-10
+# 5   5 Full_Organic Hard ser 5 1.382160e-08 6.282487e-10
+# 6   6 Full_Organic Hard ser 6 2.408016e-08 1.335511e-09
+# 7   7 Full_Organic Hard ser 7 3.674944e-08 2.415648e-09
