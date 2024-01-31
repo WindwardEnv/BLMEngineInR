@@ -251,6 +251,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
   return Rcpp::List::create(
       Rcpp::Named("SpecConc") = SpecConc,
+      Rcpp::Named("SpecAct") = SpecConc * SpecActivityCoef,
       Rcpp::Named("FinalIter") = Iter,
       Rcpp::Named("FinalMaxError") = MaxError,
       Rcpp::Named("CalcTotConc") = CalcTotConc);

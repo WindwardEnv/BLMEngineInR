@@ -49,20 +49,20 @@ BL1-Ca,  BL,       None,  2,  BL1, 1,   Ca,  1,            3.600,    0.000, 298.
 BL1-Mg,  BL,       None,  2,  BL1, 1,   Mg,  1,            3.600,    0.000, 298.15
 BL1-H,   BL,       None,  2,  BL1, 1,    H,  1,            5.400,    0.000, 298.15
 BL1-Na,  BL,       None,  2,  BL1, 1,   Na,  1,            3.000,    0.000, 298.15
-OH,      Water,    Debye, 1,  H,  -1,                    -13.997,    55810, 298.15
-HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,   -14600, 298.15
-H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,   -23760, 298.15
-MgHCO3,  Water,    Debye, 3,  CO3, 1,   Mg,  1,  H,   1,  11.400,    -9600, 298.15
-MgCO3,   Water,    Debye, 2,  CO3, 1,   Mg,  1,            2.980,    10000, 298.15
-MgSO4,   Water,    Debye, 2,  Mg,  1,  SO4,  1,            2.370,     5800, 298.15
-CaHCO3,  Water,    Debye, 3,  Ca,  1,  CO3,  1,  H,   1,  11.440,     4400, 298.15
-CaCO3,   Water,    Debye, 2,  Ca,  1,  CO3,  1,            3.220,    15000, 298.15
-CaSO4,   Water,    Debye, 2,  Ca,  1,  SO4,  1,            2.300,     7100, 298.15
-CuOH,    Water,    Debye, 2,  Cu,  1,    H, -1,           -7.520,    50200, 298.15
-Cu(OH)2, Water,    Debye, 2,  Cu,  1,    H, -2,          -16.220,    92100, 298.15
-CuSO4,   Water,    Debye, 2,  Cu,  1,  SO4,  1,            2.360,     8700, 298.15
-CuCl,    Water,    Debye, 2,  Cu,  1,   Cl,  1,            0.400,     8300, 298.15
-CuCO3,   Water,    Debye, 2,  Cu,  1,  CO3,  1,            6.750,    13000, 298.15
+OH,      Water,    Debye, 1,  H,  -1,                    -14.035,    56190, 298.15
+HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,   -14899, 298.15
+H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,   -24008, 298.15
+MgHCO3,  Water,    Debye, 3,  CO3, 1,   Mg,  1,  H,   1,  11.400,   -11590, 298.15
+MgCO3,   Water,    Debye, 2,  CO3, 1,   Mg,  1,            2.980,    11339, 298.15
+MgSO4,   Water,    Debye, 2,  Mg,  1,  SO4,  1,            2.370,    19037, 298.15
+CaHCO3,  Water,    Debye, 3,  Ca,  1,  CO3,  1,  H,   1,  11.440,    -3640, 298.15
+CaCO3,   Water,    Debye, 2,  Ca,  1,  CO3,  1,            3.220,    14853, 298.15
+CaSO4,   Water,    Debye, 2,  Ca,  1,  SO4,  1,            2.300,     6904, 298.15
+CuOH,    Water,    Debye, 2,  Cu,  1,    H, -1,           -7.550,    56190, 298.15
+Cu(OH)2, Water,    Debye, 2,  Cu,  1,    H, -2,          -16.290,   112380, 298.15
+CuSO4,   Water,    Debye, 2,  Cu,  1,  SO4,  1,            2.360,     8786, 298.15
+CuCl,    Water,    Debye, 2,  Cu,  1,   Cl,  1,            0.400,     6694, 298.15
+CuCO3,   Water,    Debye, 2,  Cu,  1,  CO3,  1,            6.750,        0, 298.15
 Cu(CO3)2,Water,    Debye, 2,  Cu,  1,  CO3,  2,            9.920,        0, 298.15
 CuHCO3,  Water,    Debye, 3,  Cu,  1,  CO3,  1,   H,  1,  14.620,        0, 298.15
 --------------------------------------------------------------------------------

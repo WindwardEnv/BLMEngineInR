@@ -158,7 +158,8 @@
 #' @param DoWHAM logical, TRUE = there are WHAM species, FALSE = no WHAM species
 #' @param wDLF numeric (2), WHAM's Double layer overlap factor
 #' @param wKZED numeric (2), WHAM's Constant to control DDL at low ZED
-#' @param wKsel numeric (2), WHAM's Selectivity coefficient Ksel
+#' @param SpecKsel numeric (NSpec, 2), WHAM's Selectivity coefficient Ksel for
+#'   diffuse layer binding
 #' @param wP numeric (2), WHAM's P parameter...
 #' @param wRadius numeric (2), WHAM's molecular radius parameter for organic
 #'   matter

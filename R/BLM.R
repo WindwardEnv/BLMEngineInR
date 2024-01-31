@@ -85,11 +85,14 @@ BLM = function(ParamFile = character(),
 
   # Initialize the output array
   MiscOutputCols = c("FinalIter", "FinalMaxError")
+  SpecActCols = paste0("Act.", SpecName)
   TotConcCols = paste0("T.", CompName)
   Out = data.frame(Obs = 1:AllInput$NObs)
   Out = cbind(Out, AllInput$InLabObs)
+  Out = cbind(Out, AllInput$InVarObs)
   Out[, MiscOutputCols] = NA
   Out[, SpecName] = NA
+  Out[, SpecActCols] = NA
   Out[, TotConcCols] = NA
   # Out = array(
   #   NA,
@@ -121,6 +124,7 @@ BLM = function(ParamFile = character(),
     Tmp = do.call("CHESS", args = FunctionInputs)
     Out[iObs, MiscOutputCols] = unlist(Tmp[MiscOutputCols])
     Out[iObs, SpecName] = Tmp$SpecConc[SpecName]
+    Out[iObs, SpecActCols] = Tmp$SpecAct[1:NSpec]
     Out[iObs, TotConcCols] = Tmp$CalcTotConc[CompName]
 
   }
