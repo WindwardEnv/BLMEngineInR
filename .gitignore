@@ -52,3 +52,6 @@ rsconnect/
 src/*.dll
 src/*.so
 src/*.o
+
+# VS Code settings folder
+.vscode/
