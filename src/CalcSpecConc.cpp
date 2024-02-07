@@ -1,5 +1,5 @@
-#include <Rcpp.h>
 #include <cmath>
+#include <Rcpp.h>
 #include "CHESSFunctions.h"
 
 //' Calculate Species Concentrations

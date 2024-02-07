@@ -80,10 +80,11 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::NumericVector TotConc,
                  bool DoWHAM,
                  int AqueousMC,
-                 Rcpp::IntegerVector DonnanMC,
+                 //Rcpp::IntegerVector DonnanMC,
                  Rcpp::NumericVector SolHS,
                  Rcpp::NumericVector wMolWt,
                  Rcpp::NumericVector wRadius,
+                 Rcpp::NumericVector wP,
                  double wDLF,
                  double wKZED,
                  double SysTempKelvin,
@@ -104,6 +105,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::NumericVector CompConcStep(NComp);
   Rcpp::NumericVector CompConc(NComp);
   Rcpp::NumericVector SpecKTempAdj(NSpec);
+  Rcpp::NumericVector SpecKISTempAdj(NSpec);
+  Rcpp::NumericVector SpecCtoMAdj(NSpec);
   Rcpp::NumericVector TotMoles(NComp);
   Rcpp::NumericVector CompCtoM(NComp);
   Rcpp::List ResidResults;
@@ -144,27 +147,47 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
 
-  // Calculate Donnan Layer effects  
-  if (DoWHAM) {
-    WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
-                                        SpecCharge, SpecMC, AqueousMC);
-    SpecCtoM = CalcDonnanLayer(NSpec, IonicStrength, SpecCtoM, SpecMC,
-                               AqueousMC, DonnanMC, wMolWt, wRadius, wDLF,
-                               wKZED, WHAMSpecCharge, SolHS);
-  }  
-
   // Initialize Species Concentrations
   SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 
                           SpecName, SpecActivityCoef);
 
+  if (DoWHAM) {
+    //Calculate the charge on the organic matter
+    WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
+                                        SpecCharge, SpecMC, AqueousMC);
+    for (iComp = 0; iComp < NComp; iComp++) {
+      if (CompName(iComp) == "DonnanHA") {
+        TotMoles(iComp) = -WHAMSpecCharge(iHA);
+        TotConc(iComp) = -WHAMSpecCharge(iHA);
+      } else if (CompName(iComp) == "DonnanFA") {
+        TotMoles(iComp) = -WHAMSpecCharge(iFA);
+        TotConc(iComp) = -WHAMSpecCharge(iFA);
+      }
+    }
+    
+    //Adjust organic matter specific binding based on ionic strength
+    SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
+                                              NSpec, SpecCharge, SpecKTempAdj, 
+                                              SpecActCorr, wP);
+    
+    //Adjust diffuse binding 
+    SpecCtoMAdj = CalcDonnanLayerVolume(NSpec, IonicStrength, SpecCtoM, 
+                                        SpecActCorr, SpecMC, AqueousMC, wMolWt, 
+                                        wRadius, wDLF, wKZED, WHAMSpecCharge, 
+                                        SolHS);
+  } else {
+    SpecKISTempAdj = SpecKTempAdj;
+    SpecCtoMAdj = SpecCtoM;
+  }
+
   // Update Total Concentrations for Fixed Activity & Metal
   UpdateTotals(NComp, NSpec, DoTox, CompType, CompName, MetalName,
-               SpecStoich, (SpecConc * SpecCtoM), CompCtoM, TotMoles, TotConc);
+               SpecStoich, (SpecConc * SpecCtoMAdj), CompCtoM, TotMoles, TotConc);
 
   // Calculate Residuals for the first time...
 
   // Calculate the total moles & conc from species concentrations
-  CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoM, SpecStoich,
+  CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoMAdj, SpecStoich,
                       CalcTotMoles, CalcTotConc);
 
   // Calculate the residuals and error fraction for each component
@@ -204,26 +227,46 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     SpecActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, 
                                         IonicStrength, SysTempKelvin);
 
-    // Calculate Donnan Layer effects  
     if (DoWHAM) {
+      //Calculate the charge on the organic matter
       WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
                                           SpecCharge, SpecMC, AqueousMC);
-      SpecCtoM = CalcDonnanLayer(NSpec, IonicStrength, SpecCtoM, SpecMC, AqueousMC, 
-                                DonnanMC, wMolWt, wRadius, wDLF, wKZED, 
-                                WHAMSpecCharge, SolHS);
-    }    
+      for (iComp = 0; iComp < NComp; iComp++) {
+        if (CompName(iComp) == "DonnanHA") {
+          TotMoles(iComp) = -WHAMSpecCharge(iHA);
+          TotConc(iComp) = -WHAMSpecCharge(iHA);
+        } else if (CompName(iComp) == "DonnanFA") {
+          TotMoles(iComp) = -WHAMSpecCharge(iFA);
+          TotConc(iComp) = -WHAMSpecCharge(iFA);
+        }
+      }
+      
+      //Adjust organic matter specific binding based on ionic strength
+      SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
+                                                NSpec, SpecCharge, SpecKTempAdj, 
+                                                SpecActCorr, wP);
+      
+      //Adjust diffuse binding 
+      SpecCtoMAdj = CalcDonnanLayerVolume(NSpec, IonicStrength, SpecCtoM, 
+                                          SpecActCorr, SpecMC, AqueousMC, wMolWt, 
+                                          wRadius, wDLF, wKZED, WHAMSpecCharge, 
+                                          SolHS);
+    } else {
+      SpecKISTempAdj = SpecKTempAdj;
+      SpecCtoMAdj = SpecCtoM;
+    }   
 
     // Calculate the species concentrations
-    SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 
+    SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
                             SpecName, SpecActivityCoef);
 
     // Update Total Concentrations for Fixed Activity & Metal
     UpdateTotals(NComp, NSpec, DoTox, CompType, CompName, MetalName,
-                 SpecStoich, (SpecConc * SpecCtoM), SpecCtoM, TotMoles, 
+                 SpecStoich, (SpecConc * SpecCtoMAdj), SpecCtoMAdj, TotMoles, 
                  TotConc);
 
     // Calculate the total moles & conc from species concentrations
-    CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoM, SpecStoich,
+    CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoMAdj, SpecStoich,
                         CalcTotMoles, CalcTotConc);
 
     // Calculate the residuals and error fraction for each component

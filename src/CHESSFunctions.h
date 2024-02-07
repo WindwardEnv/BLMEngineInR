@@ -1,8 +1,11 @@
 #ifndef __CHESSFUNCTIONS_H__
 #define __CHESSFUNCTIONS_H__
 
+//should these be #included in the header file??
+#ifndef Rcpp__Rcpp__h
+  #include <Rcpp.h>
+#endif
 #include <string>
-#include <Rcpp.h>
 
 Rcpp::List CalcResidualList (unsigned int NComp,
                              unsigned int NSpec,
@@ -139,17 +142,28 @@ Rcpp::NumericVector CalcWHAMSpecCharge(unsigned int NSpec,
                                        Rcpp::IntegerVector SpecMC,
                                        int AqueousMC);
 
-Rcpp::NumericVector CalcDonnanLayer (unsigned int NSpec,
-                                     double IonicStrength,
-                                     Rcpp::NumericVector SpecCtoM,
-                                     Rcpp::IntegerVector SpecMC,
-                                     int AqueousMC,
-                                     Rcpp::IntegerVector DonnanMC,
-                                     Rcpp::NumericVector wMolWt,
-                                     Rcpp::NumericVector wRadius,
-                                     double wDLF,
-                                     double wKZED,
-                                     Rcpp::NumericVector WHAMSpecCharge,
-                                     Rcpp::NumericVector SolHS);
+Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NSpec,
+                                          double IonicStrength,
+                                          Rcpp::NumericVector SpecCtoM,
+                                          Rcpp::CharacterVector SpecActCorr,
+                                          Rcpp::IntegerVector SpecMC,
+                                          int AqueousMC,
+                                          Rcpp::NumericVector wMolWt,
+                                          Rcpp::NumericVector wRadius,
+                                          double wDLF,
+                                          double wKZED,
+                                          Rcpp::NumericVector WHAMSpecCharge,
+                                          Rcpp::NumericVector SolHS);
+
+Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
+                                             Rcpp::NumericVector WHAMSpecCharge,
+                                             unsigned int NSpec,
+                                             Rcpp::IntegerVector SpecCharge,
+                                             Rcpp::NumericVector SpecK,
+                                             Rcpp::CharacterVector SpecActCorr,
+                                             Rcpp::NumericVector wP);
+
+const unsigned int iHA = 0; // humic acid = 0
+const unsigned int iFA = 1; // fulvic acid = 1
 
 #endif //__CHESSFUNCTIONS_H__

@@ -1,12 +1,13 @@
 rm(list = ls())
-# devtools::clean_dll()
+devtools::clean_dll()
 devtools::load_all()
 
 # test stuff
 start.time = Sys.time()
 
 ResultsTable = BLM(
-  ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
+  ParamFile = "scrap/parameter file format/abbrev_organic.dat4",
+  # ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
   InputFile = "scrap/parameter file format/full_organic.blm4",
   DoTox = F,
   # iCA = 1L,

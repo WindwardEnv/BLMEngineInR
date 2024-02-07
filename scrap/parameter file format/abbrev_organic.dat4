@@ -3,9 +3,9 @@ Column model parameter file, Ver 4.00
 2,  Number of Mass Compartments
 2,  Input Labels
 3,  Input Variables
-2,  Input Components 
+3,  Input Components 
 1,  Defined Components
-6,  Species
+4,  Species
 0,  Phases
 4,  Number of Special Definitions
 1,  Number of Critical Values     
@@ -28,7 +28,8 @@ DOC,       Water,       WHAM-FA
 Input Components
 Component, Charge, Compartment, Type,     Activity
 Cu,         2,     Water,       MassBal,  Debye
-CO3,       -2,     Water,       MassBal,  Debye
+Na,         1,     Water,       MassBal,  Debye
+Cl,        -1,     Water,       MassBal,  Debye
 --------------------------------------------------------------------------------
 Defined components                                    
 Component,  From,     Charge,   Compartment, Type,    Activity,   Site Den 
@@ -38,10 +39,8 @@ Formation Reactions
 Species, Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,  Delta H,   Temp
 BL1-Cu,  BL,       None,  2,  BL1, 1,   Cu,  1,            7.400,    0.000, 298.15
 OH,      Water,    Debye, 1,  H,  -1,                    -13.997,   -55810, 298.15
-HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,   -14600, 298.15
-H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,   -23760, 298.15
 CuOH,    Water,    Debye, 2,  Cu,  1,    H, -1,           -7.520,    50200, 298.15
-CuCO3,   Water,    Debye, 2,  Cu,  1,  CO3,  1,            6.750,    13000, 298.15
+CuCl,    Water,    Debye, 2,  Cu,  1,   Cl,  1,            0.400,     8300, 298.15
 --------------------------------------------------------------------------------
 Phase List
 Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles

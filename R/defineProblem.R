@@ -74,7 +74,7 @@
 #' ## Not Run
 #' # thisProblem = DefineProblem("my_parameter_file.dat")
 #' ## End Not Run
-DefineProblem = function(ParamFile) {
+DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
   # error catching
   stopifnot(file.exists(ParamFile))
@@ -488,6 +488,10 @@ DefineProblem = function(ParamFile) {
   # Final positions of special definition parameters
   BLMetalSpecs = which(Out$SpecName %in% BLMetalName)
   Out$BLMetalSpecs = BLMetalSpecs
+
+  if (WriteLog) {
+    CHESSLog(Out, ParamFile)
+  }
 
   return(Out)
 }

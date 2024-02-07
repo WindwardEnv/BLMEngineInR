@@ -1,5 +1,11 @@
 #' @title Expand the DOC component into WHAM components
 #'
+#' @references
+#'   Tipping E. (1994). WHAM--A chemical equilibrium model and
+#'     computer code for waters, sediments, and soils incorporating a discrete
+#'     site/electrostatic model of ion-binding by humic substances. Computers &
+#'     Geosciences, vol. 20, iss. 6, pp. 973-1023.
+#'
 #' @param NMass integer; Number of mass compartments
 #' @param MassName character vector of length `NMass`; Names of the mass
 #'   compartments
@@ -138,29 +144,30 @@ ExpandWHAM = function(NMass,
 
   # read WHAM data file-------------------------------------
   # header info
-  SkipRows = 2
+  SkipRows = 2L
   Tmp = read.delim(
     file = WdatFile,
     header = FALSE,
     sep = ",",
     skip = SkipRows,
-    nrows = 6
+    nrows = 7L
   )
   nMS = as.integer(Tmp[1, 2])#Number of monodentate sites#nolint: object_name_linter, line_length_linter.
   nBP = as.integer(Tmp[2, 2])#Number of bidentate pairs#nolint: object_name_linter, line_length_linter.
   nTG = as.integer(Tmp[3, 2])#Number of tridentate groups#nolint: object_name_linter, line_length_linter.
-  nMP = as.integer(Tmp[4, 2])#Number of metals-OM parameters#nolint: object_name_linter, line_length_linter.
-  wDLF = as.numeric(Tmp[5, 2])#Double layer overlap factor#nolint: object_name_linter, line_length_linter.
-  wKZED = as.numeric(Tmp[6, 2])#Constant to control DDL at low ZED#nolint: object_name_linter, line_length_linter.
+  nMP_file = as.integer(Tmp[4, 2])#Number of metals-OM parameters#nolint: object_name_linter, line_length_linter.
+  nKsel_file = as.integer(Tmp[5, 2])#Number of non-standard selectivity coefficients#nolint: object_name_linter, line_length_linter.
+  wDLF = as.numeric(Tmp[6, 2])#Double layer overlap factor#nolint: object_name_linter, line_length_linter.
+  wKZED = as.numeric(Tmp[7, 2])#Constant to control DDL at low ZED#nolint: object_name_linter, line_length_linter.
 
   # Parameters
-  SkipRows = SkipRows + 6 + 1
+  SkipRows = SkipRows + 7L + 1L
   Tmp = read.delim(
     file = WdatFile,
     header = TRUE,
     sep = ",",
     skip = SkipRows,
-    nrows = 12
+    nrows = 12L
   )
   nCOOH = array(as.numeric(Tmp[1, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
   pKHA = array(as.numeric(Tmp[2, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
@@ -178,7 +185,7 @@ ExpandWHAM = function(NMass,
   # Monodentate Sites - these should always be the same, but we'll set things
   # up like this so we can add in this section if it's ever needed.
   # MonodentTable = data.frame(S=1:8, AbundDenom = c(rep(4,4),rep(8,4)))
-  SkipRows = SkipRows + 12 + 3
+  SkipRows = SkipRows + 12L + 3L
   MonodentTable = read.delim(
     file = WdatFile,
     header = TRUE,
@@ -191,7 +198,7 @@ ExpandWHAM = function(NMass,
   MonodentTable$Strong1Weak2 = c(rep(1L, 4), rep(2L, 4))
 
   # Bidentate Pairs
-  SkipRows = SkipRows + nMS + 3
+  SkipRows = SkipRows + nMS + 3L
   if (nBP > 0) {
     BidentTable = read.delim(
       file = WdatFile,
@@ -213,7 +220,7 @@ ExpandWHAM = function(NMass,
 
 
   # Tridentate Groups
-  SkipRows = SkipRows + nBP + 3
+  SkipRows = SkipRows + nBP + 3L
   if (nTG > 0) {
     TridentTable = read.delim(
       file = WdatFile,
@@ -265,36 +272,81 @@ ExpandWHAM = function(NMass,
   }
 
   # Metals Parameters Table
-  SkipRows = SkipRows + nTG + 3
-  if (nMP > 0) {
+  SkipRows = SkipRows + nTG + 3L
+  if (nMP_file > 0) {
     MetalsTable = read.delim(
       file = WdatFile,
       header = TRUE,
       sep = ",",
       skip = SkipRows,
-      nrows = nMP
+      nrows = nMP_file
     )
-    names(MetalsTable) = c("Metal", "pKMAHA", "pKMAFA", "dLK2", "KselHA", "KselFA")
+    names(MetalsTable) = c("Metal", "pKMAHA", "pKMAFA", "dLK2")
     MetalsTable = MetalsTable[MetalsTable$Metal %in% c(CompName, SpecName), ]
     nMP = nrow(MetalsTable) # nolint: object_name_linter.
     MetalsTable$pKMBHA = 3 * MetalsTable$pKMAHA - 3
     MetalsTable$pKMBFA = 3.96 * MetalsTable$pKMAFA
   } else {
     MetalsTable = data.frame()
+    nMP = 0L
   }
+
+  # Non-standard selectivity coefficients
+  SkipRows = SkipRows + nMP_file + 3L
+  if (nKsel_file > 0) {
+    SpecKselTable = read.delim(
+      file = WdatFile,
+      header = TRUE,
+      sep = ",",
+      skip = SkipRows,
+      nrows = nKsel_file
+    )
+    names(SpecKselTable) = c("Spec", "KselHA", "KselFA")
+    SpecKselTable = SpecKselTable[SpecKselTable$Spec %in% SpecName, ]
+    nKsel = nrow(SpecKselTable)
+  } else {
+    SpecKselTable = data.frame()
+    nKsel = 0L
+  }
+
+
+
+
+  # Save original copies of arrays -------------------------
+  NComp_orig = NComp
+  CompName_orig = CompName
+  CompCharge_orig = CompCharge
+  CompMC_orig = CompMC
+  CompType_orig = CompType
+  CompActCorr_orig = CompActCorr
+  CompSiteDens_orig = CompSiteDens
+
+  NDefComp_orig = NDefComp
+  DefCompName_orig = DefCompName
+  DefCompFromNum_orig = DefCompFromNum
+  DefCompFromVar_orig = DefCompFromVar
+  DefCompCharge_orig = DefCompCharge
+  DefCompMC_orig = DefCompMC
+  DefCompType_orig = DefCompType
+  DefCompActCorr_orig = DefCompActCorr
+  DefCompSiteDens_orig = DefCompSiteDens
+
+  NSpec_orig = NSpec
+  SpecName_orig = SpecName
+  SpecMC_orig = SpecMC
+  SpecActCorr_orig = SpecActCorr
+  SpecCharge_orig = SpecStoich %*% CompCharge
+  SpecStoich_orig = SpecStoich
+  SpecLogK_orig = SpecLogK
+  SpecDeltaH_orig = SpecDeltaH
+  SpecTempKelvin_orig = SpecTempKelvin
 
 
   # Do the expansion ---------------------------------------
 
   # Initialize variables
   iH = which(CompName == "H") # nolint: object_name_linter.
-  DonnanMC = array(NMass + c(1L, 2L), dim = 2, dimnames = list(c("HA", "FA")))
-  SpecKsel = array(NA, dim = c(NSpec, 2), dimnames = list(SpecName, c("HA", "FA")))
-  if (nMP > 0) {
-    SpecKsel[match(MetalsTable$Metal, SpecName), ] =
-      array(unlist(MetalsTable[, c("KselHA", "KselFA")]), dim = c(nMP, 2))
-  }
-
+  SpecCharge = SpecStoich %*% CompCharge
 
   # Figure out the number of DOC components we're adding, and what fraction
   InVarWHAM = which(grepl("WHAM", InVarType))
@@ -302,6 +354,18 @@ ExpandWHAM = function(NMass,
   for (iInVar in InVarWHAM) {
 
     iMass = InVarMC[iInVar] # nolint: object_name_linter.
+    ChargedSpecName = SpecName_orig[(SpecCharge_orig != 0) &
+                                      (SpecMC_orig == iMass)]
+    NChargedSpec = length(ChargedSpecName)
+    SpecKsel = array(1, dim = c(NChargedSpec, 2),
+                     dimnames = list(ChargedSpecName, c("HA", "FA")))
+    if (nKsel > 0L) {
+      SpecKsel[match(SpecKselTable$Spec, ChargedSpecName), ]  =
+        array(unlist(SpecKselTable[, c("KselHA", "KselFA")]),
+              dim = c(nKsel, 2))
+    }
+    ChargedSpecDonnanLogK = log10(SpecKsel) +
+      SpecLogK_orig[match(ChargedSpecName, SpecName_orig)]
 
     if (InVarType[iInVar] == "WHAM-HA") {
       WHAMFracAdd = c("HA")
@@ -345,11 +409,12 @@ ExpandWHAM = function(NMass,
     #      component: FA123H
     #      species: FA123H, FA1-23H, FA2-13H, FA3-12H, FA23-1H, FA13-2H,
     #               FA12-3H, FA123, FA123-Mg, FA123-Ca, ...
-    WNComp = (nMS + nBP + nTG) * NWHAMFracAdd
-    StartComp = NComp + 1L + NWHAMFracAdd
-    NComp = NComp + WNComp + NWHAMFracAdd
-    WDonnanName = paste0("Donnan", WHAMFracAdd)
-    WCompName = paste0(rep(WHAMprefix, each = WNComp / NWHAMFracAdd),
+    NWHAMComp = (nMS + nBP + nTG) * NWHAMFracAdd
+    NDonnanComp = NWHAMFracAdd
+    StartComp = NComp_orig + 1L + NDonnanComp
+    NComp = NComp_orig + NWHAMComp + NDonnanComp
+    DonnanCompName = paste0("Donnan", WHAMFracAdd)
+    WHAMCompName = paste0(rep(WHAMprefix, each = NWHAMComp / NWHAMFracAdd),
                        rep(
                          c(
                            MonodentTable$FullyProt,
@@ -358,132 +423,148 @@ ExpandWHAM = function(NMass,
                          ),
                          times = NWHAMFracAdd
                        ))
-    CompName = c(CompName, WDonnanName, WCompName)
-    CompCharge = c(CompCharge,
-                   array(0L, dim = NWHAMFracAdd, dimnames = list(WDonnanName)),
-                   array(0L, dim = WNComp, dimnames = list(WCompName)))
-    CompMC = c(CompMC,
+    CompName = c(CompName_orig, DonnanCompName, WHAMCompName)
+    CompCharge = c(CompCharge_orig,
+                   array(0L, dim = NDonnanComp,
+                         dimnames = list(DonnanCompName)),
+                   array(0L, dim = NWHAMComp, dimnames = list(WHAMCompName)))
+    CompMC = c(CompMC_orig,
                # array(NMass + match(WHAMFracAdd, c("HA", "FA")),
-               array(DonnanMC[WHAMFracAdd],
-                     dim = NWHAMFracAdd,
-                     dimnames = list(WDonnanName)),
-               array(iMass, dim = WNComp, dimnames = list(WCompName)))
-    CompType = c(CompType,
-                 array("FixedAct", NWHAMFracAdd, dimnames = list(WDonnanName)),
-                 array("MassBal", WNComp, dimnames = list(WCompName)))
-    CompActCorr = c(CompActCorr,
-                    array("None", NWHAMFracAdd, dimnames = list(WDonnanName)),
+               array(iMass, #DonnanMC[WHAMFracAdd],
+                     dim = NDonnanComp,
+                     dimnames = list(DonnanCompName)),
+               array(iMass, dim = NWHAMComp, dimnames = list(WHAMCompName)))
+    CompType = c(CompType_orig,
+                 array("DonnanChargeBal", NDonnanComp,
+                       dimnames = list(DonnanCompName)),
+                 array("MassBal", NWHAMComp, dimnames = list(WHAMCompName)))
+    CompActCorr = c(CompActCorr_orig,
+                    array("None", NDonnanComp, dimnames = list(DonnanCompName)),
                     array(rep(paste0("WHAM", WHAMFracAdd),
-                              each = WNComp / NWHAMFracAdd),
-                          dim = WNComp, dimnames = list(WCompName)))
-    CompSiteDens = c(CompSiteDens,
-                     array(1, NWHAMFracAdd, dimnames = list(WDonnanName)),
-                     array(NA, WNComp, dimnames = list(WCompName)))
+                              each = NWHAMComp / NWHAMFracAdd),
+                          dim = NWHAMComp, dimnames = list(WHAMCompName)))
+    CompSiteDens = c(CompSiteDens_orig,
+                     array(1, NDonnanComp, dimnames = list(DonnanCompName)),
+                     array(NA, NWHAMComp, dimnames = list(WHAMCompName)))
 
-    StartDefComp = NDefComp + 1L + NWHAMFracAdd
-    NDefComp = NDefComp + NWHAMFracAdd + WNComp
-    DefCompName = c(DefCompName, WDonnanName, WCompName)
+    StartDefComp = NDefComp_orig + 1L + NDonnanComp
+    NDefComp = NDefComp_orig + NDonnanComp + NWHAMComp
+    DefCompName = c(DefCompName_orig, DonnanCompName, WHAMCompName)
     DefCompFromNum = c(
-      DefCompFromNum,
-      array(NA, dim = NWHAMFracAdd, dimnames = list(WDonnanName)),
-      array(NA, dim = WNComp, dimnames = list(WCompName)))
+      DefCompFromNum_orig,
+      array(NA, dim = NDonnanComp, dimnames = list(DonnanCompName)),
+      array(NA, dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompFromVar = c(
-      DefCompFromVar,
-      array(NA, dim = NWHAMFracAdd, dimnames = list(WDonnanName)),
-      array(rep(WHAMprefix, each = WNComp / NWHAMFracAdd),
-            dim = WNComp, dimnames = list(WCompName)))
+      DefCompFromVar_orig,
+      array(NA, dim = NDonnanComp, dimnames = list(DonnanCompName)),
+      array(rep(WHAMprefix, each = NWHAMComp / NWHAMFracAdd),
+            dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompCharge = c(
-      DefCompCharge,
-      array(0L, dim = NWHAMFracAdd, dimnames = list(WDonnanName)),
-      array(0L, dim = WNComp, dimnames = list(WCompName)))
-    DefCompMC = c(DefCompMC,
+      DefCompCharge_orig,
+      array(0L, dim = NDonnanComp, dimnames = list(DonnanCompName)),
+      array(0L, dim = NWHAMComp, dimnames = list(WHAMCompName)))
+    DefCompMC = c(DefCompMC_orig,
                   # array(NMass + match(WHAMFracAdd, c("HA", "FA")),
-                  array(DonnanMC[WHAMFracAdd],
-                        dim = NWHAMFracAdd,
-                        dimnames = list(WDonnanName)),
-                  array(iMass, dim = WNComp, dimnames = list(WCompName)))
-    DefCompType = c(DefCompType,
-                    array("FixedAct", dim = NWHAMFracAdd, dimnames = list(WDonnanName)),
-                    array("MassBal", dim = WNComp, dimnames = list(WCompName)))
-    DefCompActCorr = c(DefCompActCorr,
+                  array(iMass, #DonnanMC[WHAMFracAdd],
+                        dim = NDonnanComp,
+                        dimnames = list(DonnanCompName)),
+                  array(iMass, dim = NWHAMComp, dimnames = list(WHAMCompName)))
+    DefCompType = c(DefCompType_orig,
+                    array("DonnanChargeBal", dim = NDonnanComp,
+                          dimnames = list(DonnanCompName)),
+                    array("MassBal", dim = NWHAMComp,
+                          dimnames = list(WHAMCompName)))
+    DefCompActCorr = c(DefCompActCorr_orig,
+                       array("None", dim = NDonnanComp,
+                             dimnames = list(DonnanCompName)),
                        array(rep(paste0("WHAM", WHAMFracAdd),
-                                 each = WNComp / NWHAMFracAdd),
-                             dim = WNComp, dimnames = list(WCompName)))
-    DefCompSiteDens = c(DefCompSiteDens,
-                        array(1, dim = NWHAMFracAdd,
-                              dimnames = list(WDonnanName)),
-                        array(NA, dim = WNComp, dimnames = list(WCompName)))
+                                 each = NWHAMComp / NWHAMFracAdd),
+                             dim = NWHAMComp, dimnames = list(WHAMCompName)))
+    DefCompSiteDens = c(DefCompSiteDens_orig,
+                        array(1, dim = NDonnanComp,
+                              dimnames = list(DonnanCompName)),
+                        array(NA, dim = NWHAMComp,
+                              dimnames = list(WHAMCompName)))
 
-    WNSpec = (nMS * (2L + nMP) +
-                nBP * (4L + nMP) +
-                nTG * (8L + nMP)) * NWHAMFracAdd
-    WSpecName = array(paste0("newOCSpecies", 1:WNSpec), WNSpec)
-    StartSpec = NSpec + + NWHAMFracAdd + 1L
-    NSpec = NSpec + WNSpec + NWHAMFracAdd
-    SpecName = c(SpecName, WDonnanName, WSpecName)
-    SpecMC = c(SpecMC,
-               # array(NMass + match(WHAMFracAdd, c("HA", "FA")),
-               array(DonnanMC[WHAMFracAdd],
-                     dim = NWHAMFracAdd,
-                     dimnames = list(WDonnanName)),
+    NWHAMSpec = (nMS * (2L + nMP) +
+                   nBP * (4L + nMP) +
+                   nTG * (8L + nMP)) * NWHAMFracAdd
+    WHAMSpecName = array(paste0("newOCSpecies", 1:NWHAMSpec), NWHAMSpec)
+    NDonnanSpec = (NChargedSpec + 1L) * NWHAMFracAdd
+    DonnanSpecName = c(DonnanCompName,
+                        paste0(rep(DonnanCompName, each = NChargedSpec), "-",
+                               rep(ChargedSpecName, times = NWHAMFracAdd)))
+    StartSpec = NSpec_orig + NDonnanSpec + 1L
+    NSpec = NSpec_orig + NWHAMSpec + NDonnanSpec
+    SpecName = c(SpecName_orig, DonnanSpecName, WHAMSpecName)
+    SpecMC = c(SpecMC_orig,
+               array(iMass, #DonnanMC[WHAMFracAdd],
+                     dim = NDonnanSpec,
+                     dimnames = list(DonnanSpecName)),
                # this should always be water
-               array(iMass, dim = WNSpec, dimnames = list(WSpecName)))
-    SpecActCorr = c(SpecActCorr,
-                    array("None", dim = NWHAMFracAdd,
-                          dimnames = list(WDonnanName)),
+               array(iMass, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
+    SpecActCorr = c(SpecActCorr_orig,
+                    array(c(DonnanCompName,
+                            rep(DonnanCompName, each = NChargedSpec)),
+                          dim = NDonnanSpec,
+                          dimnames = list(DonnanSpecName)),
                     array(rep(paste0("WHAM", WHAMFracAdd),
-                              each = WNSpec / NWHAMFracAdd),
-                          dim = WNSpec, dimnames = list(WSpecName)))
-    SpecNC = c(SpecNC,
-               array(1, dim = NWHAMFracAdd, dimnames = list(WDonnanName)),
-               array(NA, dim = WNSpec, dimnames = list(WSpecName)))
-    SpecCompList = rbind(SpecCompList,
-                         matrix(0L, nrow = NWHAMFracAdd,
-                                ncol = ncol(SpecCompList)),
-                         matrix(0L, nrow = WNSpec, ncol = ncol(SpecCompList)))
+                              each = NWHAMSpec / NWHAMFracAdd),
+                          dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
+
     SpecStoich = rbind(
       cbind(
-        SpecStoich,
+        SpecStoich_orig,
         matrix(
           0L,
-          nrow = NSpec - WNSpec - NWHAMFracAdd,
-          ncol = NWHAMFracAdd + WNComp,
-          dimnames = list(SpecName[1:(NSpec - WNSpec - NWHAMFracAdd)],
-                          c(WDonnanName, WCompName))
+          nrow = NSpec_orig,
+          ncol = NWHAMFracAdd + NWHAMComp,
+          dimnames = list(SpecName[1:NSpec_orig],
+                          c(DonnanCompName, WHAMCompName))
         )
       ),
       matrix(
         0L,
-        nrow = NWHAMFracAdd,
+        nrow = NDonnanSpec,
         ncol = NComp,
-        dimnames = list(WDonnanName, CompName)
+        dimnames = list(DonnanSpecName, CompName)
       ),
       matrix(
         0L,
-        nrow = WNSpec,
+        nrow = NWHAMSpec,
         ncol = NComp,
-        dimnames = list(WSpecName, CompName)
+        dimnames = list(WHAMSpecName, CompName)
       )
     )
-    SpecLogK = c(SpecLogK,
-                 array(0.0, dim = NWHAMFracAdd, dimnames = list(WDonnanName)),
-                 array(NA, dim = WNSpec, dimnames = list(WSpecName)))
-    SpecDeltaH = c(SpecDeltaH,
-                   array(0.0, dim = NWHAMFracAdd, dimnames = list(WDonnanName)),
-                   array(0.0, dim = WNSpec, dimnames = list(WSpecName)))
-    SpecTempKelvin = c(SpecTempKelvin,
-                       array(298.15, dim = NWHAMFracAdd,
-                             dimnames = list(WDonnanName)),
-                       array(298.15, dim = WNSpec, dimnames = list(WSpecName)))
-    SpecKsel = rbind(SpecKsel,
-                     array(NA, dim = c(NWHAMFracAdd, 2), dimnames = list(WDonnanName)),
-                     array(NA, dim = c(WNSpec, 2), dimnames = list(WSpecName)))
+    SpecLogK = c(SpecLogK_orig,
+                 array(NA, dim = NDonnanSpec, dimnames = list(DonnanSpecName)),
+                 array(NA, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
+    SpecDeltaH = c(SpecDeltaH_orig,
+                   array(0.0, dim = NDonnanSpec,
+                         dimnames = list(DonnanSpecName)),
+                   array(0.0, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
+    SpecTempKelvin = c(SpecTempKelvin_orig,
+                       array(298.15, dim = NDonnanSpec,
+                             dimnames = list(DonnanSpecName)),
+                       array(298.15, dim = NWHAMSpec,
+                             dimnames = list(WHAMSpecName)))
 
     MonodentpKH = numeric(nMS)
     MonodentAbundance = numeric(nMS)
     BidentAbundance = numeric(nBP)
     TridentAbundance = numeric(nTG)
     for (OMType in WHAMFracAdd) {
+
+      # Donnan diffuse binding
+      DonnanOMChargedSpecName = paste0("Donnan", OMType, "-", ChargedSpecName)
+      SpecLogK[paste0("Donnan", OMType)] = 0.0
+      SpecLogK[DonnanOMChargedSpecName] =
+        ChargedSpecDonnanLogK[ChargedSpecName, OMType]
+      SpecStoich[DonnanOMChargedSpecName, CompName_orig] =
+        SpecStoich_orig[match(ChargedSpecName, SpecName_orig), CompName_orig]
+      SpecStoich[DonnanOMChargedSpecName, paste0("Donnan", OMType)] =
+        abs(SpecCharge_orig[match(ChargedSpecName, SpecName_orig)])
+
 
       ColspKM = paste0("pKM", c("A", "B"), OMType)
 
@@ -528,7 +609,6 @@ ExpandWHAM = function(NMass,
         SpecStoich[NewSpecNum, iH] = SpecStoich[NewSpecNum, iH] - 1L
         SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
           as.numeric(MetalsTable[iMetal, ColspKM[MonodentTable$Strong1Weak2]])
-        SpecKsel[NewSpecNum, ] = SpecKsel[iMetalSpec, , drop = FALSE]
       }
 
 
@@ -593,7 +673,6 @@ ExpandWHAM = function(NMass,
           SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
             as.numeric(MetalsTable[iMetal, ColspKM[BidentTable$S1Strong1Weak2]] +
                          MetalsTable[iMetal, ColspKM[BidentTable$S2Strong1Weak2]])
-          SpecKsel[NewSpecNum, ] = SpecKsel[iMetalSpec, , drop = FALSE]
         }
 
       }
@@ -693,7 +772,6 @@ ExpandWHAM = function(NMass,
             as.numeric(MetalsTable[iMetal, ColspKM[TridentTable$S1Strong1Weak2]] +
                          MetalsTable[iMetal, ColspKM[TridentTable$S2Strong1Weak2]] +
                          MetalsTable[iMetal, ColspKM[TridentTable$S3Strong1Weak2]])
-          SpecKsel[NewSpecNum, ] = SpecKsel[iMetalSpec, , drop = FALSE]
         }
 
       }
@@ -708,28 +786,23 @@ ExpandWHAM = function(NMass,
   # Cleanup
   names(CompSiteDens) = CompName
   names(DefCompSiteDens) = DefCompName
-  # names(SpecCharge) = SpecName
   names(SpecMC) = SpecName
-  # names(SpecType) = SpecName
   names(SpecActCorr) = SpecName
   rownames(SpecStoich) = SpecName
   names(SpecLogK) = SpecName
   names(SpecDeltaH) = SpecName
   names(SpecTempKelvin) = SpecName
-  rownames(SpecKsel) = SpecName
 
   # Re-ordering species so components are in front
-  Reorder = match(c(CompName, SpecName[SpecName %in% CompName == FALSE]), SpecName)
+  Reorder = match(c(CompName, SpecName[SpecName %in% CompName == FALSE]),
+                  SpecName)
   SpecName = SpecName[Reorder]
   SpecMC = SpecMC[Reorder]
   SpecActCorr = SpecActCorr[Reorder]
-  SpecNC = SpecNC[Reorder]
-  SpecCompList = SpecCompList[Reorder, ]
   SpecStoich = SpecStoich[Reorder, ]
   SpecLogK = SpecLogK[Reorder]
   SpecDeltaH = SpecDeltaH[Reorder]
   SpecTempKelvin = SpecTempKelvin[Reorder]
-  SpecKsel = SpecKsel[Reorder, ]
 
   SpecNC = rowSums(SpecStoich != 0L)
   names(SpecNC) = SpecName
@@ -758,7 +831,6 @@ ExpandWHAM = function(NMass,
   #     return(Tmp)
   #   }))
   # rownames(SpecList) = CompName
-
 
   # Assemble output list
   return(list(
@@ -800,8 +872,6 @@ ExpandWHAM = function(NMass,
     PhaseStoich = PhaseStoich,
 
     # WHAM parameters - to be used later
-    SpecKsel = SpecKsel,
-    DonnanMC = DonnanMC,
     wDLF = wDLF,
     wKZED = wKZED,
     wP = wP,

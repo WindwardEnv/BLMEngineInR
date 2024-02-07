@@ -288,12 +288,13 @@ void CalcResidAndError(unsigned int NComp,
 
   // Calculate the residuals
   Resid = CalcTotMoles - TotMoles;
-  for (iComp = 0; iComp < NComp; iComp++){
-    if (CompType(iComp) == "FixedAct"){
+  for (iComp = 0; iComp < NComp; iComp++) {
+    if (CompType(iComp) == "FixedAct") {
       Resid(iComp) = 0.0;
+    //} if (CompType(iComp) == "DonnanChargeBal") {
+    //  Resid(iComp) = ;
     }
   }
-
   
   // Calculate the error fraction for each component
   CompError = abs(Resid / TotMoles);
