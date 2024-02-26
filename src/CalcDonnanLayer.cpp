@@ -47,7 +47,8 @@ Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NSpec,
                                           Rcpp::NumericVector SolHS) {
 
   /* outputs */
-  Rcpp::NumericVector DonnanLayerSpecCtoM = SpecCtoM;
+  Rcpp::NumericVector DonnanLayerSpecCtoM(NSpec);// = SpecCtoM;
+    DonnanLayerSpecCtoM.names() = SpecCtoM.names();
   
   /* constants */
   const double Avogadro = 6.022E+23;
@@ -85,12 +86,16 @@ Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NSpec,
       DonnanLayerSpecCtoM(iSpec) = VD_CtoM(iHA);
     } else if (SpecActCorr(iSpec) == "DonnanFA") {
       DonnanLayerSpecCtoM(iSpec) = VD_CtoM(iFA);
-    } else if (SpecMC(iSpec) == AqueousMC) {
+    } else if ((SpecMC(iSpec) == AqueousMC) && 
+               ((SpecActCorr(iSpec) != "WHAMHA") && 
+                (SpecActCorr(iSpec) != "WHAMFA"))) {
       /* QUESTION:
       Should we be checking that this is an inorganic species with 
       ((SpecActCorr(iSpec) != "WHAMHA") && (SpecActCorr(iSpec) != "WHAMFA"))?
       */
       DonnanLayerSpecCtoM(iSpec) = SpecCtoM(iSpec) - Total_VD_CtoM;
+    } else {
+      DonnanLayerSpecCtoM(iSpec) = SpecCtoM(iSpec);
     }
   }
 

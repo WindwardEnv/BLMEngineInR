@@ -1,19 +1,18 @@
 Column model parameter file, Ver 4.00
 --------------------------------------------------------------------------------
-2,  Number of Mass Compartments
+1,  Number of Mass Compartments
 2,  Input Labels
 3,  Input Variables
 3,  Input Components 
-1,  Defined Components
-4,  Species
+0,  Defined Components
+3,  Species
 0,  Phases
-4,  Number of Special Definitions
-1,  Number of Critical Values     
+2,  Number of Special Definitions
+0,  Number of Critical Values     
 --------------------------------------------------------------------------------
 Mass Compartment List
 Compartment,   C to M,     Units label
 Water,         1,          L             
-BL,            1,          kg wet
 --------------------------------------------------------------------------------
 Input Labels
 ID
@@ -33,11 +32,9 @@ Cl,        -1,     Water,       MassBal,  Debye
 --------------------------------------------------------------------------------
 Defined components                                    
 Component,  From,     Charge,   Compartment, Type,    Activity,   Site Den 
-BL1,        1.78E-05, -1,       BL,          MassBal, None,       3E-5
 --------------------------------------------------------------------------------      
 Formation Reactions
 Species, Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,  Delta H,   Temp
-BL1-Cu,  BL,       None,  2,  BL1, 1,   Cu,  1,            7.400,    0.000, 298.15
 OH,      Water,    Debye, 1,  H,  -1,                    -13.997,   -55810, 298.15
 CuOH,    Water,    Debye, 2,  Cu,  1,    H, -1,           -7.520,    50200, 298.15
 CuCl,    Water,    Debye, 2,  Cu,  1,   Cl,  1,            0.400,     8300, 298.15
@@ -48,13 +45,10 @@ Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Mol
 Special Definitions
 Definition, Species
 Metal,      Cu
-BL,         BL1
-BL-Metal,   BL1-Cu
-WHAM,       V
+WHAM,       scrap/parameter file format/WHAM_TEST.wdat
 --------------------------------------------------------------------------------
 Critical Accumulation Table
 #, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
-1, 0.05541,     Ceriodaphnia dubia, Acute,     48h,      Neonate (<24 hr), Mortality, EC50; LC50, Gensemer et al. 2002; Hyne et al. 2005; Naddy et al. 2002; Naddy et al. 2003; Van Genderen et al. 2007,SMEA calculated by median
 --------------------------------------------------------------------------------
 -------Notes--------
 Types: 

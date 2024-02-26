@@ -33,22 +33,44 @@ Rcpp::NumericVector CalcSpecConc(unsigned int NComp,
                                  Rcpp::NumericVector SpecK,
                                  Rcpp::IntegerMatrix SpecStoich,
                                  Rcpp::CharacterVector SpecName,
+                                 Rcpp::CharacterVector SpecActCorr,
                                  Rcpp::NumericVector SpecActivityCoef) {
   /* outputs */
   Rcpp::NumericVector SpecConc(NSpec);//species concentrations
-  SpecConc.names() = SpecName;
+    SpecConc.names() = SpecName;
 
   /* Variables */
   unsigned int iSpec, iComp; //loop counters
   Rcpp::NumericVector SpecActivity(NSpec);
   Rcpp::NumericVector CompActivity(NComp);
 
-  for (iSpec = 0; iSpec < NSpec; iSpec ++) {
+  for (iComp = 0; iComp < NComp; iComp++) {
+    CompActivity(iComp) = CompConc(iComp) * SpecActivityCoef(iComp);
+    SpecActivity(iComp) = CompActivity(iComp);
+  }
+
+  for (iSpec = NComp; iSpec < NSpec; iSpec++) {
     SpecActivity(iSpec) = SpecK(iSpec);
-    for (iComp = 0; iComp < NComp; iComp ++) {
-      CompActivity(iComp) = CompConc(iComp) * SpecActivityCoef(iComp);
-      SpecActivity(iSpec) *= std::pow(CompActivity(iComp),
-                                      SpecStoich(iSpec, iComp));
+    for (iComp = 0; iComp < NComp; iComp++) {
+      if (SpecStoich(iSpec, iComp) != 0) {
+          /*if ((SpecActCorr(iSpec) == "DonnanHA") || 
+            (SpecActCorr(iSpec) == "DonnanFA")) {
+              Rcpp::Rcout << SpecActCorr(iSpec) << std::endl;
+          }*/
+          /*if ((SpecActCorr(iComp) == "DonnanHA") || 
+              (SpecActCorr(iComp) == "DonnanFA")) {
+            SpecActivity(iSpec) *= std::pow(CompConc(iComp), 
+                                            SpecStoich(iSpec, iComp));
+          } else {
+            SpecActivity(iSpec) *= std::pow(CompActivity(iComp), 
+                                            SpecStoich(iSpec, iComp));
+          }
+          
+        } else {*/
+          SpecActivity(iSpec) *= std::pow(CompActivity(iComp),
+                                        SpecStoich(iSpec, iComp));
+        //}
+      }
     }
   }
   SpecConc = SpecActivity / SpecActivityCoef;

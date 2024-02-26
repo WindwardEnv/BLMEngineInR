@@ -8,19 +8,31 @@ CHESS(
   QuietFlag,
   ConvergenceCriteria,
   MaxIter,
+  NMass,
   NComp,
   NSpec,
   NBLMetal,
+  SpecMC,
   SpecK,
-  SpecTemp,
+  SpecTempKelvin,
   SpecDeltaH,
   SpecStoich,
+  SpecCharge,
+  SpecActCorr,
   SpecCtoM,
   SpecName,
   CompType,
   CompName,
   TotConc,
-  SysTemp,
+  DoWHAM,
+  AqueousMC,
+  SolHS,
+  wMolWt,
+  wRadius,
+  wP,
+  wDLF,
+  wKZED,
+  SysTempKelvin,
   DoTox,
   MetalName,
   MetalComp,
@@ -86,17 +98,17 @@ the simulation (units of mol)}
 }
 \value{
 list with the following elements:
-  \describe{
-    \item{SpecConc}{numeric vector (NSpec), the concentrations of each
-      species for which we have formation reactions}
-    \item{Iter}{integer, the number of Newton-Raphson iterations that we
-      needed to reach convergence}
-    \item{MaxError}{numeric, the highest final absolute error fraction
-      =max(abs(Resid / TotMoles))}
-    \item{CalcTotConc}{numeric vector (NComp), the calculated total
-      concentrations of each component in the simulation (units of e.g.,
-      mol/L and mol/kg)}
-  }
+\describe{
+  \item{SpecConc}{numeric vector (NSpec), the concentrations of each species
+    for which we have formation reactions}
+  \item{FinalIter}{integer, the number of Newton-Raphson iterations that we
+    needed to reach convergence}
+  \item{FinalMaxError}{numeric, the highest final absolute error fraction  
+    =max(abs(Resid / TotMoles))}
+  \item{CalcTotConc}{numeric vector (NComp), the calculated total
+    concentrations of each component in the simulation (units of e.g., mol/L
+    and mol/kg)}
+}
 }
 \description{
 Given a chemical system, equilibria equations, and total

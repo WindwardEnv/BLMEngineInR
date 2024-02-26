@@ -58,6 +58,7 @@ Rcpp::NumericVector CalcSpecConc(unsigned int NComp,
                                  Rcpp::NumericVector SpecK,
                                  Rcpp::IntegerMatrix SpecStoich,
                                  Rcpp::CharacterVector SpecName,
+                                 Rcpp::CharacterVector SpecActCorr,
                                  Rcpp::NumericVector SpecActivityCoef);
 
 Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
@@ -130,6 +131,7 @@ double CalcChargeBalance(unsigned int NSpec,
                          Rcpp::IntegerVector SpecMC);
 
 Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
+                                     Rcpp::CharacterVector SpecName, 
                                      Rcpp::CharacterVector SpecActCorr,
                                      Rcpp::IntegerVector SpecCharge,
                                      double IonicStrength,
@@ -162,6 +164,18 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
                                              Rcpp::NumericVector SpecK,
                                              Rcpp::CharacterVector SpecActCorr,
                                              Rcpp::NumericVector wP);
+
+void AdjustForWHAM(unsigned int NComp,
+                   unsigned int NSpec,
+                   Rcpp::CharacterVector CompName,
+                   Rcpp::CharacterVector SpecActCorr,
+                   Rcpp::IntegerVector SpecCharge,
+                   Rcpp::NumericVector WHAMSpecCharge,
+                   Rcpp::NumericVector SpecCtoM,
+                   Rcpp::NumericVector &SpecConc,
+                   Rcpp::NumericVector &TotConc,
+                   Rcpp::NumericVector &TotMoles);
+
 
 const unsigned int iHA = 0; // humic acid = 0
 const unsigned int iFA = 1; // fulvic acid = 1

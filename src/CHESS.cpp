@@ -80,7 +80,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::NumericVector TotConc,
                  bool DoWHAM,
                  int AqueousMC,
-                 //Rcpp::IntegerVector DonnanMC,
                  Rcpp::NumericVector SolHS,
                  Rcpp::NumericVector wMolWt,
                  Rcpp::NumericVector wRadius,
@@ -96,7 +95,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
   /*outputs*/
   Rcpp::NumericVector SpecConc(NSpec); // species concentrations after optimization
-  unsigned int Iter = 0;
+  Rcpp::NumericVector SpecAct(NSpec);
+  unsigned int Iter = 0;  
   double MaxError;
   Rcpp::NumericVector CalcTotConc(NComp); // the calculated total concentrations of each component in the simulation (units of e.g., mol/L and mol/kg)}
 
@@ -107,8 +107,10 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::NumericVector SpecKTempAdj(NSpec);
   Rcpp::NumericVector SpecKISTempAdj(NSpec);
   Rcpp::NumericVector SpecCtoMAdj(NSpec);
+  Rcpp::NumericVector SpecMoles(NSpec);
   Rcpp::NumericVector TotMoles(NComp);
   Rcpp::NumericVector CompCtoM(NComp);
+  Rcpp::NumericVector CompCtoMAdj(NComp);
   Rcpp::List ResidResults;
   unsigned int WhichMax;
   Rcpp::NumericVector Resid(NComp);
@@ -124,6 +126,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   CompError.names() = CompName;
   CalcTotConc.names() = CompName;
   CalcTotMoles.names() = CompName;
+  SpecAct.names() = SpecName;
 
   for (iComp = 0; iComp < NComp; iComp++){
     CompPosInSpec(iComp) = iComp;
@@ -140,32 +143,24 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   // Get initial values for component concentrations
   CompConc = InitialGuess(TotConc, CompType, SpecKTempAdj, SpecStoich,
                           SpecName, NComp, NSpec);
-  SpecConc[CompPosInSpec] = CompConc;
+  SpecConc[CompPosInSpec] = clone(CompConc);
 
   // Calculate the ionic strength and activity coefficients
   IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
-  SpecActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, 
+  SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
 
   // Initialize Species Concentrations
   SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 
-                          SpecName, SpecActivityCoef);
+                          SpecName, SpecActCorr, SpecActivityCoef);
 
   if (DoWHAM) {
     //Calculate the charge on the organic matter
     WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
                                         SpecCharge, SpecMC, AqueousMC);
-    for (iComp = 0; iComp < NComp; iComp++) {
-      if (CompName(iComp) == "DonnanHA") {
-        TotMoles(iComp) = -WHAMSpecCharge(iHA);
-        TotConc(iComp) = -WHAMSpecCharge(iHA);
-      } else if (CompName(iComp) == "DonnanFA") {
-        TotMoles(iComp) = -WHAMSpecCharge(iFA);
-        TotConc(iComp) = -WHAMSpecCharge(iFA);
-      }
-    }
-    
+
     //Adjust organic matter specific binding based on ionic strength
+    IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
     SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
                                               NSpec, SpecCharge, SpecKTempAdj, 
                                               SpecActCorr, wP);
@@ -175,14 +170,22 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                                         SpecActCorr, SpecMC, AqueousMC, wMolWt, 
                                         wRadius, wDLF, wKZED, WHAMSpecCharge, 
                                         SolHS);
+
+    AdjustForWHAM(NComp, NSpec, CompName, SpecActCorr, SpecCharge, 
+                  WHAMSpecCharge, SpecCtoMAdj, SpecConc, TotConc, TotMoles);
+
   } else {
     SpecKISTempAdj = SpecKTempAdj;
     SpecCtoMAdj = SpecCtoM;
   }
+  SpecMoles = SpecConc * SpecCtoMAdj;
+  CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
+  TotMoles = TotConc * CompCtoMAdj;
 
   // Update Total Concentrations for Fixed Activity & Metal
   UpdateTotals(NComp, NSpec, DoTox, CompType, CompName, MetalName,
-               SpecStoich, (SpecConc * SpecCtoMAdj), CompCtoM, TotMoles, TotConc);
+               SpecStoich, (SpecConc * SpecCtoMAdj), CompCtoMAdj, 
+               TotMoles, TotConc);
 
   // Calculate Residuals for the first time...
 
@@ -206,64 +209,82 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Iter = 0;
   while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter)) {
 
+    if (QuietFlag == "Debug") {
+      Rcpp::Rcout << "Iter=" << Iter << 
+        ", WhichMax=" << CompName(WhichMax) << 
+        ", MaxError=" << MaxError << 
+        ", Resid=" << Resid <<
+        ", WHAMSpecCharge=" << WHAMSpecCharge <<
+        ", TotMoles=" << TotMoles <<
+        ", CalcTotConc=" << CalcTotConc <<
+        ", CalcTotMoles=" << CalcTotMoles <<
+        ", SpecConc=" << SpecConc << 
+        ", SpecCtoMAdj=" << SpecCtoMAdj << 
+        std::endl;
+    }
+
     // update the iteration counter
     Iter++;
 
     // Calculate the Jacobian Matrix
-    JacobianMatrix = Jacobian(NComp, NSpec, SpecStoich, SpecConc, SpecCtoM,
+    JacobianMatrix = Jacobian(NComp, NSpec, SpecStoich, SpecConc, SpecCtoMAdj,
                               CompName, MetalComp, NBLMetal, BLMetalSpecs, 
                               DoTox);
 
     // Calculate the Newton-Raphson step
     CompConcStep = CalcStep(JacobianMatrix, Resid, NComp, CompType, CompName);
 
+    if (DoWHAM) {
+      CompConcStep[4] = CompConc[4] * (1 - (TotMoles[4] / CalcTotMoles[4])) / 2;
+    }
+
     // Update the component free concentrations
     CompConc = SpecConc[CompPosInSpec];
     CompUpdate(NComp, CompConcStep, CompConc);
-    SpecConc[CompPosInSpec] = CompConc;
+    SpecConc[CompPosInSpec] = clone(CompConc);
     
     // Calculate the ionic strength and activity coefficients
     IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
-    SpecActivityCoef = CalcActivityCoef(NSpec, SpecActCorr, SpecCharge, 
+    SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                         IonicStrength, SysTempKelvin);
+
+    // Calculate the species concentrations
+    SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
+                            SpecName, SpecActCorr, SpecActivityCoef);
 
     if (DoWHAM) {
       //Calculate the charge on the organic matter
-      WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
+      WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr,
+                                          SpecConc * SpecCtoMAdj, 
                                           SpecCharge, SpecMC, AqueousMC);
-      for (iComp = 0; iComp < NComp; iComp++) {
-        if (CompName(iComp) == "DonnanHA") {
-          TotMoles(iComp) = -WHAMSpecCharge(iHA);
-          TotConc(iComp) = -WHAMSpecCharge(iHA);
-        } else if (CompName(iComp) == "DonnanFA") {
-          TotMoles(iComp) = -WHAMSpecCharge(iFA);
-          TotConc(iComp) = -WHAMSpecCharge(iFA);
-        }
-      }
       
       //Adjust organic matter specific binding based on ionic strength
       SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
                                                 NSpec, SpecCharge, SpecKTempAdj, 
                                                 SpecActCorr, wP);
       
-      //Adjust diffuse binding 
+      //Calculate the portion of the solution that's in the diffuse layer
       SpecCtoMAdj = CalcDonnanLayerVolume(NSpec, IonicStrength, SpecCtoM, 
                                           SpecActCorr, SpecMC, AqueousMC, wMolWt, 
                                           wRadius, wDLF, wKZED, WHAMSpecCharge, 
                                           SolHS);
+      
+      // Adjust species and component totals
+      AdjustForWHAM(NComp, NSpec, CompName, SpecActCorr, SpecCharge, 
+                    WHAMSpecCharge, SpecCtoMAdj, SpecConc, TotConc, TotMoles);
+    
     } else {
       SpecKISTempAdj = SpecKTempAdj;
       SpecCtoMAdj = SpecCtoM;
-    }   
-
-    // Calculate the species concentrations
-    SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                            SpecName, SpecActivityCoef);
+    }       
+    SpecMoles = SpecConc * SpecCtoMAdj;
+    CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
+    TotMoles = TotConc * CompCtoMAdj;
 
     // Update Total Concentrations for Fixed Activity & Metal
     UpdateTotals(NComp, NSpec, DoTox, CompType, CompName, MetalName,
-                 SpecStoich, (SpecConc * SpecCtoMAdj), SpecCtoMAdj, TotMoles, 
-                 TotConc);
+                 SpecStoich, (SpecConc * SpecCtoMAdj), CompCtoMAdj, 
+                 TotMoles, TotConc);
 
     // Calculate the total moles & conc from species concentrations
     CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoMAdj, SpecStoich,
@@ -282,19 +303,23 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     // Determine which component has the highest error fraction
     MaxError = MaxCompError(NComp, CompError, WhichMax);
 
-    if (QuietFlag == "Debug") {
+  } // while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
+
+  SpecAct = SpecConc * SpecActivityCoef;
+
+  if (QuietFlag == "Debug") {
       Rcpp::Rcout << "Iter=" << Iter << 
         ", WhichMax=" << CompName(WhichMax) << 
-        ", SpecConc[WhichMax]= " << SpecConc(WhichMax) << 
-        ", CalcTotConc[WhichMax]= " << CalcTotConc(WhichMax) << 
-        ", MaxError=" << MaxError << std::endl;
+        ", MaxError=" << MaxError << 
+        ", WHAMSpecCharge=" << WHAMSpecCharge <<
+        ", Resid=" << Resid <<
+        ", SpecConc=" << SpecConc << 
+        ", CalcTotConc=" << CalcTotConc << std::endl;
     }
-
-  } // while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
 
   return Rcpp::List::create(
       Rcpp::Named("SpecConc") = SpecConc,
-      Rcpp::Named("SpecAct") = SpecConc * SpecActivityCoef,
+      Rcpp::Named("SpecAct") = SpecAct,
       Rcpp::Named("FinalIter") = Iter,
       Rcpp::Named("FinalMaxError") = MaxError,
       Rcpp::Named("CalcTotConc") = CalcTotConc);

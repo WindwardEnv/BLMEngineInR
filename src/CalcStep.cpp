@@ -16,7 +16,6 @@
 //' @return numeric vector (NComp), the N-R step to take for each component ("X"
 //'   in C(i+1) = C(i) - X)
 //'
-// [[Rcpp::export]]
  Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
                               Rcpp::NumericVector Resid,
                               unsigned int NComp,

@@ -34,7 +34,7 @@
 #' # do.call(
 #' #   "ReadInputsFromFile",
 #' #   args = c(thisProblem[names(thisProblem) %in%
-#'                formalArgs("ReadInputsFromFile")],
+#' #              formalArgs("ReadInputsFromFile")],
 #' #            list(InputFile="my_input_file.dat"))
 #' # )
 #' ## End Not Run
@@ -307,7 +307,7 @@ MatchInputsToProblem = function(
 #'     in Celsius}
 #'   \item{pH}{numeric vector NObs; input pH for each observation}
 #'   \item{TotConcObs}{numeric matrix with NObs rows and NComp columns; the
-#'     total concentrations of each component, including derived components}}
+#'     total concentrations of each component, including derived components}
 #' }
 #'
 #' @keywords internal

@@ -17,7 +17,7 @@ Rcpp::NumericVector CalcWHAMSpecCharge(unsigned int NSpec,
   WHAMSpecCharge(iHA) = 0;
   WHAMSpecCharge(iFA) = 0;
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if (SpecMC(iSpec) == AqueousMC) {
+    if ((SpecMC(iSpec) == AqueousMC) && (SpecCharge(iSpec) != 0)) {
       if (SpecActCorr(iSpec) == "WHAMHA") {
         WHAMSpecCharge(iHA) += SpecMoles(iSpec) * SpecCharge(iSpec);
       } else if (SpecActCorr(iSpec) == "WHAMFA") {

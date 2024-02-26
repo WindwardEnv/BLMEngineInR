@@ -9,7 +9,8 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
                                              Rcpp::CharacterVector SpecActCorr,
                                              Rcpp::NumericVector wP) {
   /* output */
-  Rcpp::NumericVector SpecISAdjK = SpecK;
+  Rcpp::NumericVector SpecKISAdj(NSpec);
+    SpecKISAdj.names() = SpecK.names();
 
   /* variables */
   Rcpp::NumericVector W = wP * log10(IonicStrength);
@@ -22,13 +23,16 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
   
   //adjust the intrinsic K's for WHAM species based on the charge
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if (SpecActCorr(iSpec) == "WHAMHA") {
-      SpecISAdjK(iSpec) = SpecK(iSpec) * exp(WZ2(iHA) * abs(SpecCharge(iSpec)));
-    } else if (SpecActCorr(iSpec) == "WHAMFA") {
-      SpecISAdjK(iSpec) = SpecK(iSpec) * exp(WZ2(iFA) * abs(SpecCharge(iSpec)));
-    }
+    SpecKISAdj(iSpec) = SpecK(iSpec);
+    if (SpecCharge(iSpec) != 0) {
+      if (SpecActCorr(iSpec) == "WHAMHA") {
+        SpecKISAdj(iSpec) = SpecK(iSpec) * exp(WZ2(iHA) * abs(SpecCharge(iSpec)));
+      } else if (SpecActCorr(iSpec) == "WHAMFA") {
+        SpecKISAdj(iSpec) = SpecK(iSpec) * exp(WZ2(iFA) * abs(SpecCharge(iSpec)));
+      }
+    }    
   }
 
-  return SpecISAdjK;
+  return SpecKISAdj;
 
 }

@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
 #include "CHESSFunctions.h"
+
 //' Set the initial guess for component concentrations
 //'
 //' The initial guess is calculated by first assuming that component
@@ -23,7 +24,7 @@
 //' @keywords internal
 //'
 //' @noRd
-//[[Rcpp::export]]
+//'
 Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
                                     Rcpp::CharacterVector CompType,
 									                  Rcpp::NumericVector SpecK,
@@ -38,7 +39,7 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
   unsigned int iSpec, iComp, iRound; //loop counters
   Rcpp::NumericVector SpecConc(NSpec);//species concentrations
   Rcpp::NumericVector CalcTot(NComp);//calculated total component concentrations
-
+  
   /* Seed component concentrations with total concentrations */
   for (iComp = 0; iComp < NComp; iComp++){
 	  CompConc(iComp) = TotConc(iComp);
@@ -47,27 +48,27 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
   /* Perform three rounds of adjustments */
   for (iRound =1; iRound <= 3; iRound++){
 	  /* Calc Species */
-	  for (iSpec = 0; iSpec < NSpec; iSpec ++){
-		SpecConc(iSpec) = SpecK(iSpec);
-		for (iComp = 0; iComp < NComp; iComp ++){
-		   SpecConc(iSpec) = SpecConc(iSpec) * pow(CompConc(iComp), SpecStoich(iSpec, iComp));
-		}
+	  for (iSpec = 0; iSpec < NSpec; iSpec ++) {
+      SpecConc(iSpec) = SpecK(iSpec);
+      for (iComp = 0; iComp < NComp; iComp ++) {
+        SpecConc(iSpec) = SpecConc(iSpec) * pow(CompConc(iComp), SpecStoich(iSpec, iComp));
+      }
 	  }
-      /* Calc totals */
-      for (iComp = 0; iComp < NComp; iComp++){
-	    CalcTot(iComp) = 0;
-	    for (iSpec = 0; iSpec < NSpec; iSpec++){
-	      if (SpecStoich(iSpec, iComp) != 0){
-             CalcTot(iComp) += SpecConc(iSpec) * SpecStoich(iSpec, iComp);
-          }
+    /* Calc totals */
+    for (iComp = 0; iComp < NComp; iComp++) {
+      CalcTot(iComp) = 0;
+      for (iSpec = 0; iSpec < NSpec; iSpec++) {
+        if (SpecStoich(iSpec, iComp) != 0){
+            CalcTot(iComp) += SpecConc(iSpec) * SpecStoich(iSpec, iComp);
         }
       }
+    }
 	  /* Adjust component concentrations */
-      for (iComp = 0; iComp < NComp; iComp++){
-        if (CompType(iComp) == "MassBal"){
-          CompConc(iComp) = CompConc(iComp)*(TotConc(iComp)/CalcTot(iComp));
-        }
+    for (iComp = 0; iComp < NComp; iComp++){
+      if (CompType(iComp) == "MassBal") {
+        CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTot(iComp));
       }
+    }
   }
   return(CompConc);
 }

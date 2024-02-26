@@ -72,6 +72,7 @@ Rcpp::NumericVector Davies(double IonicStrength, int MaxCharge) {
 
 
 Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
+                                     Rcpp::CharacterVector SpecName,
                                      Rcpp::CharacterVector SpecActCorr,
                                      Rcpp::IntegerVector SpecCharge,
                                      double IonicStrength,
@@ -79,12 +80,14 @@ Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
 
   /* outputs */
   Rcpp::NumericVector SpecActivityCoef(NSpec);
+    SpecActivityCoef.names() = SpecName;
 
   /* variables */
-  unsigned int iSpec;
+  unsigned int iSpec, iSpec2;
   int MaxCharge = Rcpp::max(Rcpp::abs(SpecCharge));
   Rcpp::NumericVector ActivityCoefDebye;
   Rcpp::NumericVector ActivityCoefDavies;
+  Rcpp::String tmp;
   
   ActivityCoefDebye = ExtDebyeHuckel(IonicStrength, MaxCharge, SysTempKelvin);
   //Rcpp::Rcout << "ActivityCoefDebye = " << ActivityCoefDebye << std::endl;
@@ -95,6 +98,25 @@ Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
       SpecActivityCoef(iSpec) = ActivityCoefDebye(abs(SpecCharge(iSpec)));
     } else if (SpecActCorr(iSpec) == "Davies") {
       SpecActivityCoef(iSpec) = ActivityCoefDavies(abs(SpecCharge(iSpec)));
+    } else if ((SpecActCorr(iSpec) == "DonnanHA") || 
+               (SpecActCorr(iSpec) == "DonnanFA")) {
+                
+      //Rcpp::Rcout << "SpecName(iSpec)=" << SpecName(iSpec) << std::endl;
+      iSpec2 = 0;
+      while (iSpec2 < iSpec) {        
+        tmp = SpecActCorr(iSpec);
+        tmp += "-" + SpecName(iSpec2);
+        //Rcpp::Rcout << "tmp=" << tmp.get_cstring() << std::endl;
+        if (tmp == SpecName(iSpec)) {
+          break;
+        }
+        iSpec2++;
+      }
+      if (iSpec == iSpec2) {
+        SpecActivityCoef(iSpec) = 1.0;
+      } else {
+        SpecActivityCoef(iSpec) = SpecActivityCoef(iSpec2);
+      }
     } else {//if (SpecActCorr(iSpec) == "None") {
       SpecActivityCoef(iSpec) = 1.0;
     }

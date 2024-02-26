@@ -195,7 +195,8 @@ ExpandWHAM = function(NMass,
   )
   MonodentTable$FullyProt = paste0(MonodentTable$S, "H")
   MonodentTable$FullyDeprot = paste0(MonodentTable$S)
-  MonodentTable$Strong1Weak2 = c(rep(1L, 4), rep(2L, 4))
+  nStrong = nMS / 2
+  MonodentTable$Strong1Weak2 = rep(c(1L, 2L), each = nStrong)#c(rep(1L, 4), rep(2L, 4))
 
   # Bidentate Pairs
   SkipRows = SkipRows + nMS + 3L
@@ -212,8 +213,8 @@ ExpandWHAM = function(NMass,
     BidentTable$S1Deprot = paste0(BidentTable$S1, "-", BidentTable$S2, "H")
     BidentTable$S2Deprot = paste0(BidentTable$S2, "-", BidentTable$S1, "H")
     BidentTable$FullyDeprot = paste0(BidentTable$S1, BidentTable$S2)
-    BidentTable$S1Strong1Weak2 = ifelse(BidentTable$S1 <= 4, 1, 2)
-    BidentTable$S2Strong1Weak2 = ifelse(BidentTable$S2 <= 4, 1, 2)
+    BidentTable$S1Strong1Weak2 = ifelse(BidentTable$S1 <= nStrong, 1L, 2L)
+    BidentTable$S2Strong1Weak2 = ifelse(BidentTable$S2 <= nStrong, 1L, 2L)
   } else {
     BidentTable = data.frame()
   }
@@ -264,9 +265,9 @@ ExpandWHAM = function(NMass,
                                     "H")
     TridentTable$FullyDeprot = paste0(TridentTable$S1, TridentTable$S2,
                                       TridentTable$S3)
-    TridentTable$S1Strong1Weak2 = ifelse(TridentTable$S1 <= 4, 1, 2)
-    TridentTable$S2Strong1Weak2 = ifelse(TridentTable$S2 <= 4, 1, 2)
-    TridentTable$S3Strong1Weak2 = ifelse(TridentTable$S3 <= 4, 1, 2)
+    TridentTable$S1Strong1Weak2 = ifelse(TridentTable$S1 <= nStrong, 1L, 2L)
+    TridentTable$S2Strong1Weak2 = ifelse(TridentTable$S2 <= nStrong, 1L, 2L)
+    TridentTable$S3Strong1Weak2 = ifelse(TridentTable$S3 <= nStrong, 1L, 2L)
   } else {
     TridentTable = data.frame()
   }
@@ -452,7 +453,7 @@ ExpandWHAM = function(NMass,
     DefCompName = c(DefCompName_orig, DonnanCompName, WHAMCompName)
     DefCompFromNum = c(
       DefCompFromNum_orig,
-      array(NA, dim = NDonnanComp, dimnames = list(DonnanCompName)),
+      array(1.0, dim = NDonnanComp, dimnames = list(DonnanCompName)),
       array(NA, dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompFromVar = c(
       DefCompFromVar_orig,
@@ -481,7 +482,7 @@ ExpandWHAM = function(NMass,
                                  each = NWHAMComp / NWHAMFracAdd),
                              dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompSiteDens = c(DefCompSiteDens_orig,
-                        array(1, dim = NDonnanComp,
+                        array(10^5, dim = NDonnanComp,
                               dimnames = list(DonnanCompName)),
                         array(NA, dim = NWHAMComp,
                               dimnames = list(WHAMCompName)))
@@ -571,9 +572,12 @@ ExpandWHAM = function(NMass,
       # Monodentate sites
       NewCompNum = StartComp:(StartComp + nMS - 1)
       NewDefCompNum = StartDefComp:(StartDefComp + nMS - 1)
-      MonodentpKH[1:4] = pKHA[OMType] + dpKHA[OMType] * (2 * MonodentTable$S[1:4] - 5) / 6
-      MonodentpKH[5:8] = pKHB[OMType] + dpKHB[OMType] * (2 * MonodentTable$S[5:8] - 13) / 6
-      MonodentAbundance = (1 - fprB[OMType] - fprT[OMType]) * nCOOH[OMType] / MonodentTable$AbundDenom
+      MonodentpKH[1:nStrong] = pKHA[OMType] + dpKHA[OMType] *
+        (2 * MonodentTable$S[1:nStrong] - 5) / 6
+      MonodentpKH[(nStrong + 1):nMS] = pKHB[OMType] + dpKHB[OMType] *
+        (2 * MonodentTable$S[(nStrong + 1):nMS] - 13) / 6
+      MonodentAbundance = (1 - fprB[OMType] - fprT[OMType]) *
+        nCOOH[OMType] / MonodentTable$AbundDenom
       CompSiteDens[NewCompNum] = MonodentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
       DefCompSiteDens[NewDefCompNum] = MonodentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
 

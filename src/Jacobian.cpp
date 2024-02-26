@@ -1,3 +1,4 @@
+#include <strings.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -28,7 +29,7 @@
 //'
 //' @return numeric matrix (NComp x NComp), the jacobian matrix (see details)
 //' @keywords internal
-// [[Rcpp::export]]
+//'
 Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
                               unsigned int NSpec, //number of species
                               Rcpp::IntegerMatrix SpecStoich, //formation reaction stoichiometry (NSpec x NComp)
@@ -47,23 +48,39 @@ Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
   /* variables: */
   double Sum;
   unsigned int iComp1, iComp2, iSpec, i;
+  double S1, S2, M;
+  std::string Name1, Name2, NameS;
 
   /* Loop through the Jacobian */
   for (iComp1 = 0; iComp1 < NComp; iComp1++) {
+    Name1 = CompName(iComp1);
     for (iComp2 = 0; iComp2 < NComp; iComp2++) {
+      Name2 = CompName(iComp2);
       Sum = 0;
-      if (DoTox && (iComp1 == (MetalComp - 1))){//subtract 1 because C++ is 0-based
+      if (DoTox && (iComp1 == (MetalComp - 1))) {//subtract 1 because C++ is 0-based
         /* Toxicity mode the metal's derivatives are relative to the CA error */
         for (i = 0; i < NBLMetal; i++) {
           iSpec = BLMetalSpecs(i) - 1;
           Sum += (SpecStoich(iSpec, iComp2) * SpecStoich(iSpec, iComp1) *
             SpecConc(iSpec) * SpecCtoM(iSpec));
         };//NEXT iSpec
+      } else if ((CompName(iComp1) == "DonnanFA") || 
+                 (CompName(iComp1) == "DonnanHA")) {
+        /* diffuse double layer stuff */
+        for (iSpec = NComp; iSpec < NSpec; iSpec++) {
+          //NameS = 
+          S1 = SpecStoich(iSpec, iComp1);
+          S2 = SpecStoich(iSpec, iComp2);
+          M = SpecConc(iSpec) * SpecCtoM(iSpec);
+          Sum += (S1 * S2 * M);
+        };//NEXT iSpec
       } else {
         /* All others are based on Resid = CalcTotMoles - TotMoles */
         for (iSpec = 0; iSpec < NSpec; iSpec++) {
-          Sum += (SpecStoich(iSpec, iComp2) * SpecStoich(iSpec, iComp1) *
-            SpecConc(iSpec) * SpecCtoM(iSpec));
+          S1 = SpecStoich(iSpec, iComp1);
+          S2 = SpecStoich(iSpec, iComp2);
+          M = SpecConc(iSpec) * SpecCtoM(iSpec);
+          Sum += (S1 * S2 * M);
         };//NEXT iSpec
       }
       if ((SpecConc(iComp2) == 0.0) || (SpecCtoM(iComp2) == 0.0)) {

@@ -13,6 +13,12 @@
 \item{MassUnit}{character vector (NMass), The units for each mass
 compartment.}
 
+\item{AqueousMC}{integer, the (1-based) position of the water/aqueous mass
+compartment.}
+
+\item{BioticLigMC}{integer, the (1-based) position of the biotic ligand mass
+compartment(s).}
+
 \item{NInLab}{integer, the number of input label fields}
 
 \item{InLabName}{character vector (NInLab), The names of the input label
@@ -132,7 +138,7 @@ coefficient of the formation reactions}
 \item{SpecDeltaH}{numeric vector (NSpec), the enthalpy change of the
 formation reactions}
 
-\item{SpecTemp}{numeric vector (NSpec), the temperature associated with
+\item{SpecTempKelvin}{numeric vector (NSpec), the temperature associated with
 K/logK and DeltaH of the formation reactions}
 
 \item{SpecStoich}{signed integer matrix (NSpec x NComp), the reaction
@@ -195,22 +201,103 @@ associated with toxic effects.}
 \item{BLMetalName}{The names of the species that are the biotic ligand-bound
 metal associated with toxic effects.}
 
+\item{BLComp}{integer vector (NBL), the (1-based) position of the biotic
+ligand component(s) in the component arrays}
+
+\item{MetalComp}{integer vector (NMetal), the (1-based) position of the metal
+component(s) in the component arrays (i.e., which is the toxic metal
+component)}
+
+\item{BLMetalSpecs}{integer vector (NBLMetal), the (1-based) positions of the
+species in the arrays which contribute to toxicity (i.e., which species are
+the toxic metal bound to the relevant biotic ligand)}
+
 \item{DoWHAM}{logical, TRUE = there are WHAM species, FALSE = no WHAM species}
+
+\item{wDLF}{numeric (2), WHAM's Double layer overlap factor}
+
+\item{wKZED}{numeric (2), WHAM's Constant to control DDL at low ZED}
+
+\item{SpecKsel}{numeric (NSpec, 2), WHAM's Selectivity coefficient Ksel for
+diffuse layer binding}
+
+\item{wP}{numeric (2), WHAM's P parameter...}
+
+\item{wRadius}{numeric (2), WHAM's molecular radius parameter for organic
+matter}
+
+\item{wMolWt}{numeric (2), WHAM's molecular weight parameter for organic
+matter}
 
 \item{CATab}{data frame, the critical accumulation table from the parameter
 file.}
 
 \item{NCAT}{integer, the number of critical accumulations in the parameter
 file table.}
+
+\item{CATarget}{numeric, the target critical accumulation in units of mol /
+kg (only used when DoTox == TRUE)}
+
+\item{NObs}{integer; the number of chemistry observations}
+
+\item{InLabObs}{matrix with NObs rows and InLab columns; the input labels for
+each observation}
+
+\item{InVarObs}{matrix with NObs rows and InVar columns; the input variables
+for each observation}
+
+\item{InCompObs}{matrix with NObs rows and InComp columns; the input
+component concentrations for each observation}
+
+\item{SysTempCelsiusObs}{numeric vector of length NObs; input temperatures,
+in Celsius}
+
+\item{SysTempKelvinObs}{numeric vector of length NObs; input temperatures, in
+Kelvin}
+
+\item{SysTempCelsius}{double; input temperature for the current observation,
+in Celsius}
+
+\item{SysTempKelvin}{double; input temperature for the current observation,
+in Kelvin}
+
+\item{TotConcObs}{numeric matrix with NObs rows and NComp columns; the total
+concentrations of each component, including derived components}
+
+\item{pH}{numeric vector NObs; input pH for each observation}
+
+\item{FinalIter}{integer, the number of Newton-Raphson iterations that we
+needed to reach convergence}
+
+\item{FinalMaxError}{numeric, the highest final absolute error fraction
+=max(abs(Resid / TotMoles))}
+
+\item{MaxError}{numeric, the highest absolute error fraction in this
+iteration =max(abs(Resid / TotMoles))}
+
+\item{CalcTotConc}{numeric vector (NComp), the calculated total
+concentrations of each component in the simulation (units of e.g., mol/L
+and mol/kg)}
+
+\item{QuietFlag}{character, one of "Very Quiet" (only print out when run is
+done), "Quiet" (print out Obs=iObs), or "Debug" (print out lots of info)}
+
+\item{DoTox}{logical, TRUE for toxicity mode where the MetalName component
+concentration is adjusted to try to match the CATarget with BLMetalSpecs}
+
+\item{ConvergenceCriteria}{numeric, the maximum value of MaxError that counts
+as convergence by the Newton-Raphson root-finding algorithm}
+
+\item{MaxIter}{integer, the maximum number of iterations the Newton-Raphson
+root-finding algorithm should do before giving up}
 }
 \description{
-These are parameters that are commonly used in the BLMEngineInR package.
-  They will appear throughout the various internal functions, and this
-  central repository of their definitions is helpful.
+These are parameters that are commonly used in the BLMEngineInR
+  package. They will appear throughout the various internal functions, and
+  this central repository of their definitions is helpful.
 }
 \seealso{
 Other BLMEngine Functions: 
-\code{\link{DefineProblem}()},
 \code{\link{ReadInputsFromFile}()}
 }
 \concept{BLMEngine Functions}

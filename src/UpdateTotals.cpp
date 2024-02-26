@@ -91,7 +91,6 @@ void UpdateTotals(unsigned int NComp,
 //' @return Rcpp::List (Rcpp::NumericVector TotMoles, 
 //'   Rcpp::NumericVector TotConc)
 //' 
-// [[Rcpp::export]]
 Rcpp::List UpdateTotalsList(unsigned int NComp, 
                             unsigned int NSpec, 
                             bool DoTox, 
