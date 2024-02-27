@@ -106,7 +106,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::NumericVector CompConc(NComp);
   Rcpp::NumericVector SpecKTempAdj(NSpec);
   Rcpp::NumericVector SpecKISTempAdj(NSpec);
-  Rcpp::NumericVector SpecCtoMAdj(NSpec);
+  Rcpp::NumericVector SpecCtoMAdj = clone(SpecCtoM);
   Rcpp::NumericVector SpecMoles(NSpec);
   Rcpp::NumericVector TotMoles(NComp);
   Rcpp::NumericVector CompCtoM(NComp);
@@ -121,6 +121,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::IntegerVector CompPosInSpec(NComp);
   Rcpp::NumericVector WHAMSpecCharge(2);
   unsigned int iComp;
+  unsigned int iSpec;
   TotMoles.names() = CompName;
   Resid.names() = CompName;
   CompError.names() = CompName;
@@ -141,12 +142,13 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::Rcout << TmpVector << std::endl;*/
 
   // Get initial values for component concentrations
-  CompConc = InitialGuess(TotConc, CompType, SpecKTempAdj, SpecStoich,
+  CompConc = InitialGuess(TotConc, SpecCtoMAdj, CompType, SpecKTempAdj, SpecStoich,
                           SpecName, NComp, NSpec);
   SpecConc[CompPosInSpec] = clone(CompConc);
 
   // Calculate the ionic strength and activity coefficients
-  IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
+  IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
+                                    SpecMC);
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
 
@@ -160,7 +162,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                                         SpecCharge, SpecMC, AqueousMC);
 
     //Adjust organic matter specific binding based on ionic strength
-    IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
+    IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
+                                      SpecMC);
     SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
                                               NSpec, SpecCharge, SpecKTempAdj, 
                                               SpecActCorr, wP);
@@ -234,8 +237,15 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     // Calculate the Newton-Raphson step
     CompConcStep = CalcStep(JacobianMatrix, Resid, NComp, CompType, CompName);
 
-    if (DoWHAM) {
-      CompConcStep[4] = CompConc[4] * (1 - (TotMoles[4] / CalcTotMoles[4])) / 2;
+    if (FALSE) {//(DoWHAM) {
+      // Update the Donnan layers the way WHAM does it
+      for (iComp = 0; iComp < NComp; iComp++) {
+        if ((CompType(iComp) == "DonnanHA") || 
+            (CompType(iComp) == "DonnanFA")) {
+          CompConcStep(iComp) = CompConc(iComp) * 
+            (1 - (TotMoles(iComp) / CalcTotMoles(iComp))) / 2;
+        }
+      }
     }
 
     // Update the component free concentrations
@@ -244,7 +254,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     SpecConc[CompPosInSpec] = clone(CompConc);
     
     // Calculate the ionic strength and activity coefficients
-    IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, SpecMC);
+    IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
+                                      SpecMC);
     SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                         IonicStrength, SysTempKelvin);
 
@@ -305,6 +316,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
   } // while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
 
+  SpecMoles = SpecConc * SpecCtoMAdj;
   SpecAct = SpecConc * SpecActivityCoef;
 
   if (QuietFlag == "Debug") {
@@ -320,6 +332,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   return Rcpp::List::create(
       Rcpp::Named("SpecConc") = SpecConc,
       Rcpp::Named("SpecAct") = SpecAct,
+      Rcpp::Named("SpecMoles") = SpecMoles,
       Rcpp::Named("FinalIter") = Iter,
       Rcpp::Named("FinalMaxError") = MaxError,
       Rcpp::Named("CalcTotConc") = CalcTotConc);

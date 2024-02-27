@@ -72,12 +72,13 @@ void CompUpdate(unsigned int NComp,
                 Rcpp::NumericVector &CompConc);
 
 Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
-                                    Rcpp::CharacterVector CompType,
-									                  Rcpp::NumericVector SpecK,
-                                    Rcpp::IntegerMatrix SpecStoich,
-                                    Rcpp::CharacterVector SpecName,
-                                    unsigned int NComp,
-                                    unsigned int NSpec);
+                                 Rcpp::NumericVector SpecCtoM, 
+                                 Rcpp::CharacterVector CompType,
+									               Rcpp::NumericVector SpecK,
+                                 Rcpp::IntegerMatrix SpecStoich,
+                                 Rcpp::CharacterVector SpecName,
+                                 unsigned int NComp,
+                                 unsigned int NSpec);
 
 Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
                               unsigned int NSpec, //number of species

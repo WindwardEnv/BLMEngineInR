@@ -64,29 +64,31 @@ Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
           Sum += (SpecStoich(iSpec, iComp2) * SpecStoich(iSpec, iComp1) *
             SpecConc(iSpec) * SpecCtoM(iSpec));
         };//NEXT iSpec
-      } else if ((CompName(iComp1) == "DonnanFA") || 
+      /*} else if ((CompName(iComp1) == "DonnanFA") || 
                  (CompName(iComp1) == "DonnanHA")) {
-        /* diffuse double layer stuff */
+        // diffuse double layer stuff 
         for (iSpec = NComp; iSpec < NSpec; iSpec++) {
           //NameS = 
           S1 = SpecStoich(iSpec, iComp1);
           S2 = SpecStoich(iSpec, iComp2);
           M = SpecConc(iSpec) * SpecCtoM(iSpec);
           Sum += (S1 * S2 * M);
-        };//NEXT iSpec
+        };//NEXT iSpec*/
       } else {
         /* All others are based on Resid = CalcTotMoles - TotMoles */
         for (iSpec = 0; iSpec < NSpec; iSpec++) {
           S1 = SpecStoich(iSpec, iComp1);
           S2 = SpecStoich(iSpec, iComp2);
-          M = SpecConc(iSpec) * SpecCtoM(iSpec);
-          Sum += (S1 * S2 * M);
+          if ((S1 != 0) && (S2 != 0)) {
+            M = SpecConc(iSpec) * SpecCtoM(iSpec);
+            Sum += (S1 * S2 * M);
+          }
         };//NEXT iSpec
       }
       if ((SpecConc(iComp2) == 0.0) || (SpecCtoM(iComp2) == 0.0)) {
         JacobianMatrix(iComp1, iComp2) = 0.0;
       } else {
-        JacobianMatrix(iComp1, iComp2) = Sum / (SpecConc(iComp2) * SpecCtoM(iComp2));
+        JacobianMatrix(iComp1, iComp2) = Sum / (SpecConc(iComp2));// * SpecCtoM(iComp2));
       }
     };//NEXT iComp2
   };//NEXT iComp1

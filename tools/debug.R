@@ -105,6 +105,13 @@ if (FALSE) {
   dev.off()
 }
 
+plot(x = ResultsTable$DOC, y = ResultsTable$Cu, type = "o", ylim = c(10^-10, 10^0), log = "y")
+lines(x = ResultsTable$DOC, y = ResultsTable$`DonnanFA-Cu`, type = "o", col = 2)
+
+plot(x = ResultsTable$DOC, y = ResultsTable$Na, type = "o", ylim = c(10^-10, 10^0), log = "y")
+lines(x = ResultsTable$DOC, y = ResultsTable$`DonnanFA-Na`, type = "o", col = 2)
+
+0.00152631
 
 for (i.col in c("TOrg.Cu", "Cu", "CO3", "HCO3","Act.OH", "CuOH","Cu(OH)2")){
 # for (i.col in colnames(ResultsTable)){

@@ -26,28 +26,35 @@
 //' @noRd
 //'
 Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
-                                    Rcpp::CharacterVector CompType,
-									                  Rcpp::NumericVector SpecK,
-                                    Rcpp::IntegerMatrix SpecStoich,
-                                    Rcpp::CharacterVector SpecName,
-                                    unsigned int NComp,
-                                    unsigned int NSpec){
+                                 Rcpp::NumericVector SpecCtoM,
+                                 Rcpp::CharacterVector CompType,
+									               Rcpp::NumericVector SpecK,
+                                 Rcpp::IntegerMatrix SpecStoich,
+                                 Rcpp::CharacterVector SpecName,
+                                 unsigned int NComp,
+                                 unsigned int NSpec){
   /* outputs */
   Rcpp::NumericVector CompConc(NComp);//component concentrations
 
   /* Variables */
   unsigned int iSpec, iComp, iRound; //loop counters
   Rcpp::NumericVector SpecConc(NSpec);//species concentrations
-  Rcpp::NumericVector CalcTot(NComp);//calculated total component concentrations
+  //Rcpp::NumericVector SpecMoles(NSpec);
+  Rcpp::NumericVector CalcTotConc(NComp);//calculated total component concentrations
+  Rcpp::NumericVector CalcTotMoles(NComp);//calculated total component moles 
+  Rcpp::NumericVector TotMoles(NComp);
   
   /* Seed component concentrations with total concentrations */
   for (iComp = 0; iComp < NComp; iComp++){
 	  CompConc(iComp) = TotConc(iComp);
+    TotMoles(iComp) = TotConc(iComp) * SpecCtoM(iComp);
   }
 
   /* Perform three rounds of adjustments */
-  for (iRound =1; iRound <= 3; iRound++){
+  for (iRound = 1; iRound <= 3; iRound++){
 	  /* Calc Species */
+    //CalcSpecConc(NComp, NSpec, CompConc, SpecK, SpecStoich, SpecName, 
+    //             SpecActCorr, SpecActivityCoef);
 	  for (iSpec = 0; iSpec < NSpec; iSpec ++) {
       SpecConc(iSpec) = SpecK(iSpec);
       for (iComp = 0; iComp < NComp; iComp ++) {
@@ -55,18 +62,25 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
       }
 	  }
     /* Calc totals */
-    for (iComp = 0; iComp < NComp; iComp++) {
-      CalcTot(iComp) = 0;
+    CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoM, SpecStoich, 
+                        CalcTotMoles, CalcTotConc);
+    /*for (iComp = 0; iComp < NComp; iComp++) {
+      CalcTotConc(iComp) = 0;
       for (iSpec = 0; iSpec < NSpec; iSpec++) {
         if (SpecStoich(iSpec, iComp) != 0){
-            CalcTot(iComp) += SpecConc(iSpec) * SpecStoich(iSpec, iComp);
+            CalcTotConc(iComp) += SpecConc(iSpec) * SpecStoich(iSpec, iComp);
         }
       }
-    }
+    }*/
+
 	  /* Adjust component concentrations */
     for (iComp = 0; iComp < NComp; iComp++){
       if (CompType(iComp) == "MassBal") {
-        CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTot(iComp));
+        //CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTotConc(iComp));
+        CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp));
+      } else if ((iRound == 3) && ((CompType(iComp) == "DonnanHA") || 
+                                   (CompType(iComp) == "DonnanFA"))) {
+        CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;;
       }
     }
   }
