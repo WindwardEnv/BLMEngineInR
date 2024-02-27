@@ -124,12 +124,14 @@ Rcpp::NumericVector TempCorrection(double SysTempKelvin,
 double CalcIonicStrength(unsigned int NSpec,
                          Rcpp::NumericVector SpecMoles,
                          Rcpp::IntegerVector SpecCharge,
-                         Rcpp::IntegerVector SpecMC);
+                         Rcpp::IntegerVector SpecMC,
+                         int AqueousMC);
 
 double CalcChargeBalance(unsigned int NSpec,
                          Rcpp::NumericVector SpecMoles,
                          Rcpp::IntegerVector SpecCharge,
-                         Rcpp::IntegerVector SpecMC);
+                         Rcpp::IntegerVector SpecMC,
+                         int AqueousMC);
 
 Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
                                      Rcpp::CharacterVector SpecName, 
@@ -145,12 +147,12 @@ Rcpp::NumericVector CalcWHAMSpecCharge(unsigned int NSpec,
                                        Rcpp::IntegerVector SpecMC,
                                        int AqueousMC);
 
-Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NSpec,
+Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NMass,
+                                          unsigned int NSpec,
                                           double IonicStrength,
-                                          Rcpp::NumericVector SpecCtoM,
-                                          Rcpp::CharacterVector SpecActCorr,
-                                          Rcpp::IntegerVector SpecMC,
+                                          Rcpp::NumericVector MassAmt,
                                           int AqueousMC,
+                                          Rcpp::IntegerVector WHAMDonnanMC,
                                           Rcpp::NumericVector wMolWt,
                                           Rcpp::NumericVector wRadius,
                                           double wDLF,

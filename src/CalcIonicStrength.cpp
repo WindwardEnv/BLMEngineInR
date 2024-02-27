@@ -22,7 +22,8 @@
 double CalcIonicStrength(unsigned int NSpec,
                          Rcpp::NumericVector SpecMoles,
                          Rcpp::IntegerVector SpecCharge,
-                         Rcpp::IntegerVector SpecMC) {
+                         Rcpp::IntegerVector SpecMC,
+                         int AqueousMC) {
   /* output */
   double IonicStrength = 0;
 
@@ -30,7 +31,7 @@ double CalcIonicStrength(unsigned int NSpec,
   unsigned int iSpec;
 
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if (SpecMC(iSpec) == 1L) {
+    if (SpecMC(iSpec) == AqueousMC) {
       IonicStrength += SpecCharge(iSpec) * SpecCharge(iSpec) * SpecMoles(iSpec);
     }
   }

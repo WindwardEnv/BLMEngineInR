@@ -420,7 +420,8 @@ ExpandWHAM = function(NMass,
     NDonnanComp = NWHAMFracAdd
     DonnanCompName = paste0("Donnan", WHAMFracAdd)
     DonnanMassName = paste(MassName_orig[iMass], DonnanCompName, sep = "_")
-    DonnanMC = NMass_orig + (1:NDonnanComp)
+    DonnanMC = array(NMass_orig + (1:NDonnanComp), dim = NDonnanComp,
+                     dimnames = list(WHAMFracAdd))
 
     NMass = NMass_orig + NDonnanComp
     MassName = c(MassName_orig, DonnanMassName)
@@ -499,7 +500,7 @@ ExpandWHAM = function(NMass,
                                  each = NWHAMComp / NWHAMFracAdd),
                              dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompSiteDens = c(DefCompSiteDens_orig,
-                        array(10^6, dim = NDonnanComp,
+                        array(1, dim = NDonnanComp,
                               dimnames = list(DonnanCompName)),
                         array(NA, dim = NWHAMComp,
                               dimnames = list(WHAMCompName)))
@@ -816,6 +817,8 @@ ExpandWHAM = function(NMass,
   names(SpecLogK) = SpecName
   names(SpecDeltaH) = SpecName
   names(SpecTempKelvin) = SpecName
+  WHAMDonnanMC = array(DonnanMC[c("HA","FA")], dim = 2,
+                       dimnames = list(c("HA","FA")))
 
   # Re-ordering species so components are in front
   Reorder = match(c(CompName, SpecName[SpecName %in% CompName == FALSE]),
@@ -864,7 +867,7 @@ ExpandWHAM = function(NMass,
     MassName = MassName,
     MassAmt = MassAmt,
     MassUnit = MassUnit,
-    WHAMDonnanMC = DonnanMC,
+    WHAMDonnanMC = WHAMDonnanMC,
 
     # Components
     NComp = NComp,

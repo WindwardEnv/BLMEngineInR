@@ -33,12 +33,12 @@
 //' 
 //' @return Rcpp::NumericVector - a modified SpecCtoM
 //' 
-Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NSpec,
+Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NMass,
+                                          unsigned int NSpec,
                                           double IonicStrength,
-                                          Rcpp::NumericVector SpecCtoM,
-                                          Rcpp::CharacterVector SpecActCorr,
-                                          Rcpp::IntegerVector SpecMC,
+                                          Rcpp::NumericVector MassAmt,
                                           int AqueousMC,
+                                          Rcpp::IntegerVector WHAMDonnanMC,
                                           Rcpp::NumericVector wMolWt,
                                           Rcpp::NumericVector wRadius,
                                           double wDLF,
@@ -47,15 +47,16 @@ Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NSpec,
                                           Rcpp::NumericVector SolHS) {
 
   /* outputs */
-  Rcpp::NumericVector DonnanLayerSpecCtoM(NSpec);// = SpecCtoM;
-    DonnanLayerSpecCtoM.names() = SpecCtoM.names();
+  Rcpp::NumericVector MassAmtAdj(NMass);// = SpecCtoM;
+    MassAmtAdj.names() = MassAmt.names();
   
   /* constants */
   const double Avogadro = 6.022E+23;
   const double pi = 3.14159265358979323846;
   
   /* variables */
-  unsigned int iSpec, iHS;  
+  int iMass;
+  unsigned int iHS;  
   double IKappa = 0.000000000304 / pow(IonicStrength, 0.5);
   double M, r, Zmod, VDmax, Tmp, Total_VD_CtoM;
   Rcpp::NumericVector VDP(2);
@@ -81,7 +82,18 @@ Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NSpec,
   if (VD_CtoM(iFA) < 0.0) { VD_CtoM(iFA) = 0.0; }
 
   Total_VD_CtoM = VD_CtoM(iHA) + VD_CtoM(iFA);
-  for (iSpec = 0; iSpec < NSpec; iSpec++) {
+  for (iMass = 0; iMass < NMass; iMass++) {
+    if (iMass == AqueousMC) {
+      MassAmtAdj[iMass] = MassAmt[iMass - Total_VD_CtoM];
+    } else if (iMass == WHAMDonnanMC[iHA]) {
+      MassAmtAdj[iMass] = VD_CtoM[iHA];
+    } else if (iMass == WHAMDonnanMC[iFA]) {
+      MassAmtAdj[iMass] = VD_CtoM[iFA];
+    } else {
+      MassAmtAdj[iMass] = MassAmt[iMass];
+    }
+  }
+  /*for (iSpec = 0; iSpec < NSpec; iSpec++) {
     if (SpecActCorr(iSpec) == "DonnanHA") {
       DonnanLayerSpecCtoM(iSpec) = VD_CtoM(iHA);
     } else if (SpecActCorr(iSpec) == "DonnanFA") {
@@ -89,17 +101,17 @@ Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NSpec,
     } else if ((SpecMC(iSpec) == AqueousMC) && 
                ((SpecActCorr(iSpec) != "WHAMHA") && 
                 (SpecActCorr(iSpec) != "WHAMFA"))) {
-      /* QUESTION:
-      Should we be checking that this is an inorganic species with 
-      ((SpecActCorr(iSpec) != "WHAMHA") && (SpecActCorr(iSpec) != "WHAMFA"))?
-      */
       DonnanLayerSpecCtoM(iSpec) = SpecCtoM(iSpec) - Total_VD_CtoM;
     } else {
       DonnanLayerSpecCtoM(iSpec) = SpecCtoM(iSpec);
     }
-  }
+  }*/
+  /* QUESTION:
+      Should we be checking that this is an inorganic species with 
+      ((SpecActCorr(iSpec) != "WHAMHA") && (SpecActCorr(iSpec) != "WHAMFA"))?
+      */
 
-  return DonnanLayerSpecCtoM;
+  return MassAmtAdj;
 
 }
 

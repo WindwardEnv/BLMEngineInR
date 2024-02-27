@@ -50,6 +50,7 @@ BLM = function(ParamFile = character(),
   AllInput = do.call("GetData", args = FunctionInputs)
 
   # Save some common variables for initializing arrays
+  MassName = ThisProblem$MassName
   NComp = ThisProblem$NComp
   CompName = ThisProblem$CompName
   NSpec = ThisProblem$NSpec
@@ -85,15 +86,20 @@ BLM = function(ParamFile = character(),
 
   # Initialize the output array
   MiscOutputCols = c("FinalIter", "FinalMaxError")
+  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMC],")")
+  SpecMolesCols = paste0(SpecName," (mol)")
   SpecActCols = paste0("Act.", SpecName)
-  TotConcCols = paste0("T.", CompName)
+  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMC],")")
+  MassAmtCols = paste0(MassName, " (",ThisProblem$MassUnit,")")
   Out = data.frame(Obs = 1:AllInput$NObs)
   Out = cbind(Out, AllInput$InLabObs)
   Out = cbind(Out, AllInput$InVarObs)
   Out[, MiscOutputCols] = NA
-  Out[, SpecName] = NA
+  Out[, SpecConcCols] = NA
   Out[, SpecActCols] = NA
+  Out[, SpecMolesCols] = NA
   Out[, TotConcCols] = NA
+  Out[, MassAmtCols] = NA
   # Out = array(
   #   NA,
   #   dim = c(AllInput$NObs, NSpec + NComp + length(MiscOutputCols)),
@@ -123,9 +129,11 @@ BLM = function(ParamFile = character(),
 
     Tmp = do.call("CHESS", args = FunctionInputs)
     Out[iObs, MiscOutputCols] = unlist(Tmp[MiscOutputCols])
-    Out[iObs, SpecName] = Tmp$SpecConc[SpecName]
-    Out[iObs, SpecActCols] = Tmp$SpecAct[1:NSpec]
-    Out[iObs, TotConcCols] = Tmp$CalcTotConc[CompName]
+    Out[iObs, SpecConcCols] = Tmp$SpecConc
+    Out[iObs, SpecActCols] = Tmp$SpecAct
+    Out[iObs, SpecMolesCols] = Tmp$SpecMoles
+    Out[iObs, TotConcCols] = Tmp$CalcTotConc
+    Out[iObs, MassAmtCols] = Tmp$MassAmt
 
   }
 

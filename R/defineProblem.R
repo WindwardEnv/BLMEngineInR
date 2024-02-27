@@ -477,9 +477,6 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   stopifnot(!any(duplicated(c(InLabName, InVarName, SpecName))))
 
   # Make SpecCtoM, SpecCharge, SpecK
-  SpecCtoM = array(Out$MassAmt[Out$SpecMC], dim = Out$NSpec,
-                   dimnames = list(Out$SpecName))
-  Out$SpecCtoM = SpecCtoM
   SpecCharge = Out$SpecStoich %*% Out$CompCharge
   Out$SpecCharge = SpecCharge
   Out$SpecK = array(10 ^ Out$SpecLogK, dim = Out$NSpec,

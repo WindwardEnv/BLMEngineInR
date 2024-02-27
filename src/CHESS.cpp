@@ -63,9 +63,13 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  double ConvergenceCriteria,
                  unsigned int MaxIter,
                  unsigned int NMass,
+                 Rcpp::CharacterVector MassName,
+                 Rcpp::NumericVector MassAmt,
                  unsigned int NComp,
+                 Rcpp::CharacterVector CompName,
+                 Rcpp::CharacterVector CompType,
+                 Rcpp::NumericVector TotConc,
                  unsigned int NSpec,
-                 unsigned int NBLMetal,
                  Rcpp::IntegerVector SpecMC,
                  Rcpp::NumericVector SpecK,
                  Rcpp::NumericVector SpecTempKelvin,
@@ -73,13 +77,10 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::IntegerMatrix SpecStoich,
                  Rcpp::IntegerVector SpecCharge,
                  Rcpp::CharacterVector SpecActCorr,
-                 Rcpp::NumericVector SpecCtoM,
                  Rcpp::CharacterVector SpecName,
-                 Rcpp::CharacterVector CompType,
-                 Rcpp::CharacterVector CompName,
-                 Rcpp::NumericVector TotConc,
                  bool DoWHAM,
                  int AqueousMC,
+                 Rcpp::IntegerVector WHAMDonnanMC,
                  Rcpp::NumericVector SolHS,
                  Rcpp::NumericVector wMolWt,
                  Rcpp::NumericVector wRadius,
@@ -90,6 +91,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  bool DoTox,
                  Rcpp::String MetalName,
                  unsigned int MetalComp,
+                 unsigned int NBLMetal,
                  Rcpp::IntegerVector BLMetalSpecs,
                  double CATarget) {
 
@@ -101,27 +103,28 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::NumericVector CalcTotConc(NComp); // the calculated total concentrations of each component in the simulation (units of e.g., mol/L and mol/kg)}
 
   /*variables*/
-  Rcpp::NumericMatrix JacobianMatrix(NComp);
+  unsigned int iComp;
+  Rcpp::NumericVector MassAmtAdj(NMass);
   Rcpp::NumericVector CompConcStep(NComp);
   Rcpp::NumericVector CompConc(NComp);
-  Rcpp::NumericVector SpecKTempAdj(NSpec);
-  Rcpp::NumericVector SpecKISTempAdj(NSpec);
-  Rcpp::NumericVector SpecCtoMAdj = clone(SpecCtoM);
-  Rcpp::NumericVector SpecMoles(NSpec);
   Rcpp::NumericVector TotMoles(NComp);
   Rcpp::NumericVector CompCtoM(NComp);
   Rcpp::NumericVector CompCtoMAdj(NComp);
-  Rcpp::List ResidResults;
+  Rcpp::NumericVector CalcTotMoles(NComp);
+  Rcpp::IntegerVector CompPosInSpec(NComp);
+  Rcpp::NumericVector SpecKTempAdj(NSpec);
+  Rcpp::NumericVector SpecKISTempAdj(NSpec);
+  Rcpp::NumericVector SpecCtoM(NSpec);
+  Rcpp::NumericVector SpecCtoMAdj(NSpec);
+  Rcpp::NumericVector SpecMoles(NSpec);
+  Rcpp::NumericVector SpecActivityCoef(NSpec);
+  Rcpp::NumericVector WHAMSpecCharge(2);
   unsigned int WhichMax;
+  double IonicStrength;
   Rcpp::NumericVector Resid(NComp);
   Rcpp::NumericVector CompError(NComp);
-  Rcpp::NumericVector CalcTotMoles(NComp);
-  double IonicStrength;
-  Rcpp::NumericVector SpecActivityCoef(NSpec);
-  Rcpp::IntegerVector CompPosInSpec(NComp);
-  Rcpp::NumericVector WHAMSpecCharge(2);
-  unsigned int iComp;
-  unsigned int iSpec;
+  Rcpp::NumericMatrix JacobianMatrix(NComp);
+  MassAmtAdj.names() = MassName;
   TotMoles.names() = CompName;
   Resid.names() = CompName;
   CompError.names() = CompName;
@@ -129,31 +132,38 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   CalcTotMoles.names() = CompName;
   SpecAct.names() = SpecName;
 
-  for (iComp = 0; iComp < NComp; iComp++){
+  // Initialize some variables
+  for (iComp = 0; iComp < NComp; iComp++) {
     CompPosInSpec(iComp) = iComp;
   }
-
+  SpecMC = SpecMC - 1;
+  AqueousMC = AqueousMC - 1;
+  WHAMDonnanMC = WHAMDonnanMC - 1;
+  MassAmtAdj = clone(MassAmt);
+  SpecCtoM = MassAmtAdj[SpecMC];
+  SpecCtoMAdj = clone(SpecCtoM);
   CompCtoM = SpecCtoM[CompPosInSpec];
   TotMoles = TotConc * CompCtoM;
 
   SpecKTempAdj = TempCorrection(SysTempKelvin, NSpec, SpecK, SpecTempKelvin, 
                                 SpecDeltaH);
+  SpecKISTempAdj = clone(SpecKTempAdj);
   /*Rcpp::NumericVector TmpVector = SpecKTempAdj / SpecK;
   Rcpp::Rcout << TmpVector << std::endl;*/
 
   // Get initial values for component concentrations
-  CompConc = InitialGuess(TotConc, SpecCtoMAdj, CompType, SpecKTempAdj, SpecStoich,
-                          SpecName, NComp, NSpec);
+  CompConc = InitialGuess(TotConc, SpecCtoMAdj, CompType, SpecKISTempAdj, 
+                          SpecStoich, SpecName, NComp, NSpec);
   SpecConc[CompPosInSpec] = clone(CompConc);
 
   // Calculate the ionic strength and activity coefficients
   IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC);
+                                    SpecMC, AqueousMC);
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
 
   // Initialize Species Concentrations
-  SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 
+  SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
                           SpecName, SpecActCorr, SpecActivityCoef);
 
   if (DoWHAM) {
@@ -163,23 +173,21 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
     //Adjust organic matter specific binding based on ionic strength
     IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                      SpecMC);
+                                      SpecMC, AqueousMC);
     SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
                                               NSpec, SpecCharge, SpecKTempAdj, 
                                               SpecActCorr, wP);
     
     //Adjust diffuse binding 
-    SpecCtoMAdj = CalcDonnanLayerVolume(NSpec, IonicStrength, SpecCtoM, 
-                                        SpecActCorr, SpecMC, AqueousMC, wMolWt, 
-                                        wRadius, wDLF, wKZED, WHAMSpecCharge, 
-                                        SolHS);
+    MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, IonicStrength, MassAmt, 
+                                       AqueousMC, WHAMDonnanMC, wMolWt, 
+                                       wRadius, wDLF, wKZED, WHAMSpecCharge, 
+                                       SolHS);
+    SpecCtoMAdj = MassAmtAdj[SpecMC];
 
     AdjustForWHAM(NComp, NSpec, CompName, SpecActCorr, SpecCharge, 
                   WHAMSpecCharge, SpecCtoMAdj, SpecConc, TotConc, TotMoles);
 
-  } else {
-    SpecKISTempAdj = SpecKTempAdj;
-    SpecCtoMAdj = SpecCtoM;
   }
   SpecMoles = SpecConc * SpecCtoMAdj;
   CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
@@ -213,17 +221,17 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter)) {
 
     if (QuietFlag == "Debug") {
-      Rcpp::Rcout << "Iter=" << Iter << 
-        ", WhichMax=" << CompName(WhichMax) << 
-        ", MaxError=" << MaxError << 
-        ", Resid=" << Resid <<
-        ", WHAMSpecCharge=" << WHAMSpecCharge <<
-        ", TotMoles=" << TotMoles <<
-        ", CalcTotConc=" << CalcTotConc <<
-        ", CalcTotMoles=" << CalcTotMoles <<
-        ", SpecConc=" << SpecConc << 
-        ", SpecCtoMAdj=" << SpecCtoMAdj << 
-        std::endl;
+      Rcpp::Rcout << "Iter=" << Iter 
+        << ", WhichMax=" << CompName(WhichMax) 
+        << ", MaxError=" << MaxError 
+        << ", WHAMSpecCharge=" << WHAMSpecCharge 
+        /*<< ", Resid=" << Resid 
+        << ", TotMoles=" << TotMoles 
+        << ", CalcTotConc=" << CalcTotConc 
+        << ", CalcTotMoles=" << CalcTotMoles 
+        << ", SpecConc=" << SpecConc 
+        << ", SpecCtoMAdj=" << SpecCtoMAdj */
+        << std::endl;
     }
 
     // update the iteration counter
@@ -255,7 +263,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     
     // Calculate the ionic strength and activity coefficients
     IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                      SpecMC);
+                                      SpecMC, AqueousMC);
     SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                         IonicStrength, SysTempKelvin);
 
@@ -275,18 +283,16 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                                                 SpecActCorr, wP);
       
       //Calculate the portion of the solution that's in the diffuse layer
-      SpecCtoMAdj = CalcDonnanLayerVolume(NSpec, IonicStrength, SpecCtoM, 
-                                          SpecActCorr, SpecMC, AqueousMC, wMolWt, 
-                                          wRadius, wDLF, wKZED, WHAMSpecCharge, 
-                                          SolHS);
+      MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, IonicStrength, MassAmt, 
+                                         AqueousMC, WHAMDonnanMC, wMolWt, 
+                                         wRadius, wDLF, wKZED, WHAMSpecCharge, 
+                                         SolHS);
+      SpecCtoMAdj = MassAmtAdj[SpecMC];
       
       // Adjust species and component totals
       AdjustForWHAM(NComp, NSpec, CompName, SpecActCorr, SpecCharge, 
                     WHAMSpecCharge, SpecCtoMAdj, SpecConc, TotConc, TotMoles);
-    
-    } else {
-      SpecKISTempAdj = SpecKTempAdj;
-      SpecCtoMAdj = SpecCtoM;
+      
     }       
     SpecMoles = SpecConc * SpecCtoMAdj;
     CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
@@ -322,11 +328,12 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   if (QuietFlag == "Debug") {
       Rcpp::Rcout << "Iter=" << Iter << 
         ", WhichMax=" << CompName(WhichMax) << 
-        ", MaxError=" << MaxError << 
-        ", WHAMSpecCharge=" << WHAMSpecCharge <<
-        ", Resid=" << Resid <<
-        ", SpecConc=" << SpecConc << 
-        ", CalcTotConc=" << CalcTotConc << std::endl;
+        ", MaxError=" << MaxError 
+        /*<< ", WHAMSpecCharge=" << WHAMSpecCharge 
+        << ", Resid=" << Resid 
+        << ", SpecConc=" << SpecConc 
+        << ", CalcTotConc=" << CalcTotConc*/
+        << std::endl;
     }
 
   return Rcpp::List::create(
@@ -335,5 +342,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
       Rcpp::Named("SpecMoles") = SpecMoles,
       Rcpp::Named("FinalIter") = Iter,
       Rcpp::Named("FinalMaxError") = MaxError,
-      Rcpp::Named("CalcTotConc") = CalcTotConc);
+      Rcpp::Named("CalcTotConc") = CalcTotConc,
+      Rcpp::Named("MassAmt") = MassAmtAdj);
 }

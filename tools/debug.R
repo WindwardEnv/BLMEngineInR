@@ -6,10 +6,10 @@ devtools::load_all()
 start.time = Sys.time()
 
 ResultsTable = BLM(
-  ParamFile = "scrap/parameter file format/abbrev_organic.dat4",
-  InputFile = "scrap/parameter file format/abbrev_organic.blm4",
-  # ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
-  # InputFile = "scrap/parameter file format/full_organic.blm4",
+  # ParamFile = "scrap/parameter file format/abbrev_organic.dat4",
+  # InputFile = "scrap/parameter file format/abbrev_organic.blm4",
+  ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
+  InputFile = "scrap/parameter file format/full_organic.blm4",
   DoTox = F,
   # iCA = 1L,
   QuietFlag ="Debug",
@@ -21,7 +21,7 @@ end.time = Sys.time()
 end.time - start.time
 
 ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
-ResultsTable[, c("ID","ID2","T.Cu","Cu")]
+ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]
 
 
 OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx",
@@ -111,7 +111,9 @@ lines(x = ResultsTable$DOC, y = ResultsTable$`DonnanFA-Cu`, type = "o", col = 2)
 plot(x = ResultsTable$DOC, y = ResultsTable$Na, type = "o", ylim = c(10^-10, 10^0), log = "y")
 lines(x = ResultsTable$DOC, y = ResultsTable$`DonnanFA-Na`, type = "o", col = 2)
 
-0.00152631
+ResultsTable$`DonnanFA-Cu` * c(3.87787e-08, 1, 1, 1, 1, 0.00152631)
+
+
 
 for (i.col in c("TOrg.Cu", "Cu", "CO3", "HCO3","Act.OH", "CuOH","Cu(OH)2")){
 # for (i.col in colnames(ResultsTable)){
