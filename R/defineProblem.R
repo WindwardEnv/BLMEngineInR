@@ -472,6 +472,13 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
               args = c(Out[which(names(Out) %in% formalArgs("ExpandWHAM"))],
                        list(WdatFile = WdatFile, WHAMVer = WHAMVer)))
     Out[names(Out2)] = Out2
+  } else {
+    Out$WHAMDonnanMC = array(NA, dim = 2, dimnames = list(c("HA","FA")))
+    Out$wDLF = NA
+    Out$wKZED = NA
+    Out$wP = array(NA, dim = 2, dimnames = list(c("HA","FA")))
+    Out$wRadius = array(NA, dim = 2, dimnames = list(c("HA","FA")))
+    Out$wMolWt = array(NA, dim = 2, dimnames = list(c("HA","FA")))
   }
 
   stopifnot(!any(duplicated(c(InLabName, InVarName, SpecName))))

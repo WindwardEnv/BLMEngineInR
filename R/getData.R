@@ -214,8 +214,8 @@ MatchInputsToProblem = function(
       # # make sense...why would we multiply by the site density AGAIN?
       # SolHAObs = TotConcObs[, HACompName] %*% HACompSiteDens
       # SolFAObs = TotConcObs[, FACompName] %*% FACompSiteDens
-      SolHSObs = array(c(rowSums(TotConcObs[, HACompName]),
-                         rowSums(TotConcObs[, FACompName])),
+      SolHSObs = array(c(rowSums(TotConcObs[, HACompName, drop = FALSE]),
+                         rowSums(TotConcObs[, FACompName, drop = FALSE])),
                        dim = c(NObs, 2),
                        dimnames = list(Obs = 1:NObs, c("HA", "FA")))
 
