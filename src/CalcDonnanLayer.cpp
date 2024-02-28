@@ -33,8 +33,8 @@
 //' 
 //' @return Rcpp::NumericVector - a modified SpecCtoM
 //' 
-Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NMass,
-                                          unsigned int NSpec,
+Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
+                                          int NSpec,
                                           double IonicStrength,
                                           Rcpp::NumericVector MassAmt,
                                           int AqueousMC,
@@ -56,7 +56,7 @@ Rcpp::NumericVector CalcDonnanLayerVolume(unsigned int NMass,
   
   /* variables */
   int iMass;
-  unsigned int iHS;  
+  int iHS;  
   double IKappa = 0.000000000304 / pow(IonicStrength, 0.5);
   double M, r, Zmod, VDmax, Tmp, Total_VD_CtoM;
   Rcpp::NumericVector VDP(2);

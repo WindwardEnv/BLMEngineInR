@@ -32,8 +32,8 @@
 //' @param TotConc numeric vector (NComp), the total concentrations of each 
 //'   component in the simulation (units of e.g., mol/L and mol/kg)
 //'
-void UpdateTotals(unsigned int NComp, 
-                  unsigned int NSpec, 
+void UpdateTotals(int NComp, 
+                  int NSpec, 
                   bool DoTox, 
                   Rcpp::CharacterVector CompType, 
                   Rcpp::CharacterVector CompName, 
@@ -44,7 +44,7 @@ void UpdateTotals(unsigned int NComp,
                   Rcpp::NumericVector &TotMoles, 
                   Rcpp::NumericVector &TotConc) {
     
-    unsigned int iComp, iSpec;
+    int iComp, iSpec;
             
     for (iComp = 0; iComp < NComp; iComp++) {
         if ((CompType(iComp) == "FixedAct") | 
@@ -91,8 +91,8 @@ void UpdateTotals(unsigned int NComp,
 //' @return Rcpp::List (Rcpp::NumericVector TotMoles, 
 //'   Rcpp::NumericVector TotConc)
 //' 
-Rcpp::List UpdateTotalsList(unsigned int NComp, 
-                            unsigned int NSpec, 
+Rcpp::List UpdateTotalsList(int NComp, 
+                            int NSpec, 
                             bool DoTox, 
                             Rcpp::CharacterVector CompType, 
                             Rcpp::CharacterVector CompName, 
@@ -103,7 +103,7 @@ Rcpp::List UpdateTotalsList(unsigned int NComp,
                             Rcpp::NumericVector TotMoles, 
                             Rcpp::NumericVector TotConc) {
     
-    unsigned int iComp, iSpec;
+    int iComp, iSpec;
 
     for (iComp = 0; iComp < NComp; iComp++) {
         if ((CompType(iComp) == "FixedAct") || (DoTox & (CompName(iComp) == MetalName))) {

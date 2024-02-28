@@ -71,7 +71,7 @@ Rcpp::NumericVector Davies(double IonicStrength, int MaxCharge) {
 }
 
 
-Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
+Rcpp::NumericVector CalcActivityCoef(int NSpec,
                                      Rcpp::CharacterVector SpecName,
                                      Rcpp::CharacterVector SpecActCorr,
                                      Rcpp::IntegerVector SpecCharge,
@@ -83,7 +83,7 @@ Rcpp::NumericVector CalcActivityCoef(unsigned int NSpec,
     SpecActivityCoef.names() = SpecName;
 
   /* variables */
-  unsigned int iSpec, iSpec2;
+  int iSpec, iSpec2;
   int MaxCharge = Rcpp::max(Rcpp::abs(SpecCharge));
   Rcpp::NumericVector ActivityCoefDebye;
   Rcpp::NumericVector ActivityCoefDavies;

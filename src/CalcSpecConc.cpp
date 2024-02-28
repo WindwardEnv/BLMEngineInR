@@ -27,8 +27,8 @@
 //' @returns A vector of `NSpec` species concentrations.
 //'
 //' @noRd
-Rcpp::NumericVector CalcSpecConc(unsigned int NComp,
-                                 unsigned int NSpec,
+Rcpp::NumericVector CalcSpecConc(int NComp,
+                                 int NSpec,
                                  Rcpp::NumericVector CompConc,
                                  Rcpp::NumericVector SpecK,
                                  Rcpp::IntegerMatrix SpecStoich,
@@ -40,7 +40,7 @@ Rcpp::NumericVector CalcSpecConc(unsigned int NComp,
     SpecConc.names() = SpecName;
 
   /* Variables */
-  unsigned int iSpec, iComp; //loop counters
+  int iSpec, iComp; //loop counters
   Rcpp::NumericVector SpecActivity(NSpec);
   Rcpp::NumericVector CompActivity(NComp);
 

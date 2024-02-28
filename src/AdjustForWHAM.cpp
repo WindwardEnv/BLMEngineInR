@@ -1,8 +1,8 @@
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
-void AdjustForWHAM(unsigned int NComp,
-                   unsigned int NSpec,
+void AdjustForWHAM(int NComp,
+                   int NSpec,
                    Rcpp::CharacterVector CompName,
                    Rcpp::CharacterVector SpecActCorr,
                    Rcpp::IntegerVector SpecCharge,
@@ -13,8 +13,8 @@ void AdjustForWHAM(unsigned int NComp,
                    Rcpp::NumericVector &TotMoles) {
 
   /* variables */
-  unsigned int iComp;
-  unsigned int iSpec;
+  int iComp;
+  int iSpec;
 
   // Set -Z_HS to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {

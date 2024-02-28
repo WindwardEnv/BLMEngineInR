@@ -19,7 +19,7 @@
 //'
 //' @return double, the ionic strength
 //'
-double CalcIonicStrength(unsigned int NSpec,
+double CalcIonicStrength(int NSpec,
                          Rcpp::NumericVector SpecMoles,
                          Rcpp::IntegerVector SpecCharge,
                          Rcpp::IntegerVector SpecMC,
@@ -28,7 +28,7 @@ double CalcIonicStrength(unsigned int NSpec,
   double IonicStrength = 0;
 
   /* variables */
-  unsigned int iSpec;
+  int iSpec;
 
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
     if (SpecMC(iSpec) == AqueousMC) {

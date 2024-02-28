@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
-Rcpp::NumericVector CalcWHAMSpecCharge(unsigned int NSpec, 
+Rcpp::NumericVector CalcWHAMSpecCharge(int NSpec, 
                                        Rcpp::CharacterVector SpecActCorr,
                                        Rcpp::NumericVector SpecMoles,
                                        Rcpp::IntegerVector SpecCharge,
@@ -12,7 +12,7 @@ Rcpp::NumericVector CalcWHAMSpecCharge(unsigned int NSpec,
   Rcpp::NumericVector WHAMSpecCharge(2);
   
   /* variables */
-  unsigned int iSpec;
+  int iSpec;
   
   WHAMSpecCharge(iHA) = 0;
   WHAMSpecCharge(iFA) = 0;

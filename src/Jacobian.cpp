@@ -30,14 +30,14 @@
 //' @return numeric matrix (NComp x NComp), the jacobian matrix (see details)
 //' @keywords internal
 //'
-Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
-                              unsigned int NSpec, //number of species
+Rcpp::NumericMatrix Jacobian (int NComp, //number of components
+                              int NSpec, //number of species
                               Rcpp::IntegerMatrix SpecStoich, //formation reaction stoichiometry (NSpec x NComp)
                               Rcpp::NumericVector SpecConc, //species concentrations
                               Rcpp::NumericVector SpecCtoM, //concentration to mass conversion for each species
                               Rcpp::CharacterVector CompName, //names of components
-                              unsigned int MetalComp, //position of the metal component
-                              unsigned int NBLMetal, //number of BL-Metal species
+                              int MetalComp, //position of the metal component
+                              int NBLMetal, //number of BL-Metal species
                               Rcpp::IntegerVector BLMetalSpecs, //positions of BL-metal species
                               bool DoTox) {//TRUE = do toxicity, FALSE = speciation only
   /* outputs: */
@@ -47,7 +47,7 @@ Rcpp::NumericMatrix Jacobian (unsigned int NComp, //number of components
 
   /* variables: */
   double Sum;
-  unsigned int iComp1, iComp2, iSpec, i;
+  int iComp1, iComp2, iSpec, i;
   double S1, S2, M;
   std::string Name1, Name2, NameS;
 

@@ -61,15 +61,15 @@
 //[[Rcpp::export]]
 Rcpp::List CHESS(Rcpp::String QuietFlag,
                  double ConvergenceCriteria,
-                 unsigned int MaxIter,
-                 unsigned int NMass,
+                 int MaxIter,
+                 int NMass,
                  Rcpp::CharacterVector MassName,
                  Rcpp::NumericVector MassAmt,
-                 unsigned int NComp,
+                 int NComp,
                  Rcpp::CharacterVector CompName,
                  Rcpp::CharacterVector CompType,
                  Rcpp::NumericVector TotConc,
-                 unsigned int NSpec,
+                 int NSpec,
                  Rcpp::IntegerVector SpecMC,
                  Rcpp::NumericVector SpecK,
                  Rcpp::NumericVector SpecTempKelvin,
@@ -90,20 +90,20 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  double SysTempKelvin,
                  bool DoTox,
                  Rcpp::String MetalName,
-                 unsigned int MetalComp,
-                 unsigned int NBLMetal,
+                 int MetalComp,
+                 int NBLMetal,
                  Rcpp::IntegerVector BLMetalSpecs,
                  double CATarget) {
 
   /*outputs*/
   Rcpp::NumericVector SpecConc(NSpec); // species concentrations after optimization
   Rcpp::NumericVector SpecAct(NSpec);
-  unsigned int Iter = 0;  
+  int Iter = 0;  
   double MaxError;
   Rcpp::NumericVector CalcTotConc(NComp); // the calculated total concentrations of each component in the simulation (units of e.g., mol/L and mol/kg)}
 
   /*variables*/
-  unsigned int iComp;
+  int iComp;
   Rcpp::NumericVector MassAmtAdj(NMass);
   Rcpp::NumericVector CompConcStep(NComp);
   Rcpp::NumericVector CompConc(NComp);
@@ -119,7 +119,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::NumericVector SpecMoles(NSpec);
   Rcpp::NumericVector SpecActivityCoef(NSpec);
   Rcpp::NumericVector WHAMSpecCharge(2);
-  unsigned int WhichMax;
+  int WhichMax;
   double IonicStrength;
   Rcpp::NumericVector Resid(NComp);
   Rcpp::NumericVector CompError(NComp);
@@ -225,12 +225,13 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
         << ", WhichMax=" << CompName(WhichMax) 
         << ", MaxError=" << MaxError 
         << ", WHAMSpecCharge=" << WHAMSpecCharge 
-        /*<< ", Resid=" << Resid 
+        << ", Resid=" << Resid 
         << ", TotMoles=" << TotMoles 
         << ", CalcTotConc=" << CalcTotConc 
         << ", CalcTotMoles=" << CalcTotMoles 
         << ", SpecConc=" << SpecConc 
-        << ", SpecCtoMAdj=" << SpecCtoMAdj */
+        << ", SpecMoles=" << SpecMoles
+        << ", MassAmtAdj=" << MassAmtAdj
         << std::endl;
     }
 
@@ -326,13 +327,17 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   SpecAct = SpecConc * SpecActivityCoef;
 
   if (QuietFlag == "Debug") {
-      Rcpp::Rcout << "Iter=" << Iter << 
-        ", WhichMax=" << CompName(WhichMax) << 
-        ", MaxError=" << MaxError 
-        /*<< ", WHAMSpecCharge=" << WHAMSpecCharge 
+      Rcpp::Rcout << "Iter=" << Iter 
+        << ", WhichMax=" << CompName(WhichMax) 
+        << ", MaxError=" << MaxError 
+        << ", WHAMSpecCharge=" << WHAMSpecCharge 
         << ", Resid=" << Resid 
+        << ", TotMoles=" << TotMoles 
+        << ", CalcTotConc=" << CalcTotConc 
+        << ", CalcTotMoles=" << CalcTotMoles 
         << ", SpecConc=" << SpecConc 
-        << ", CalcTotConc=" << CalcTotConc*/
+        << ", SpecMoles=" << SpecMoles
+        << ", MassAmtAdj=" << MassAmtAdj
         << std::endl;
     }
 

@@ -55,22 +55,22 @@
 //'    each component j}
 //' }
 //'
-Rcpp::List CalcResidualList (unsigned int NComp,
-                             unsigned int NSpec,
+Rcpp::List CalcResidualList (int NComp,
+                             int NSpec,
                              Rcpp::NumericVector SpecConc,
                              Rcpp::IntegerMatrix SpecStoich,
                              Rcpp::NumericVector TotMoles,
                              Rcpp::NumericVector SpecCtoM,
                              Rcpp::CharacterVector CompName,
                              Rcpp::CharacterVector CompType,
-                             unsigned int MetalComp,
-                             unsigned int NBLMetal,
+                             int MetalComp,
+                             int NBLMetal,
                              Rcpp::IntegerVector BLMetalSpecs,
                              double CATarget,
                              bool DoTox) {
   /* outputs */
   double MaxError;// maximum of absolute ratios of residuals to totals
-  unsigned int WhichMax;// which component has the highest absolute error
+  int WhichMax;// which component has the highest absolute error
   Rcpp::NumericVector Resid(NComp);// residuals
   Rcpp::NumericVector CompError(NComp); // the absolute ratios of residuals to totals
   Rcpp::NumericVector CalcTotConc(NComp); // the calculated total concentrations (mol/L)
@@ -81,7 +81,7 @@ Rcpp::List CalcResidualList (unsigned int NComp,
   CalcTotMoles.names() = CompName;
 
   /* variables: */
-  unsigned int iComp, iSpec, i;
+  int iComp, iSpec, i;
   Rcpp::NumericVector SpecMoles;
   double CalcCA;
   Rcpp::NumericVector CompCtoM(NComp);
@@ -177,8 +177,8 @@ Rcpp::List CalcResidualList (unsigned int NComp,
 //' @name CalcIterationTotals
 //' @usage CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoM, SpecStoich, 
 //'   CalcTotMoles, CalcTotConc);
-void CalcIterationTotals(unsigned int NComp,
-                         unsigned int NSpec,
+void CalcIterationTotals(int NComp,
+                         int NSpec,
                          Rcpp::NumericVector SpecConc,
                          Rcpp::NumericVector SpecCtoM,
                          Rcpp::IntegerMatrix SpecStoich,
@@ -186,7 +186,7 @@ void CalcIterationTotals(unsigned int NComp,
                          Rcpp::NumericVector &CalcTotConc) {
 
   /* variables: */
-  unsigned int iComp, iSpec; // loop counters
+  int iComp, iSpec; // loop counters
   Rcpp::NumericVector SpecMoles; // moles of each species
   
   // Calculate the total moles and concentrations from species concentrations
@@ -226,7 +226,7 @@ void CalcIterationTotals(unsigned int NComp,
 //' 
 //' @name CalcResidualsOnly
 //' @usage CalcResidualsOnly(NComp, CalcTotMoles, TotMoles, CompType)
-Rcpp::NumericVector CalcResidualsOnly(unsigned int NComp,
+Rcpp::NumericVector CalcResidualsOnly(int NComp,
                                       Rcpp::NumericVector CalcTotMoles,
                                       Rcpp::NumericVector TotMoles,
                                       Rcpp::CharacterVector CompType) {
@@ -235,7 +235,7 @@ Rcpp::NumericVector CalcResidualsOnly(unsigned int NComp,
   Rcpp::NumericVector Resid(NComp);// residuals
 
   /* variables: */
-  unsigned int iComp; // loop counters
+  int iComp; // loop counters
 
   // Calculate the residuals
   Resid = CalcTotMoles - TotMoles;
@@ -275,7 +275,7 @@ Rcpp::NumericVector CalcResidualsOnly(unsigned int NComp,
 //'
 //' @name CalcResidualAndError
 //' @usage CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, Resid, CompError);
-void CalcResidAndError(unsigned int NComp,
+void CalcResidAndError(int NComp,
                        Rcpp::NumericVector CalcTotMoles,
                        Rcpp::NumericVector TotMoles,
                        Rcpp::CharacterVector CompType,
@@ -283,7 +283,7 @@ void CalcResidAndError(unsigned int NComp,
                        Rcpp::NumericVector &CompError) {
 
   /* variables: */
-  unsigned int iComp; // loop counters
+  int iComp; // loop counters
 
   // Calculate the residuals
   Resid = CalcTotMoles - TotMoles;
@@ -332,16 +332,16 @@ void CalcResidAndError(unsigned int NComp,
 //' @name AdjustForToxMode
 //' @usage AdjustForToxMode(NBLMetal, BLMetalSpecs, MetalComp, CATarget, 
 //'   SpecConc, Resid, CompError)
-void AdjustForToxMode(unsigned int NBLMetal, 
+void AdjustForToxMode(int NBLMetal, 
                       Rcpp::IntegerVector BLMetalSpecs, 
-                      unsigned int MetalComp,
+                      int MetalComp,
                       double CATarget,
                       Rcpp::NumericVector SpecConc,
                       Rcpp::NumericVector &Resid,
                       Rcpp::NumericVector &CompError) {
   /* variables */
   double CalcCA;
-  unsigned int i, iSpec;
+  int i, iSpec;
   // Adjust Resid and CompError for toxicity mode
     CalcCA = 0;
     
@@ -373,14 +373,14 @@ void AdjustForToxMode(unsigned int NBLMetal,
 //'
 //' @name MaxCompError
 //' @usage MaxError = MaxCompError(NComp, CompError, WhichMax)
-double MaxCompError(unsigned int NComp, Rcpp::NumericVector CompError, 
-                    unsigned int &WhichMax) {
+double MaxCompError(int NComp, Rcpp::NumericVector CompError, 
+                    int &WhichMax) {
 
   /* output */
   double MaxError;
 
   /* variable */
-  unsigned int iComp;
+  int iComp;
 
   // Determine which component has the highest error fraction
   MaxError = CompError(0);

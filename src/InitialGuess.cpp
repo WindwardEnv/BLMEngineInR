@@ -31,13 +31,13 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
 									               Rcpp::NumericVector SpecK,
                                  Rcpp::IntegerMatrix SpecStoich,
                                  Rcpp::CharacterVector SpecName,
-                                 unsigned int NComp,
-                                 unsigned int NSpec){
+                                 int NComp,
+                                 int NSpec){
   /* outputs */
   Rcpp::NumericVector CompConc(NComp);//component concentrations
 
   /* Variables */
-  unsigned int iSpec, iComp, iRound; //loop counters
+  int iSpec, iComp, iRound; //loop counters
   Rcpp::NumericVector SpecConc(NSpec);//species concentrations
   //Rcpp::NumericVector SpecMoles(NSpec);
   Rcpp::NumericVector CalcTotConc(NComp);//calculated total component concentrations

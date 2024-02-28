@@ -20,14 +20,15 @@
 //'
 //' @return  numeric cector CompConc (NComp) modified for the next iteration
 //'
-void CompUpdate(unsigned int NComp, 
+void CompUpdate(int NComp, 
                 Rcpp::NumericVector CompConcStep,
+                Rcpp::CharacterVector CompType,
                 Rcpp::NumericVector &CompConc){
 
   /* variables */
   Rcpp::NumericVector oldCompConc(NComp); //oldCompConc = CompConc;
   // Rcpp::LogicalVector ltzero(NComp);
-  unsigned int iComp;
+  int iComp;
 
 
   // newCompConc = CompConc - CompConcStep;

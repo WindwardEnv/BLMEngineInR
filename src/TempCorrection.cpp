@@ -19,7 +19,7 @@
 //'   log Ks for species
 //' 
 Rcpp::NumericVector TempCorrection(double SysTempKelvin,
-                                   unsigned int NSpec,
+                                   int NSpec,
                                    Rcpp::NumericVector SpecK,
                                    Rcpp::NumericVector SpecTempKelvin,
                                    Rcpp::NumericVector SpecDeltaH) {
@@ -27,7 +27,7 @@ Rcpp::NumericVector TempCorrection(double SysTempKelvin,
 	Rcpp::NumericVector SpecKTempAdj(NSpec);
 	
   /* Local variables: */
-	unsigned int iSpec;
+	int iSpec;
 	double Rcon = 8.314;//universal gas constant (Rcon = 8.314 J / (mol*K))
   double T0, T1, T2;//temparary temperature variables 
   

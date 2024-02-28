@@ -19,7 +19,7 @@
 //'
 //' @return double, the net charge balance in solution
 //'
-double CalcChargeBalance(unsigned int NSpec,
+double CalcChargeBalance(int NSpec,
                          Rcpp::NumericVector SpecMoles,
                          Rcpp::IntegerVector SpecCharge,
                          Rcpp::IntegerVector SpecMC,
@@ -28,7 +28,7 @@ double CalcChargeBalance(unsigned int NSpec,
   double ChargeBal;
   
   /* variables */
-  unsigned int iSpec;
+  int iSpec;
   
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
     if (SpecMC(iSpec) == AqueousMC) {

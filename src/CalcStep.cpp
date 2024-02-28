@@ -18,7 +18,7 @@
 //'
  Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
                               Rcpp::NumericVector Resid,
-                              unsigned int NComp,
+                              int NComp,
                               Rcpp::CharacterVector CompType,
                               Rcpp::CharacterVector CompName){
 
@@ -27,9 +27,9 @@
    CompConcStep.names() = CompName;
 
    /* variables */
-   unsigned int iComp, iComp2;
-   unsigned int i, j;
-   unsigned int NSolve;
+   int iComp, iComp2;
+   int i, j;
+   int NSolve;
    NSolve = 0;
    for (iComp = 0; iComp < NComp; iComp++){
      if (CompType(iComp) != "FixedAct"){ NSolve++; }
