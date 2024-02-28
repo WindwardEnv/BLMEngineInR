@@ -41,6 +41,10 @@ void CompUpdate(int NComp,
     } else {
       CompConc(iComp) = oldCompConc(iComp) - CompConcStep(iComp);
     }
+    if ((CompConc(iComp) < 1.0) && 
+        ((CompType(iComp) == "DonnanHA") || (CompType(iComp) == "DonnanFA"))) {
+      CompConc(iComp) = 1.0;
+    }
   }//NEXT iComp
 
 }

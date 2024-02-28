@@ -259,7 +259,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
     // Update the component free concentrations
     CompConc = SpecConc[CompPosInSpec];
-    CompUpdate(NComp, CompConcStep, CompConc);
+    CompUpdate(NComp, CompConcStep, CompType, CompConc);
     SpecConc[CompPosInSpec] = clone(CompConc);
     
     // Calculate the ionic strength and activity coefficients

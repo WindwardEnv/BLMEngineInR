@@ -80,7 +80,7 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
         CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp));
       } else if ((iRound == 3) && ((CompType(iComp) == "DonnanHA") || 
                                    (CompType(iComp) == "DonnanFA"))) {
-        CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;;
+        CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;
       }
     }
   }

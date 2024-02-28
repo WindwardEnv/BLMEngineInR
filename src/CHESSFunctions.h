@@ -69,6 +69,7 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
 
 void CompUpdate(int NComp, 
                 Rcpp::NumericVector CompConcStep,
+                Rcpp::CharacterVector CompType,
                 Rcpp::NumericVector &CompConc);
 
 Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
