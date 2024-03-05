@@ -21,7 +21,7 @@
 #'   factor for each chemical species
 #' @param CompName character vector (NComp), the names of the components
 #' @param CompType character vector (NComp), the type of component. It should be
-#'   a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal, SurfPot)
+#'   a fixed set of values (MassBal, FixedConc, Substituted, ChargeBal, SurfPot)
 #' @param MetalComp integer, the position in component vectors of the toxic
 #'   metal component
 #' @param BLMetalSpecs integer vector, the position in the species vectors of
@@ -65,7 +65,7 @@ RCalcResidual = function(NComp, NSpec, SpecConc, SpecStoich, TotMoles, SpecCtoM,
   CalcTotMoles = array((SpecConc * SpecCtoM) %*% SpecStoich, dim = NComp, dimnames = list(CompName))
   # CalcTotConc = as.numeric(matrix(SpecConc, nrow = 1, ncol = NSpec) %*% SpecStoich)
   Resid = CalcTotMoles - TotMoles # * SpecCtoM[1:NComp]
-  Resid[CompType == "FixedAct"] = 0.0
+  Resid[CompType == "FixedConc"] = 0.0
   ThisError = abs(Resid / TotMoles)
   if(DoTox){
     Resid[MetalComp] = sum(SpecConc[BLMetalSpecs]) - CATarget

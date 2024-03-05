@@ -21,6 +21,19 @@ SUB CalcDonnanLayer(ISTR#)
     iH_FADL = FindSpecies("H_DL_FA")
     iH_S = FindSpecies("H")
 
+' This would be done in GetData in the PB code
+    IF (iDOC <> 0) THEN
+        Sol_HA = Sol_HS(1) * OKT(iDOC)
+        Sol_FA = Sol_HS(2) * OKT(iDOC)
+    ELSE
+        Sol_HA = 0#
+        Sol_FA = 0#
+        FOR i = 1 TO NComp
+            IF (ActCorr(i) = acWHAMHA) THEN Sol_HA = Sol_HA + OKT(i) * SiteDen(i)
+            IF (ActCorr(i) = acWHAMFA) THEN Sol_FA = Sol_FA + OKT(i) * SiteDen(i)
+        NEXT i
+    END IF
+
 '  *----------------------------------------------------------------*
 '  |  Calculate the diffuse layer volume, VD_HA/FA, adjust CToM,    |
 '  |  and set the equilibrium constant for DL                       |

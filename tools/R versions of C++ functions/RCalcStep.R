@@ -6,7 +6,7 @@
 #'   known totals
 #' @param NComp integer, the number of components
 #' @param CompType character vector (NComp), the type of component. It should be
-#'   a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal, SurfPot)
+#'   a fixed set of values (MassBal, FixedConc, Substituted, ChargeBal, SurfPot)
 #' @param CompName character vector (NComp), the names of the components
 #'
 #' @return numeric vector (NComp), the N-R step to take for each component ("X"
@@ -14,7 +14,7 @@
 #' @export
 RCalcStep = function(JacobianMatrix, Resid, NComp, CompType, CompName){
 
-  i.solve = which(CompType != "FixedAct")
+  i.solve = which(CompType != "FixedConc")
   n.solve = length(i.solve)
 
   (Resid.solve = matrix(Resid[i.solve], nrow = n.solve, ncol = 1,
@@ -37,7 +37,7 @@ RCalcStep = function(JacobianMatrix, Resid, NComp, CompType, CompName){
   CompConcStep = array(0, dim = NComp, dimnames = list(CompName))
   CompConcStep[i.solve] = CompConcStep.solve
 
-  # CompConcStep[CompType == "FixedAct"] = 0
+  # CompConcStep[CompType == "FixedConc"] = 0
 
   return(CompConcStep)
 

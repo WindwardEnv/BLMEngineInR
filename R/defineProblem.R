@@ -16,8 +16,8 @@
 #'  \item{\code{CompCharge}}{integer vector of length `NComp`; the charge of
 #'    the components as free ions}
 #'  \item{\code{CompType}}{character vector of length `NComp`; the type of
-#'    component. It should be a fixed set of values (MassBal, FixedAct,
-#'    Substituted, ChargeBal, SurfPot)}
+#'    component. It should be a fixed set of values ("MassBal", "FixedAct",
+#'    "FixedConc", "Substituted", "ChargeBal", "SurfPot", "DonnanChargeBal")}
 #'  \item{\code{CompActCorr}}{character vector of length `NComp`; the method to
 #'    use for activity corrections with this component,  }
 #'  \item{\code{SpecName}}{character vector of length `NSpec`; species names}
@@ -373,8 +373,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   # error catching
   stopifnot(
     all(!is.na(c(CompMC, SpecMC))),
-    all(CompType %in% c("MassBal", "FixedAct", "Substituted", "ChargeBal",
-                        "SurfPot")),
+    all(CompType %in% c("MassBal", "FixedAct", "FixedConc", "Substituted", "ChargeBal",
+                        "SurfPot", "DonnanChargeBal")),
     all(c(CompActCorr, SpecActCorr) %in% c("None", "Debye", "Davies", "WHAM"))
   )
 

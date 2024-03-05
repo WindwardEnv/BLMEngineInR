@@ -23,8 +23,8 @@
 //'   associated with toxic effects.
 //' @param SpecStoich signed integer matrix (NSpec x NComp), the reaction 
 //'   stoichiometry of the formation reactions.
-//' @param SpecMoles numeric vector (NSpec), the moles of each species for 
-//'   which we have formation reactions
+//' @param SpecConc numeric vector (NSpec), the concentration of each species
+//'   for which we have formation reactions
 //' @param CompCtoM numeric vector (NSpec), the concentration to mass conversion 
 //'   factor of the components
 //' @param TotMoles numeric vector (NComp), the total moles of each component in 
@@ -39,7 +39,7 @@ void UpdateTotals(int NComp,
                   Rcpp::CharacterVector CompName, 
                   Rcpp::String MetalName, 
                   Rcpp::IntegerMatrix SpecStoich, 
-                  Rcpp::NumericVector SpecMoles, 
+                  Rcpp::NumericVector SpecConc, 
                   Rcpp::NumericVector CompCtoM, 
                   Rcpp::NumericVector &TotMoles, 
                   Rcpp::NumericVector &TotConc) {
@@ -47,13 +47,14 @@ void UpdateTotals(int NComp,
     int iComp, iSpec;
             
     for (iComp = 0; iComp < NComp; iComp++) {
-        if ((CompType(iComp) == "FixedAct") | 
+        if ((CompType(iComp) == "FixedConc") || 
+            (CompType(iComp) == "FixedAct") || 
           (DoTox & (CompName(iComp) == MetalName))) {
-            TotMoles(iComp) = 0;
+            TotConc(iComp) = 0;
             for (iSpec = 0; iSpec < NSpec; iSpec++) {
-                TotMoles(iComp) += SpecStoich(iSpec, iComp) * SpecMoles(iSpec);
+                TotConc(iComp) += SpecStoich(iSpec, iComp) * SpecConc(iSpec);
             }
-            TotConc(iComp) = TotMoles(iComp) * CompCtoM(iComp);
+            TotMoles(iComp) = TotConc(iComp) * CompCtoM(iComp);
         }
     }
 }

@@ -95,6 +95,7 @@ double CHESSIter(
   Rcpp::NumericVector &SpecKISTempAdj,
   Rcpp::NumericVector &SpecCtoMAdj,
   Rcpp::NumericVector &SpecConc,
+  Rcpp::NumericVector &SpecActivityCoef,
   Rcpp::NumericVector &CalcTotMoles,
   int &WhichMax,
   double &IonicStrength,
@@ -118,7 +119,7 @@ double CHESSIter(
   Rcpp::NumericVector CompCtoMAdj(NComp);
   //Rcpp::NumericVector SpecKISTempAdj(NSpec);
   //Rcpp::NumericVector SpecCtoMAdj(NSpec);
-  Rcpp::NumericVector SpecActivityCoef(NSpec);
+  //Rcpp::NumericVector SpecActivityCoef(NSpec);
   Rcpp::NumericVector WHAMSpecCharge(2);
   
   // Update the component free concentrations
@@ -132,6 +133,16 @@ double CHESSIter(
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
   
+  for(int iComp = 0; iComp < NComp; iComp++) {
+    if (CompType[iComp] == "FixedAct") {
+      SpecConc[iComp] = TotConc[iComp] / SpecActivityCoef[iComp];
+      CompConc[iComp] = SpecConc[iComp];
+    } else if (CompType[iComp] == "FixedConc"){
+      SpecConc[iComp] = TotConc[iComp];
+      CompConc[iComp] = SpecConc[iComp];
+    }
+  }
+
   // Calculate the species concentrations
   SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
                           SpecName, SpecActCorr, SpecActivityCoef);
@@ -149,10 +160,10 @@ double CHESSIter(
   TotMoles = TotConc * CompCtoMAdj;
 
   // Update Total Concentrations for Fixed Activity & Metal
-  UpdateTotals(NComp, NSpec, DoTox, CompType, CompName, MetalName,
-                SpecStoich, (SpecConc * SpecCtoMAdj), CompCtoMAdj, 
-                TotMoles, TotConc);
-
+  /*UpdateTotals(NComp, NSpec, DoTox, CompType, CompName, MetalName,
+                SpecStoich, SpecConc, CompCtoMAdj, 
+                TotMoles, TotConc);*/
+  
   // Calculate the total moles & conc from species concentrations
   CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, 
                                          SpecStoich);

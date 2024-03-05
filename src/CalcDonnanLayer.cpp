@@ -85,7 +85,7 @@ Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
   Total_VD_CtoM = VD_CtoM(iHA) + VD_CtoM(iFA);
   for (iMass = 0; iMass < NMass; iMass++) {
     if (iMass == AqueousMC) {
-      MassAmtAdj[iMass] = MassAmt[iMass - Total_VD_CtoM];
+      MassAmtAdj[iMass] = MassAmt[iMass] - Total_VD_CtoM;
     } else if (iMass == WHAMDonnanMC[iHA]) {
       MassAmtAdj[iMass] = VD_CtoM[iHA];
     } else if (iMass == WHAMDonnanMC[iFA]) {

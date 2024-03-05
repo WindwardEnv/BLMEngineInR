@@ -154,7 +154,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                              NComp = NComp,
                              NSpec = NSpec,
                              SpecName = SpecName)
-    for (iComp in which(CompType == "FixedAct")){
+    for (iComp in which(CompType == "FixedConc")){
       TotMoles[iComp] = sum(SpecStoich[, iComp] * (SpecConc * SpecCtoM))
       TotConc[iComp] = sum(SpecStoich[, iComp] * SpecConc)
     }
@@ -198,7 +198,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
                                    SpecName = SpecName)
       TotConc_Full = TotConc
       TotMoles_Full = TotMoles
-      for (iComp in which(CompType == "FixedAct")){
+      for (iComp in which(CompType == "FixedConc")){
         TotMoles_Full[iComp] = sum(SpecStoich[,iComp] * (SpecConc_Full * SpecCtoM))
         TotConc_Full[iComp] = sum(SpecStoich[,iComp] * SpecConc_Full)
       }
@@ -238,7 +238,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
 
         TotConc_Half = TotConc
         TotMoles_Half = TotMoles
-        for (iComp in which(CompType == "FixedAct")){
+        for (iComp in which(CompType == "FixedConc")){
           TotMoles_Half[iComp] = sum(SpecStoich[,iComp] * (SpecConc_Half * SpecCtoM))
           TotConc_Half[iComp] = sum(SpecStoich[,iComp] * SpecConc_Half)
         }
@@ -277,7 +277,7 @@ RCHESS = function(DoPartialSteps, QuietFlag, ConvergenceCriteria, MaxIter,
 
         TotConc_Best = TotConc
         TotMoles_Best = TotMoles
-        for (iComp in which(CompType == "FixedAct")){
+        for (iComp in which(CompType == "FixedConc")){
           TotConc_Best[iComp] = sum(SpecStoich[,iComp] * (SpecConc_Best * SpecCtoM))
           TotConc_Best[iComp] = sum(SpecStoich[,iComp] * SpecConc_Best)
         }

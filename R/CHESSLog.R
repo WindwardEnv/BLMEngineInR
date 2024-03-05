@@ -47,10 +47,15 @@ CHESSLog = function(ThisProblem, ParamFile) {
   write(strrep("-", 80), file = LogFilename, append = TRUE)
   write(tmp, file = LogFilename, append = TRUE)
 
-  # Fixed Activity Components
+  # FixedAct Components
   write(strrep("-", 80), file = LogFilename, append = TRUE)
   write("FixedAct Components:", file = LogFilename, append = TRUE)
   write(CompName[CompType == "FixedAct"], file = LogFilename, append = TRUE)
+
+  # FixedConc Components
+  write(strrep("-", 80), file = LogFilename, append = TRUE)
+  write("FixedConc Components:", file = LogFilename, append = TRUE)
+  write(CompName[CompType == "FixedConc"], file = LogFilename, append = TRUE)
 
   # MassBal Totals
   tmp = paste0(

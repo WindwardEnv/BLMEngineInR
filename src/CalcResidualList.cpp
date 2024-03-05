@@ -26,7 +26,7 @@
  //'   factor for each chemical species
  //' @param CompName character vector (NComp), the names of the components
  //' @param CompType character vector (NComp), the type of component. It should
- //'   be a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal,
+ //'   be a fixed set of values (MassBal, FixedConc, Substituted, ChargeBal,
  //'   SurfPot)
  //' @param MetalComp integer, the position in component vectors of the toxic
  //'   metal component
@@ -103,7 +103,7 @@
    // Rcpp::Rcout << "Calculate Resid" << std::endl;
    Resid = CalcTotMoles - TotMoles;
    for (iComp = 0; iComp < NComp; iComp++) {
-     if (CompType(iComp) == "FixedAct"){
+     if ((CompType(iComp) == "FixedConc") || (CompType(iComp) == "FixedAct")) {
        Resid(iComp) = 0.0;
      }
    }

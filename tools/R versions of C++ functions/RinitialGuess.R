@@ -16,7 +16,7 @@ RinitialGuess = function(NComp, CompName, TotConc, CompType){
   CompConc = TotConc / 2
   names(CompConc) = CompName
 
-  CompConc[CompType == "FixedAct"] = TotConc[CompType == "FixedAct"]
+  CompConc[CompType == "FixedConc"] = TotConc[CompType == "FixedConc"]
 
   return(CompConc)
 }
@@ -33,7 +33,7 @@ RinitialGuess = function(NComp, CompName, TotConc, CompType){
 # SpecConc[1:NComp] = CompConc
 #
 # # Update Total Concentrations for Fixed Activity & Metal
-# for (iComp in which((CompType == "FixedAct") | (iTox & (CompName == MetalName)))){
+# for (iComp in which((CompType == "FixedConc") | (iTox & (CompName == MetalName)))){
 #   TotMoles[iComp] = sum(SpecStoich[,iComp] * (SpecConc * SpecCtoM))
 #   TotConc[iComp] = TotMoles[iComp] * SpecCtoM[iComp]
 # }
@@ -79,7 +79,7 @@ RinitialGuess = function(NComp, CompName, TotConc, CompType){
 #     SpecConc[1:NComp] = CompConc
 #
 #     # Update Total Concentrations for Fixed Activity & Metal
-#     for (iComp in which((CompType == "FixedAct") | (iTox & (CompName == MetalName)))){
+#     for (iComp in which((CompType == "FixedConc") | (iTox & (CompName == MetalName)))){
 #       TotMoles[iComp] = sum(SpecStoich[,iComp] * (SpecConc * SpecCtoM))
 #       TotConc[iComp] = TotMoles[iComp] * SpecCtoM[iComp]
 #     }

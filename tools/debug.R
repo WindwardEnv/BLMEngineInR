@@ -12,13 +12,15 @@ ResultsTable <- BLM(
   # InputFile = "scrap/parameter file format/abbrev_organic.blm4",
   # ParamFile = "scrap/parameter file format/full_inorg.dat4",
   # InputFile = "scrap/parameter file format/full_inorg.blm4",
-  ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
-  InputFile = "scrap/parameter file format/full_organic.blm4",
+  # ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
+  # InputFile = "scrap/parameter file format/full_organic.blm4",
+  ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcCu.dat4",
+  InputFile = "scrap/parameter file format/full_organic_FixedConcCu.blm4",
   DoTox = F,
   # iCA = 1L,
   QuietFlag ="Quiet",
   ConvergenceCriteria = 0.001,
-  MaxIter = 1000L,
+  MaxIter = 30L,
   DoPartialStepsAlways = FALSE
 )
 # , file = "scrap/debug.txt")
@@ -26,130 +28,64 @@ ResultsTable <- BLM(
 end.time = Sys.time()
 end.time - start.time
 
+ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
+
+ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
 ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
+which((ResultsTable$FinalIter < 30) & !is.na(ResultsTable$FinalMaxError))
 ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]
+ResultsTable[, c("ID2","T.Cu (mol/L)","T.Cu (mol)","Water (L)", "Water_DonnanHA (L)","Water_DonnanFA (L)")]
 
 
 
-start.time = Sys.time()
-ResultsTable_DPSTRUE <- BLM(
-  ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
-  InputFile = "scrap/parameter file format/full_organic.blm4",
-  DoTox = F,
-  QuietFlag ="Quiet",
-  ConvergenceCriteria = 0.001,
-  MaxIter = 1000L,
-  DoPartialStepsAlways = TRUE
-)
-time.elapsed_DPSTRUE = Sys.time() - start.time
-
-start.time = Sys.time()
-ResultsTable_DPSFALSE <- BLM(
-  ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
-  InputFile = "scrap/parameter file format/full_organic.blm4",
-  DoTox = F,
-  QuietFlag ="Quiet",
-  ConvergenceCriteria = 0.001,
-  MaxIter = 1000L,
-  DoPartialStepsAlways = FALSE
-)
-time.elapsed_DPSFALSE = Sys.time() - start.time
-
-ResultsTable_DPSTRUE$Hard = (ResultsTable_DPSTRUE$`T.Ca (mol/L)` + ResultsTable_DPSTRUE$`T.Mg (mol/L)`) * 100086
-ResultsTable_DPSFALSE$Hard = (ResultsTable_DPSFALSE$`T.Ca (mol/L)` + ResultsTable_DPSFALSE$`T.Mg (mol/L)`) * 100086
-
-ResultsTable_DPSTRUE[, c("Obs","ID2","FinalIter","FinalMaxError","Cu (mol/L)")]
-ResultsTable_DPSFALSE[, c("Obs","ID2","FinalIter","FinalMaxError","Cu (mol/L)")]
-
-# hardness series = 1 - 7
-# DOC series = 8 - 16
-# pH series = 17 - 23
-# Temp series = 24 - 29
-# hi DOC hard series = 30 - 36
-# hi DOC pH series = 37 - 43
-# hi DOC Temp series = 44 - 49
-
-mean(ResultsTable_DPSTRUE$FinalIter / ResultsTable_DPSFALSE$FinalIter)
-sum(ResultsTable_DPSFALSE$FinalIter == 1001L)#3 fail to converge when doing normal N-R
-sum(ResultsTable_DPSTRUE$FinalIter == 1001L)#5 fail to converge with DPS
-which((ResultsTable_DPSFALSE$FinalIter == 1001L)) #        9    24    41
-which((ResultsTable_DPSTRUE$FinalIter == 1001L))  #  2  3  9       25 41
-#                                                  Hard    DOC  temp  hdp
-
-
-sum(is.na(ResultsTable_DPSFALSE$`Cu (mol/L)`))#9 fail to converge when doing normal N-R
-sum(is.na(ResultsTable_DPSTRUE$`Cu (mol/L)`))#7 fail to converge with DPS
-which(is.na(ResultsTable_DPSFALSE$`Cu (mol/L)`)) #  1  2  3  4 21    23 26    35   43
-which(is.na(ResultsTable_DPSTRUE$`Cu (mol/L)`))  #  1          21 22 23 26 29      43
-#                                                   Hard       pH       temp  hdh  hdp
-
-
-plot(x = ResultsTable_DPSTRUE$`Cu (mol/L)`, y = ResultsTable_DPSFALSE$`Cu (mol/L)`, log = "xy"); abline(a = 0, b = 1)
-mean(ResultsTable_DPSTRUE$`Cu (mol/L)` / ResultsTable_DPSFALSE$`Cu (mol/L)`, na.rm = TRUE)
-# The answer's converging to the same point, when both converge, but it's a
-# toss-up of whether DPS actually helps...some fail to converge, some explode,
-# but there are some that do these in either case (with some overlap, but some
-# unique cases).
-
-sum(ResultsTable_DPSTRUE$FinalIter > ResultsTable_DPSFALSE$FinalIter)  #28
-sum(ResultsTable_DPSTRUE$FinalIter < ResultsTable_DPSFALSE$FinalIter)  #14
-sum(ResultsTable_DPSTRUE$FinalIter == ResultsTable_DPSFALSE$FinalIter) # 7
-which(ResultsTable_DPSTRUE$FinalIter > ResultsTable_DPSFALSE$FinalIter)
-which(ResultsTable_DPSTRUE$FinalIter < ResultsTable_DPSFALSE$FinalIter)
-which(ResultsTable_DPSTRUE$FinalIter == ResultsTable_DPSFALSE$FinalIter)
-#  best hard------------------  DOC-------------------  pH------------------  temp-------------  hi DOC hard---------   hi DOC pH-----------   hi DOC temp------
-#  N-R     2  3  4                10 11 12 13 14 15     17    19 20 21 22        25 26              31          35 36   37    39 40       43   44    46 47 48 49
-#  DPS  1           5  6  7  8                             18                 24       27 28 29  30       33 34                                   45
-#  same                         9                   16                    23                           32                  38       41 42
-#       hard------------------  DOC-------------------  pH------------------  temp-------------  hi DOC hard---------   hi DOC pH-----------   hi DOC temp------
-
-plot(x = ResultsTable_DPSTRUE$FinalIter, y = ResultsTable_DPSFALSE$FinalIter, log = "xy"); abline(a = 0, b = 1)
-plot(x = ResultsTable_DPSTRUE$Obs, y = ResultsTable_DPSTRUE$FinalIter, log = "y", type = "o"); points(x = ResultsTable_DPSFALSE$Obs, y = ResultsTable_DPSFALSE$FinalIter, col = 2, type = "o")
-plot(x = ResultsTable_DPSTRUE$DOC, y = ResultsTable_DPSTRUE$FinalIter, log = "xy", type = "o"); points(x = ResultsTable_DPSFALSE$DOC, y = ResultsTable_DPSFALSE$FinalIter, col = 2, type = "o")
-plot(x = ResultsTable_DPSTRUE$pH, y = ResultsTable_DPSTRUE$FinalIter, log = "y", type = "o"); points(x = ResultsTable_DPSFALSE$pH, y = ResultsTable_DPSFALSE$FinalIter, col = 2, type = "o")
-plot(x = ResultsTable_DPSTRUE$Hard, y = ResultsTable_DPSTRUE$FinalIter, log = "xy", type = "o"); points(x = ResultsTable_DPSFALSE$Hard, y = ResultsTable_DPSFALSE$FinalIter, col = 2, type = "o")
-
-
-# No partial steps: Time difference of 0.911727 secs
-#   Obs       ID2 FinalIter FinalMaxError
-# 1   1 DOC ser 1       451  6.060930e-04
-# 2   2 DOC ser 2         7  9.989368e-06
-# 3   3 DOC ser 3         7  2.465376e-04
-# 4   4 DOC ser 4         6  2.031681e-04
-# 5   5 DOC ser 5         6  2.070989e-04
-# 6   6 DOC ser 6         6  9.463851e-04
-#
-# Time difference of 1.696869 mins
-#> summary(ResultsTable$FinalIter)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
-# 5      11      23     127      98    1001
-#
-# Partial steps: Time difference of 0.4131219 secs
-#   Obs       ID2 FinalIter FinalMaxError
-# 1   1 DOC ser 1        82  3.539385e-04
-# 2   2 DOC ser 2         6  9.035190e-04
-# 3   3 DOC ser 3         7  4.125571e-05
-# 4   4 DOC ser 4         6  2.031681e-04
-# 5   5 DOC ser 5         6  2.070989e-04
-# 6   6 DOC ser 6         6  9.463851e-04
-#
-# Time difference of 2.615645 mins
-# > summary(ResultsTable$FinalIter)
-# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
-# 5.0    14.0    44.0   175.9   145.0  1001.0
 
 
 
 OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx",
                                          sheet = 1, rows = c(5, 7:55))
+OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
+OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
+
+
+iObs = 9
+OldBLMResultsTable$CuHCO3[iObs]
+ResultsTable$`CuHCO3 (mol/L)`[iObs]
+ResultsTable$Act.CuHCO3[iObs]
+
+OldBLMResultsTable$CO3[iObs]
+ResultsTable$`CO3 (mol/L)`[iObs]
+
+OldBLMResultsTable$Cu[iObs]
+ResultsTable$`Cu (mol/L)`[iObs]
+
+ResultsTable[iObs,c("ID2","Input.Cu","Cu (mol/L)","CO3 (mol/L)","H (mol/L)","CuHCO3 (mol/L)")]
+OldBLMResultsTable[iObs,c("ID2","Cu","CO3","H","CuHCO3")]
+
+log10((ResultsTable$`Cu (mol/L)` * ResultsTable$`CO3 (mol/L)` * ResultsTable$`H (mol/L)`) / ResultsTable$`CuHCO3 (mol/L)`)[iObs]
+log10((OldBLMResultsTable$Cu * OldBLMResultsTable$CO3 * OldBLMResultsTable$H) / OldBLMResultsTable$CuHCO3)[iObs]
+
+Org.Cu.cols = colnames(ResultsTable)[
+  grepl("Cu", colnames(ResultsTable)) & grepl("mol/L", colnames(ResultsTable)) &
+    (grepl("DOC", colnames(ResultsTable)) | grepl("Donnan", colnames(ResultsTable)))
+    ]
+ResultsTable$TOrg.Cu = rowSums(ResultsTable[, Org.Cu.cols])
+(ResultsTable$`DonnanHA-Cu (mol/L)` + ResultsTable$`DonnanFA-Cu (mol/L)`)[iObs]
+(ResultsTable$`DonnanHA-CuOH (mol/L)` + ResultsTable$`DonnanFA-CuOH (mol/L)`)[iObs]
+OldBLMResultsTable$TOrg.Cu[iObs]
+ResultsTable$TOrg.Cu[iObs]
+par(mar = c(5,15,1,1))
+barplot(as.matrix(ResultsTable[iObs, Org.Cu.cols[grepl("Donnan", Org.Cu.cols)]]), horiz = TRUE, las = 2)
+abline(v = OldBLMResultsTable$TOrg.Cu[iObs], col = "red")
+
+(OldBLMResultsTable$Cu * OldBLMResultsTable$Act_z2)[iObs]
+ResultsTable$Act.Cu[iObs]
+(ResultsTable$Act.Cu / ResultsTable$`Cu (mol/L)`)[iObs]
+OldBLMResultsTable$Act_z2[iObs]
 
 ResultsTable$T.Cu = ResultsTable$`T.Cu (mol/L)`
 ResultsTable$Cu = ResultsTable$`Cu (mol/L)`
 (ResultsTable$DDL.Na = ResultsTable$`DonnanHA-Na (mol/L)` + ResultsTable$`DonnanFA-Na (mol/L)`)
-ResultsTable$TOrg.Cu = rowSums(ResultsTable[, grepl("DOC", colnames(ResultsTable)) & grepl("Cu", colnames(ResultsTable)) & grepl("mol/L", colnames(ResultsTable))])
 (OldBLMResultsTable$DDL.Na = OldBLMResultsTable$T.Na - OldBLMResultsTable$Na)
-OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
-OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
 ResultsTable[, c("ID","ID2","T.Cu","Cu","TOrg.Cu","DDL.Na")]
 OldBLMResultsTable[, c("ID","ID2","T.Cu","Cu","TOrg.Cu","DDL.Na")]
 OldBLMResultsTable$Act.OH = OldBLMResultsTable$OH
@@ -398,3 +334,110 @@ legend("topleft", legend = c("Hard ser", "DOC ser", "pH ser"), pch = 16, col = 2
 # 7   7 Full_Organic Hard ser 7 3.428998e-08 2.415803e-09
 
 
+
+start.time = Sys.time()
+ResultsTable_DPSTRUE <- BLM(
+  ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
+  InputFile = "scrap/parameter file format/full_organic.blm4",
+  DoTox = F,
+  QuietFlag ="Quiet",
+  ConvergenceCriteria = 0.001,
+  MaxIter = 1000L,
+  DoPartialStepsAlways = TRUE
+)
+time.elapsed_DPSTRUE = Sys.time() - start.time
+
+start.time = Sys.time()
+ResultsTable_DPSFALSE <- BLM(
+  ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
+  InputFile = "scrap/parameter file format/full_organic.blm4",
+  DoTox = F,
+  QuietFlag ="Quiet",
+  ConvergenceCriteria = 0.001,
+  MaxIter = 1000L,
+  DoPartialStepsAlways = FALSE
+)
+time.elapsed_DPSFALSE = Sys.time() - start.time
+
+ResultsTable_DPSTRUE$Hard = (ResultsTable_DPSTRUE$`T.Ca (mol/L)` + ResultsTable_DPSTRUE$`T.Mg (mol/L)`) * 100086
+ResultsTable_DPSFALSE$Hard = (ResultsTable_DPSFALSE$`T.Ca (mol/L)` + ResultsTable_DPSFALSE$`T.Mg (mol/L)`) * 100086
+
+ResultsTable_DPSTRUE[, c("Obs","ID2","FinalIter","FinalMaxError","Cu (mol/L)")]
+ResultsTable_DPSFALSE[, c("Obs","ID2","FinalIter","FinalMaxError","Cu (mol/L)")]
+
+# hardness series = 1 - 7
+# DOC series = 8 - 16
+# pH series = 17 - 23
+# Temp series = 24 - 29
+# hi DOC hard series = 30 - 36
+# hi DOC pH series = 37 - 43
+# hi DOC Temp series = 44 - 49
+
+mean(ResultsTable_DPSTRUE$FinalIter / ResultsTable_DPSFALSE$FinalIter)
+sum(ResultsTable_DPSFALSE$FinalIter == 1001L)#3 fail to converge when doing normal N-R
+sum(ResultsTable_DPSTRUE$FinalIter == 1001L)#5 fail to converge with DPS
+which((ResultsTable_DPSFALSE$FinalIter == 1001L)) #        9    24    41
+which((ResultsTable_DPSTRUE$FinalIter == 1001L))  #  2  3  9       25 41
+#                                                  Hard    DOC  temp  hdp
+
+
+sum(is.na(ResultsTable_DPSFALSE$`Cu (mol/L)`))#9 fail to converge when doing normal N-R
+sum(is.na(ResultsTable_DPSTRUE$`Cu (mol/L)`))#7 fail to converge with DPS
+which(is.na(ResultsTable_DPSFALSE$`Cu (mol/L)`)) #  1  2  3  4 21    23 26    35   43
+which(is.na(ResultsTable_DPSTRUE$`Cu (mol/L)`))  #  1          21 22 23 26 29      43
+#                                                   Hard       pH       temp  hdh  hdp
+
+
+plot(x = ResultsTable_DPSTRUE$`Cu (mol/L)`, y = ResultsTable_DPSFALSE$`Cu (mol/L)`, log = "xy"); abline(a = 0, b = 1)
+mean(ResultsTable_DPSTRUE$`Cu (mol/L)` / ResultsTable_DPSFALSE$`Cu (mol/L)`, na.rm = TRUE)
+# The answer's converging to the same point, when both converge, but it's a
+# toss-up of whether DPS actually helps...some fail to converge, some explode,
+# but there are some that do these in either case (with some overlap, but some
+# unique cases).
+
+sum(ResultsTable_DPSTRUE$FinalIter > ResultsTable_DPSFALSE$FinalIter)  #28
+sum(ResultsTable_DPSTRUE$FinalIter < ResultsTable_DPSFALSE$FinalIter)  #14
+sum(ResultsTable_DPSTRUE$FinalIter == ResultsTable_DPSFALSE$FinalIter) # 7
+which(ResultsTable_DPSTRUE$FinalIter > ResultsTable_DPSFALSE$FinalIter)
+which(ResultsTable_DPSTRUE$FinalIter < ResultsTable_DPSFALSE$FinalIter)
+which(ResultsTable_DPSTRUE$FinalIter == ResultsTable_DPSFALSE$FinalIter)
+#  best hard------------------  DOC-------------------  pH------------------  temp-------------  hi DOC hard---------   hi DOC pH-----------   hi DOC temp------
+#  N-R     2  3  4                10 11 12 13 14 15     17    19 20 21 22        25 26              31          35 36   37    39 40       43   44    46 47 48 49
+#  DPS  1           5  6  7  8                             18                 24       27 28 29  30       33 34                                   45
+#  same                         9                   16                    23                           32                  38       41 42
+#       hard------------------  DOC-------------------  pH------------------  temp-------------  hi DOC hard---------   hi DOC pH-----------   hi DOC temp------
+
+plot(x = ResultsTable_DPSTRUE$FinalIter, y = ResultsTable_DPSFALSE$FinalIter, log = "xy"); abline(a = 0, b = 1)
+plot(x = ResultsTable_DPSTRUE$Obs, y = ResultsTable_DPSTRUE$FinalIter, log = "y", type = "o"); points(x = ResultsTable_DPSFALSE$Obs, y = ResultsTable_DPSFALSE$FinalIter, col = 2, type = "o")
+plot(x = ResultsTable_DPSTRUE$DOC, y = ResultsTable_DPSTRUE$FinalIter, log = "xy", type = "o"); points(x = ResultsTable_DPSFALSE$DOC, y = ResultsTable_DPSFALSE$FinalIter, col = 2, type = "o")
+plot(x = ResultsTable_DPSTRUE$pH, y = ResultsTable_DPSTRUE$FinalIter, log = "y", type = "o"); points(x = ResultsTable_DPSFALSE$pH, y = ResultsTable_DPSFALSE$FinalIter, col = 2, type = "o")
+plot(x = ResultsTable_DPSTRUE$Hard, y = ResultsTable_DPSTRUE$FinalIter, log = "xy", type = "o"); points(x = ResultsTable_DPSFALSE$Hard, y = ResultsTable_DPSFALSE$FinalIter, col = 2, type = "o")
+
+
+# No partial steps: Time difference of 0.911727 secs
+#   Obs       ID2 FinalIter FinalMaxError
+# 1   1 DOC ser 1       451  6.060930e-04
+# 2   2 DOC ser 2         7  9.989368e-06
+# 3   3 DOC ser 3         7  2.465376e-04
+# 4   4 DOC ser 4         6  2.031681e-04
+# 5   5 DOC ser 5         6  2.070989e-04
+# 6   6 DOC ser 6         6  9.463851e-04
+#
+# Time difference of 1.696869 mins
+#> summary(ResultsTable$FinalIter)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+# 5      11      23     127      98    1001
+#
+# Partial steps: Time difference of 0.4131219 secs
+#   Obs       ID2 FinalIter FinalMaxError
+# 1   1 DOC ser 1        82  3.539385e-04
+# 2   2 DOC ser 2         6  9.035190e-04
+# 3   3 DOC ser 3         7  4.125571e-05
+# 4   4 DOC ser 4         6  2.031681e-04
+# 5   5 DOC ser 5         6  2.070989e-04
+# 6   6 DOC ser 6         6  9.463851e-04
+#
+# Time difference of 2.615645 mins
+# > summary(ResultsTable$FinalIter)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+# 5.0    14.0    44.0   175.9   145.0  1001.0

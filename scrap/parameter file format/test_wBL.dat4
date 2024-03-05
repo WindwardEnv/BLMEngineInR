@@ -51,7 +51,7 @@ Critical Accumulation Table
 Component Types: 
   PB  C++  R/PFile  
   1   1     MassBal(Float previously)
-  2   2     FixedAct
+  2   2     FixedConc
   3   -     Substituted (who knows what this is)
   4   3     ChargeBal (not useful in BLM)
   5   4     SurfPot (keep for now - double layer stuff)

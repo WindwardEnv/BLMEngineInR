@@ -19,7 +19,7 @@
 //'   each component = sum(SpecConc * SpecCtoM * SpecStoich[,j]) for each 
 //'   component j
 //' @param CompType character vector (NComp), the type of component. It should
-//'   be a fixed set of values (MassBal, FixedAct, Substituted, ChargeBal,
+//'   be a fixed set of values (MassBal, FixedConc, Substituted, ChargeBal,
 //'   SurfPot)
 //' @param Resid (return value) numeric vector (NComp), the residuals = 
 //'   calculated totals - known totals
@@ -43,7 +43,7 @@ void CalcResidAndError(int NComp,
   // Calculate the residuals
   Resid = CalcTotMoles - TotMoles;
   for (iComp = 0; iComp < NComp; iComp++) {
-    if (CompType(iComp) == "FixedAct") {
+    if ((CompType(iComp) == "FixedConc") || (CompType(iComp) == "FixedAct")) {
       Resid(iComp) = 0.0;
     //} if (CompType(iComp) == "DonnanChargeBal") {
     //  Resid(iComp) = ;

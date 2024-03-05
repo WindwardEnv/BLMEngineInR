@@ -22,8 +22,8 @@ Returns a `list` object with each list item named according to
  \item{\code{CompCharge}}{integer vector of length `NComp`; the charge of
    the components as free ions}
  \item{\code{CompType}}{character vector of length `NComp`; the type of
-   component. It should be a fixed set of values (MassBal, FixedAct,
-   Substituted, ChargeBal, SurfPot)}
+   component. It should be a fixed set of values ("MassBal", "FixedAct",
+   "FixedConc", "Substituted", "ChargeBal", "SurfPot", "DonnanChargeBal")}
  \item{\code{CompActCorr}}{character vector of length `NComp`; the method to
    use for activity corrections with this component,  }
  \item{\code{SpecName}}{character vector of length `NSpec`; species names}

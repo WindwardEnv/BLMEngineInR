@@ -105,15 +105,21 @@ BLM = function(ParamFile = character(),
   SpecMolesCols = paste0(SpecName," (mol)")
   SpecActCols = paste0("Act.", SpecName)
   TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMC],")")
+  TotMolesCols = paste0("T.", CompName, " (mol)")
   MassAmtCols = paste0(MassName, " (",ThisProblem$MassUnit,")")
   Out = data.frame(Obs = 1:AllInput$NObs)
   Out = cbind(Out, AllInput$InLabObs)
   Out = cbind(Out, AllInput$InVarObs)
+  Out = cbind(Out, AllInput$InCompObs)
+  InputCols = c("Obs", ThisProblem$InLabName, ThisProblem$InVarName,
+                paste0("Input.",ThisProblem$InCompName))
+  colnames(Out) = InputCols
   Out[, MiscOutputCols] = NA
   Out[, SpecConcCols] = NA
   Out[, SpecActCols] = NA
   Out[, SpecMolesCols] = NA
   Out[, TotConcCols] = NA
+  Out[, TotMolesCols] = NA
   Out[, MassAmtCols] = NA
   # Out = array(
   #   NA,
@@ -148,6 +154,7 @@ BLM = function(ParamFile = character(),
     Out[iObs, SpecActCols] = Tmp$SpecAct
     Out[iObs, SpecMolesCols] = Tmp$SpecMoles
     Out[iObs, TotConcCols] = Tmp$CalcTotConc
+    Out[iObs, TotMolesCols] = Tmp$CalcTotMoles
     Out[iObs, MassAmtCols] = Tmp$MassAmt
 
   }
