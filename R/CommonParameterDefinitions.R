@@ -17,6 +17,8 @@
 #'   compartment.
 #' @param BioticLigMC integer, the (1-based) position of the biotic ligand mass
 #'   compartment(s).
+#' @param WHAMDonnanMC integer (2), the mass compartments corresponding to the
+#'   humic acid (0) and fulvic acid (1) Donnan layers.
 #'
 #' @param NInLab integer, the number of input label fields
 #' @param InLabName character vector (NInLab), The names of the input label
@@ -165,6 +167,7 @@
 #'   matter
 #' @param wMolWt numeric (2), WHAM's molecular weight parameter for organic
 #'   matter
+#' @param SolHS numeric (2), moles of each organic matter component in solution
 #'
 #' @param CATab data frame, the critical accumulation table from the parameter
 #'   file.

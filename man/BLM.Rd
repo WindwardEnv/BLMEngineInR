@@ -11,17 +11,43 @@ BLM(
   iCA = 1L,
   QuietFlag = c("Quiet", "Very Quiet", "Debug"),
   ConvergenceCriteria = 0.001,
-  MaxIter = 30L
+  MaxIter = 30L,
+  DoPartialStepsAlways = FALSE
 )
 }
 \arguments{
-\item{ParamFile}{the path and file name of the parameter file}
+\item{ParamFile}{The path and file name of the parameter file}
 
-\item{InputFile}{the path and file name of the chemistry input file}
+\item{InputFile}{The path and file name of the chemistry input file}
+
+\item{DoTox}{Should this be a speciation (TRUE) or toxicity (FALSE) run? In a
+speciation run, the total metal is input and the free metal and metal bound
+to the biotic ligand is calculated. In a toxicity run, the critical
+accumulation is input and the free and total metal concentrations that
+would result in that amount bound to the biotic ligand is calculated.}
+
+\item{iCA}{(integer) The index of the critical accumulation value in the
+parameter file critical accumulation table.}
+
+\item{QuietFlag}{Either "Quiet", "Very Quiet", or "Debug". With "Very Quiet",
+the simulation will run siliently. With "Quiet", the simulation will print
+"Obs=1", "Obs=2", etc... to the console. With "Debug", intermediate
+information from the CHESS function will print to the console.}
+
+\item{ConvergenceCriteria}{(numeric) The maximum allowed CompError in for the
+simulation to be considered complete. CompError = abs(CalcTotMoles -
+TotMoles) / TotMoles}
+
+\item{MaxIter}{(integer) The maximum allowed CHESS iterations before the
+program should give up.}
+
+\item{DoPartialStepsAlways}{Should CHESS do strict Newton-Raphson iterations
+(FALSE), or try to improve the simulation with partial N-R steps (trying to
+prevent oscillations).}
 }
 \value{
-A data frame with chemistry speciation information, including total
-  concentrations.
+A data frame with chemistry speciation information, including species
+  concentrations, species activities, and total concentrations.
 }
 \description{
 `BLM` will run the Windward Environmental Biotic Ligand Model (BLM) with the

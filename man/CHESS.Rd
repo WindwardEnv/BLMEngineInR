@@ -8,10 +8,16 @@ CHESS(
   QuietFlag,
   ConvergenceCriteria,
   MaxIter,
+  DoPartialStepsAlways,
   NMass,
+  MassName,
+  MassAmt,
   NComp,
+  CompName,
+  CompType,
+  TotConc,
   NSpec,
-  NBLMetal,
+  SpecName,
   SpecMC,
   SpecK,
   SpecTempKelvin,
@@ -19,13 +25,9 @@ CHESS(
   SpecStoich,
   SpecCharge,
   SpecActCorr,
-  SpecCtoM,
-  SpecName,
-  CompType,
-  CompName,
-  TotConc,
   DoWHAM,
   AqueousMC,
+  WHAMDonnanMC,
   SolHS,
   wMolWt,
   wRadius,
@@ -36,6 +38,7 @@ CHESS(
   DoTox,
   MetalName,
   MetalComp,
+  NBLMetal,
   BLMetalSpecs,
   CATarget
 )
@@ -50,33 +53,78 @@ counts as convergence by the Newton-Raphson root-finding algorithm}
 \item{MaxIter}{integer, the maximum number of iterations the Newton-Raphson
 root-finding algorithm should do before giving up}
 
+\item{DoPartialStepsAlways}{boolean, Should CHESS do strict Newton-Raphson
+iterations (FALSE), or try to improve the simulation with partial N-R
+steps (trying to prevent oscillations).}
+
+\item{NMass}{integer, number of mass compartments}
+
+\item{MassName}{CharacterVector (NMass), the names of the mass compartments}
+
+\item{MassAmt}{NumericVector (NMass), The amount of each mass compartment.}
+
 \item{NComp}{integer, number of components}
+
+\item{CompName}{character vector (NComp), the name of each component in the
+simulation}
+
+\item{CompType}{character vector (NComp), the type of each component in the
+simulation}
+
+\item{TotConc}{numeric vector (NComp), the total concentrations of each
+component in the simulation (units of e.g., mol/L and mol/kg)}
 
 \item{NSpec}{integer, number of species reactions}
 
-\item{NBLMetal}{integer, the number of biotic ligand-bound metal species 
-that are associated with toxic effects.}
+\item{SpecName}{character vector (NSpec), the name of the chemical species
+for which we have formation reactions}
+
+\item{SpecMC}{IntegerVector (NSpec), the mass compartment of the chemical
+species for which we have formation reactions}
 
 \item{SpecK}{numeric vector (NSpec), the equilibrium coefficient of the
+formation reactions.}
+
+\item{SpecTempKelvin}{NumericVector (NSpec), the temperature associated with
+K/logK and DeltaH of the formation reactions}
+
+\item{SpecDeltaH}{numeric vector (NSpec), the enthalpy change of the
 formation reactions}
 
 \item{SpecStoich}{signed integer matrix (NSpec x NComp), the reaction
 stoichiometry of the formation reactions}
 
-\item{SpecCtoM}{numeric vector (NSpec), the concentration to mass conversion
-factor of the chemical species for which we have formation reactions}
+\item{SpecCharge}{signed integer vector (NSpec), the charge of the chemical
+species for which we have formation reactions}
 
-\item{SpecName}{character vector (NSpec), the name of the chemical species
-for which we have formation reactions}
+\item{SpecActCorr}{character vector (NSpec), the activity correction method
+of the chemical species for which we have formation reactions}
 
-\item{CompType}{character vector (NComp), the type of each component in the
-simulation}
+\item{DoWHAM}{boolean, true=there are WHAM species, false=no WHAM species}
 
-\item{CompName}{character vector (NComp), the name of each component in the
-simulation}
+\item{AqueousMC}{integer, the (1-based) position of the water/aqueous mass
+compartment. (transformed to 0-based at the beginning of the function)}
 
-\item{TotConc}{numeric vector (NComp), the total concentrations of each
-component in the simulation (units of e.g., mol/L and mol/kg)}
+\item{WHAMDonnanMC}{the mass compartments corresponding to the
+humic acid (0) and fulvic acid (1) Donnan layers. (transformed to 0-based
+at the beginning of the function)}
+
+\item{SolHS}{numeric (2), moles of each organic matter component in solution}
+
+\item{wMolWt}{numeric (2), WHAM's molecular weight parameter for organic
+matter}
+
+\item{wRadius}{numeric (2), WHAM's molecular radius parameter for organic
+matter}
+
+\item{wP}{numeric (2), WHAM's P parameter...}
+
+\item{wDLF}{numeric (2), WHAM's Double layer overlap factor}
+
+\item{wKZED}{numeric (2), WHAM's Constant to control DDL at low ZED}
+
+\item{SysTempKelvin}{double; input temperature for the current observation,
+in Kelvin}
 
 \item{DoTox}{logical, TRUE for toxicity mode where the MetalName component
 concentration is adjusted to try to match the CATarget with BLMetalSpecs}
@@ -86,15 +134,15 @@ concentration is adjusted to try to match the CATarget with BLMetalSpecs}
 \item{MetalComp}{integer, the position of the metal in the component arrays
 (i.e., which is the toxic metal component) Note: this are base-1 indexed.}
 
+\item{NBLMetal}{integer, the number of biotic ligand-bound metal species 
+that are associated with toxic effects.}
+
 \item{BLMetalSpecs}{integer vector, the positions of the species in the
 arrays which contribute to toxicity (i.e., which species are the toxic
 metal bound to the relevant biotic ligand) Note: these are base-1 indexed.}
 
 \item{CATarget}{numeric, the target critical accumulation in units of mol /
 kg (only used when DoTox == TRUE)}
-
-\item{TotMoles}{numeric vector (NComp), the total moles of each component in
-the simulation (units of mol)}
 }
 \value{
 list with the following elements:

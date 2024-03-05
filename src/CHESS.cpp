@@ -13,31 +13,59 @@
 //'   counts as convergence by the Newton-Raphson root-finding algorithm
 //' @param MaxIter integer, the maximum number of iterations the Newton-Raphson
 //'   root-finding algorithm should do before giving up
+//' @param DoPartialStepsAlways boolean, Should CHESS do strict Newton-Raphson
+//'   iterations (FALSE), or try to improve the simulation with partial N-R
+//'   steps (trying to prevent oscillations).
+//' @param NMass integer, number of mass compartments
+//' @param MassName CharacterVector (NMass), the names of the mass compartments
+//' @param MassAmt NumericVector (NMass), The amount of each mass compartment. 
 //' @param NComp integer, number of components
+//' @param CompName character vector (NComp), the name of each component in the
+//'   simulation
+//' @param CompType character vector (NComp), the type of each component in the
+//'   simulation
+//' @param TotConc numeric vector (NComp), the total concentrations of each
+//'   component in the simulation (units of e.g., mol/L and mol/kg)
 //' @param NSpec integer, number of species reactions
-//' @param NBLMetal integer, the number of biotic ligand-bound metal species 
-//'   that are associated with toxic effects.
+//' @param SpecName character vector (NSpec), the name of the chemical species
+//'   for which we have formation reactions
+//' @param SpecMC IntegerVector (NSpec), the mass compartment of the chemical
+//'   species for which we have formation reactions
 //' @param SpecK numeric vector (NSpec), the equilibrium coefficient of the
+//'   formation reactions.
+//' @param SpecTempKelvin NumericVector (NSpec), the temperature associated with
+//'   K/logK and DeltaH of the formation reactions 
+//' @param SpecDeltaH numeric vector (NSpec), the enthalpy change of the
 //'   formation reactions
 //' @param SpecStoich signed integer matrix (NSpec x NComp), the reaction
 //'   stoichiometry of the formation reactions
-//' @param SpecCtoM numeric vector (NSpec), the concentration to mass conversion
-//'   factor of the chemical species for which we have formation reactions
-//' @param SpecName character vector (NSpec), the name of the chemical species
-//'   for which we have formation reactions
-//' @param CompType character vector (NComp), the type of each component in the
-//'   simulation
-//' @param CompName character vector (NComp), the name of each component in the
-//'   simulation
-//' @param TotMoles numeric vector (NComp), the total moles of each component in
-//'   the simulation (units of mol)
-//' @param TotConc numeric vector (NComp), the total concentrations of each
-//'   component in the simulation (units of e.g., mol/L and mol/kg)
+//' @param SpecCharge signed integer vector (NSpec), the charge of the chemical
+//'   species for which we have formation reactions
+//' @param SpecActCorr character vector (NSpec), the activity correction method
+//'   of the chemical species for which we have formation reactions
+//' @param DoWHAM boolean, true=there are WHAM species, false=no WHAM species
+//' @param AqueousMC integer, the (1-based) position of the water/aqueous mass
+//'   compartment. (transformed to 0-based at the beginning of the function)
+//' @param WHAMDonnanMC the mass compartments corresponding to the
+//'   humic acid (0) and fulvic acid (1) Donnan layers. (transformed to 0-based
+//'   at the beginning of the function)
+//' @param SolHS numeric (2), moles of each organic matter component in solution
+//' @param wMolWt numeric (2), WHAM's molecular weight parameter for organic
+//'   matter
+//' @param wRadius numeric (2), WHAM's molecular radius parameter for organic
+//'   matter
+//' @param wP numeric (2), WHAM's P parameter...
+//' @param wDLF numeric (2), WHAM's Double layer overlap factor
+//' @param wKZED numeric (2), WHAM's Constant to control DDL at low ZED
+//' @param SysTempKelvin double; input temperature for the current observation,
+//'   in Kelvin
 //' @param DoTox logical, TRUE for toxicity mode where the MetalName component
 //'   concentration is adjusted to try to match the CATarget with BLMetalSpecs
 //' @param MetalName character string, the name of the toxic metal
 //' @param MetalComp integer, the position of the metal in the component arrays
 //'   (i.e., which is the toxic metal component) Note: this are base-1 indexed.
+//' @param NBLMetal integer, the number of biotic ligand-bound metal species 
+//'   that are associated with toxic effects.
 //' @param BLMetalSpecs integer vector, the positions of the species in the
 //'   arrays which contribute to toxicity (i.e., which species are the toxic
 //'   metal bound to the relevant biotic ligand) Note: these are base-1 indexed.
@@ -71,6 +99,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::CharacterVector CompType,
                  Rcpp::NumericVector TotConc,
                  int NSpec,
+                 Rcpp::CharacterVector SpecName,
                  Rcpp::IntegerVector SpecMC,
                  Rcpp::NumericVector SpecK,
                  Rcpp::NumericVector SpecTempKelvin,
@@ -78,7 +107,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::IntegerMatrix SpecStoich,
                  Rcpp::IntegerVector SpecCharge,
                  Rcpp::CharacterVector SpecActCorr,
-                 Rcpp::CharacterVector SpecName,
                  bool DoWHAM,
                  int AqueousMC,
                  Rcpp::IntegerVector WHAMDonnanMC,

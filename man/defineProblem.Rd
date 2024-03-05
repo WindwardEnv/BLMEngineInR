@@ -8,6 +8,9 @@ DefineProblem(ParamFile, WriteLog = FALSE)
 }
 \arguments{
 \item{ParamFile}{the path and file name to a parameter file}
+
+\item{WriteLog}{if TRUE, the CHESS.LOG file will be written, summarizing the
+current problem}
 }
 \value{
 Returns a `list` object with each list item named according to

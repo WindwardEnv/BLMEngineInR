@@ -62,7 +62,8 @@
 //' @param AqueousMC int, the mass compartment corresponding to water/aqueous
 //' @param WHAMDonnanMC IntegerVector, length 2, the mass compartments
 //'   corresponding to the humic acid (0) and fulvic acid (1) Donnan layers.
-//' @param SolHS NumericVector, 
+//' @param SolHS NumericVector, length of 2, moles of each organic matter 
+//'   component in solution
 //' @param wMolWt NumericVector, WHAM's molecular weight parameter for organic
 //'   matter
 //' @param wRadius NumericVector, WHAM's molecular radius parameter for organic

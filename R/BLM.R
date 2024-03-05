@@ -3,17 +3,30 @@
 #' `BLM` will run the Windward Environmental Biotic Ligand Model (BLM) with the
 #' provided parameter file, input file, and options.
 #'
-#' @param ParamFile the path and file name of the parameter file
-#' @param InputFile the path and file name of the chemistry input file
-# @param quiet logical. If `TRUE`, iteration information will be displayed in
-#   the console.
-# @param mode the mode to run the model in. Only values of `"speciation"` or
-#   `"toxicity"` are supported, or partial matches to those character strings.
-# @param writeOutputFile,outputFileName,criticalSource,convergenceCriteria
-#   Other parameters that are not implemented, but expected to be needed.
+#' @param ParamFile The path and file name of the parameter file
+#' @param InputFile The path and file name of the chemistry input file
+#' @param DoTox Should this be a speciation (TRUE) or toxicity (FALSE) run? In a
+#'   speciation run, the total metal is input and the free metal and metal bound
+#'   to the biotic ligand is calculated. In a toxicity run, the critical
+#'   accumulation is input and the free and total metal concentrations that
+#'   would result in that amount bound to the biotic ligand is calculated.
+#' @param iCA (integer) The index of the critical accumulation value in the
+#'   parameter file critical accumulation table.
+#' @param QuietFlag Either "Quiet", "Very Quiet", or "Debug". With "Very Quiet",
+#'   the simulation will run siliently. With "Quiet", the simulation will print
+#'   "Obs=1", "Obs=2", etc... to the console. With "Debug", intermediate
+#'   information from the CHESS function will print to the console.
+#' @param ConvergenceCriteria (numeric) The maximum allowed CompError in for the
+#'   simulation to be considered complete. CompError = abs(CalcTotMoles -
+#'   TotMoles) / TotMoles
+#' @param MaxIter (integer) The maximum allowed CHESS iterations before the
+#'   program should give up.
+#' @param DoPartialStepsAlways Should CHESS do strict Newton-Raphson iterations
+#'   (FALSE), or try to improve the simulation with partial N-R steps (trying to
+#'   prevent oscillations).
 #'
-#' @return A data frame with chemistry speciation information, including total
-#'   concentrations.
+#' @return A data frame with chemistry speciation information, including species
+#'   concentrations, species activities, and total concentrations.
 #'
 #' @export
 #'

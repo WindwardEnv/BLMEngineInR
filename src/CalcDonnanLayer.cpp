@@ -29,7 +29,8 @@
 //' @param wDLF double, {text}
 //' @param wKZED double, {text}
 //' @param WHAMSpecCharge numeric vector, {text}
-//' @param SolHS numeric vector, {text}
+//' @param SolHS numeric vector, length of 2, moles of each organic matter 
+//'   component in solution
 //' 
 //' @return Rcpp::NumericVector - a modified SpecCtoM
 //' 

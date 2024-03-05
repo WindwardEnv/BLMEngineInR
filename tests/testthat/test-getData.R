@@ -1,5 +1,5 @@
 test_that("GetData works", {
-  expect_error(GetData)
+  expect_error(GetData())
   # NComp = as.integer(2)
   # CompNames = c("H","CO3")
   # TestResult = GetData("Test",NComp,CompNames)

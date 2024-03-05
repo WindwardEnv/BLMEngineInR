@@ -19,6 +19,9 @@ compartment.}
 \item{BioticLigMC}{integer, the (1-based) position of the biotic ligand mass
 compartment(s).}
 
+\item{WHAMDonnanMC}{integer (2), the mass compartments corresponding to the
+humic acid (0) and fulvic acid (1) Donnan layers.}
+
 \item{NInLab}{integer, the number of input label fields}
 
 \item{InLabName}{character vector (NInLab), The names of the input label
@@ -229,6 +232,8 @@ matter}
 \item{wMolWt}{numeric (2), WHAM's molecular weight parameter for organic
 matter}
 
+\item{SolHS}{numeric (2), moles of each organic matter component in solution}
+
 \item{CATab}{data frame, the critical accumulation table from the parameter
 file.}
 
@@ -290,6 +295,8 @@ as convergence by the Newton-Raphson root-finding algorithm}
 
 \item{MaxIter}{integer, the maximum number of iterations the Newton-Raphson
 root-finding algorithm should do before giving up}
+
+\item{IonicStrength}{double, the ionic strength of the solution}
 }
 \description{
 These are parameters that are commonly used in the BLMEngineInR

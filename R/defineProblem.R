@@ -4,6 +4,8 @@
 #' and matrices that will be needed to run the speciation calculations in CHESS.
 #'
 #' @param ParamFile the path and file name to a parameter file
+#' @param WriteLog if TRUE, the CHESS.LOG file will be written, summarizing the
+#'   current problem
 #'
 #' @returns Returns a `list` object with each list item named according to
 #'
