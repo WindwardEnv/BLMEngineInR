@@ -54,4 +54,6 @@ src/*.so
 src/*.o
 
 # VSCode files
-.vscode/
+.vscode/*.json
+.vscode/c_cpp_properties.json
+.vscode/launch.json
