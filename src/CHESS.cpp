@@ -62,6 +62,7 @@
 Rcpp::List CHESS(Rcpp::String QuietFlag,
                  double ConvergenceCriteria,
                  int MaxIter,
+                 bool DoPartialStepsAlways,
                  int NMass,
                  Rcpp::CharacterVector MassName,
                  Rcpp::NumericVector MassAmt,
@@ -96,42 +97,88 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  double CATarget) {
 
   /*outputs*/
-  Rcpp::NumericVector SpecConc(NSpec); // species concentrations after optimization
-  Rcpp::NumericVector SpecAct(NSpec);
   int Iter = 0;  
   double MaxError;
+  Rcpp::NumericVector SpecConc(NSpec); // species concentrations after optimization
+  Rcpp::NumericVector SpecAct(NSpec);
+    SpecAct.names() = SpecName;
   Rcpp::NumericVector CalcTotConc(NComp); // the calculated total concentrations of each component in the simulation (units of e.g., mol/L and mol/kg)}
+    CalcTotConc.names() = CompName;
+  Rcpp::NumericVector SpecMoles(NSpec);
+    SpecMoles.names() = SpecName;
 
   /*variables*/
   int iComp;
   Rcpp::NumericVector MassAmtAdj(NMass);
+    MassAmtAdj.names() = MassName;
   Rcpp::NumericVector CompConcStep(NComp);
   Rcpp::NumericVector CompConc(NComp);
   Rcpp::NumericVector TotMoles(NComp);
+    TotMoles.names() = CompName;
   Rcpp::NumericVector CompCtoM(NComp);
   Rcpp::NumericVector CompCtoMAdj(NComp);
   Rcpp::NumericVector CalcTotMoles(NComp);
+    CalcTotMoles.names() = CompName;
   Rcpp::IntegerVector CompPosInSpec(NComp);
   Rcpp::NumericVector SpecKTempAdj(NSpec);
   Rcpp::NumericVector SpecKISTempAdj(NSpec);
   Rcpp::NumericVector SpecCtoM(NSpec);
   Rcpp::NumericVector SpecCtoMAdj(NSpec);
-  Rcpp::NumericVector SpecMoles(NSpec);
   Rcpp::NumericVector SpecActivityCoef(NSpec);
   Rcpp::NumericVector WHAMSpecCharge(2);
   int WhichMax;
   double IonicStrength;
   Rcpp::NumericVector Resid(NComp);
+    Resid.names() = CompName;
   Rcpp::NumericVector CompError(NComp);
+    CompError.names() = CompName;
   Rcpp::NumericMatrix JacobianMatrix(NComp);
-  MassAmtAdj.names() = MassName;
-  TotMoles.names() = CompName;
-  Resid.names() = CompName;
-  CompError.names() = CompName;
-  CalcTotConc.names() = CompName;
-  CalcTotMoles.names() = CompName;
-  SpecAct.names() = SpecName;
 
+  bool DoPartialSteps;
+
+  double MaxErrorFull;
+  Rcpp::NumericVector CompConcStepFull(NComp);
+  Rcpp::NumericVector MassAmtAdjFull(NMass);
+  Rcpp::NumericVector TotConcFull(NComp);
+  Rcpp::NumericVector SpecKISTempAdjFull(NSpec);
+  Rcpp::NumericVector SpecCtoMAdjFull(NSpec);
+  Rcpp::NumericVector SpecConcFull(NSpec);
+  Rcpp::NumericVector CalcTotMolesFull(NComp);
+  int WhichMaxFull;
+  double IonicStrengthFull;
+  Rcpp::NumericVector ResidFull(NComp);
+  Rcpp::NumericVector CompErrorFull(NComp);
+
+  double StepSizeAlt;
+  double MaxErrorAlt;
+  Rcpp::NumericVector CompConcStepAlt(NComp);
+  Rcpp::NumericVector MassAmtAdjAlt(NMass);
+  Rcpp::NumericVector TotConcAlt(NComp);
+  Rcpp::NumericVector SpecKISTempAdjAlt(NSpec);
+  Rcpp::NumericVector SpecCtoMAdjAlt(NSpec);
+  Rcpp::NumericVector SpecConcAlt(NSpec);
+  Rcpp::NumericVector CalcTotMolesAlt(NComp);
+  int WhichMaxAlt;
+  double IonicStrengthAlt;
+  Rcpp::NumericVector ResidAlt(NComp);
+  Rcpp::NumericVector CompErrorAlt(NComp);
+
+  /*double StepSizeInterp;
+  double MaxErrorInterp;
+  Rcpp::NumericVector CompConcStepInterp(NComp);
+  Rcpp::NumericVector MassAmtAdjInterp(NMass);
+  Rcpp::NumericVector TotConcInterp(NComp);
+  Rcpp::NumericVector SpecKISTempAdjInterp(NSpec);
+  Rcpp::NumericVector SpecCtoMAdjInterp(NSpec);
+  Rcpp::NumericVector SpecConcInterp(NSpec);
+  Rcpp::NumericVector CalcTotMolesInterp(NComp);
+  int WhichMaxInterp;
+  double IonicStrengthInterp;
+  Rcpp::NumericVector ResidInterp(NComp);
+  Rcpp::NumericVector CompErrorInterp(NComp);*/
+
+  int Counter;
+  
   // Initialize some variables
   for (iComp = 0; iComp < NComp; iComp++) {
     CompPosInSpec(iComp) = iComp;
@@ -244,19 +291,152 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                               DoTox);
 
     // Calculate the Newton-Raphson step
-    CompConcStep = CalcStep(JacobianMatrix, Resid, NComp, CompType, CompName);
+    CompConcStepFull = CalcStep(JacobianMatrix, Resid, NComp, CompType, CompName);
 
-    if (FALSE) {//(DoWHAM) {
-      // Update the Donnan layers the way WHAM does it
-      for (iComp = 0; iComp < NComp; iComp++) {
-        if ((CompType(iComp) == "DonnanHA") || 
-            (CompType(iComp) == "DonnanFA")) {
-          CompConcStep(iComp) = CompConc(iComp) * 
-            (1 - (TotMoles(iComp) / CalcTotMoles(iComp))) / 2;
+    // Do a full N-R step
+    SpecKISTempAdjFull = clone(SpecKISTempAdj);
+    SpecCtoMAdjFull = clone(SpecCtoMAdj);
+    SpecConcFull = clone(SpecConc);
+    TotConcFull = clone(TotConc);
+    MaxErrorFull = CHESSIter(CompConcStepFull, NMass, MassAmt, NComp, CompName, 
+                        CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                        SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
+                        DoWHAM, AqueousMC, WHAMDonnanMC, SolHS, wMolWt, 
+                        wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
+                        MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
+                        MassAmtAdjFull, TotConcFull, SpecKISTempAdjFull, 
+                        SpecCtoMAdjFull, SpecConcFull, CalcTotMolesFull, 
+                        WhichMaxFull, IonicStrengthFull, ResidFull, 
+                        CompErrorFull);
+
+    if (MaxErrorFull > MaxError) {
+      // Do a half-step
+      StepSizeAlt = std::pow(0.5, 0.5);//this just ensures it starts at 0.5
+      DoPartialSteps = true;
+    } else if (MaxErrorFull > (MaxError * 0.99)) {
+      // Do a double-step
+      StepSizeAlt = std::pow(1.5, 0.5);
+      DoPartialSteps = true;
+    } else {
+      DoPartialSteps = false;
+    }
+    
+    DoPartialSteps = DoPartialSteps && DoPartialStepsAlways;
+    //MaxErrorInterp = MaxError + 999;
+    MaxErrorAlt = MaxError + 999;
+
+    if (DoPartialSteps) {      
+      if (QuietFlag == "Debug") {
+        Rcpp::Rcout << 
+        "Counter StepSizeAlt MaxErrorAlt"
+        << std::endl;
+      }
+
+      Counter = 0;
+      while((Counter < 3) && (MaxErrorAlt > MaxError)) {
+        Counter++;
+        StepSizeAlt = std::pow(StepSizeAlt, 2);
+        SpecKISTempAdjAlt = clone(SpecKISTempAdj);
+        SpecCtoMAdjAlt = clone(SpecCtoMAdj);
+        SpecConcAlt = clone(SpecConc);
+        TotConcAlt = clone(TotConc);
+        CompConcStepAlt = CompConcStepFull * StepSizeAlt;
+        MaxErrorAlt = CHESSIter(CompConcStepAlt, NMass, MassAmt, NComp, CompName, 
+                            CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                            SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
+                            DoWHAM, AqueousMC, WHAMDonnanMC, SolHS, wMolWt, 
+                            wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
+                            MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
+                            MassAmtAdjAlt, TotConcAlt, SpecKISTempAdjAlt, 
+                            SpecCtoMAdjAlt, SpecConcAlt, CalcTotMolesAlt, 
+                            WhichMaxAlt, IonicStrengthAlt, ResidAlt, 
+                            CompErrorAlt);
+        if (QuietFlag == "Debug") {
+          Rcpp::Rcout << 
+          Counter << " " << 
+          StepSizeAlt << " " << 
+          MaxErrorAlt
+          << std::endl;
         }
       }
-    }
 
+      /*if (MaxErrorAlt < MaxError) {
+       
+        // linearly interpolate for a potential best step
+        StepSizeInterp = 1 - MaxErrorFull * (1 - StepSizeAlt) /
+          (MaxErrorFull - MaxErrorAlt);
+        SpecKISTempAdjInterp = clone(SpecKISTempAdj);
+        SpecCtoMAdjInterp = clone(SpecCtoMAdj);
+        SpecConcInterp = clone(SpecConc);
+        TotConcInterp = clone(TotConc);
+        CompConcStepInterp = CompConcStepFull * StepSizeInterp;
+        MaxErrorInterp = CHESSIter(CompConcStepInterp, NMass, MassAmt, NComp, CompName, 
+                            CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                            SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
+                            DoWHAM, AqueousMC, WHAMDonnanMC, SolHS, wMolWt, 
+                            wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
+                            MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
+                            MassAmtAdjInterp, TotConcInterp, SpecKISTempAdjInterp, 
+                            SpecCtoMAdjInterp, SpecConcInterp, CalcTotMolesInterp, 
+                            WhichMaxInterp, IonicStrengthInterp, ResidInterp, 
+                            CompErrorInterp);
+      }
+
+      if (MaxErrorInterp > MaxErrorAlt){
+        // interpolation didn't help us
+        MaxErrorInterp = MaxError + 999;
+      }*/
+
+    }
+    
+    /*if (MaxErrorInterp < MaxError) {
+      // Store the best partial step in the main variables
+      MaxError = MaxErrorInterp;
+      WhichMax = WhichMaxInterp;
+      IonicStrength = IonicStrengthInterp;
+      Resid = clone(ResidInterp);
+      CompError = clone(CompErrorInterp);
+      MassAmtAdj = clone(MassAmtAdjInterp);
+      TotConc = clone(TotConcInterp);
+      SpecKISTempAdj = clone(SpecKISTempAdjInterp);
+      SpecCtoMAdj = clone(SpecCtoMAdjInterp);
+      SpecConc = clone(SpecConcInterp);
+      CalcTotMoles = clone(CalcTotMolesInterp);
+    } else */if (MaxErrorAlt < MaxError) {
+      //Store Alt in the main veriables
+      MaxError = MaxErrorAlt;
+      WhichMax = WhichMaxAlt;
+      IonicStrength = IonicStrengthAlt;
+      Resid = clone(ResidAlt);
+      CompError = clone(CompErrorAlt);
+      MassAmtAdj = clone(MassAmtAdjAlt);
+      TotConc = clone(TotConcAlt);
+      SpecKISTempAdj = clone(SpecKISTempAdjAlt);
+      SpecCtoMAdj = clone(SpecCtoMAdjAlt);
+      SpecConc = clone(SpecConcAlt);
+      CalcTotMoles = clone(CalcTotMolesAlt);
+    } else {
+      // Partial Steps has failed, just revert to full
+      MaxError = MaxErrorFull;
+      WhichMax = WhichMaxFull;
+      IonicStrength = IonicStrengthFull;
+      Resid = clone(ResidFull);
+      CompError = clone(CompErrorFull);
+      MassAmtAdj = clone(MassAmtAdjFull);
+      TotConc = clone(TotConcFull);
+      SpecKISTempAdj = clone(SpecKISTempAdjFull);
+      SpecCtoMAdj = clone(SpecCtoMAdjFull);
+      SpecConc = clone(SpecConcFull);
+      CalcTotMoles = clone(CalcTotMolesFull);
+    }
+    
+    SpecMoles = SpecConc * SpecCtoMAdj;
+    CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
+    TotMoles = TotConc * CompCtoMAdj;
+
+
+
+    /*
     // Update the component free concentrations
     CompConc = SpecConc[CompPosInSpec];
     CompUpdate(NComp, CompConcStep, CompType, CompConc);
@@ -320,6 +500,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
     // Determine which component has the highest error fraction
     MaxError = MaxCompError(NComp, CompError, WhichMax);
+    */
 
   } // while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
 
@@ -342,11 +523,11 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     }
 
   return Rcpp::List::create(
+      Rcpp::Named("FinalIter") = Iter,
+      Rcpp::Named("FinalMaxError") = MaxError,
       Rcpp::Named("SpecConc") = SpecConc,
       Rcpp::Named("SpecAct") = SpecAct,
       Rcpp::Named("SpecMoles") = SpecMoles,
-      Rcpp::Named("FinalIter") = Iter,
-      Rcpp::Named("FinalMaxError") = MaxError,
       Rcpp::Named("CalcTotConc") = CalcTotConc,
       Rcpp::Named("MassAmt") = MassAmtAdj);
 }

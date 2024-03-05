@@ -29,7 +29,8 @@ BLM = function(ParamFile = character(),
                # writeOutputFile = F, outputFileName = NULL,
                # criticalSource = c("ParamFile","InputFile"),
                ConvergenceCriteria = 0.001,
-               MaxIter = 30L) {
+               MaxIter = 30L,
+               DoPartialStepsAlways = FALSE) {
 
   # error catching
   stopifnot(file.exists(ParamFile))
@@ -77,6 +78,7 @@ BLM = function(ParamFile = character(),
     QuietFlag = QuietFlag,
     ConvergenceCriteria = ConvergenceCriteria,
     MaxIter = MaxIter,
+    DoPartialStepsAlways = DoPartialStepsAlways,
     DoTox = DoTox,
     # MetalComp = ThisProblem$MetalComp,
     CATarget = NA

@@ -15,11 +15,7 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
   /* variables */
   Rcpp::NumericVector W = wP * log10(IonicStrength);
   Rcpp::NumericVector WZ2 = 2 * W * WHAMSpecCharge;
-  //int iHA = 0;
-  //int iFA = 1;
   int iSpec;
-  
-  //check that WHAMSpecCharge is negative for both -- do we need to??
   
   //adjust the intrinsic K's for WHAM species based on the charge
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
