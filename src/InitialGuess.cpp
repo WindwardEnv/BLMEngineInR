@@ -11,15 +11,21 @@
 //' Since there are a lot of inter-dependencies between the components, a few
 //' iterations are needed to develop good intitial guesses.
 //'
-//' @param TotConc numeric vector (`NComp`); the total concentrations of components
+//' @param TotConc numeric vector (`NComp`); the total concentrations of
+//'   components
+//' @param SpecCtoM, numericVector (NSpec); the concentration to mass conversion
+//'   factor for each species
 //' @param CompType character vector (`NComp`); the component type
-//' @param SpecK A vector of reaction equilibrium constants for each of `NSpec` reactions.
-//' @param SpecStoich A matrix of reaction stoichiometry, with `NSpec` rows and `NComp` columns.
+//' @param SpecK A vector of reaction equilibrium constants for each of `NSpec`
+//'   reactions.
+//' @param SpecStoich A matrix of reaction stoichiometry, with `NSpec` rows and
+//'   `NComp` columns.
 //' @param SpecName character vector (NSpec), the names of the chemical species
 //' @param NComp The number of components in the equilibrium system.
-//' @param NSpec The number of species (reactions) in the equilibrium system.#' @param NComp integer; the number of components
+//' @param NSpec The number of species (reactions) in the equilibrium system.
 //'
-//' @return CompConc The initial guesses for the free ion concentrations of components
+//' @return CompConc The initial guesses for the free ion concentrations of
+//'   components
 //'
 //' @keywords internal
 //'

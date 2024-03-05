@@ -7,20 +7,6 @@
 #endif
 #include <string>
 
-Rcpp::List CalcResidualList (int NComp,
-                             int NSpec,
-                             Rcpp::NumericVector SpecConc,
-                             Rcpp::IntegerMatrix SpecStoich,
-                             Rcpp::NumericVector TotMoles,
-                             Rcpp::NumericVector SpecCtoM,
-                             Rcpp::CharacterVector CompName,
-                             Rcpp::CharacterVector CompType,
-                             int MetalComp,
-                             int NBLMetal,
-                             Rcpp::IntegerVector BLMetalSpecs,
-                             double CATarget,
-                             bool DoTox);
-
 void CalcIterationTotals(int NComp,
                          int NSpec,
                          Rcpp::NumericVector SpecConc,
@@ -32,12 +18,7 @@ void CalcIterationTotals(int NComp,
 Rcpp::NumericVector CalcIterationTotalMoles(int NComp,
                                             int NSpec,
                                             Rcpp::NumericVector SpecMoles,
-                                            Rcpp::IntegerMatrix SpecStoich); 
-
-Rcpp::NumericVector CalcResidualsOnly(int NComp,
-                                      Rcpp::NumericVector CalcTotMoles,
-                                      Rcpp::NumericVector TotMoles,
-                                      Rcpp::CharacterVector CompType);
+                                            Rcpp::IntegerMatrix SpecStoich);
 
 void CalcResidAndError(int NComp,
                        Rcpp::NumericVector CalcTotMoles,
@@ -86,15 +67,15 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
                                  int NComp,
                                  int NSpec);
 
-Rcpp::NumericMatrix Jacobian (int NComp, //number of components
-                              int NSpec, //number of species
-                              Rcpp::IntegerMatrix SpecStoich, //formation reaction stoichiometry (NSpec x NComp)
-                              Rcpp::NumericVector SpecConc, //species concentrations
-                              Rcpp::NumericVector SpecCtoM, //concentration to mass conversion for each species
-                              Rcpp::CharacterVector CompName, //names of components
-                              int MetalComp, //position of the metal component
-                              int NBLMetal, //number of BL-Metal species
-                              Rcpp::IntegerVector BLMetalSpecs, //positions of BL-metal species
+Rcpp::NumericMatrix Jacobian (int NComp,
+                              int NSpec,
+                              Rcpp::IntegerMatrix SpecStoich,
+                              Rcpp::NumericVector SpecConc,
+                              Rcpp::NumericVector SpecCtoM,
+                              Rcpp::CharacterVector CompName,
+                              int MetalComp,
+                              int NBLMetal,
+                              Rcpp::IntegerVector BLMetalSpecs,
                               bool DoTox);
 
 void UpdateTotals(int NComp, 
@@ -108,18 +89,6 @@ void UpdateTotals(int NComp,
                   Rcpp::NumericVector CompCtoM, 
                   Rcpp::NumericVector &TotMoles, 
                   Rcpp::NumericVector &TotConc);
-
-Rcpp::List UpdateTotalsList(int NComp, 
-                            int NSpec, 
-                            bool DoTox, 
-                            Rcpp::CharacterVector CompType, 
-                            Rcpp::CharacterVector CompName, 
-                            Rcpp::String MetalName, 
-                            Rcpp::IntegerMatrix SpecStoich, 
-                            Rcpp::NumericVector SpecMoles, 
-                            Rcpp::NumericVector CompCtoM, 
-                            Rcpp::NumericVector TotMoles, 
-                            Rcpp::NumericVector TotConc);
 
 Rcpp::NumericVector TempCorrection(double SysTempKelvin,
                                    int NSpec,
@@ -174,18 +143,7 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
                                              Rcpp::CharacterVector SpecActCorr,
                                              Rcpp::NumericVector wP);
 
-void AdjustForWHAM(int NComp,
-                   int NSpec,
-                   Rcpp::CharacterVector CompName,
-                   Rcpp::CharacterVector SpecActCorr,
-                   Rcpp::IntegerVector SpecCharge,
-                   Rcpp::NumericVector WHAMSpecCharge,
-                   Rcpp::NumericVector SpecCtoM,
-                   Rcpp::NumericVector &SpecConc,
-                   Rcpp::NumericVector &TotConc,
-                   Rcpp::NumericVector &TotMoles);
-
-void WHAMAdjustments(int NMass,   
+void AdjustForWHAM(int NMass,   
                      Rcpp::NumericVector MassAmt,
                      Rcpp::NumericVector &MassAmtAdj,
                      int NComp,

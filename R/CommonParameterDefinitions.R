@@ -210,4 +210,6 @@
 #' @param MaxIter integer, the maximum number of iterations the Newton-Raphson
 #'   root-finding algorithm should do before giving up
 #'
+#' @param IonicStrength double, the ionic strength of the solution
+#'
 NULL

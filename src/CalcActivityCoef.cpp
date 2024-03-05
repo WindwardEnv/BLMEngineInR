@@ -1,6 +1,27 @@
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
+//' @title ExtDebyeHuckel
+//' 
+//' @description Calculates the Extended Debye-Huckel Activity Coefficients
+//' 
+//' @details This function will calculate the EDH activitiy coefficients for 
+//'   ions with charges from 0 to MaxCharge (input). 
+//' 
+//' @author Kelly Croteau (kellyc@windwardenv.com)
+//' 
+//' @param IonicStrength double, the ionic strength of the solution
+//' @param MaxCharge int, the maximum absolute charge to calculate activity
+//'   coefficients for (e.g., if the ions in solutions have charges of -3, -2,
+//'   -1, 0, +1, +2, then MaxCharge should be 3).
+//' @param SysTempKelvin double, the temperature of the solution, in Kelvin
+//' 
+//' @return Rcpp::NumericVector of length MaxCharge + 1, with the activity 
+//'   coefficient for a 0-charge ion in the 0th element, +/-1 charge ion in the
+//'   1st element, etc.
+//' 
+//' @keywords internal
+//' 
 Rcpp::NumericVector ExtDebyeHuckel(double IonicStrength, 
                                    int MaxCharge, 
                                    double SysTempKelvin) {
@@ -38,6 +59,26 @@ Rcpp::NumericVector ExtDebyeHuckel(double IonicStrength,
   return ActivityCoefDebye;
 }
 
+//' @title Davies
+//' 
+//' @description Calculates the Davies Activity Coefficients
+//' 
+//' @details This function will calculate the Davies activitiy coefficients for 
+//'   ions with charges from 0 to MaxCharge (input).
+//' 
+//' @author Kelly Croteau (kellyc@windwardenv.com)
+//' 
+//' @param IonicStrength double, the ionic strength of the solution
+//' @param MaxCharge int, the maximum absolute charge to calculate activity
+//'   coefficients for (e.g., if the ions in solutions have charges of -3, -2,
+//'   -1, 0, +1, +2, then MaxCharge should be 3).
+//' 
+//' @return Rcpp::NumericVector of length MaxCharge + 1, with the activity 
+//'   coefficient for a 0-charge ion in the 0th element, +/-1 charge ion in the
+//'   1st element, etc.
+//' 
+//' @keywords internal
+//' 
 Rcpp::NumericVector Davies(double IonicStrength, int MaxCharge) {
   
   /* outputs */
@@ -71,6 +112,31 @@ Rcpp::NumericVector Davies(double IonicStrength, int MaxCharge) {
 }
 
 
+//' @title CalcActivityCoef
+//' 
+//' @description {text}
+//' 
+//' @details {text}
+//' 
+//' @author Kelly Croteau (kellyc@windwardenv.com)
+//' 
+//' @param NSpec int, the number of chemical species for which we have
+//'   formation reactions in the simulation
+//' @param SpecName Rcpp::CharacterVector, the name of the chemical species
+//'   for which we have formation reactions
+//' @param SpecActCorr Rcpp::CharacterVector, (should be length NSpec) the
+//'   activity correction method of the chemical species for which we have
+//'   formation reactions
+//' @param SpecCharge Rcpp::IntegerVector, (should be length NSpec) the ionic 
+//'   charges of each species
+//' @param IonicStrength double, the ionic strength of the solution
+//' @param SysTempKelvin double, the temperature of the solution, in Kelvin
+//' 
+//' @return Rcpp::NumericVector of length NSpec with the activity coefficient
+//'   for each chemical species.
+//'
+//' @family CHESSFunctions
+//' 
 Rcpp::NumericVector CalcActivityCoef(int NSpec,
                                      Rcpp::CharacterVector SpecName,
                                      Rcpp::CharacterVector SpecActCorr,

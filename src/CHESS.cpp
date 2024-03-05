@@ -214,26 +214,13 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                           SpecName, SpecActCorr, SpecActivityCoef);
 
   if (DoWHAM) {
-    //Calculate the charge on the organic matter
-    WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
-                                        SpecCharge, SpecMC, AqueousMC);
 
-    //Adjust organic matter specific binding based on ionic strength
-    IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                      SpecMC, AqueousMC);
-    SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
-                                              NSpec, SpecCharge, SpecKTempAdj, 
-                                              SpecActCorr, wP);
-    
-    //Adjust diffuse binding 
-    MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, IonicStrength, MassAmt, 
-                                       AqueousMC, WHAMDonnanMC, wMolWt, 
-                                       wRadius, wDLF, wKZED, WHAMSpecCharge, 
-                                       SolHS);
-    SpecCtoMAdj = MassAmtAdj[SpecMC];
-
-    AdjustForWHAM(NComp, NSpec, CompName, SpecActCorr, SpecCharge, 
-                  WHAMSpecCharge, SpecCtoMAdj, SpecConc, TotConc, TotMoles);
+    AdjustForWHAM(NMass, MassAmt, MassAmtAdj, 
+                    NComp, CompType, TotConc, TotMoles,
+                    NSpec, SpecConc, SpecMC, SpecActCorr, SpecCharge, 
+                    SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,  
+                    IonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC,
+                    SolHS, wMolWt, wRadius, wP, wDLF, wKZED);
 
   }
   SpecMoles = SpecConc * SpecCtoMAdj;
@@ -453,27 +440,12 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                             SpecName, SpecActCorr, SpecActivityCoef);
 
     if (DoWHAM) {
-      //Calculate the charge on the organic matter
-      WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr,
-                                          SpecConc * SpecCtoMAdj, 
-                                          SpecCharge, SpecMC, AqueousMC);
-      
-      //Adjust organic matter specific binding based on ionic strength
-      SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
-                                                NSpec, SpecCharge, SpecKTempAdj, 
-                                                SpecActCorr, wP);
-      
-      //Calculate the portion of the solution that's in the diffuse layer
-      MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, IonicStrength, MassAmt, 
-                                         AqueousMC, WHAMDonnanMC, wMolWt, 
-                                         wRadius, wDLF, wKZED, WHAMSpecCharge, 
-                                         SolHS);
-      SpecCtoMAdj = MassAmtAdj[SpecMC];
-      
-      // Adjust species and component totals
-      AdjustForWHAM(NComp, NSpec, CompName, SpecActCorr, SpecCharge, 
-                    WHAMSpecCharge, SpecCtoMAdj, SpecConc, TotConc, TotMoles);
-      
+      AdjustForWHAM(NMass, MassAmt, MassAmtAdj, 
+                    NComp, CompType, TotConc, TotMoles,
+                    NSpec, SpecConc, SpecMC, SpecActCorr, SpecCharge, 
+                    SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,  
+                    IonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC,
+                    SolHS, wMolWt, wRadius, wP, wDLF, wKZED);      
     }       
     SpecMoles = SpecConc * SpecCtoMAdj;
     CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];

@@ -14,9 +14,9 @@
 //' @param NComp integer, the number of components
 //' @param CompConcStep numeric vector (NComp) of adjustments to the component
 //'   concentrations
-//' @param CompConc numeric vector (NComp) of component concentrations, input values
-//'   are from this iteration
 //' @param CompName numeric vector (NComp) with the names of the components
+//' @param CompConc (INPUT & OUTPUT) numeric vector (NComp) of component
+//'   concentrations, input values are from this iteration
 //'
 //' @return  numeric cector CompConc (NComp) modified for the next iteration
 //'

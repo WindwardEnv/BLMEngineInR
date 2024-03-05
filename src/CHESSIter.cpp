@@ -1,6 +1,64 @@
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
+//' @title CHESSIter
+//' 
+//' @description Perform calculations for one iteration of CHESS
+//' 
+//' @details
+//'   This function will take a CompConcStep input and will update all of the
+//'   necessary calculations to return the residual and error information that
+//'   results from that step. The updated variables and arrays are also
+//'   returned. This function is meant to consolidate the calculations needed
+//'   for a CHESS iteration into one function, so if other methods that are not
+//'   strictly Newton-Raphson will be used, they can be without repeating (and
+//'   potentially messing up) the code. This also helps to make it clearer what
+//'   variables are updated with each iteration so that they won't be
+//'   overwritten in the main routine unless specifically asked to. 
+//' 
+//' @author Kelly Croteau (kellyc@windwardenv.com)
+//' 
+//' @param CompConcStep NumericVector, length of NComp, the number to substract
+//'   from CompConc in this iteration
+//' @param NMass,MassAmt mass compartment information
+//' @param NComp,CompName,CompType,CompPosInSpec component information
+//' @param NSpec,SpecName,SpecMC,SpecActCorr,SpecStoich species info
+//' @param SpecCharge,SpecKTempAdj more species information
+//' @param DoWHAM boolean, whether WHAM organic matter is in this simulation
+//' @param AqueousMC,WHAMDonnanMC which mass compartments correspond to the
+//'   aqueous solution and Donnan layers, respectively
+//' @param SolHS,wMolWt,wRadius,wP,wDLF,wKZED WHAM parameters
+//' @param SysTempKelvin double, the temperature of the solution, in Kelvin
+//' @param DoTox boolean, is this a toxicity run?
+//' @param MetalName,MetalCompNBLMetal,BLMetalSpecs,CATarget params for tox mode
+//' @param MassAmtAdj (OUTPUT), NumericVector, The amount of each mass 
+//'   compartment, adjusted for the Donnan Layer volumes (aqueous compartment 
+//'   will be its original value minus the total volume of the Donnan Layers).
+//' @param TotConc (INPUT & OUTPUT) NumericVector, length of NComp, the total
+//'   concentrations of each component in the simulation (units of e.g., mol/L
+//'   and mol/kg)
+//' @param SpecKISTempAdj (INPUT & OUTPUT) NumericVector, length NSpec, the
+//'   equilibrium coefficient of the formation reactions, adjusted for
+//'   temperature and ionic strength effects
+//' @param SpecCtoMAdj (INPUT & OUTPUT) NumericVector, length NSpec, the
+//'   concentration to mass conversion factor of the chemical species for which
+//'   we have formation reactions, adjusted to take into account diffuse binding
+//'   to organic matter.
+//' @param SpecConc (INPUT & OUTPUT) NumericVector, length NSpec, the
+//'   concentrations of each species for which we have formation reactions
+//' @param CalcTotMoles (OUTPUT) NumericVector, length of NComp, the calculated
+//'   total moles of each component in the simulation
+//' @param WhichMax (OUTPUT) integer, the position in the component
+//'   vectors of the component with the highest absolute error
+//' @param IonicStrength (OUTPU) double, the ionic strength of the solution
+//' @param Resid (OUTPUT) numeric vector (NComp), the residuals = 
+//'   calculated totals - known totals
+//' @param CompError (OUTPUT) numeric vector (NComp), the absolute error
+//'   fraction for each component in this iteration = abs(Resid / TotMoles)
+//' 
+//' @return MaxError, double, the highest absolute error fraction in this
+//'   iteration =max(abs(Resid / TotMoles))
+//' 
 double CHESSIter(
   Rcpp::NumericVector CompConcStep,
   int NMass,
@@ -79,14 +137,12 @@ double CHESSIter(
                           SpecName, SpecActCorr, SpecActivityCoef);
   
   if (DoWHAM) {
-
-    WHAMAdjustments(NMass, MassAmt, MassAmtAdj, 
+    AdjustForWHAM(NMass, MassAmt, MassAmtAdj, 
                     NComp, CompType, TotConc, TotMoles,
                     NSpec, SpecConc, SpecMC, SpecActCorr, SpecCharge, 
                     SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,  
                     IonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC,
                     SolHS, wMolWt, wRadius, wP, wDLF, wKZED);
-    
   }       
   SpecMoles = SpecConc * SpecCtoMAdj;
   CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
