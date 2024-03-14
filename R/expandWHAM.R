@@ -195,6 +195,7 @@ ExpandWHAM = function(NMass,
     skip = SkipRows,
     nrows = nMS
   )
+  names(MonodentTable) = c("S","AbundDenom")
   MonodentTable$FullyProt = paste0(MonodentTable$S, "H")
   MonodentTable$FullyDeprot = paste0(MonodentTable$S)
   nStrong = nMS / 2
@@ -423,12 +424,23 @@ ExpandWHAM = function(NMass,
     DonnanMC = array(NMass_orig + (1:NDonnanComp), dim = NDonnanComp,
                      dimnames = list(WHAMFracAdd))
 
-    NMass = NMass_orig + NDonnanComp
+    # BulkMassName = paste0(MassName_orig[iMass], "_Bulk")
+    # BulkMC = NMass_orig + NDonnanComp + 1
+
+    NMass = NMass_orig + NDonnanComp + 1
+    # MassName = c(MassName_orig, DonnanMassName, BulkMassName)
     MassName = c(MassName_orig, DonnanMassName)
     MassAmt = c(MassAmt_orig,
-                array(1E-20, dim = NDonnanComp, dimnames = list(DonnanMassName)))
+                array(1E-5, dim = NDonnanComp, dimnames = list(DonnanMassName)))
+                # array(c(1E-5, MassAmt_orig[iMass]),
+                #         dim = NDonnanComp + 1,
+                #         dimnames = list(c(DonnanMassName, BulkMassName))))
     MassUnit = c(MassUnit_orig,
-                 array("L", dim = NDonnanComp, dimnames = list(DonnanMassName)))
+                 array(MassUnit_orig[iMass], dim = NDonnanComp,
+                       dimnames = list(DonnanMassName)))
+                 # array(MassUnit_orig[iMass],
+                 #       dim = NDonnanComp + 1,
+                 #       dimnames = list(c(DonnanMassName, BulkMassName))))
 
     NWHAMComp = (nMS + nBP + nTG) * NWHAMFracAdd
     StartComp = NComp_orig + 1L + NDonnanComp
@@ -452,6 +464,7 @@ ExpandWHAM = function(NMass,
                array(DonnanMC,#iMass, #DonnanMC[WHAMFracAdd],
                      dim = NDonnanComp,
                      dimnames = list(DonnanCompName)),
+               # array(BulkMC, dim = NWHAMComp, dimnames = list(WHAMCompName)))
                array(iMass, dim = NWHAMComp, dimnames = list(WHAMCompName)))
     CompType = c(CompType_orig,
                  array(DonnanCompName, NDonnanComp,
@@ -471,11 +484,11 @@ ExpandWHAM = function(NMass,
     DefCompName = c(DefCompName_orig, DonnanCompName, WHAMCompName)
     DefCompFromNum = c(
       DefCompFromNum_orig,
-      array(1.0, dim = NDonnanComp, dimnames = list(DonnanCompName)),
+      array(NA, dim = NDonnanComp, dimnames = list(DonnanCompName)),
       array(NA, dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompFromVar = c(
       DefCompFromVar_orig,
-      array(NA, dim = NDonnanComp, dimnames = list(DonnanCompName)),
+      array(WHAMprefix, dim = NDonnanComp, dimnames = list(DonnanCompName)),
       array(rep(WHAMprefix, each = NWHAMComp / NWHAMFracAdd),
             dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompCharge = c(
@@ -487,6 +500,7 @@ ExpandWHAM = function(NMass,
                   array(DonnanMC, #iMass, #DonnanMC[WHAMFracAdd],
                         dim = NDonnanComp,
                         dimnames = list(DonnanCompName)),
+                  # array(BulkMC, dim = NWHAMComp, dimnames = list(WHAMCompName)))
                   array(iMass, dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompType = c(DefCompType_orig,
                     array(DonnanCompName, dim = NDonnanComp,
@@ -500,7 +514,7 @@ ExpandWHAM = function(NMass,
                                  each = NWHAMComp / NWHAMFracAdd),
                              dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompSiteDens = c(DefCompSiteDens_orig,
-                        array(1, dim = NDonnanComp,
+                        array(1.0E-4, dim = NDonnanComp,
                               dimnames = list(DonnanCompName)),
                         array(NA, dim = NWHAMComp,
                               dimnames = list(WHAMCompName)))
@@ -522,6 +536,7 @@ ExpandWHAM = function(NMass,
                      dim = NDonnanSpec,
                      dimnames = list(DonnanSpecName)),
                # this should always be water
+               # array(BulkMC, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
                array(iMass, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
     SpecActCorr = c(SpecActCorr_orig,
                     array(c(DonnanCompName,
@@ -597,8 +612,8 @@ ExpandWHAM = function(NMass,
         (2 * MonodentTable$S[(nStrong + 1):nMS] - 13) / 6
       MonodentAbundance = (1 - fprB[OMType] - fprT[OMType]) *
         nCOOH[OMType] / MonodentTable$AbundDenom
-      CompSiteDens[NewCompNum] = MonodentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
-      DefCompSiteDens[NewDefCompNum] = MonodentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+      CompSiteDens[NewCompNum] = MonodentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
+      DefCompSiteDens[NewDefCompNum] = MonodentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
 
       # - fully protonated (components)
       NewSpecNum = StartSpec:(StartSpec + nMS - 1)
@@ -644,8 +659,8 @@ ExpandWHAM = function(NMass,
         NewCompNum = StartComp:(StartComp + nBP - 1)
         NewDefCompNum = StartDefComp:(StartDefComp + nBP - 1)
         BidentAbundance = fprB[OMType] * nCOOH[OMType] / BidentTable$AbundDenom
-        CompSiteDens[NewCompNum] = BidentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
-        DefCompSiteDens[NewDefCompNum] = BidentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        CompSiteDens[NewCompNum] = BidentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
+        DefCompSiteDens[NewDefCompNum] = BidentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
 
         # - fully protonated
         NewSpecNum = StartSpec:(StartSpec + nBP - 1)
@@ -708,8 +723,8 @@ ExpandWHAM = function(NMass,
         NewCompNum = StartComp:(StartComp + nTG - 1)
         NewDefCompNum = StartDefComp:(StartDefComp + nTG - 1)
         TridentAbundance = fprT[OMType] * nCOOH[OMType] / TridentTable$AbundDenom
-        CompSiteDens[NewCompNum] = TridentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
-        DefCompSiteDens[NewDefCompNum] = TridentAbundance * 1E-3 # the input is in milligrams, while nCOOH is mols/g
+        CompSiteDens[NewCompNum] = TridentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
+        DefCompSiteDens[NewDefCompNum] = TridentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
 
         # - fully protonated
         NewSpecNum = StartSpec:(StartSpec + nTG - 1)

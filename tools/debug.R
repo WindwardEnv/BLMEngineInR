@@ -5,17 +5,29 @@ devtools::load_all()
 # test stuff
 start.time = Sys.time()
 
+# ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
+# ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
+# InputFile = "scrap/parameter file format/abbrev_organic.blm4"
+# ParamFile = "scrap/parameter file format/full_inorg.dat4"
+# InputFile = "scrap/parameter file format/full_inorg.blm4"
+ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+InputFile = "scrap/parameter file format/full_organic.blm4"
+# ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcCu.dat4"
+# InputFile = "scrap/parameter file format/full_organic_FixedConcCu.blm4"
+# ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
+# InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
+
+ThisProblem = DefineProblem(ParamFile, WriteLog = TRUE)
+
+FunctionInputs = ThisProblem[
+  which(names(ThisProblem) %in% formalArgs("GetData"))]
+FunctionInputs$InputFile = InputFile
+AllInput = do.call("GetData", args = FunctionInputs)
+
 # capture.output(
 ResultsTable <- BLM(
-  # ParamFile = "scrap/parameter file format/abbrev_organic.dat4",
-  # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4",
-  # InputFile = "scrap/parameter file format/abbrev_organic.blm4",
-  # ParamFile = "scrap/parameter file format/full_inorg.dat4",
-  # InputFile = "scrap/parameter file format/full_inorg.blm4",
-  # ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4",
-  # InputFile = "scrap/parameter file format/full_organic.blm4",
-  ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcCu.dat4",
-  InputFile = "scrap/parameter file format/full_organic_FixedConcCu.blm4",
+  ParamFile = ParamFile,
+  InputFile = InputFile,
   DoTox = F,
   # iCA = 1L,
   QuietFlag ="Quiet",
@@ -32,10 +44,9 @@ ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
 
 ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
 ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
-which((ResultsTable$FinalIter < 30) & !is.na(ResultsTable$FinalMaxError))
+iObs = which((ResultsTable$FinalIter < 30) & !is.na(ResultsTable$FinalMaxError))[1]
 ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]
 ResultsTable[, c("ID2","T.Cu (mol/L)","T.Cu (mol)","Water (L)", "Water_DonnanHA (L)","Water_DonnanFA (L)")]
-
 
 
 
@@ -46,8 +57,24 @@ OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_
 OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
 OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
 
+ResultsTable[iObs, c("IonicStrength", "Water_DonnanHA (L)","Water_DonnanFA (L)",
+                     "DonnanHA (mol/L)","DonnanFA (mol/L)")]
+OldBLMResultsTable[iObs, c("Ionic.S.", "DDLMaxV_HS", "DDLMaxV_FS", "Ratio_HS", "Ratio_FS")]
 
-iObs = 9
+IS = 0
+for (iSpec in 1:ThisProblem$NSpec){
+  tmp = ResultsTable[iObs, paste0(ThisProblem$SpecName[iSpec],
+                                  " (mol/", ThisProblem$MassUnit[ThisProblem$SpecMC[iSpec]], ")")] *
+    ThisProblem$SpecCharge[iSpec] ^ 2
+  # if (iSpec %in% c(11, 75:91)) {
+  #   tmp = tmp * 2.598275e-05
+  # } else if (iSpec %in% c(12, 92:108)) {
+  #   tmp = tmp * 0.001940053
+  # }
+  IS = IS + tmp
+}
+(IS = IS * 0.5)
+
 OldBLMResultsTable$CuHCO3[iObs]
 ResultsTable$`CuHCO3 (mol/L)`[iObs]
 ResultsTable$Act.CuHCO3[iObs]
@@ -64,15 +91,9 @@ OldBLMResultsTable[iObs,c("ID2","Cu","CO3","H","CuHCO3")]
 log10((ResultsTable$`Cu (mol/L)` * ResultsTable$`CO3 (mol/L)` * ResultsTable$`H (mol/L)`) / ResultsTable$`CuHCO3 (mol/L)`)[iObs]
 log10((OldBLMResultsTable$Cu * OldBLMResultsTable$CO3 * OldBLMResultsTable$H) / OldBLMResultsTable$CuHCO3)[iObs]
 
-Org.Cu.cols = colnames(ResultsTable)[
-  grepl("Cu", colnames(ResultsTable)) & grepl("mol/L", colnames(ResultsTable)) &
-    (grepl("DOC", colnames(ResultsTable)) | grepl("Donnan", colnames(ResultsTable)))
-    ]
-ResultsTable$TOrg.Cu = rowSums(ResultsTable[, Org.Cu.cols])
-(ResultsTable$`DonnanHA-Cu (mol/L)` + ResultsTable$`DonnanFA-Cu (mol/L)`)[iObs]
-(ResultsTable$`DonnanHA-CuOH (mol/L)` + ResultsTable$`DonnanFA-CuOH (mol/L)`)[iObs]
 OldBLMResultsTable$TOrg.Cu[iObs]
-ResultsTable$TOrg.Cu[iObs]
+ResultsTable$`TOrg.Cu (mol/L)`[iObs]
+
 par(mar = c(5,15,1,1))
 barplot(as.matrix(ResultsTable[iObs, Org.Cu.cols[grepl("Donnan", Org.Cu.cols)]]), horiz = TRUE, las = 2)
 abline(v = OldBLMResultsTable$TOrg.Cu[iObs], col = "red")

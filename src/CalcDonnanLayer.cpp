@@ -29,8 +29,8 @@
 //' @param wDLF double, {text}
 //' @param wKZED double, {text}
 //' @param WHAMSpecCharge numeric vector, {text}
-//' @param SolHS numeric vector, length of 2, moles of each organic matter 
-//'   component in solution
+//' @param HumicSubstGramsPerLiter NumericVector, length of 2, grams per liter 
+//'   of each organic matter component (HA and FA) in solution
 //' 
 //' @return Rcpp::NumericVector - a modified SpecCtoM
 //' 
@@ -45,71 +45,67 @@ Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
                                           double wDLF,
                                           double wKZED,
                                           Rcpp::NumericVector WHAMSpecCharge,
-                                          Rcpp::NumericVector SolHS) {
+                                          Rcpp::NumericVector HumicSubstGramsPerLiter) {
 
   /* outputs */
   Rcpp::NumericVector MassAmtAdj(NMass);// = SpecCtoM;
     MassAmtAdj.names() = MassAmt.names();
   
   /* constants */
-  const double Avogadro = 6.022E+23;
-  const double pi = 3.14159265358979323846;
+  const double Avogadro = 6E+23;//6.022E+23;
+  const double pi = 3.1425;//3.14159265358979323846;
   
   /* variables */
   int iMass;
-  int iHS;  
-  double IKappa = 0.000000000304 / pow(IonicStrength, 0.5);
-  double M, r, Zmod, VDmax, Tmp, Total_VD_CtoM;
-  Rcpp::NumericVector VDP(2);
-  Rcpp::NumericVector VD_CtoM(2);
+  Rcpp::NumericVector VTerm1(2), VTerm2(2), VTerm3(2), ZTerm(2);//intermediates
+  Rcpp::NumericVector MaxVolDiffusePerGramHS(2);
+  Rcpp::NumericVector MaxVolDiffuse(2);
+  Rcpp::NumericVector VolDiffuse(2);
+  double Denom;
+  double VolSolution;  
   
-  // calculate the max diffuse layer volumes
-  for (iHS = 0; iHS < 2; iHS++) {
-    r = wRadius(iHS);
-    M = wMolWt(iHS);
-    Zmod = abs(WHAMSpecCharge(iHS));  
-    VDmax = 1000 * (Avogadro / M) * (4 * pi / 3) * (pow(r + IKappa, 3) - pow(r, 3));
-    VDP(iHS) = (VDmax * wKZED * Zmod) / (1 + wKZED * Zmod);
-    VDP(iHS) *= SolHS(iHS) * wMolWt(iHS);
-  }
+  // calculate the max diffuse layer volumes  
+  VTerm1 = wRadius + (3.04E-10 / sqrt(IonicStrength));
+  VTerm2 = pow(VTerm1, 3) - pow(wRadius, 3);
+  VTerm3 = (4 * pi / 3) * VTerm2;
+  MaxVolDiffusePerGramHS = Avogadro * VTerm3 * (1000 / wMolWt);
+  MaxVolDiffuse = MaxVolDiffusePerGramHS * HumicSubstGramsPerLiter;
+  ZTerm = wKZED * abs(WHAMSpecCharge);
+  MaxVolDiffuse = MaxVolDiffuse * ZTerm / (1 + ZTerm);
   
   // adjust for diffuse layer overlap with wDLF
-  Tmp = wDLF / (wDLF + VDP(iHA) + VDP(iFA));
-  VD_CtoM = Tmp * VDP;
+  Denom = 1 + ((MaxVolDiffuse(0) + MaxVolDiffuse(1)) / wDLF);
+  VolDiffuse = MaxVolDiffuse / Denom;
   
   // Volume should never be 0. We're setting a minimum value to avoid
   // numerical issues.
-  if (VD_CtoM(iHA) < 0.0) { VD_CtoM(iHA) = 0.0; }
-  if (VD_CtoM(iFA) < 0.0) { VD_CtoM(iFA) = 0.0; }
+  if (VolDiffuse(iHA) < 0.0) { VolDiffuse(iHA) = 0.0; }
+  if (VolDiffuse(iFA) < 0.0) { VolDiffuse(iFA) = 0.0; }
 
-  Total_VD_CtoM = VD_CtoM(iHA) + VD_CtoM(iFA);
+  // Update the Aqueous and Donnan mass compartments with the new volumes
+  VolSolution = MassAmt[AqueousMC] - VolDiffuse(iHA) - VolDiffuse(iFA);
   for (iMass = 0; iMass < NMass; iMass++) {
     if (iMass == AqueousMC) {
-      MassAmtAdj[iMass] = MassAmt[iMass] - Total_VD_CtoM;
+      MassAmtAdj[iMass] = VolSolution;
     } else if (iMass == WHAMDonnanMC[iHA]) {
-      MassAmtAdj[iMass] = VD_CtoM[iHA];
+      MassAmtAdj[iMass] = VolDiffuse[iHA];
     } else if (iMass == WHAMDonnanMC[iFA]) {
-      MassAmtAdj[iMass] = VD_CtoM[iFA];
+      MassAmtAdj[iMass] = VolDiffuse[iFA];
     } else {
       MassAmtAdj[iMass] = MassAmt[iMass];
     }
   }
-  /*for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if (SpecActCorr(iSpec) == "DonnanHA") {
-      DonnanLayerSpecCtoM(iSpec) = VD_CtoM(iHA);
-    } else if (SpecActCorr(iSpec) == "DonnanFA") {
-      DonnanLayerSpecCtoM(iSpec) = VD_CtoM(iFA);
-    } else if ((SpecMC(iSpec) == AqueousMC) && 
-               ((SpecActCorr(iSpec) != "WHAMHA") && 
-                (SpecActCorr(iSpec) != "WHAMFA"))) {
-      DonnanLayerSpecCtoM(iSpec) = SpecCtoM(iSpec) - Total_VD_CtoM;
-    } else {
-      DonnanLayerSpecCtoM(iSpec) = SpecCtoM(iSpec);
-    }
-  }*/
   /* QUESTION:
       Should we be checking that this is an inorganic species with 
       ((SpecActCorr(iSpec) != "WHAMHA") && (SpecActCorr(iSpec) != "WHAMFA"))?
+
+      (KEC, 2024-03-07):
+      I looked into the Tipping code, and it seems that VolSol is only used when
+      dealing with calculating the totals of inorganic species, not the DOC
+      species. However, I think it's useful to have the MassAmt reflect the
+      different volumes, so I changed ExpandWHAM so that DOC species are added
+      to a Water_Bulk mass compartment, which should be a copy of the Water MC
+      that doesn't get changes to MassAmt.
       */
 
   return MassAmtAdj;

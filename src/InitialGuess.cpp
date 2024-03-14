@@ -57,7 +57,7 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
   }
 
   /* Perform three rounds of adjustments */
-  for (iRound = 1; iRound <= 3; iRound++){
+  for (iRound = 1; iRound <= 3; iRound++) {
 	  /* Calc Species */
     //CalcSpecConc(NComp, NSpec, CompConc, SpecK, SpecStoich, SpecName, 
     //             SpecActCorr, SpecActivityCoef);
@@ -86,7 +86,7 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
         CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp));
       } else if ((iRound == 3) && ((CompType(iComp) == "DonnanHA") || 
                                    (CompType(iComp) == "DonnanFA"))) {
-        CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;
+        CompConc(iComp) = 10.0;//CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;
       }
     }
   }

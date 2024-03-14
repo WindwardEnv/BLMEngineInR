@@ -85,7 +85,7 @@ BLM = function(ParamFile = character(),
   ThisInput$TotConc = array(numeric(NComp), dimnames = list(CompName))
   ThisInput$CompConc = array(numeric(NComp), dimnames = list(CompName))
   ThisInput$SpecConc = array(numeric(NSpec), dimnames = list(SpecName))
-  ThisInput$SolHS = array(numeric(2), dimnames = list(c("HA", "FA")))
+  ThisInput$HumicSubstGramsPerLiter = array(numeric(2), dimnames = list(c("HA", "FA")))
 
   FunctionInputs = list(
     QuietFlag = QuietFlag,
@@ -100,7 +100,7 @@ BLM = function(ParamFile = character(),
     formalArgs("CHESS") %in% names(FunctionInputs) == FALSE]
 
   # Initialize the output array
-  MiscOutputCols = c("FinalIter", "FinalMaxError")
+  MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength")
   SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMC],")")
   SpecMolesCols = paste0(SpecName," (mol)")
   SpecActCols = paste0("Act.", SpecName)
@@ -137,7 +137,7 @@ BLM = function(ParamFile = character(),
     ThisInput$InLab = AllInput$InLabObs[iObs, ]
     ThisInput$SysTempKelvin = AllInput$SysTempKelvinObs[iObs]
     ThisInput$TotConc = AllInput$TotConcObs[iObs, CompName]
-    ThisInput$SolHS = AllInput$SolHSObs[iObs, c("HA", "FA")]
+    ThisInput$HumicSubstGramsPerLiter = AllInput$HumicSubstGramsPerLiterObs[iObs, c("HA", "FA")]
 
     if (DoTox) {
       FunctionInputs$CATarget = CATargetDefault * ThisInput$TotConc[BLComp]
@@ -158,6 +158,19 @@ BLM = function(ParamFile = character(),
     Out[iObs, MassAmtCols] = Tmp$MassAmt
 
   }
+
+  # Make summary columns for organically-bound components
+  if (ThisProblem$DoWHAM) {
+    for (iComp in CompName){
+      OrgCols = colnames(Out)[
+        grepl(iComp, colnames(Out)) & grepl("mol/L", colnames(Out)) &
+          (grepl("DOC", colnames(Out)) | grepl("Donnan", colnames(Out)))
+      ]
+      Out[,paste0("TOrg.",iComp," (mol/L)")] = rowSums(Out[, OrgCols])
+    }
+  }
+
+
 
   return(Out)
 

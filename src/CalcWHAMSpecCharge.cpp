@@ -3,7 +3,7 @@
 
 Rcpp::NumericVector CalcWHAMSpecCharge(int NSpec, 
                                        Rcpp::CharacterVector SpecActCorr,
-                                       Rcpp::NumericVector SpecMoles,
+                                       Rcpp::NumericVector SpecActivity,
                                        Rcpp::IntegerVector SpecCharge,
                                        Rcpp::IntegerVector SpecMC,
                                        int AqueousMC) {
@@ -17,13 +17,13 @@ Rcpp::NumericVector CalcWHAMSpecCharge(int NSpec,
   WHAMSpecCharge(iHA) = 0;
   WHAMSpecCharge(iFA) = 0;
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if ((SpecMC(iSpec) == AqueousMC) && (SpecCharge(iSpec) != 0)) {
+    //if ((SpecMC(iSpec) == AqueousMC) && (SpecCharge(iSpec) != 0)) {
       if (SpecActCorr(iSpec) == "WHAMHA") {
-        WHAMSpecCharge(iHA) += SpecMoles(iSpec) * SpecCharge(iSpec);
+        WHAMSpecCharge(iHA) += SpecActivity(iSpec) * SpecCharge(iSpec);
       } else if (SpecActCorr(iSpec) == "WHAMFA") {
-        WHAMSpecCharge(iFA) += SpecMoles(iSpec) * SpecCharge(iSpec);
+        WHAMSpecCharge(iFA) += SpecActivity(iSpec) * SpecCharge(iSpec);
       }
-    }
+    //}
   }
 
   return WHAMSpecCharge;

@@ -30,6 +30,7 @@ double CalcChargeBalance(int NSpec,
   /* variables */
   int iSpec;
   
+  ChargeBal = 0;
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
     if (SpecMC(iSpec) == AqueousMC) {
       ChargeBal += SpecCharge(iSpec) * SpecMoles(iSpec);

@@ -28,7 +28,7 @@ CHESS(
   DoWHAM,
   AqueousMC,
   WHAMDonnanMC,
-  SolHS,
+  HumicSubstGramsPerLiter,
   wMolWt,
   wRadius,
   wP,
@@ -109,7 +109,7 @@ compartment. (transformed to 0-based at the beginning of the function)}
 humic acid (0) and fulvic acid (1) Donnan layers. (transformed to 0-based
 at the beginning of the function)}
 
-\item{SolHS}{numeric (2), moles of each organic matter component in solution}
+\item{HumicSubstGramsPerLiter}{numeric (2), moles of each organic matter component in solution}
 
 \item{wMolWt}{numeric (2), WHAM's molecular weight parameter for organic
 matter}

@@ -68,7 +68,6 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
                  (CompName(iComp1) == "DonnanHA")) {
         // diffuse double layer stuff 
         for (iSpec = NComp; iSpec < NSpec; iSpec++) {
-          //NameS = 
           S1 = SpecStoich(iSpec, iComp1);
           S2 = SpecStoich(iSpec, iComp2);
           M = SpecConc(iSpec) * SpecCtoM(iSpec);

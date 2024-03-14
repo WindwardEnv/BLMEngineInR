@@ -4,7 +4,7 @@ number of monodentate sites,8
 Number of bidentate pairs,12
 Number of tridentate groups,0
 Number of metals-OM parameters,50
-Number of non-standard selectivity coefficients,2
+Number of non-standard selectivity coefficients,0
 Double layer overlap factor,0.25
 Constant to control DDL at low ZED,1000
 --------------------------------------------------------
@@ -106,5 +106,3 @@ ZnOH,      2.3,    1.3,    0.13
 --------------------------------------------------------
 Selectivity Coefficients for Non-specific binding
 Spec, KselHA, KselFA
-H,    0.999,      1
-Test, 1,      1

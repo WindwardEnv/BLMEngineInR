@@ -49,7 +49,8 @@
 #' @param WHAMDonnanMC the mass compartments corresponding to the
 #'   humic acid (0) and fulvic acid (1) Donnan layers. (transformed to 0-based
 #'   at the beginning of the function)
-#' @param SolHS numeric (2), moles of each organic matter component in solution
+#' @param HumicSubstGramsPerLiter NumericVector, length of 2, grams per liter 
+#'   of each organic matter component (HA and FA) in solution
 #' @param wMolWt numeric (2), WHAM's molecular weight parameter for organic
 #'   matter
 #' @param wRadius numeric (2), WHAM's molecular radius parameter for organic
@@ -86,7 +87,7 @@
 #' }
 #' @export
 #'
-CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecMC, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMC, WHAMDonnanMC, SolHS, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget) {
-    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecMC, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMC, WHAMDonnanMC, SolHS, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget)
+CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecMC, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget) {
+    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecMC, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget)
 }
 

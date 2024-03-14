@@ -131,11 +131,10 @@ ReadInputsFromFile = function(
 #'    including derived components}
 #' }
 #'
-#' @keywords internal
-#'
 #' @family BLMEngine Functions
 #'
-#' @noRd
+#' @export
+#'
 MatchInputsToProblem = function(
     NObs, InVarObs, InCompObs, #inputs from file
     #information from DefineProblem:
@@ -162,12 +161,12 @@ MatchInputsToProblem = function(
   }
 
   # -get organic matter and parse into components
-  SolHSObs = array(0.0, dim = c(NObs, 2),
+  HumicSubstGramsPerLiterObs = array(0.0, dim = c(NObs, 2),
                    dimnames = list(Obs = 1:NObs, c("HA", "FA")))
   if (any(grepl("WHAM", InVarType))) {
     OM = as.matrix(InVarObs[, InVarName[InVarType %in% c("Temperature", "pH") == FALSE], drop = FALSE]) # nolint: line_length_linter.
     for (i in which(grepl("WHAM", InVarType))) {
-      OMColI = OM[, InVarName[i], drop = FALSE]
+      OMColI = OM[, InVarName[i], drop = FALSE]#mg C / L
 
       # Initialize FracAFA and FracHA with the needed values
       FracAFACol = matrix(1, nrow = NObs, ncol = 1)
@@ -186,38 +185,45 @@ MatchInputsToProblem = function(
       # Pull out relevant HA and FA components
       FAComps = which(DefCompFromVar %in% paste0(InVarName[i], "-FA_"))
       FACompName = DefCompName[FAComps]
-      FACompSiteDens = DefCompSiteDens[FAComps]
+      FACompSiteDens = DefCompSiteDens[FAComps] #mol / mg C
       HAComps = which(DefCompFromVar %in% paste0(InVarName[i], "-HA_"))
       HACompName = DefCompName[HAComps]
-      HACompSiteDens = DefCompSiteDens[HAComps]
+      HACompSiteDens = DefCompSiteDens[HAComps] #mol / mg C
+
+      HumicSubstGramsPerLiterObs = array(0.0, dim = c(NObs, 2),
+                       dimnames = list(Obs = 1:NObs, c("HA", "FA")))
 
       # Calculate the component concentrations
       if (InVarType[i] == "WHAM-FA") {
         # This is a FA-only input variable
         TotConcObs[, FACompName] = (OMColI * FracAFACol) %*% FACompSiteDens
-        TotConcObs[, "DonnanFA"] = 0.0
+        # TotConcObs[, "DonnanFA"] = 1E-4
+        HumicSubstGramsPerLiterObs[, "FA"] = (OMColI * FracAFACol) / 1000 * 2
       } else if (InVarType[i] == "WHAM-HA") {
         # This is a HA-only input variable
         TotConcObs[, HACompName] = OMColI %*% HACompSiteDens
-        TotConcObs[, "DonnanHA"] = 0.0
+        # TotConcObs[, "DonnanHA"] = 1E-4
+        HumicSubstGramsPerLiterObs[, "HA"] = OMColI / 1000 * 2
       } else if (InVarType[i]  == "WHAM-HAFA") {
         # This is a combined HA + FA component, and % HA is needed
         TotConcObs[, HACompName] = (OMColI * FracHACol) %*% HACompSiteDens
         TotConcObs[, FACompName] =
           (OMColI * (1 - FracHACol) * FracAFACol) %*% FACompSiteDens
-        TotConcObs[, c("DonnanHA", "DonnanFA")] = 0.0
+        # TotConcObs[, c("DonnanHA", "DonnanFA")] = 1E-4
+        HumicSubstGramsPerLiterObs[, "FA"] = (OMColI * (1 - FracHACol) * FracAFACol) / 1000 * 2
+        HumicSubstGramsPerLiterObs[, "HA"] = (OMColI * FracHACol) / 1000 * 2
       }
       # TotConcObs[, HACompName] = SolHAObs %*% HACompSiteDens
       # TotConcObs[, FACompName] = SolFAObs %*% FACompSiteDens
 
       # # Calculate the moles of each OM component in solution...this doesn't
-      # # make sense...why would we multiply by the site density AGAIN?
-      # SolHAObs = TotConcObs[, HACompName] %*% HACompSiteDens
-      # SolFAObs = TotConcObs[, FACompName] %*% FACompSiteDens
-      SolHSObs = array(c(rowSums(TotConcObs[, HACompName, drop = FALSE]),
-                         rowSums(TotConcObs[, FACompName, drop = FALSE])),
-                       dim = c(NObs, 2),
-                       dimnames = list(Obs = 1:NObs, c("HA", "FA")))
+      # # # make sense...why would we multiply by the site density AGAIN?
+      # # SolHAObs = TotConcObs[, HACompName] %*% HACompSiteDens
+      # # SolFAObs = TotConcObs[, FACompName] %*% FACompSiteDens
+      # HumicSubstGramsPerLiterObs = array(c(rowSums(TotConcObs[, HACompName, drop = FALSE]),
+      #                    rowSums(TotConcObs[, FACompName, drop = FALSE])),
+      #                  dim = c(NObs, 2),
+      #                  dimnames = list(Obs = 1:NObs, c("HA", "FA")))
 
     }
   }
@@ -257,7 +263,7 @@ MatchInputsToProblem = function(
     SysTempKelvinObs = SysTempCelsiusObs + 273.15,
     pH = pH,
     TotConcObs = TotConcObs,
-    SolHSObs = SolHSObs
+    HumicSubstGramsPerLiterObs = HumicSubstGramsPerLiterObs
   )
 
   return(Out)

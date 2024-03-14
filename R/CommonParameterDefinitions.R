@@ -167,7 +167,8 @@
 #'   matter
 #' @param wMolWt numeric (2), WHAM's molecular weight parameter for organic
 #'   matter
-#' @param SolHS numeric (2), moles of each organic matter component in solution
+#' @param HumicSubstGramsPerLiter numeric (2), grams per liter of each organic
+#'   matter component (HA and FA) in solution
 #'
 #' @param CATab data frame, the critical accumulation table from the parameter
 #'   file.

@@ -27,7 +27,7 @@
 //' @param DoWHAM boolean, whether WHAM organic matter is in this simulation
 //' @param AqueousMC,WHAMDonnanMC which mass compartments correspond to the
 //'   aqueous solution and Donnan layers, respectively
-//' @param SolHS,wMolWt,wRadius,wP,wDLF,wKZED WHAM parameters
+//' @param HumicSubstGramsPerLiter,wMolWt,wRadius,wP,wDLF,wKZED WHAM parameters
 //' @param SysTempKelvin double, the temperature of the solution, in Kelvin
 //' @param DoTox boolean, is this a toxicity run?
 //' @param MetalName,MetalCompNBLMetal,BLMetalSpecs,CATarget params for tox mode
@@ -77,7 +77,7 @@ double CHESSIter(
   bool DoWHAM,
   int AqueousMC,
   Rcpp::IntegerVector WHAMDonnanMC,
-  Rcpp::NumericVector SolHS,
+  Rcpp::NumericVector HumicSubstGramsPerLiter,
   Rcpp::NumericVector wMolWt,
   Rcpp::NumericVector wRadius,
   Rcpp::NumericVector wP,
@@ -92,11 +92,13 @@ double CHESSIter(
   double CATarget,
   Rcpp::NumericVector &MassAmtAdj,
   Rcpp::NumericVector &TotConc,
+  Rcpp::NumericVector &TotMoles,
   Rcpp::NumericVector &SpecKISTempAdj,
   Rcpp::NumericVector &SpecCtoMAdj,
   Rcpp::NumericVector &SpecConc,
   Rcpp::NumericVector &SpecActivityCoef,
   Rcpp::NumericVector &CalcTotMoles,
+  Rcpp::NumericVector &WHAMSpecCharge,
   int &WhichMax,
   double &IonicStrength,
   Rcpp::NumericVector &Resid,
@@ -114,13 +116,15 @@ double CHESSIter(
   //Rcpp::NumericVector MassAmtAdj(NMass);
   //  MassAmtAdj.names() = MassAmt.names();
   Rcpp::NumericVector CompConc(NComp);
-  Rcpp::NumericVector TotMoles(NComp);
-    TotMoles.names() = CompName;
+  //Rcpp::NumericVector TotMoles(NComp);
+  //  TotMoles.names() = CompName;
   Rcpp::NumericVector CompCtoMAdj(NComp);
   //Rcpp::NumericVector SpecKISTempAdj(NSpec);
   //Rcpp::NumericVector SpecCtoMAdj(NSpec);
   //Rcpp::NumericVector SpecActivityCoef(NSpec);
-  Rcpp::NumericVector WHAMSpecCharge(2);
+  //Rcpp::NumericVector WHAMSpecCharge(2);
+  double ChargeBalance;
+  double WHAMIonicStrength;
   
   // Update the component free concentrations
   CompConc = SpecConc[CompPosInSpec];
@@ -128,42 +132,178 @@ double CHESSIter(
   SpecConc[CompPosInSpec] = clone(CompConc);
 
   // Calculate the ionic strength and activity coefficients
-  IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
+  ChargeBalance = CalcChargeBalance(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
                                     SpecMC, AqueousMC);
+  IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
+                                    SpecMC, AqueousMC, SpecActCorr, true);
+  if (false) {
+    //FIRST/INITAL WHAM ITER FROM PB BLM
+    IonicStrength = 0.1;
+    WHAMSpecCharge[0] = -0.0001;
+    WHAMSpecCharge[1] = -0.0001;
+    //Inorganics
+    CompConc[0] = 9.1253E-07;
+    CompConc[1] = 8.1101E-05;
+    CompConc[2] = 1.3596E-04;
+    CompConc[3] = 1.7606E-04;
+    CompConc[4] = 8.5928E-06;
+    CompConc[5] = 2.1655E-04;
+    CompConc[6] = 8.5738E-06;
+    CompConc[7] = 3.3690E-10;
+    CompConc[8] = 3.5523E-08;
+    //Donnan ratios
+    CompConc[10] = 10.0;
+    CompConc[11] = 10.0;
+    //DOC-HA-#H monodentate protonated sites
+    CompConc[12] = 3.2178E-14;//1
+    CompConc[13] = 1.2610E-13;//2
+    CompConc[14] = 4.9356E-13;//3
+    CompConc[15] = 1.9227E-12;//4
+    CompConc[16] = 6.1071E-11;//5
+    CompConc[17] = 2.0008E-10;//6
+    CompConc[18] = 2.3923E-10;//7
+    CompConc[19] = 2.4265E-10;//8
+    //DOC-HA-##H bidentate protonated sites
+    CompConc[20] = 1.22811E-18;//1
+    CompConc[21] = 1.76377E-17;//2
+    CompConc[22] = 2.60392E-16;//3
+    CompConc[23] = 2.63466E-16;//4
+    CompConc[24] = 1.76647E-17;//5
+    CompConc[25] = 2.58895E-16;//6
+    CompConc[26] = 2.70011E-16;//7
+    CompConc[27] = 1.37116E-16;//8
+    CompConc[28] = 2.71588E-16;//9
+    CompConc[29] = 2.71803E-16;//10
+    CompConc[30] = 2.71480E-16;//11
+    CompConc[31] = 2.72246E-16;//12
+    //DOC-FA_#H monodentate protonated sites
+    CompConc[32] = 1.3651E-14;//1
+    CompConc[33] = 1.7721E-13;//2
+    CompConc[34] = 2.3002E-12;//3
+    CompConc[35] = 2.9796E-11;//4
+    CompConc[36] = 1.1013E-09;//5
+    CompConc[37] = 5.9714E-09;//6
+    CompConc[38] = 6.3791E-09;//7
+    CompConc[39] = 6.3854E-09;//8
+    //DOC-FA-##H bidentate protonated sites
+    CompConc[40] = 6.3143E-20;//1
+    CompConc[41] = 1.0617E-17;//2
+    CompConc[42] = 4.2553E-15;//3
+    CompConc[43] = 4.5503E-15;//4
+    CompConc[44] = 1.0639E-17;//5
+    CompConc[45] = 1.0188E-14;//6
+    CompConc[46] = 5.9012E-14;//7
+    CompConc[47] = 1.7888E-15;//8
+    CompConc[48] = 7.1700E-13;//9
+    CompConc[49] = 7.6671E-13;//10
+    CompConc[50] = 1.7130E-12;//11
+    CompConc[51] = 9.9220E-12;//12
+  } else if (true) {
+    //LAST WHAM ITER FROM PB BLM
+    IonicStrength = 0.000534679;
+    WHAMSpecCharge[0] = -0.001055782;
+    WHAMSpecCharge[1] = -0.002757042;
+    CompConc[0] = 9.59993363565727E-08;
+    CompConc[1] = 3.68278171517698E-05;
+    CompConc[2] = 0.000061754236008998;
+    CompConc[3] = 0.000137555074214308;
+    CompConc[4] = 6.71355101983406E-06;
+    CompConc[5] = 9.85195915618222E-05;
+    CompConc[6] = 6.69941662102341E-06;
+    CompConc[7] = 1.94743882686021E-07;
+    CompConc[8] = 2.76256091289306E-08;
+    CompConc[10] = 4.001807;
+    CompConc[11] = 1.712652;
+    CompConc[12] = 3.90672800784937E-13;
+    CompConc[13] = 1.47731944186428E-12;
+    CompConc[14] = 5.08513478543844E-12;
+    CompConc[15] = 1.34857790600327E-11;
+    CompConc[16] = 1.45907868350776E-10;
+    CompConc[17] = 1.68683394297017E-10;
+    CompConc[18] = 1.70597781345935E-10;
+    CompConc[19] = 1.70737081609003E-10;
+    CompConc[20] = 1.62318730585003E-16;
+    CompConc[21] = 8.72449447745709E-16;
+    CompConc[22] = 1.62691821629889E-15;
+    CompConc[23] = 1.62770370103955E-15;
+    CompConc[24] = 8.77842067578099E-16;
+    CompConc[25] = 1.6450367927837E-15;
+    CompConc[26] = 1.64789379713423E-15;
+    CompConc[27] = 1.23358746610706E-15;
+    CompConc[28] = 1.65308852570421E-15;
+    CompConc[29] = 1.65314162960448E-15;
+    CompConc[30] = 1.65428833978588E-15;
+    CompConc[31] = 1.65448109374049E-15;
+    CompConc[32] = 8.56767594077975E-14;
+    CompConc[33] = 1.09999978532507E-12;
+    CompConc[34] = 1.24955490848289E-11;
+    CompConc[35] = 6.18627774290784E-11;
+    CompConc[36] = 3.58950110306434E-09;
+    CompConc[37] = 6.22238094341529E-09;
+    CompConc[38] = 6.28905895093181E-09;
+    CompConc[39] = 6.29003322009559E-09;
+    CompConc[40] = 1.23989844969647E-18;
+    CompConc[41] = 1.15544203776794E-16;
+    CompConc[42] = 1.29419496326124E-14;
+    CompConc[43] = 1.30726020153824E-14;
+    CompConc[44] = 1.16407613144101E-16;
+    CompConc[45] = 6.23586088186863E-14;
+    CompConc[46] = 8.38894475929258E-14;
+    CompConc[47] = 2.59685374121812E-16;
+    CompConc[48] = 1.43888965697356E-13;
+    CompConc[49] = 1.43984008436532E-13;
+    CompConc[50] = 1.51818397868478E-13;
+    CompConc[51] = 1.52391684761759E-13;
+  }
+
+
+
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
   
-  for(int iComp = 0; iComp < NComp; iComp++) {
-    if (CompType[iComp] == "FixedAct") {
-      SpecConc[iComp] = TotConc[iComp] / SpecActivityCoef[iComp];
-      CompConc[iComp] = SpecConc[iComp];
-    } else if (CompType[iComp] == "FixedConc"){
-      SpecConc[iComp] = TotConc[iComp];
-      CompConc[iComp] = SpecConc[iComp];
-    }
+  if (DoWHAM) {
+    //WHAMIonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
+    //                                SpecMC, AqueousMC, SpecActCorr, true);
+    AdjustForWHAMBeforeCalcSpecies(NMass, MassAmt, MassAmtAdj, NSpec, SpecMC,
+      SpecActCorr, SpecCharge, SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,
+      IonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC, 
+      HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED);
+
+    CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
+    TotMoles = TotConc * CompCtoMAdj;
   }
+
+  //for (int iSpec = 0; iSpec < NSpec; iSpec++){
+  //  Rcpp::Rcout << "SpecLogK[" << SpecName[iSpec] << "]=" << 
+  //    log10(SpecKISTempAdj[iSpec]) << std::endl;
+  //}
 
   // Calculate the species concentrations
   SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
                           SpecName, SpecActCorr, SpecActivityCoef);
+
+  UpdateFixedComps(NComp, CompType, TotConc, SpecActivityCoef, 
+                  SpecConc, CompConc);
   
   if (DoWHAM) {
-    AdjustForWHAM(NMass, MassAmt, MassAmtAdj, 
+    /*AdjustForWHAM(NMass, MassAmt, MassAmtAdj, 
                     NComp, CompType, TotConc, TotMoles,
                     NSpec, SpecConc, SpecMC, SpecActCorr, SpecCharge, 
                     SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,  
                     IonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC,
-                    SolHS, wMolWt, wRadius, wP, wDLF, wKZED);
+                    HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED);*/
+    AdjustForWHAMAfterCalcSpecies(NComp, CompType, TotConc, TotMoles, NSpec, 
+      SpecConc, SpecActivityCoef, SpecMC, SpecActCorr, SpecCharge, SpecCtoMAdj, WHAMSpecCharge, 
+      AqueousMC, HumicSubstGramsPerLiter);
+    
   }       
-  SpecMoles = SpecConc * SpecCtoMAdj;
-  CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
-  TotMoles = TotConc * CompCtoMAdj;
 
-  // Update Total Concentrations for Fixed Activity & Metal
-  /*UpdateTotals(NComp, NSpec, DoTox, CompType, CompName, MetalName,
-                SpecStoich, SpecConc, CompCtoMAdj, 
-                TotMoles, TotConc);*/
+  for (int iSpec = 0; iSpec < NSpec; iSpec++){
+    Rcpp::Rcout << "SpecConc[" << SpecName[iSpec] << "]=" << 
+      SpecConc[iSpec] << std::endl;
+  }
   
+
   // Calculate the total moles & conc from species concentrations
   CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, 
                                          SpecStoich);

@@ -23,19 +23,30 @@ double CalcIonicStrength(int NSpec,
                          Rcpp::NumericVector SpecMoles,
                          Rcpp::IntegerVector SpecCharge,
                          Rcpp::IntegerVector SpecMC,
-                         int AqueousMC) {
+                         int AqueousMC, 
+                         Rcpp::CharacterVector SpecActCorr,
+                         bool ExcludeOrgMatter) {
   /* output */
   double IonicStrength = 0;
 
   /* variables */
   int iSpec;
+  bool IncludeSpec;
 
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if (SpecMC(iSpec) == AqueousMC) {
-      IonicStrength += SpecCharge(iSpec) * SpecCharge(iSpec) * SpecMoles(iSpec);
+    IncludeSpec = (SpecMC(iSpec) == AqueousMC);
+    if (ExcludeOrgMatter) {
+      IncludeSpec &= (SpecActCorr(iSpec) != "WHAMHA");
+      IncludeSpec &= (SpecActCorr(iSpec) != "WHAMFA");
     }
+    if (IncludeSpec){ 
+      IonicStrength += pow(SpecCharge(iSpec), 2) * SpecMoles(iSpec);
+    } 
   }
-  IonicStrength *= 0.5;
+  IonicStrength *= 0.5;  
+
+  if (IonicStrength > 100.0) { IonicStrength = 100.0; }
+  if (IonicStrength <= 0.0) { IonicStrength = 0.1; }
 
   return IonicStrength;
 }
