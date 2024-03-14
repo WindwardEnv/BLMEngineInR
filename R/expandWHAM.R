@@ -363,7 +363,7 @@ ExpandWHAM = function(NMass,
   for (iInVar in InVarWHAM) {
 
     iMass = InVarMC[iInVar] # nolint: object_name_linter.
-    ChargedSpecName = SpecName_orig[(SpecCharge_orig != 0) &
+    ChargedSpecName = SpecName_orig[#(SpecCharge_orig != 0) &
                                       (SpecMC_orig == iMass)]
     NChargedSpec = length(ChargedSpecName)
     SpecKsel = array(1, dim = c(NChargedSpec, 2),
@@ -595,6 +595,10 @@ ExpandWHAM = function(NMass,
       SpecLogK[paste0("Donnan", OMType)] = 0.0
       SpecLogK[DonnanOMChargedSpecName] =
         ChargedSpecDonnanLogK[ChargedSpecName, OMType]
+      SpecDeltaH[DonnanOMChargedSpecName] =
+        SpecDeltaH_orig[match(ChargedSpecName, SpecName_orig)]
+      SpecTempKelvin[DonnanOMChargedSpecName] =
+        SpecTempKelvin_orig[match(ChargedSpecName, SpecName_orig)]
       SpecStoich[DonnanOMChargedSpecName, CompName_orig] =
         SpecStoich_orig[match(ChargedSpecName, SpecName_orig), CompName_orig]
       SpecStoich[DonnanOMChargedSpecName, paste0("Donnan", OMType)] =
@@ -647,6 +651,8 @@ ExpandWHAM = function(NMass,
         SpecStoich[NewSpecNum, iH] = SpecStoich[NewSpecNum, iH] - 1L
         SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
           as.numeric(MetalsTable[iMetal, ColspKM[MonodentTable$Strong1Weak2]])
+        SpecDeltaH[NewSpecNum] = SpecDeltaH[iMetalSpec]
+        SpecTempKelvin[NewSpecNum] = SpecTempKelvin[iMetalSpec]
       }
 
 
@@ -711,6 +717,8 @@ ExpandWHAM = function(NMass,
           SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
             as.numeric(MetalsTable[iMetal, ColspKM[BidentTable$S1Strong1Weak2]] +
                          MetalsTable[iMetal, ColspKM[BidentTable$S2Strong1Weak2]])
+          SpecDeltaH[NewSpecNum] = SpecDeltaH[iMetalSpec]
+          SpecTempKelvin[NewSpecNum] = SpecTempKelvin[iMetalSpec]
         }
 
       }
@@ -810,6 +818,8 @@ ExpandWHAM = function(NMass,
             as.numeric(MetalsTable[iMetal, ColspKM[TridentTable$S1Strong1Weak2]] +
                          MetalsTable[iMetal, ColspKM[TridentTable$S2Strong1Weak2]] +
                          MetalsTable[iMetal, ColspKM[TridentTable$S3Strong1Weak2]])
+          SpecDeltaH[NewSpecNum] = SpecDeltaH[iMetalSpec]
+          SpecTempKelvin[NewSpecNum] = SpecTempKelvin[iMetalSpec]
         }
 
       }

@@ -160,7 +160,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     WHAMSpecCharge[1] = -0.0001;
   int WhichMax;
   double IonicStrength = 0.1;
-  double ChargeBalance = 0.0;
+  //double ChargeBalance = 0.0;
   Rcpp::NumericVector Resid(NComp);
     Resid.names() = CompName;
   Rcpp::NumericVector CompError(NComp);
@@ -235,7 +235,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   TotMoles = TotConc * CompCtoM;
 
   // Do the temperature adjustments on the binding constants
-  SysTempKelvin = 288;
+  //SysTempKelvin = 288;
   SpecKTempAdj = TempCorrection(SysTempKelvin, NSpec, SpecK, SpecTempKelvin, 
                                 SpecDeltaH);
   SpecKISTempAdj = clone(SpecKTempAdj);

@@ -2,20 +2,18 @@ rm(list = ls())
 # devtools::clean_dll()
 devtools::load_all()
 
-# test stuff
-start.time = Sys.time()
 
 # ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
 # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
 # InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 # ParamFile = "scrap/parameter file format/full_inorg.dat4"
 # InputFile = "scrap/parameter file format/full_inorg.blm4"
-ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
-InputFile = "scrap/parameter file format/full_organic.blm4"
+# ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+# InputFile = "scrap/parameter file format/full_organic.blm4"
 # ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcCu.dat4"
 # InputFile = "scrap/parameter file format/full_organic_FixedConcCu.blm4"
-# ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
-# InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
+ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
+InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
 
 ThisProblem = DefineProblem(ParamFile, WriteLog = TRUE)
 
@@ -24,19 +22,20 @@ FunctionInputs = ThisProblem[
 FunctionInputs$InputFile = InputFile
 AllInput = do.call("GetData", args = FunctionInputs)
 
+# test stuff
+start.time = Sys.time()
 # capture.output(
 ResultsTable <- BLM(
   ParamFile = ParamFile,
   InputFile = InputFile,
   DoTox = F,
   # iCA = 1L,
-  QuietFlag ="Quiet",
+  QuietFlag ="Debug",
   ConvergenceCriteria = 0.001,
   MaxIter = 30L,
   DoPartialStepsAlways = FALSE
 )
 # , file = "scrap/debug.txt")
-
 end.time = Sys.time()
 end.time - start.time
 

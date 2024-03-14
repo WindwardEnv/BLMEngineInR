@@ -123,8 +123,8 @@ double CHESSIter(
   //Rcpp::NumericVector SpecCtoMAdj(NSpec);
   //Rcpp::NumericVector SpecActivityCoef(NSpec);
   //Rcpp::NumericVector WHAMSpecCharge(2);
-  double ChargeBalance;
-  double WHAMIonicStrength;
+  //double ChargeBalance;
+  //double WHAMIonicStrength;
   
   // Update the component free concentrations
   CompConc = SpecConc[CompPosInSpec];
@@ -132,8 +132,8 @@ double CHESSIter(
   SpecConc[CompPosInSpec] = clone(CompConc);
 
   // Calculate the ionic strength and activity coefficients
-  ChargeBalance = CalcChargeBalance(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC);
+  //ChargeBalance = CalcChargeBalance(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
+  //                                  SpecMC, AqueousMC);
   IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
                                     SpecMC, AqueousMC, SpecActCorr, true);
   if (false) {
@@ -198,7 +198,7 @@ double CHESSIter(
     CompConc[49] = 7.6671E-13;//10
     CompConc[50] = 1.7130E-12;//11
     CompConc[51] = 9.9220E-12;//12
-  } else if (true) {
+  } else if (false) {
     //LAST WHAM ITER FROM PB BLM
     IonicStrength = 0.000534679;
     WHAMSpecCharge[0] = -0.001055782;
