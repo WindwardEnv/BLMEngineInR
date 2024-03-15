@@ -64,12 +64,14 @@
 //'   concentration is adjusted to try to match the CATarget with BLMetalSpecs
 //' @param MetalName character string, the name of the toxic metal
 //' @param MetalComp integer, the position of the metal in the component arrays
-//'   (i.e., which is the toxic metal component) Note: this are base-1 indexed.
+//'   (i.e., which is the toxic metal component) Note: this is base-1 indexed on
+//'   input then converted.
 //' @param NBLMetal integer, the number of biotic ligand-bound metal species 
 //'   that are associated with toxic effects.
 //' @param BLMetalSpecs integer vector, the positions of the species in the
 //'   arrays which contribute to toxicity (i.e., which species are the toxic
-//'   metal bound to the relevant biotic ligand) Note: these are base-1 indexed.
+//'   metal bound to the relevant biotic ligand) Note: these are base-1 indexed
+//'   on input then converted.
 //' @param CATarget numeric, the target critical accumulation in units of mol /
 //'   kg (only used when DoTox == TRUE)
 //'
@@ -228,6 +230,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   SpecMC = SpecMC - 1;
   AqueousMC = AqueousMC - 1;
   WHAMDonnanMC = WHAMDonnanMC - 1;
+  MetalComp = MetalComp - 1;
+  BLMetalSpecs = BLMetalSpecs - 1;
   MassAmtAdj = clone(MassAmt);
   SpecCtoM = MassAmtAdj[SpecMC];
   SpecCtoMAdj = clone(SpecCtoM);
@@ -261,12 +265,11 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                        SpecActivityCoef, CalcTotMoles, WHAMSpecCharge,
                        WhichMax, IonicStrength, Resid, CompError);
 
-
   // Begin iterating
   Iter = 0;
   while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter)) {
 
-    if (QuietFlag == "Debug") {
+    /*if (QuietFlag == "Debug") {
       Rcpp::Rcout << "Iter=" << Iter 
         << ", WhichMax=" << CompName(WhichMax) 
         << ", MaxError=" << MaxError 
@@ -279,18 +282,38 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
         << ", SpecMoles=" << SpecMoles
         << ", MassAmtAdj=" << MassAmtAdj
         << std::endl;
-    }
+    }*/
 
     // update the iteration counter
     Iter++;
 
     // Calculate the Jacobian Matrix
-    JacobianMatrix = Jacobian(NComp, NSpec, SpecStoich, SpecConc, SpecCtoMAdj,
-                              CompName, MetalComp, NBLMetal, BLMetalSpecs, 
-                              DoTox);
+    JacobianMatrix = Jacobian(NComp, NSpec, CompName, SpecStoich, SpecConc, 
+                              SpecCtoMAdj, SpecActCorr, SpecCharge, 
+                              HumicSubstGramsPerLiter, MetalComp, NBLMetal, 
+                              BLMetalSpecs, DoTox);
+    
+    //Rcpp::Rcout << JacobianMatrix << std::endl;
 
     // Calculate the Newton-Raphson step
     CompConcStepFull = CalcStep(JacobianMatrix, Resid, NComp, CompType, CompName);
+    
+    if (QuietFlag == "Debug") {
+      Rcpp::Rcout << "iComp\tSpecName\tSpecConc\tResid\tError\tStep" << std::endl;
+      for (iComp = 9; iComp < NComp; iComp++) {
+        Rcpp::Rcout << iComp << "\t" 
+                    << SpecName[iComp] << "\t" 
+                    << SpecConc[iComp] << "   " 
+                    << Resid[iComp] << "   " 
+                    << CompError[iComp] << "   "
+                    << CompConcStepFull[iComp]
+                    << std::endl;
+        //Rcpp::Rcout << "Resid[" << SpecName[iComp] << "]=" << 
+        //  Resid[iComp] << std::endl;
+        //Rcpp::Rcout << "CompConcStepFull[" << SpecName[iComp] << "]=" << 
+        //  CompConcStepFull[iComp] << std::endl;
+      }
+    }   
 
     // Do a full N-R step
     SpecKISTempAdjFull = clone(SpecKISTempAdj);
@@ -315,10 +338,12 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
       // Do a half-step
       StepSizeAlt = std::pow(0.5, 0.5);//this just ensures it starts at 0.5
       DoPartialSteps = true;
-    } else if (MaxErrorFull > (MaxError * 0.99)) {
+      if (QuietFlag == "Debug") { Rcpp::Rcout << "Little Step." << std::endl; }
+    } else if (MaxErrorFull > (MaxError * 0.9)) {
       // Do a double-step
       StepSizeAlt = std::pow(1.5, 0.5);
       DoPartialSteps = true;
+      if (QuietFlag == "Debug") { Rcpp::Rcout << "Big Step." << std::endl; }
     } else {
       DoPartialSteps = false;
     }

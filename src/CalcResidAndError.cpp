@@ -45,8 +45,6 @@ void CalcResidAndError(int NComp,
   for (iComp = 0; iComp < NComp; iComp++) {
     if ((CompType(iComp) == "FixedConc") || (CompType(iComp) == "FixedAct")) {
       Resid(iComp) = 0.0;
-    //} if (CompType(iComp) == "DonnanChargeBal") {
-    //  Resid(iComp) = ;
     }
   }
   

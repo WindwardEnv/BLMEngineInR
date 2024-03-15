@@ -105,8 +105,7 @@ void AdjustForWHAM(
   int iSpec;
 
   //Calculate the charge on the organic matter
-  WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr,
-                                      SpecConc * SpecCtoMAdj, 
+  WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
                                       SpecCharge, SpecMC, AqueousMC);
   WHAMSpecCharge = WHAMSpecCharge / HumicSubstGramsPerLiter;
 
@@ -335,8 +334,7 @@ void AdjustForWHAMAfterCalcSpecies(
   }
 
   //Calculate the charge on the organic matter
-  WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr,
-                                      SpecConc * SpecActivityCoef, 
+  WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
                                       SpecCharge, SpecMC, AqueousMC);
   WHAMSpecCharge = WHAMSpecCharge / HumicSubstGramsPerLiter;
 

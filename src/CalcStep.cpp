@@ -1,6 +1,7 @@
 #include <RcppArmadillo.h>
 #include "RcppArmaHelper.h"
 #include "CHESSFunctions.h"
+#include <armadillo>
 
 //' @title Calculate the Newton-Raphson step
 //'
@@ -57,7 +58,8 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   // find the matrix inverse of JacobianMatrix by SVD
   JacobianMatrixInv = SvdInverse(JacobianMatrixSolve);
   // // If we wanted to not do SVD...
-  // JacobianMatrixInv = solve(JacobianMatrix.solve)
+  //arma::mat JacobianMatSolve = RcppMatrixToMatrix(JacobianMatrixSolve);
+  //JacobianMatrixInv = MatrixToRcppMatrix(arma::inv(JacobianMatSolve));
   CompConcStepSolve = RcppMatMult(JacobianMatrixInv, ResidSolve);
   i = 0;
   for (iComp = 0; iComp < NComp; iComp++){

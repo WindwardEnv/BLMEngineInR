@@ -40,20 +40,22 @@ void AdjustForToxMode(int NBLMetal,
                       Rcpp::NumericVector SpecConc,
                       Rcpp::NumericVector &Resid,
                       Rcpp::NumericVector &CompError) {
+
   /* variables */
   double CalcCA;
   int i, iSpec;
+  
   // Adjust Resid and CompError for toxicity mode
-    CalcCA = 0;
-    
-    // Sum toxic BL-bound metal species
-    for (i = 0; i < NBLMetal; i++){
-      iSpec = BLMetalSpecs(i) - 1;
-      CalcCA += SpecConc(iSpec);
-    }
+  CalcCA = 0;
+  
+  // Sum toxic BL-bound metal species
+  for (i = 0; i < NBLMetal; i++){
+    iSpec = BLMetalSpecs[i];
+    CalcCA += SpecConc[iSpec];
+  }
 
-    // Resid and CompError for the metal component are based on these species
-    Resid(MetalComp - 1) = CalcCA - CATarget;
-    CompError(MetalComp - 1) = abs(Resid(MetalComp - 1) / CATarget);
+  // Resid and CompError for the metal component are based on these species
+  Resid[MetalComp] = CalcCA - CATarget;
+  CompError[MetalComp] = abs(Resid[MetalComp] / CATarget);
     
 }

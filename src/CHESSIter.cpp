@@ -198,11 +198,11 @@ double CHESSIter(
     CompConc[49] = 7.6671E-13;//10
     CompConc[50] = 1.7130E-12;//11
     CompConc[51] = 9.9220E-12;//12
-  } else if (false) {
+  } else if (true) {
     //LAST WHAM ITER FROM PB BLM
-    IonicStrength = 0.000534679;
-    WHAMSpecCharge[0] = -0.001055782;
-    WHAMSpecCharge[1] = -0.002757042;
+    //IonicStrength = 0.000534679;
+    //WHAMSpecCharge[0] = -0.001055782;
+    //WHAMSpecCharge[1] = -0.002757042;
     CompConc[0] = 9.59993363565727E-08;
     CompConc[1] = 3.68278171517698E-05;
     CompConc[2] = 0.000061754236008998;
@@ -214,7 +214,7 @@ double CHESSIter(
     CompConc[8] = 2.76256091289306E-08;
     CompConc[10] = 4.001807;
     CompConc[11] = 1.712652;
-    CompConc[12] = 3.90672800784937E-13;
+    /*CompConc[12] = 3.90672800784937E-13;
     CompConc[13] = 1.47731944186428E-12;
     CompConc[14] = 5.08513478543844E-12;
     CompConc[15] = 1.34857790600327E-11;
@@ -253,10 +253,8 @@ double CHESSIter(
     CompConc[48] = 1.43888965697356E-13;
     CompConc[49] = 1.43984008436532E-13;
     CompConc[50] = 1.51818397868478E-13;
-    CompConc[51] = 1.52391684761759E-13;
+    CompConc[51] = 1.52391684761759E-13;*/
   }
-
-
 
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
@@ -293,20 +291,22 @@ double CHESSIter(
                     IonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC,
                     HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED);*/
     AdjustForWHAMAfterCalcSpecies(NComp, CompType, TotConc, TotMoles, NSpec, 
-      SpecConc, SpecActivityCoef, SpecMC, SpecActCorr, SpecCharge, SpecCtoMAdj, WHAMSpecCharge, 
-      AqueousMC, HumicSubstGramsPerLiter);
+      SpecConc, SpecActivityCoef, SpecMC, SpecActCorr, SpecCharge, SpecCtoMAdj, 
+      WHAMSpecCharge, AqueousMC, HumicSubstGramsPerLiter);
     
   }       
 
-  for (int iSpec = 0; iSpec < NSpec; iSpec++){
+  /*for (int iSpec = 0; iSpec < NSpec; iSpec++){
     Rcpp::Rcout << "SpecConc[" << SpecName[iSpec] << "]=" << 
       SpecConc[iSpec] << std::endl;
-  }
+  }*/
   
 
   // Calculate the total moles & conc from species concentrations
   CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, 
                                          SpecStoich);
+  CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoMAdj, SpecStoich,
+                      CalcTotMoles, CalcTotConc);
 
   // Calculate the residuals and error fraction for each component
   CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, Resid, 

@@ -67,15 +67,18 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
                                  int NComp,
                                  int NSpec);
 
-Rcpp::NumericMatrix Jacobian (int NComp,
-                              int NSpec,
-                              Rcpp::IntegerMatrix SpecStoich,
-                              Rcpp::NumericVector SpecConc,
-                              Rcpp::NumericVector SpecCtoM,
-                              Rcpp::CharacterVector CompName,
-                              int MetalComp,
-                              int NBLMetal,
-                              Rcpp::IntegerVector BLMetalSpecs,
+Rcpp::NumericMatrix Jacobian (int NComp, //number of components
+                              int NSpec, //number of species
+                              Rcpp::CharacterVector CompName, //names of components
+                              Rcpp::IntegerMatrix SpecStoich, //formation reaction stoichiometry (NSpec x NComp)
+                              Rcpp::NumericVector SpecConc, //species concentrations
+                              Rcpp::NumericVector SpecCtoM, //concentration to mass conversion for each species
+                              Rcpp::CharacterVector SpecActCorr,
+                              Rcpp::IntegerVector SpecCharge,
+                              Rcpp::NumericVector HumicSubstGramsPerLiter,
+                              int MetalComp, //position of the metal component
+                              int NBLMetal, //number of BL-Metal species
+                              Rcpp::IntegerVector BLMetalSpecs, //positions of BL-metal species
                               bool DoTox);
 
 void UpdateTotals(int NComp, 
@@ -126,7 +129,7 @@ Rcpp::NumericVector CalcActivityCoef(int NSpec,
 
 Rcpp::NumericVector CalcWHAMSpecCharge(int NSpec, 
                                        Rcpp::CharacterVector SpecActCorr,
-                                       Rcpp::NumericVector SpecActivity,
+                                       Rcpp::NumericVector SpecConc,
                                        Rcpp::IntegerVector SpecCharge,
                                        Rcpp::IntegerVector SpecMC,
                                        int AqueousMC);

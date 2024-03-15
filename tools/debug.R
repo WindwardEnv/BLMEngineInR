@@ -10,8 +10,6 @@ devtools::load_all()
 # InputFile = "scrap/parameter file format/full_inorg.blm4"
 # ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
 # InputFile = "scrap/parameter file format/full_organic.blm4"
-# ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcCu.dat4"
-# InputFile = "scrap/parameter file format/full_organic_FixedConcCu.blm4"
 ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
 InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
 
@@ -31,7 +29,7 @@ ResultsTable <- BLM(
   DoTox = F,
   # iCA = 1L,
   QuietFlag ="Debug",
-  ConvergenceCriteria = 0.001,
+  ConvergenceCriteria = 0.0001,
   MaxIter = 30L,
   DoPartialStepsAlways = FALSE
 )

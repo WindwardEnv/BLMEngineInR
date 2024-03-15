@@ -64,12 +64,14 @@
 #'   concentration is adjusted to try to match the CATarget with BLMetalSpecs
 #' @param MetalName character string, the name of the toxic metal
 #' @param MetalComp integer, the position of the metal in the component arrays
-#'   (i.e., which is the toxic metal component) Note: this are base-1 indexed.
+#'   (i.e., which is the toxic metal component) Note: this is base-1 indexed on
+#'   input then converted.
 #' @param NBLMetal integer, the number of biotic ligand-bound metal species 
 #'   that are associated with toxic effects.
 #' @param BLMetalSpecs integer vector, the positions of the species in the
 #'   arrays which contribute to toxicity (i.e., which species are the toxic
-#'   metal bound to the relevant biotic ligand) Note: these are base-1 indexed.
+#'   metal bound to the relevant biotic ligand) Note: these are base-1 indexed
+#'   on input then converted.
 #' @param CATarget numeric, the target critical accumulation in units of mol /
 #'   kg (only used when DoTox == TRUE)
 #'

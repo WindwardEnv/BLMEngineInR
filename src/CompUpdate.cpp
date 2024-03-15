@@ -35,15 +35,14 @@ void CompUpdate(int NComp,
   // newCompConc[ltzero] = CompConc[ltzero] / 10;
 
   for (iComp = 0; iComp < NComp; iComp++){
-    oldCompConc(iComp) = CompConc(iComp);
-    if (CompConcStep(iComp) >= oldCompConc(iComp)) {
-      CompConc(iComp) = oldCompConc(iComp) / 10;
+    oldCompConc[iComp] = CompConc[iComp];
+    if (CompConcStep[iComp] >= oldCompConc[iComp]) {
+      CompConc[iComp] = oldCompConc[iComp] / 10;
     } else {
-      CompConc(iComp) = oldCompConc(iComp) - CompConcStep(iComp);
+      CompConc[iComp] = oldCompConc[iComp] - CompConcStep[iComp];
     }
-    if ((CompConc(iComp) < 1.0) && 
-        ((CompType(iComp) == "DonnanHA") || (CompType(iComp) == "DonnanFA"))) {
-      CompConc(iComp) = 1.0;
+    if (((CompType[iComp] == "DonnanHA") || (CompType[iComp] == "DonnanFA"))) {
+      if (CompConc[iComp] < 1.0) { CompConc[iComp] = 1.0; }
     }
   }//NEXT iComp
 
