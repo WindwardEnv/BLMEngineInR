@@ -75,6 +75,7 @@ double CHESSIter(
   Rcpp::IntegerVector SpecCharge,
   Rcpp::NumericVector SpecKTempAdj,
   bool DoWHAM,
+  bool UpdateZED,
   int AqueousMC,
   Rcpp::IntegerVector WHAMDonnanMC,
   Rcpp::NumericVector HumicSubstGramsPerLiter,
@@ -130,12 +131,7 @@ double CHESSIter(
   CompConc = SpecConc[CompPosInSpec];
   CompUpdate(NComp, CompConcStep, CompType, CompConc);
   SpecConc[CompPosInSpec] = clone(CompConc);
-
-  // Calculate the ionic strength and activity coefficients
-  //ChargeBalance = CalcChargeBalance(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-  //                                  SpecMC, AqueousMC);
-  IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC, SpecActCorr, true);
+  
   if (false) {
     //FIRST/INITAL WHAM ITER FROM PB BLM
     IonicStrength = 0.1;
@@ -198,11 +194,22 @@ double CHESSIter(
     CompConc[49] = 7.6671E-13;//10
     CompConc[50] = 1.7130E-12;//11
     CompConc[51] = 9.9220E-12;//12
-  } else if (true) {
+  } else if (false) {
     //LAST WHAM ITER FROM PB BLM
-    //IonicStrength = 0.000534679;
-    //WHAMSpecCharge[0] = -0.001055782;
-    //WHAMSpecCharge[1] = -0.002757042;
+    
+    WHAMSpecCharge[0] = -0.001055782;
+    WHAMSpecCharge[1] = -0.002757042;
+    MassAmtAdj[AqueousMC] =  0.999939401;
+    MassAmtAdj[WHAMDonnanMC[iHA]] = 5.65E-07;
+    MassAmtAdj[WHAMDonnanMC[iFA]] = 6.00E-05;
+    for (int iSpec = 0; iSpec < NSpec; iSpec++) {    
+      if ((SpecActCorr[iSpec] == "WHAMHA") || (SpecActCorr[iSpec] == "WHAMFA")) {
+        SpecCtoMAdj[iSpec] = MassAmt[AqueousMC];
+      } else {
+        SpecCtoMAdj[iSpec] = MassAmtAdj[SpecMC[iSpec]];
+      }
+    }	
+
     CompConc[0] = 9.59993363565727E-08;
     CompConc[1] = 3.68278171517698E-05;
     CompConc[2] = 0.000061754236008998;
@@ -214,7 +221,7 @@ double CHESSIter(
     CompConc[8] = 2.76256091289306E-08;
     CompConc[10] = 4.001807;
     CompConc[11] = 1.712652;
-    /*CompConc[12] = 3.90672800784937E-13;
+    CompConc[12] = 3.90672800784937E-13;
     CompConc[13] = 1.47731944186428E-12;
     CompConc[14] = 5.08513478543844E-12;
     CompConc[15] = 1.34857790600327E-11;
@@ -253,9 +260,21 @@ double CHESSIter(
     CompConc[48] = 1.43888965697356E-13;
     CompConc[49] = 1.43984008436532E-13;
     CompConc[50] = 1.51818397868478E-13;
-    CompConc[51] = 1.52391684761759E-13;*/
+    CompConc[51] = 1.52391684761759E-13;
+    
+    SpecConc[CompPosInSpec] = clone(CompConc);
+    IonicStrength = 0.000534679;
+    SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
+                                      IonicStrength, SysTempKelvin);
+    SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 
+                            SpecName, SpecActCorr, SpecActivityCoef);
   }
 
+  // Calculate the ionic strength and activity coefficients
+  //ChargeBalance = CalcChargeBalance(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
+  //                                  SpecMC, AqueousMC);
+  IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
+                                    SpecMC, AqueousMC, SpecActCorr, true);
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
   
@@ -266,7 +285,6 @@ double CHESSIter(
       SpecActCorr, SpecCharge, SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,
       IonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC, 
       HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED);
-
     CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
     TotMoles = TotConc * CompCtoMAdj;
   }
@@ -292,8 +310,13 @@ double CHESSIter(
                     HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED);*/
     AdjustForWHAMAfterCalcSpecies(NComp, CompType, TotConc, TotMoles, NSpec, 
       SpecConc, SpecActivityCoef, SpecMC, SpecActCorr, SpecCharge, SpecCtoMAdj, 
-      WHAMSpecCharge, AqueousMC, HumicSubstGramsPerLiter);
+      WHAMSpecCharge, AqueousMC, HumicSubstGramsPerLiter, UpdateZED);
     
+    AdjustDonnanRatio(NComp, NSpec, CompConc, CompType, TotMoles, SpecKISTempAdj,
+                      SpecStoich, SpecName, SpecActCorr, SpecActivityCoef, SpecCtoMAdj);
+    SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
+                          SpecName, SpecActCorr, SpecActivityCoef);
+
   }       
 
   /*for (int iSpec = 0; iSpec < NSpec; iSpec++){
@@ -308,9 +331,77 @@ double CHESSIter(
   CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoMAdj, SpecStoich,
                       CalcTotMoles, CalcTotConc);
 
+  double CalcTotDLCheck = 0;
+  double ZCheck = 0;
+  if (false) {
+    for (int iSpec = 0; iSpec < NSpec; iSpec++) {
+      if (((iSpec >= 12) && (iSpec <= 31)) || 
+          ((iSpec >= 124) && (iSpec <= 247))) {
+        ZCheck += ((SpecConc[iSpec] / HumicSubstGramsPerLiter[0]) * SpecCharge[iSpec]);
+      }    
+    }
+    //ZCheck = ZCheck * HumicSubstGramsPerLiter[0];
+
+    CalcTotDLCheck += SpecConc[74] * 2; //Cu
+    CalcTotDLCheck += SpecConc[75] * 2; //Ca
+    CalcTotDLCheck += SpecConc[76] * 2; //Mg
+    CalcTotDLCheck += SpecConc[77] * 1; //Na
+    CalcTotDLCheck += SpecConc[78] * 1; //K
+    CalcTotDLCheck += SpecConc[81] * 2; //CO3
+    CalcTotDLCheck += SpecConc[82] * 1;//H
+    CalcTotDLCheck += SpecConc[84] * 1;//HCO3
+    CalcTotDLCheck += SpecConc[86] * 1;//MgHCO3
+    CalcTotDLCheck += SpecConc[89] * 1;//CaHCO3
+    CalcTotDLCheck += SpecConc[92] * 1;//CuOH
+    CalcTotDLCheck += SpecConc[95] * 1;//CuCl
+    CalcTotDLCheck += SpecConc[98] * 1;//CuHCO3
+    CalcTotDLCheck *= MassAmtAdj[WHAMDonnanMC[iHA]];
+    
+    //Tmp += SpecConc[85] * 0;//H2CO3
+    //Tmp += SpecConc[87] * 0;//MgCO3
+    //Tmp += SpecConc[88] * 0;//MgSO4
+    //Tmp += SpecConc[90] * 0;//CaCO3
+    //Tmp += SpecConc[91] * 0;//CaSO4
+    //Tmp += SpecConc[93] * 0;//Cu(OH)2
+    //Tmp += SpecConc[94] * 0;//CuSO4
+    //Tmp += SpecConc[96] * 0;//CuCO3
+
+    //Tmp = 0;
+    //Tmp += SpecConc[83] * -1;//OH
+    //Tmp += SpecConc[79] * -2; //SO4
+    //Tmp += SpecConc[80] * -1; //Cl
+    //Tmp += SpecConc[97] * -2;//Cu(CO3)2
+    //Tmp = Tmp * MassAmtAdj[WHAMDonnanMC[iHA]];
+  }
+
   // Calculate the residuals and error fraction for each component
-  CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, Resid, 
-                    CompError);
+  CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, 
+                    SpecActCorr,  
+                    Resid, CompError);
+
+  if (false){
+    Rcpp::Rcout 
+      << Resid[0] << "," 
+      << Resid[10] << "," 
+      << Resid[11] << "," 
+      << Resid[12] << "," 
+      << Resid[13] << "," 
+      << Resid[17] << "," 
+      << Resid[20] << "," 
+      << Resid[22] << "," 
+      << Resid[32] << "," 
+      << Resid[33] << "," 
+      << Resid[37] << "," 
+      << Resid[40] << "," 
+      << Resid[42] << "," 
+      << WHAMSpecCharge[0] << "," 
+      << WHAMSpecCharge[1] << "," 
+      << MassAmtAdj[AqueousMC] << ","
+      << MassAmtAdj[WHAMDonnanMC[0]] << ","
+      << MassAmtAdj[WHAMDonnanMC[1]] << ","
+      << std::endl;
+  }
+  
 
   // Adjust Resid and CompError for toxicity mode
   if (DoTox) {

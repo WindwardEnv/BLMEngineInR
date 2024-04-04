@@ -34,23 +34,41 @@ void CalcResidAndError(int NComp,
                        Rcpp::NumericVector CalcTotMoles,
                        Rcpp::NumericVector TotMoles,
                        Rcpp::CharacterVector CompType,
+                       Rcpp::CharacterVector SpecActCorr,
                        Rcpp::NumericVector &Resid,
                        Rcpp::NumericVector &CompError) {
 
   /* variables: */
   int iComp; // loop counters
+  Rcpp::NumericVector TotHSMoles(2);
+  
+  TotHSMoles(iHA) = 0.0;
+  TotHSMoles(iFA) = 0.0;
+  for (iComp = 0; iComp < NComp; iComp++) {
+    if (SpecActCorr(iComp) == "WHAMHA") {
+      TotHSMoles(iHA) += TotMoles(iComp);
+    } else if (SpecActCorr(iComp) == "WHAMFA") {
+      TotHSMoles(iFA) = TotMoles(iComp);
+    }
+  }
 
   // Calculate the residuals
   Resid = CalcTotMoles - TotMoles;
-  for (iComp = 0; iComp < NComp; iComp++) {
-    if ((CompType(iComp) == "FixedConc") || (CompType(iComp) == "FixedAct")) {
-      Resid(iComp) = 0.0;
-    }
-  }
   
   // Calculate the error fraction for each component
   CompError = abs(Resid / TotMoles);
-
+  
+  for (iComp = 0; iComp < NComp; iComp++) {
+    if ((CompType(iComp) == "FixedConc") || (CompType(iComp) == "FixedAct")) {
+      Resid(iComp) = 0.0;
+      CompError(iComp) = 0.0;
+    } else if (SpecActCorr(iComp) == "WHAMHA") {
+      CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iHA]);
+    } else if (SpecActCorr(iComp) == "WHAMFA") {
+      CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iFA]);
+    }
+  }  
+  
 }
 
 

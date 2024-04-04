@@ -106,7 +106,8 @@ void AdjustForWHAM(
 
   //Calculate the charge on the organic matter
   WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
-                                      SpecCharge, SpecMC, AqueousMC);
+                                      SpecCharge, SpecMC, AqueousMC, 
+                                      HumicSubstGramsPerLiter);
   WHAMSpecCharge = WHAMSpecCharge / HumicSubstGramsPerLiter;
 
   //Adjust organic matter specific binding based on ionic strength
@@ -311,12 +312,14 @@ void AdjustForWHAMAfterCalcSpecies(
   Rcpp::NumericVector SpecCtoMAdj,  
   Rcpp::NumericVector &WHAMSpecCharge,
   int AqueousMC,
-  Rcpp::NumericVector HumicSubstGramsPerLiter
+  Rcpp::NumericVector HumicSubstGramsPerLiter,
+  bool UpdateZED
 ) {
 
   /* variables */
   int iComp;
   int iSpec;
+  Rcpp::NumericVector NewWHAMSpecCharge(2);
 
   /* The cation species concentrations should be canceled out if Z_HS is 
      positive, and anion species concentrations should be canceled out if Z_HS
@@ -325,27 +328,100 @@ void AdjustForWHAMAfterCalcSpecies(
     if ((SpecActCorr(iSpec) == "DonnanHA") && 
         (((WHAMSpecCharge(iHA) < 0) && (SpecCharge(iSpec) < 0)) || 
          ((WHAMSpecCharge(iHA) > 0) && (SpecCharge(iSpec) > 0)))) {
-      SpecConc(iSpec) = 0;
+      SpecConc[iSpec] = 0.0;
     } else if ((SpecActCorr(iSpec) == "DonnanFA") &&
                (((WHAMSpecCharge(iFA) < 0) && (SpecCharge(iSpec) < 0)) || 
                 ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
-      SpecConc(iSpec) = 0;
+      SpecConc[iSpec] = 0.0;
     }
   }
 
   //Calculate the charge on the organic matter
-  WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
-                                      SpecCharge, SpecMC, AqueousMC);
-  WHAMSpecCharge = WHAMSpecCharge / HumicSubstGramsPerLiter;
+  if (UpdateZED) {
+    NewWHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
+                                           SpecCharge, SpecMC, AqueousMC, 
+                                           HumicSubstGramsPerLiter);
+    WHAMSpecCharge(iHA) = WHAMSpecCharge(iHA) + ((NewWHAMSpecCharge(iHA) - WHAMSpecCharge(iHA)) / 5);
+    WHAMSpecCharge(iFA) = WHAMSpecCharge(iFA) + ((NewWHAMSpecCharge(iFA) - WHAMSpecCharge(iFA)) / 5);
+  }
 
   // Set -Z_HS to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
     if (CompType(iComp) == "DonnanHA") {
-      TotMoles(iComp) = abs(WHAMSpecCharge(iHA)) * HumicSubstGramsPerLiter(iHA);
-      TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
+      TotMoles[iComp] = abs(WHAMSpecCharge[iHA]) * HumicSubstGramsPerLiter[iHA];
+      TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
     } else if (CompType(iComp) == "DonnanFA") {
-      TotMoles(iComp) = abs(WHAMSpecCharge(iFA)) * HumicSubstGramsPerLiter(iFA);
-      TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
+      TotMoles[iComp] = abs(WHAMSpecCharge[iFA]) * HumicSubstGramsPerLiter[iFA];
+      TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
     }
   }
+}
+
+
+void AdjustDonnanRatio(
+  int NComp,
+  int NSpec,
+  Rcpp::NumericVector &CompConc,
+  Rcpp::CharacterVector CompType,
+  Rcpp::NumericVector TotMoles,
+  Rcpp::NumericVector SpecKISTempAdj,
+  Rcpp::IntegerMatrix SpecStoich,
+  Rcpp::CharacterVector SpecName,
+  Rcpp::CharacterVector SpecActCorr,
+  Rcpp::NumericVector SpecActivityCoef,
+  Rcpp::NumericVector SpecCtoMAdj
+) {
+
+  Rcpp::NumericVector SpecConc(NSpec);
+  Rcpp::NumericVector CalcTotMoles(NComp);
+
+  const double ConvCrit = 0.0001;
+  double DonnanChargeBalError;
+  
+
+  // Update the Donnan layers the way WHAM does it
+  for (int iComp = 0; iComp < NComp; iComp++) {
+    if ((CompType(iComp) == "DonnanHA") || (CompType(iComp) == "DonnanFA")) {
+
+      DonnanChargeBalError = ConvCrit * 999;
+      while (DonnanChargeBalError > ConvCrit) {
+
+        SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
+                              SpecName, SpecActCorr, SpecActivityCoef);
+
+        CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, 
+                                                SpecStoich);
+
+        CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
+        if (CompConc(iComp) <= 1.0) {
+          CompConc(iComp) = 1.0;
+          break;
+        }
+        //DonnanChargeBalError = pow(2 * (TotMoles(iComp) - CalcTotMoles(iComp)) / (TotMoles(iComp) + CalcTotMoles(iComp)), 2);
+        DonnanChargeBalError = abs(TotMoles(iComp) - CalcTotMoles(iComp)) / TotMoles(iComp);
+
+      }
+    } else if ((SpecActCorr(iComp) == "WHAMHA") || (SpecActCorr(iComp) == "WHAMFA")) {
+
+      DonnanChargeBalError = ConvCrit * 999;
+      while (DonnanChargeBalError > ConvCrit) {
+
+        SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
+                              SpecName, SpecActCorr, SpecActivityCoef);
+
+        CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, 
+                                                SpecStoich);
+
+        CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
+        if (CompConc(iComp) <= 0.0) {
+          CompConc(iComp) = 1.0E-20;
+          break;
+        }
+        //DonnanChargeBalError = pow(2 * (TotMoles(iComp) - CalcTotMoles(iComp)) / (TotMoles(iComp) + CalcTotMoles(iComp)), 2);
+        DonnanChargeBalError = abs(TotMoles(iComp) - CalcTotMoles(iComp)) / TotMoles(iComp);
+
+      }
+    }
+  }
+
 }

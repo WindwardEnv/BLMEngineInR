@@ -1,5 +1,5 @@
-CHESS problem defined by 'scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4' parameter file:
-(2024-03-15 16:28:33.276259)
+CHESS problem defined by 'scrap/parameter file format/full_organic_WATER23dH.dat4' parameter file:
+(2024-04-04 17:07:23.342203)
 --------------------------------------------------------------------------------
 Component List:
 Cu
@@ -434,16 +434,17 @@ FixedAct Components:
 H
 --------------------------------------------------------------------------------
 FixedConc Components:
-Cu
-Ca
-Mg
-Na
-K
-SO4
-Cl
-CO3
+
 --------------------------------------------------------------------------------
 MassBal Totals:
+T.Cu = 1 * Cu + 1 * BL1-Cu + 1 * BL1-CuOH + 1 * CuOH + 1 * Cu(OH)2 + 1 * CuSO4 + 1 * CuCl + 1 * CuCO3 + 1 * Cu(CO3)2 + 1 * CuHCO3 + 1 * DonnanHA-Cu + 1 * DonnanHA-CuOH + 1 * DonnanHA-Cu(OH)2 + 1 * DonnanHA-CuSO4 + 1 * DonnanHA-CuCl + 1 * DonnanHA-CuCO3 + 1 * DonnanHA-Cu(CO3)2 + 1 * DonnanHA-CuHCO3 + 1 * DonnanFA-Cu + 1 * DonnanFA-CuOH + 1 * DonnanFA-Cu(OH)2 + 1 * DonnanFA-CuSO4 + 1 * DonnanFA-CuCl + 1 * DonnanFA-CuCO3 + 1 * DonnanFA-Cu(CO3)2 + 1 * DonnanFA-CuHCO3 + 1 * DOC-HA_1-Cu + 1 * DOC-HA_2-Cu + 1 * DOC-HA_3-Cu + 1 * DOC-HA_4-Cu + 1 * DOC-HA_5-Cu + 1 * DOC-HA_6-Cu + 1 * DOC-HA_7-Cu + 1 * DOC-HA_8-Cu + 1 * DOC-HA_1-CuOH + 1 * DOC-HA_2-CuOH + 1 * DOC-HA_3-CuOH + 1 * DOC-HA_4-CuOH + 1 * DOC-HA_5-CuOH + 1 * DOC-HA_6-CuOH + 1 * DOC-HA_7-CuOH + 1 * DOC-HA_8-CuOH + 1 * DOC-HA_12-Cu + 1 * DOC-HA_14-Cu + 1 * DOC-HA_16-Cu + 1 * DOC-HA_18-Cu + 1 * DOC-HA_23-Cu + 1 * DOC-HA_25-Cu + 1 * DOC-HA_27-Cu + 1 * DOC-HA_34-Cu + 1 * DOC-HA_36-Cu + 1 * DOC-HA_38-Cu + 1 * DOC-HA_45-Cu + 1 * DOC-HA_47-Cu + 1 * DOC-HA_12-CuOH + 1 * DOC-HA_14-CuOH + 1 * DOC-HA_16-CuOH + 1 * DOC-HA_18-CuOH + 1 * DOC-HA_23-CuOH + 1 * DOC-HA_25-CuOH + 1 * DOC-HA_27-CuOH + 1 * DOC-HA_34-CuOH + 1 * DOC-HA_36-CuOH + 1 * DOC-HA_38-CuOH + 1 * DOC-HA_45-CuOH + 1 * DOC-HA_47-CuOH + 1 * DOC-FA_1-Cu + 1 * DOC-FA_2-Cu + 1 * DOC-FA_3-Cu + 1 * DOC-FA_4-Cu + 1 * DOC-FA_5-Cu + 1 * DOC-FA_6-Cu + 1 * DOC-FA_7-Cu + 1 * DOC-FA_8-Cu + 1 * DOC-FA_1-CuOH + 1 * DOC-FA_2-CuOH + 1 * DOC-FA_3-CuOH + 1 * DOC-FA_4-CuOH + 1 * DOC-FA_5-CuOH + 1 * DOC-FA_6-CuOH + 1 * DOC-FA_7-CuOH + 1 * DOC-FA_8-CuOH + 1 * DOC-FA_12-Cu + 1 * DOC-FA_14-Cu + 1 * DOC-FA_16-Cu + 1 * DOC-FA_18-Cu + 1 * DOC-FA_23-Cu + 1 * DOC-FA_25-Cu + 1 * DOC-FA_27-Cu + 1 * DOC-FA_34-Cu + 1 * DOC-FA_36-Cu + 1 * DOC-FA_38-Cu + 1 * DOC-FA_45-Cu + 1 * DOC-FA_47-Cu + 1 * DOC-FA_12-CuOH + 1 * DOC-FA_14-CuOH + 1 * DOC-FA_16-CuOH + 1 * DOC-FA_18-CuOH + 1 * DOC-FA_23-CuOH + 1 * DOC-FA_25-CuOH + 1 * DOC-FA_27-CuOH + 1 * DOC-FA_34-CuOH + 1 * DOC-FA_36-CuOH + 1 * DOC-FA_38-CuOH + 1 * DOC-FA_45-CuOH + 1 * DOC-FA_47-CuOH
+T.Ca = 1 * Ca + 1 * BL1-Ca + 1 * CaHCO3 + 1 * CaCO3 + 1 * CaSO4 + 1 * DonnanHA-Ca + 1 * DonnanHA-CaHCO3 + 1 * DonnanHA-CaCO3 + 1 * DonnanHA-CaSO4 + 1 * DonnanFA-Ca + 1 * DonnanFA-CaHCO3 + 1 * DonnanFA-CaCO3 + 1 * DonnanFA-CaSO4 + 1 * DOC-HA_1-Ca + 1 * DOC-HA_2-Ca + 1 * DOC-HA_3-Ca + 1 * DOC-HA_4-Ca + 1 * DOC-HA_5-Ca + 1 * DOC-HA_6-Ca + 1 * DOC-HA_7-Ca + 1 * DOC-HA_8-Ca + 1 * DOC-HA_12-Ca + 1 * DOC-HA_14-Ca + 1 * DOC-HA_16-Ca + 1 * DOC-HA_18-Ca + 1 * DOC-HA_23-Ca + 1 * DOC-HA_25-Ca + 1 * DOC-HA_27-Ca + 1 * DOC-HA_34-Ca + 1 * DOC-HA_36-Ca + 1 * DOC-HA_38-Ca + 1 * DOC-HA_45-Ca + 1 * DOC-HA_47-Ca + 1 * DOC-FA_1-Ca + 1 * DOC-FA_2-Ca + 1 * DOC-FA_3-Ca + 1 * DOC-FA_4-Ca + 1 * DOC-FA_5-Ca + 1 * DOC-FA_6-Ca + 1 * DOC-FA_7-Ca + 1 * DOC-FA_8-Ca + 1 * DOC-FA_12-Ca + 1 * DOC-FA_14-Ca + 1 * DOC-FA_16-Ca + 1 * DOC-FA_18-Ca + 1 * DOC-FA_23-Ca + 1 * DOC-FA_25-Ca + 1 * DOC-FA_27-Ca + 1 * DOC-FA_34-Ca + 1 * DOC-FA_36-Ca + 1 * DOC-FA_38-Ca + 1 * DOC-FA_45-Ca + 1 * DOC-FA_47-Ca
+T.Mg = 1 * Mg + 1 * BL1-Mg + 1 * MgHCO3 + 1 * MgCO3 + 1 * MgSO4 + 1 * DonnanHA-Mg + 1 * DonnanHA-MgHCO3 + 1 * DonnanHA-MgCO3 + 1 * DonnanHA-MgSO4 + 1 * DonnanFA-Mg + 1 * DonnanFA-MgHCO3 + 1 * DonnanFA-MgCO3 + 1 * DonnanFA-MgSO4 + 1 * DOC-HA_1-Mg + 1 * DOC-HA_2-Mg + 1 * DOC-HA_3-Mg + 1 * DOC-HA_4-Mg + 1 * DOC-HA_5-Mg + 1 * DOC-HA_6-Mg + 1 * DOC-HA_7-Mg + 1 * DOC-HA_8-Mg + 1 * DOC-HA_12-Mg + 1 * DOC-HA_14-Mg + 1 * DOC-HA_16-Mg + 1 * DOC-HA_18-Mg + 1 * DOC-HA_23-Mg + 1 * DOC-HA_25-Mg + 1 * DOC-HA_27-Mg + 1 * DOC-HA_34-Mg + 1 * DOC-HA_36-Mg + 1 * DOC-HA_38-Mg + 1 * DOC-HA_45-Mg + 1 * DOC-HA_47-Mg + 1 * DOC-FA_1-Mg + 1 * DOC-FA_2-Mg + 1 * DOC-FA_3-Mg + 1 * DOC-FA_4-Mg + 1 * DOC-FA_5-Mg + 1 * DOC-FA_6-Mg + 1 * DOC-FA_7-Mg + 1 * DOC-FA_8-Mg + 1 * DOC-FA_12-Mg + 1 * DOC-FA_14-Mg + 1 * DOC-FA_16-Mg + 1 * DOC-FA_18-Mg + 1 * DOC-FA_23-Mg + 1 * DOC-FA_25-Mg + 1 * DOC-FA_27-Mg + 1 * DOC-FA_34-Mg + 1 * DOC-FA_36-Mg + 1 * DOC-FA_38-Mg + 1 * DOC-FA_45-Mg + 1 * DOC-FA_47-Mg
+T.Na = 1 * Na + 1 * BL1-Na + 1 * DonnanHA-Na + 1 * DonnanFA-Na
+T.K = 1 * K + 1 * DonnanHA-K + 1 * DonnanFA-K
+T.SO4 = 1 * SO4 + 1 * MgSO4 + 1 * CaSO4 + 1 * CuSO4 + 1 * DonnanHA-SO4 + 1 * DonnanHA-MgSO4 + 1 * DonnanHA-CaSO4 + 1 * DonnanHA-CuSO4 + 1 * DonnanFA-SO4 + 1 * DonnanFA-MgSO4 + 1 * DonnanFA-CaSO4 + 1 * DonnanFA-CuSO4
+T.Cl = 1 * Cl + 1 * CuCl + 1 * DonnanHA-Cl + 1 * DonnanHA-CuCl + 1 * DonnanFA-Cl + 1 * DonnanFA-CuCl
+T.CO3 = 1 * CO3 + 1 * HCO3 + 1 * H2CO3 + 1 * MgHCO3 + 1 * MgCO3 + 1 * CaHCO3 + 1 * CaCO3 + 1 * CuCO3 + 2 * Cu(CO3)2 + 1 * CuHCO3 + 1 * DonnanHA-CO3 + 1 * DonnanHA-HCO3 + 1 * DonnanHA-H2CO3 + 1 * DonnanHA-MgHCO3 + 1 * DonnanHA-MgCO3 + 1 * DonnanHA-CaHCO3 + 1 * DonnanHA-CaCO3 + 1 * DonnanHA-CuCO3 + 2 * DonnanHA-Cu(CO3)2 + 1 * DonnanHA-CuHCO3 + 1 * DonnanFA-CO3 + 1 * DonnanFA-HCO3 + 1 * DonnanFA-H2CO3 + 1 * DonnanFA-MgHCO3 + 1 * DonnanFA-MgCO3 + 1 * DonnanFA-CaHCO3 + 1 * DonnanFA-CaCO3 + 1 * DonnanFA-CuCO3 + 2 * DonnanFA-Cu(CO3)2 + 1 * DonnanFA-CuHCO3
 T.BL1 = 1 * BL1 + 1 * BL1-Cu + 1 * BL1-CuOH + 1 * BL1-Ca + 1 * BL1-Mg + 1 * BL1-H + 1 * BL1-Na
 T.DOC-HA_1H = 1 * DOC-HA_1H + 1 * DOC-HA_1 + 1 * DOC-HA_1-Ca + 1 * DOC-HA_1-Cu + 1 * DOC-HA_1-CuOH + 1 * DOC-HA_1-Mg
 T.DOC-HA_2H = 1 * DOC-HA_2H + 1 * DOC-HA_2 + 1 * DOC-HA_2-Ca + 1 * DOC-HA_2-Cu + 1 * DOC-HA_2-CuOH + 1 * DOC-HA_2-Mg

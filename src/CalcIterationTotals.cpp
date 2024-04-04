@@ -43,7 +43,7 @@ void CalcIterationTotals(int NComp,
     CalcTotMoles(iComp) = 0;
     for (iSpec = 0; iSpec < NSpec; iSpec++){
       if (SpecStoich(iSpec, iComp) != 0){
-        CalcTotMoles(iComp) += SpecMoles(iSpec) * SpecStoich(iSpec, iComp);
+        CalcTotMoles(iComp) += (SpecMoles(iSpec) * SpecStoich(iSpec, iComp));
       }
     }
     CalcTotConc(iComp) = CalcTotMoles(iComp) / SpecCtoM(iComp); 

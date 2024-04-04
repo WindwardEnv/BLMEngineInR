@@ -85,7 +85,7 @@ Rcpp::NumericVector RcppMatMult(Rcpp::NumericVector A, Rcpp::NumericMatrix B){
 
 
 // specific mathy functions
-arma::mat SvdInverse(arma::mat X){
+arma::mat SvdInverse(arma::mat X) {
 
   arma::mat Xinv;
   arma::mat U, UT;

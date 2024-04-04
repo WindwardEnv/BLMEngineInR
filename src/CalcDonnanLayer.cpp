@@ -2,6 +2,52 @@
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
+
+
+
+void CalcDonnanLayerParams(int NSpec,
+                           double IonicStrength,
+                           Rcpp::NumericVector wMolWt,
+                           Rcpp::NumericVector wRadius,
+                           double wDLF,
+                           double wKZED,
+                           Rcpp::NumericVector WHAMSpecCharge,
+                           Rcpp::NumericVector HumicSubstGramsPerLiter,
+                           Rcpp::NumericVector &MaxVolDiffusePerGramHS,
+                           Rcpp::NumericVector &MaxVolDiffuse,
+                           Rcpp::NumericVector &VolDiffuse) {
+  
+  /* outputs */
+  
+  /* constants */
+  const double Avogadro = 6E+23;//6.022E+23;
+  const double pi = 3.1425;//3.14159265358979323846;
+  
+  /* variables */
+  Rcpp::NumericVector VTerm1(2), VTerm2(2), VTerm3(2), ZTerm(2);//intermediates
+  double Denom;
+  
+  // calculate the max diffuse layer volumes  
+  VTerm1 = wRadius + (3.04E-10 / sqrt(IonicStrength));
+  VTerm2 = pow(VTerm1, 3) - pow(wRadius, 3);
+  VTerm3 = (4 * pi / 3) * VTerm2;
+  MaxVolDiffusePerGramHS = Avogadro * VTerm3 * (1000 / wMolWt);
+  MaxVolDiffuse = MaxVolDiffusePerGramHS * HumicSubstGramsPerLiter;
+  ZTerm = wKZED * abs(WHAMSpecCharge);
+  MaxVolDiffuse = MaxVolDiffuse * ZTerm / (1 + ZTerm);
+  
+  // adjust for diffuse layer overlap with wDLF
+  Denom = 1 + ((MaxVolDiffuse(0) + MaxVolDiffuse(1)) / wDLF);
+  VolDiffuse = MaxVolDiffuse / Denom;
+  
+  // Volume should never be 0. We're setting a minimum value to avoid
+  // numerical issues.
+  if (VolDiffuse(iHA) < 0.0) { VolDiffuse(iHA) = 0.0; }
+  if (VolDiffuse(iFA) < 0.0) { VolDiffuse(iFA) = 0.0; }
+
+}
+
+
 //' @title Calculate the Diffuse Layer Volumes and Adjust CtoM
 //' 
 //' @description This function calculates a diffuse layer volume for the
@@ -51,39 +97,25 @@ Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
   Rcpp::NumericVector MassAmtAdj(NMass);// = SpecCtoM;
     MassAmtAdj.names() = MassAmt.names();
   
-  /* constants */
-  const double Avogadro = 6E+23;//6.022E+23;
-  const double pi = 3.1425;//3.14159265358979323846;
-  
   /* variables */
   int iMass;
-  Rcpp::NumericVector VTerm1(2), VTerm2(2), VTerm3(2), ZTerm(2);//intermediates
   Rcpp::NumericVector MaxVolDiffusePerGramHS(2);
   Rcpp::NumericVector MaxVolDiffuse(2);
   Rcpp::NumericVector VolDiffuse(2);
-  double Denom;
   double VolSolution;  
-  
-  // calculate the max diffuse layer volumes  
-  VTerm1 = wRadius + (3.04E-10 / sqrt(IonicStrength));
-  VTerm2 = pow(VTerm1, 3) - pow(wRadius, 3);
-  VTerm3 = (4 * pi / 3) * VTerm2;
-  MaxVolDiffusePerGramHS = Avogadro * VTerm3 * (1000 / wMolWt);
-  MaxVolDiffuse = MaxVolDiffusePerGramHS * HumicSubstGramsPerLiter;
-  ZTerm = wKZED * abs(WHAMSpecCharge);
-  MaxVolDiffuse = MaxVolDiffuse * ZTerm / (1 + ZTerm);
-  
-  // adjust for diffuse layer overlap with wDLF
-  Denom = 1 + ((MaxVolDiffuse(0) + MaxVolDiffuse(1)) / wDLF);
-  VolDiffuse = MaxVolDiffuse / Denom;
-  
-  // Volume should never be 0. We're setting a minimum value to avoid
-  // numerical issues.
-  if (VolDiffuse(iHA) < 0.0) { VolDiffuse(iHA) = 0.0; }
-  if (VolDiffuse(iFA) < 0.0) { VolDiffuse(iFA) = 0.0; }
 
+  CalcDonnanLayerParams(NSpec, IonicStrength, wMolWt, wRadius, wDLF, wKZED, 
+                        WHAMSpecCharge, HumicSubstGramsPerLiter, 
+                        MaxVolDiffusePerGramHS, MaxVolDiffuse, VolDiffuse);
+  
   // Update the Aqueous and Donnan mass compartments with the new volumes
   VolSolution = MassAmt[AqueousMC] - VolDiffuse(iHA) - VolDiffuse(iFA);
+
+  /*Rcpp::Rcout << "VolSolution = " << VolSolution 
+              << ", VolDiffuse[iHA] = " << VolDiffuse[iHA]              
+              << ", VolDiffuse[iFA] = " << VolDiffuse[iFA]
+              << std::endl;*/
+
   for (iMass = 0; iMass < NMass; iMass++) {
     if (iMass == AqueousMC) {
       MassAmtAdj[iMass] = VolSolution;
@@ -111,5 +143,4 @@ Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
   return MassAmtAdj;
 
 }
-
 

@@ -24,6 +24,7 @@ void CalcResidAndError(int NComp,
                        Rcpp::NumericVector CalcTotMoles,
                        Rcpp::NumericVector TotMoles,
                        Rcpp::CharacterVector CompType,
+                       Rcpp::CharacterVector SpecActCorr,
                        Rcpp::NumericVector &Resid,
                        Rcpp::NumericVector &CompError);
 
@@ -70,12 +71,26 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
 Rcpp::NumericMatrix Jacobian (int NComp, //number of components
                               int NSpec, //number of species
                               Rcpp::CharacterVector CompName, //names of components
+                              Rcpp::NumericVector TotConc,
                               Rcpp::IntegerMatrix SpecStoich, //formation reaction stoichiometry (NSpec x NComp)
                               Rcpp::NumericVector SpecConc, //species concentrations
+                              Rcpp::IntegerVector SpecMC,
                               Rcpp::NumericVector SpecCtoM, //concentration to mass conversion for each species
                               Rcpp::CharacterVector SpecActCorr,
                               Rcpp::IntegerVector SpecCharge,
+                              Rcpp::NumericVector SpecK,
+                              double IonicStrength,
+                              bool DoWHAM,
                               Rcpp::NumericVector HumicSubstGramsPerLiter,
+                              Rcpp::NumericVector WHAMSpecCharge,
+                              Rcpp::NumericVector wP,
+                              Rcpp::NumericVector wMolWt,
+                              Rcpp::NumericVector wRadius,
+                              double wDLF,
+                              double wKZED,
+                              Rcpp::NumericVector MassAmtAdj,
+                              int AqueousMC,
+                              Rcpp::IntegerVector WHAMDonnanMC,
                               int MetalComp, //position of the metal component
                               int NBLMetal, //number of BL-Metal species
                               Rcpp::IntegerVector BLMetalSpecs, //positions of BL-metal species
@@ -132,7 +147,20 @@ Rcpp::NumericVector CalcWHAMSpecCharge(int NSpec,
                                        Rcpp::NumericVector SpecConc,
                                        Rcpp::IntegerVector SpecCharge,
                                        Rcpp::IntegerVector SpecMC,
-                                       int AqueousMC);
+                                       int AqueousMC,
+                                       Rcpp::NumericVector HumicSubstGramsPerLiter);
+
+void CalcDonnanLayerParams(int NSpec,
+                           double IonicStrength,
+                           Rcpp::NumericVector wMolWt,
+                           Rcpp::NumericVector wRadius,
+                           double wDLF,
+                           double wKZED,
+                           Rcpp::NumericVector WHAMSpecCharge,
+                           Rcpp::NumericVector HumicSubstGramsPerLiter,
+                           Rcpp::NumericVector &MaxVolDiffusePerGramHS,
+                           Rcpp::NumericVector &MaxVolDiffuse,
+                           Rcpp::NumericVector &VolDiffuse);
 
 Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
                                           int NSpec,
@@ -220,7 +248,22 @@ void AdjustForWHAMAfterCalcSpecies(
   Rcpp::NumericVector SpecCtoMAdj,  
   Rcpp::NumericVector &WHAMSpecCharge,
   int AqueousMC,
-  Rcpp::NumericVector HumicSubstGramsPerLiter
+  Rcpp::NumericVector HumicSubstGramsPerLiter,
+  bool UpdateZED
+);
+
+void AdjustDonnanRatio(
+  int NComp,
+  int NSpec,
+  Rcpp::NumericVector &CompConc,
+  Rcpp::CharacterVector CompType,
+  Rcpp::NumericVector TotMoles,
+  Rcpp::NumericVector SpecKISTempAdj,
+  Rcpp::IntegerMatrix SpecStoich,
+  Rcpp::CharacterVector SpecName,
+  Rcpp::CharacterVector SpecActCorr,
+  Rcpp::NumericVector SpecActivityCoef,
+  Rcpp::NumericVector SpecCtoMAdj
 );
 
 double CHESSIter(
@@ -239,6 +282,7 @@ double CHESSIter(
   Rcpp::IntegerVector SpecCharge,
   Rcpp::NumericVector SpecKTempAdj,
   bool DoWHAM,
+  bool UpdateZED,
   int AqueousMC,
   Rcpp::IntegerVector WHAMDonnanMC,
   Rcpp::NumericVector HumicSubstGramsPerLiter,

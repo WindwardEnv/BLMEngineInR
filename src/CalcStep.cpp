@@ -25,6 +25,7 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   /* output */
   Rcpp::NumericVector CompConcStep(NComp);
   CompConcStep.names() = CompName;
+
   /* variables */
   int iComp, iComp2;
   int i, j;
@@ -35,38 +36,93 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
       NSolve++; 
     }
   }
-  Rcpp::NumericVector CompConcStepSolve(NSolve);
-  Rcpp::NumericVector ResidSolve(NSolve);
+  
+  /*Rcpp::NumericVector CompConcStepSolve(NSolve);
+  Rcpp::NumericVector ResidSolve(NSolve);  
   Rcpp::NumericMatrix JacobianMatrixSolve(NSolve, NSolve);
-  Rcpp::NumericMatrix JacobianMatrixInv(NSolve, NSolve);
+  Rcpp::NumericMatrix JacobianMatrixInv(NSolve, NSolve);*/
+
+  arma::mat ArmaCompConcStepSolve(NSolve, 1);
+  arma::mat ArmaResidSolve(NSolve, 1);
+  arma::mat ArmaJacobianMatSolve(NSolve, NSolve);
+  arma::mat ArmaJacobianMatInv(NSolve, NSolve);
+  //arma::mat ArmaResidSolve1N(1, NSolve);
+  //arma::mat ArmaCompConcStepSolve1N(1, NSolve);
+
   //Pull out sub-set that should be solved
   i = 0;
   for (iComp = 0; iComp < NComp; iComp++){
     if ((CompType(iComp) != "FixedConc") && (CompType(iComp) != "FixedAct")) {
-      ResidSolve(i) = Resid(iComp);
+      //ResidSolve(i) = Resid(iComp);
+      //ArmaResidSolve1N(0, i) = Resid(iComp);
+      ArmaResidSolve(i, 0) = Resid(iComp);
       j = 0;
       for (iComp2 = 0; iComp2 < NComp; iComp2++){
         if ((CompType(iComp2) != "FixedConc") && 
             (CompType(iComp2) != "FixedAct")) {
-          JacobianMatrixSolve(i, j) = JacobianMatrix(iComp, iComp2);
+          //JacobianMatrixSolve(i, j) = JacobianMatrix(iComp, iComp2);
+          ArmaJacobianMatSolve(i, j) = JacobianMatrix(iComp, iComp2);
           j++;
         }
       }
       i++;
     }
   }
+
+
+  /*Rcpp::Rcout << "ResidSolve = [" << ResidSolve << "]" << std::endl;
+  std::cout << "ArmaResidSolve = [";
+  for (i = 0; i < NSolve; i++) {
+    if (i != 0) { std::cout << " "; }
+    std::cout << ArmaResidSolve(i, 0);
+  }
+  std::cout << "]" << std::endl;
+
+  Rcpp::Rcout << "JacobianMatrixSolve = [" << JacobianMatrixSolve << "]" << std::endl;
+  std::cout << "ArmaJacobianMatSolve = [";
+  for (i = 0; i < NSolve; i++) {
+    if (i != 0) { std::cout << std::endl; }
+    for (j = 0; j < NSolve; j++) {
+      if (j != 0) { std::cout << " "; }
+      std::cout << ArmaJacobianMatSolve(i, j);
+    }
+  }
+  std::cout << "]" << std::endl;
+
   // find the matrix inverse of JacobianMatrix by SVD
   JacobianMatrixInv = SvdInverse(JacobianMatrixSolve);
   // // If we wanted to not do SVD...
   //arma::mat JacobianMatSolve = RcppMatrixToMatrix(JacobianMatrixSolve);
   //JacobianMatrixInv = MatrixToRcppMatrix(arma::inv(JacobianMatSolve));
-  CompConcStepSolve = RcppMatMult(JacobianMatrixInv, ResidSolve);
+  CompConcStepSolve = RcppMatMult(JacobianMatrixInv, ResidSolve); */
+  
+  // Doing the calculations with Armadillo classes
+  ArmaJacobianMatInv = SvdInverse(ArmaJacobianMatSolve);
+  ArmaCompConcStepSolve = ArmaJacobianMatInv * ArmaResidSolve;
+  //ArmaCompConcStepSolve1N = ArmaResidSolve1N * ArmaJacobianMatInv;
+  
+  /*Rcpp::Rcout << "CompConcStepSolve = [" << CompConcStepSolve << "]" << std::endl;
+  std::cout << "ArmaCompConcStepSolve = [";
+  for (i = 0; i < NSolve; i++) {
+    if (i != 0) { std::cout << " "; }
+    std::cout << ArmaCompConcStepSolve(i, 0);
+  }
+  std::cout << "]" << std::endl;*/
+  /*std::cout << "ArmaCompConcStepSolve1N = [";
+  for (i = 0; i < NSolve; i++) {
+    if (i != 0) { std::cout << " "; }
+    std::cout << ArmaCompConcStepSolve1N(0, i);
+  }
+  std::cout << "]" << std::endl;*/
+
   i = 0;
   for (iComp = 0; iComp < NComp; iComp++){
     if ((CompType(iComp) == "FixedConc") || (CompType(iComp) == "FixedAct")) {
       CompConcStep(iComp) = 0;
     } else {
-      CompConcStep(iComp) = CompConcStepSolve(i);
+      //CompConcStep(iComp) = CompConcStepSolve(i);      
+      CompConcStep(iComp) = ArmaCompConcStepSolve(i, 0);
+      //CompConcStep(iComp) = ArmaCompConcStepSolve1N(0, i);
       i++;
     }
   }
