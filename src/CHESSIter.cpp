@@ -285,8 +285,8 @@ double CHESSIter(
       SpecActCorr, SpecCharge, SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,
       IonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC, 
       HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED);
-    CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
-    TotMoles = TotConc * CompCtoMAdj;
+    //CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
+    //TotMoles = TotConc * CompCtoM;Adj;
   }
 
   //for (int iSpec = 0; iSpec < NSpec; iSpec++){
@@ -312,10 +312,10 @@ double CHESSIter(
       SpecConc, SpecActivityCoef, SpecMC, SpecActCorr, SpecCharge, SpecCtoMAdj, 
       WHAMSpecCharge, AqueousMC, HumicSubstGramsPerLiter, UpdateZED);
     
-    AdjustDonnanRatio(NComp, NSpec, CompConc, CompType, TotMoles, SpecKISTempAdj,
-                      SpecStoich, SpecName, SpecActCorr, SpecActivityCoef, SpecCtoMAdj);
-    SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                          SpecName, SpecActCorr, SpecActivityCoef);
+    //AdjustDonnanRatio(NComp, NSpec, CompConc, CompType, TotMoles, SpecKISTempAdj,
+    //                  SpecStoich, SpecName, SpecActCorr, SpecActivityCoef, SpecCtoMAdj);
+    //SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
+    //                      SpecName, SpecActCorr, SpecActivityCoef);
 
   }       
 

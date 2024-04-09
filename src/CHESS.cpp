@@ -103,7 +103,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::NumericVector TotConc,
                  int NSpec,
                  Rcpp::CharacterVector SpecName,
-                 Rcpp::IntegerVector SpecMC,
+                 Rcpp::IntegerVector SpecMCR,
                  Rcpp::NumericVector SpecK,
                  Rcpp::NumericVector SpecTempKelvin,
                  Rcpp::NumericVector SpecDeltaH,
@@ -111,8 +111,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::IntegerVector SpecCharge,
                  Rcpp::CharacterVector SpecActCorr,
                  bool DoWHAM,
-                 int AqueousMC,
-                 Rcpp::IntegerVector WHAMDonnanMC,
+                 int AqueousMCR,
+                 Rcpp::IntegerVector WHAMDonnanMCR,
                  Rcpp::NumericVector HumicSubstGramsPerLiter,
                  Rcpp::NumericVector wMolWt,
                  Rcpp::NumericVector wRadius,
@@ -122,9 +122,9 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  double SysTempKelvin,
                  bool DoTox,
                  Rcpp::String MetalName,
-                 int MetalComp,
+                 int MetalCompR,
                  int NBLMetal,
-                 Rcpp::IntegerVector BLMetalSpecs,
+                 Rcpp::IntegerVector BLMetalSpecsR,
                  double CATarget) {
 
   /*outputs*/
@@ -168,6 +168,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::NumericVector CompError(NComp);
     CompError.names() = CompName;
   Rcpp::NumericMatrix JacobianMatrix(NComp);
+  Rcpp::NumericMatrix NumericalJacobianMatrix(NComp);
 
   bool DoPartialSteps;
 
@@ -227,14 +228,12 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   double CompChangeAmt = 0.0;
   
   // Initialize some variables
-  for (iComp = 0; iComp < NComp; iComp++) {
-    CompPosInSpec(iComp) = iComp;
-  }
-  SpecMC = SpecMC - 1;
-  AqueousMC = AqueousMC - 1;
-  WHAMDonnanMC = WHAMDonnanMC - 1;
-  MetalComp = MetalComp - 1;
-  BLMetalSpecs = BLMetalSpecs - 1;
+  for (iComp = 0; iComp < NComp; iComp++) { CompPosInSpec(iComp) = iComp; }
+  Rcpp::IntegerVector SpecMC = clone(SpecMCR) - 1;
+  int AqueousMC = AqueousMCR - 1;
+  Rcpp::IntegerVector WHAMDonnanMC = clone(WHAMDonnanMCR) - 1;
+  int MetalComp = MetalCompR - 1;
+  Rcpp::IntegerVector BLMetalSpecs = clone(BLMetalSpecsR) - 1;
   MassAmtAdj = clone(MassAmt);
   SpecCtoM = MassAmtAdj[SpecMC];
   SpecCtoMAdj = clone(SpecCtoM);
@@ -374,7 +373,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
     // update the iteration counter
     Iter++;
-    UpdateZED = !UpdateZED;
+    UpdateZED = true;//!UpdateZED;
     
     // Calculate the Jacobian Matrix
     JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
@@ -384,6 +383,15 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                               wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
                               AqueousMC, WHAMDonnanMC,  MetalComp, NBLMetal, BLMetalSpecs, 
                               DoTox);
+    NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
+                       CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
+                       SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
+                       WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
+                       wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
+                       MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
+                       TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
+                       SpecActivityCoef, WHAMSpecCharge,
+                       IonicStrength, Resid);
 
     if (false) {
 
@@ -672,12 +680,15 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
     } else {
       // Calculate the Newton-Raphson step
-      CompConcStepFull = CalcStep(JacobianMatrix, Resid, NComp, CompType, CompName);
+      CompConcStepFull = CalcStep(JacobianMatrix, Resid, 
+                                  CompConc, TotMoles, CalcTotMoles, 
+                                  NComp, CompType, CompName);
     }
 
 
     if (QuietFlag == "Debug") {
       Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
+      Rcpp::Rcout << "NumericalJacobianMatrix = [" <<std::endl << NumericalJacobianMatrix << "]" << std::endl;
       Rcpp::Rcout << "iComp\tSpecName\tSpecConc\tResid\tError\tStep" << std::endl;
       for (iComp = 0; iComp < NComp; iComp++) {
         Rcpp::Rcout << iComp << "\t" 
@@ -709,6 +720,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                         DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
                         wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
                         MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
+                        //parameters that are modified and returned:
                         MassAmtAdjFull, TotConcFull, TotMolesFull, SpecKISTempAdjFull, 
                         SpecCtoMAdjFull, SpecConcFull, SpecActivityCoefFull,
                         CalcTotMolesFull, WHAMSpecChargeFull, WhichMaxFull, 
@@ -855,9 +867,9 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     }
     
     SpecMoles = SpecConc * SpecCtoMAdj;
-    CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
+    //CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
     //TotMoles = TotConc * CompCtoMAdj;
-    CalcTotConc = CalcTotMoles / CompCtoMAdj;
+    CalcTotConc = CalcTotMoles / CompCtoM;//Adj;
 
   } // while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
 

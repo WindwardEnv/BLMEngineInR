@@ -375,22 +375,30 @@ void AdjustDonnanRatio(
   Rcpp::NumericVector SpecConc(NSpec);
   Rcpp::NumericVector CalcTotMoles(NComp);
 
-  const double ConvCrit = 0.0001;
+  const double ConvCrit = 0.000001;
+  const int MaxIter = 10;
   double DonnanChargeBalError;
-  
+  int iComp, iSpec, Iter;
+
 
   // Update the Donnan layers the way WHAM does it
-  for (int iComp = 0; iComp < NComp; iComp++) {
+  for (iComp = 0; iComp < NComp; iComp++) {
+    Iter = 0;
     if ((CompType(iComp) == "DonnanHA") || (CompType(iComp) == "DonnanFA")) {
 
       DonnanChargeBalError = ConvCrit * 999;
-      while (DonnanChargeBalError > ConvCrit) {
-
+      while ((DonnanChargeBalError > ConvCrit) && (Iter < MaxIter)) {
+        Iter++;
         SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                              SpecName, SpecActCorr, SpecActivityCoef);
-
-        CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, 
-                                                SpecStoich);
+                                SpecName, SpecActCorr, SpecActivityCoef);
+        
+        CalcTotMoles(iComp) = 0;
+        for (iSpec = 0; iSpec < NSpec; iSpec++){
+          if (SpecStoich(iSpec, iComp) != 0) {
+            CalcTotMoles(iComp) += SpecConc(iSpec) * SpecCtoMAdj(iSpec) * SpecStoich(iSpec, iComp);
+          }
+        }
+        //CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, SpecStoich);
 
         CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
         if (CompConc(iComp) <= 1.0) {
@@ -404,13 +412,18 @@ void AdjustDonnanRatio(
     } else if ((SpecActCorr(iComp) == "WHAMHA") || (SpecActCorr(iComp) == "WHAMFA")) {
 
       DonnanChargeBalError = ConvCrit * 999;
-      while (DonnanChargeBalError > ConvCrit) {
-
+      while ((DonnanChargeBalError > ConvCrit) && (Iter < MaxIter)) {
+        Iter++;
         SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                              SpecName, SpecActCorr, SpecActivityCoef);
+                                SpecName, SpecActCorr, SpecActivityCoef);
 
-        CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, 
-                                                SpecStoich);
+        CalcTotMoles(iComp) = 0;
+        for (iSpec = 0; iSpec < NSpec; iSpec++){
+          if (SpecStoich(iSpec, iComp) != 0) {
+            CalcTotMoles(iComp) += SpecConc(iSpec) * SpecCtoMAdj(iSpec) * SpecStoich(iSpec, iComp);
+          }
+        }
+        //CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, SpecStoich);
 
         CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
         if (CompConc(iComp) <= 0.0) {

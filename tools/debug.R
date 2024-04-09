@@ -3,18 +3,26 @@ rm(list = ls())
 devtools::load_all()
 
 
-# ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
-# InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
+ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
+InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
 
 # ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
 # # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
 # InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 
-ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
-InputFile = "scrap/parameter file format/full_organic.blm4"
+# ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+# InputFile = "scrap/parameter file format/full_organic.blm4"
 
 # ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
 # InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
+
+DoTox = F
+iCA = 1L
+QuietFlag ="Debug"
+ConvergenceCriteria = 0.0001
+MaxIter = 100L
+DoPartialStepsAlways = FALSE
+
 
 ThisProblem = DefineProblem(ParamFile, WriteLog = TRUE)
 
@@ -40,23 +48,30 @@ ResultsTable <- BLM(
 end.time = Sys.time()
 end.time - start.time
 #
-# ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
+ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
 #
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
-# ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
+ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
 # iObs = which((ResultsTable$FinalIter < 30) & !is.na(ResultsTable$FinalMaxError))[1]
 # ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]
 # ResultsTable[, c("ID2","T.Cu (mol/L)","T.Cu (mol)","Water (L)", "Water_DonnanHA (L)","Water_DonnanFA (L)")]
-#
-#
-#
-#
-#
-# OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx",
-#                                          sheet = 1, rows = c(5, 7:55))
-# OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
-# OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
-#
+
+
+
+
+
+OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx",
+                                         sheet = 1, rows = c(5, 7:55))
+OldBLMResultsTable$Obs = 1:nrow(OldBLMResultsTable)
+OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
+OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
+colnames(OldBLMResultsTable)[paste0(colnames(OldBLMResultsTable), " (mol/L)") %in% colnames(ResultsTable)] =
+  paste0(colnames(OldBLMResultsTable)[paste0(colnames(OldBLMResultsTable), " (mol/L)") %in% colnames(ResultsTable)], " (mol/L)")
+OldBLMResultsTable$`DonnanHA (mol/L)` = OldBLMResultsTable$Ratio_HS
+OldBLMResultsTable$`DonnanFA (mol/L)` = OldBLMResultsTable$Ratio_FS
+OldBLMResultsTable$Z_HA = OldBLMResultsTable$Z_HS
+OldBLMResultsTable$Z_FA = OldBLMResultsTable$Z_FS
+
 # ResultsTable[iObs, c("IonicStrength", "Water_DonnanHA (L)","Water_DonnanFA (L)",
 #                      "DonnanHA (mol/L)","DonnanFA (mol/L)")]
 # OldBLMResultsTable[iObs, c("Ionic.S.", "DDLMaxV_HS", "DDLMaxV_FS", "Ratio_HS", "Ratio_FS")]
@@ -64,7 +79,7 @@ end.time - start.time
 # IS = 0
 # for (iSpec in 1:ThisProblem$NSpec){
 #   tmp = ResultsTable[iObs, paste0(ThisProblem$SpecName[iSpec],
-#                                   " (mol/", ThisProblem$MassUnit[ThisProblem$SpecMC[iSpec]], ")")] *
+#                                   " (mol/", ThisProblem$MassUnit[ThisProblem$SpecMCR[iSpec]], ")")] *
 #     ThisProblem$SpecCharge[iSpec] ^ 2
 #   # if (iSpec %in% c(11, 75:91)) {
 #   #   tmp = tmp * 2.598275e-05
@@ -93,7 +108,7 @@ end.time - start.time
 #
 # OldBLMResultsTable$TOrg.Cu[iObs]
 # ResultsTable$`TOrg.Cu (mol/L)`[iObs]
-#
+
 # par(mar = c(5,15,1,1))
 # barplot(as.matrix(ResultsTable[iObs, Org.Cu.cols[grepl("Donnan", Org.Cu.cols)]]), horiz = TRUE, las = 2)
 # abline(v = OldBLMResultsTable$TOrg.Cu[iObs], col = "red")
@@ -110,74 +125,111 @@ end.time - start.time
 # ResultsTable[, c("ID","ID2","T.Cu","Cu","TOrg.Cu","DDL.Na")]
 # OldBLMResultsTable[, c("ID","ID2","T.Cu","Cu","TOrg.Cu","DDL.Na")]
 # OldBLMResultsTable$Act.OH = OldBLMResultsTable$OH
-#
-#
-# ResultsTable$SerLab = ""
-# ResultsTable$SerLab[grepl("Hard ser", ResultsTable$ID2)] =
-#   round((ResultsTable$T.Ca + ResultsTable$T.Mg) * 100086, 0)[grepl("Hard ser", ResultsTable$ID2)]
-# ResultsTable$SerLab[grepl("pH ser", ResultsTable$ID2)] =
-#   ResultsTable$pH[grepl("pH ser", ResultsTable$ID2)]
-# ResultsTable$SerLab[grepl("Temp ser", ResultsTable$ID2)] =
-#   ResultsTable$Temp[grepl("Temp ser", ResultsTable$ID2)]
-# ResultsTable$SerLab[grepl("DOC ser", ResultsTable$ID2)] =
-#   ResultsTable$DOC[grepl("DOC ser", ResultsTable$ID2)]
-#
-# ResultsTable$Ser = gsub("ser .+","ser", ResultsTable$ID2)
-# leg.dat = data.frame(
-#   Ser = c("Hard ser", "DOC ser", "pH ser", "Temp ser",
-#           "hi DOC Hard ser", "hi DOC pH ser", "hi DOC Temp ser"),
-#   col = 2:8
-# )
-# ResultsTable$col = leg.dat$col[match(ResultsTable$Ser, leg.dat$Ser)]
-#
-#
-# if (FALSE) {
-#
-#   log10(OldBLMResultsTable$Act.OH * ResultsTable$Act.H)[24:29]
-#
-#   SysTempKelvin = (ResultsTable$Temp + 273.15)
-#
-#   T1 = 1 / SysTempKelvin
-#   T0 = 1 / 298.15
-#   SpecK = 10^-14.03541
-#   Rcon = 8.314
-#   SpecDeltaH = 56190#-56197
-#   T2 = SpecDeltaH * (T0 - T1) / Rcon
-#   log10(SpecK * exp(T2))[24:29]
-#
-#   OldBLMResultsTable = OldBLMResultsTable[!grepl("DOC ser", OldBLMResultsTable$ID2), ]
-#   ResultsTable = ResultsTable[!grepl("DOC ser", ResultsTable$ID2), ]
-#
-#
-#   pdf("scrap/speciation comparison.pdf")
-#   par(omi = rep(1, 4))
-#   # for (i.col in c("TOrg.Cu", "Cu", "CO3", "HCO3","Act.OH", "CuOH","Cu(OH)2")){
-#   for (i.col in intersect(colnames(ResultsTable), colnames(OldBLMResultsTable))){
-#     if (all(!is.na(is.numeric(ResultsTable[,i.col]))) &&
-#         !grepl("T[.]", i.col) &&
-#         (i.col %in% c("ID","ID2","#.Iter.", "DDL.Na", "TOrg.Cu") == FALSE)){
-#       ax.lim = range(OldBLMResultsTable[, i.col], na.rm = T)
-#       ax.lim[1] = 10^(floor(log10(ax.lim[1])))
-#       ax.lim[2] = 10^(ceiling(log10(ax.lim[2])))
-#       plot(x = OldBLMResultsTable[,i.col],
-#            y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable[,i.col])),
-#            col = c(rep(2, 7), rep(4, 7), rep(5, 6)),
-#            pch = ifelse(ResultsTable[,i.col] < ax.lim[1], 6,
-#                         ifelse(ResultsTable[,i.col] > ax.lim[2], 2, 16)),
-#            main = i.col, xlab = "BLM Version 3.41.2.45",
-#            ylab = "BLM in R",
-#            log = "xy", xlim = ax.lim, ylim = ax.lim, las = 2)
-#       text(x = OldBLMResultsTable[,i.col],
-#            y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable[,i.col])),
-#            labels =ResultsTable$SerLab,
-#            col = c(rep(2, 7), rep(4, 7), rep(5, 6)),
-#            pos = 3, cex = 0.5)
-#       abline(a = 0, b = 1)
-#       legend("topleft", legend = c("Hard ser", "pH ser", "Temp ser"), pch = 16, col = c(2,4,5))
-#     }
-#   }
-#   dev.off()
-# }
+
+
+ResultsTable$SerLab = gsub(".+ ([0-9.]+)$", "\\1", ResultsTable$ID2)
+ResultsTable$Ser = gsub("ser .+","ser", ResultsTable$ID2)
+leg.dat = data.frame(
+  Ser = c("Hard ser", "DOC ser", "pH ser", "Temp ser",
+          "hi DOC Hard ser", "hi DOC pH ser", "hi DOC Temp ser"),
+  col = 2:8
+)
+ResultsTable$col = leg.dat$col[match(ResultsTable$Ser, leg.dat$Ser)]
+
+for (i.col in intersect(colnames(ResultsTable),
+                        colnames(OldBLMResultsTable))) {
+  if (all(!is.na(is.numeric(ResultsTable[,i.col]))) &&
+      !grepl("T[.]", i.col) &&
+      (i.col %in% c("Obs","ID","ID2","#.Iter.", "DDL.Na") == FALSE)) {
+
+    ResultsTable[is.infinite(ResultsTable[, i.col]), i.col] = NA
+
+    ax.lim = range(OldBLMResultsTable[, i.col], na.rm = T)
+    if (all(ax.lim > 0)) {
+      ax.lim[1] = 10^(floor(log10(ax.lim[1])))
+      ax.lim[2] = 10^(ceiling(log10(ax.lim[2])))
+    } else {
+      ax.lim = c(min(pretty(ax.lim)),
+                 max(pretty(ax.lim)))
+    }
+
+    layout(matrix(1:2, ncol = 2), widths = c(1, lcm(3)))
+    par(mar = c(5,5,2,1))
+    plot(x = OldBLMResultsTable[,i.col],
+         y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable[,i.col])),
+         col = ResultsTable$col,
+         pch = ifelse(ResultsTable[, i.col] < ax.lim[1], 6,
+                      ifelse(ResultsTable[, i.col] > ax.lim[2], 2, 16)),
+         main = i.col,
+         xlab = "BLM Version 3.41.2.45",
+         ylab = "BLM in R",
+         log = ifelse(any(ax.lim<=0), "","xy"),
+         xlim = ax.lim,
+         ylim = ax.lim,
+         las = 2)
+    grid(nx = 5, ny = 5)
+    text(x = OldBLMResultsTable[, i.col],
+         y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable[, i.col])),
+         labels = ResultsTable$SerLab,
+         col = ResultsTable$col,
+         pos = 3,
+         cex = 0.5)
+    abline(a = 0, b = 1)
+
+    par(mar = c(0,0,2,0))
+    plot.new()
+    legend("topleft", legend = leg.dat$Ser, pch = 16, col = leg.dat$col)
+  }
+}
+
+
+if (FALSE) {
+
+  # log10(OldBLMResultsTable$Act.OH * ResultsTable$Act.H)[24:29]
+  #
+  # SysTempKelvin = (ResultsTable$Temp + 273.15)
+  #
+  # T1 = 1 / SysTempKelvin
+  # T0 = 1 / 298.15
+  # SpecK = 10^-14.03541
+  # Rcon = 8.314
+  # SpecDeltaH = 56190#-56197
+  # T2 = SpecDeltaH * (T0 - T1) / Rcon
+  # log10(SpecK * exp(T2))[24:29]
+  #
+  # OldBLMResultsTable = OldBLMResultsTable[!grepl("DOC ser", OldBLMResultsTable$ID2), ]
+  # ResultsTable = ResultsTable[!grepl("DOC ser", ResultsTable$ID2), ]
+
+
+  pdf("scrap/speciation comparison.pdf")
+  par(omi = rep(1, 4))
+  # for (i.col in c("TOrg.Cu", "Cu", "CO3", "HCO3","Act.OH", "CuOH","Cu(OH)2")){
+  for (i.col in intersect(colnames(ResultsTable), colnames(OldBLMResultsTable))){
+    if (all(!is.na(is.numeric(ResultsTable[,i.col]))) &&
+        !grepl("T[.]", i.col) &&
+        (i.col %in% c("ID","ID2","#.Iter.", "DDL.Na", "TOrg.Cu") == FALSE)){
+      ax.lim = range(OldBLMResultsTable[, i.col], na.rm = T)
+      ax.lim[1] = 10^(floor(log10(ax.lim[1])))
+      ax.lim[2] = 10^(ceiling(log10(ax.lim[2])))
+      plot(x = OldBLMResultsTable[,i.col],
+           y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable[,i.col])),
+           col = c(rep(2, 7), rep(4, 7), rep(5, 6)),
+           pch = ifelse(ResultsTable[,i.col] < ax.lim[1], 6,
+                        ifelse(ResultsTable[,i.col] > ax.lim[2], 2, 16)),
+           main = i.col, xlab = "BLM Version 3.41.2.45",
+           ylab = "BLM in R",
+           log = "xy", xlim = ax.lim, ylim = ax.lim, las = 2)
+      text(x = OldBLMResultsTable[,i.col],
+           y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable[,i.col])),
+           labels =ResultsTable$SerLab,
+           col = c(rep(2, 7), rep(4, 7), rep(5, 6)),
+           pos = 3, cex = 0.5)
+      abline(a = 0, b = 1)
+      legend("topleft", legend = c("Hard ser", "pH ser", "Temp ser"), pch = 16, col = c(2,4,5))
+    }
+  }
+  dev.off()
+}
 #
 # plot(x = ResultsTable$DOC, y = ResultsTable$Cu, type = "o", ylim = c(10^-10, 10^0), log = "y")
 # lines(x = ResultsTable$DOC, y = ResultsTable$`DonnanFA-Cu`, type = "o", col = 2)

@@ -49,10 +49,13 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
                                  Rcpp::NumericVector SpecActivityCoef);
 
 Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
-                              Rcpp::NumericVector Resid,
-                              int NComp,
-                              Rcpp::CharacterVector CompType,
-                              Rcpp::CharacterVector CompName);
+                             Rcpp::NumericVector Resid,
+                             Rcpp::NumericVector CompConc,
+                             Rcpp::NumericVector TotMoles,
+                             Rcpp::NumericVector CalcTotMoles,
+                             int NComp,
+                             Rcpp::CharacterVector CompType,
+                             Rcpp::CharacterVector CompName);
 
 void CompUpdate(int NComp, 
                 Rcpp::NumericVector CompConcStep,
@@ -95,6 +98,48 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
                               int NBLMetal, //number of BL-Metal species
                               Rcpp::IntegerVector BLMetalSpecs, //positions of BL-metal species
                               bool DoTox);
+
+Rcpp::NumericMatrix NumericalJacobian(
+  int NMass,
+  Rcpp::NumericVector MassAmt,
+  int NComp,
+  Rcpp::CharacterVector CompName,
+  Rcpp::CharacterVector CompType,
+  Rcpp::IntegerVector CompPosInSpec,
+  int NSpec,
+  Rcpp::CharacterVector SpecName,
+  Rcpp::IntegerVector SpecMC,
+  Rcpp::CharacterVector SpecActCorr,
+  Rcpp::IntegerMatrix SpecStoich,
+  Rcpp::IntegerVector SpecCharge,
+  Rcpp::NumericVector SpecKTempAdj,
+  bool DoWHAM,
+  bool UpdateZED,
+  int AqueousMC,
+  Rcpp::IntegerVector WHAMDonnanMC,
+  Rcpp::NumericVector HumicSubstGramsPerLiter,
+  Rcpp::NumericVector wMolWt,
+  Rcpp::NumericVector wRadius,
+  Rcpp::NumericVector wP,
+  double wDLF,
+  double wKZED,
+  double SysTempKelvin,
+  bool DoTox,
+  Rcpp::String MetalName,
+  int MetalComp,
+  int NBLMetal,
+  Rcpp::IntegerVector BLMetalSpecs,
+  double CATarget,
+  Rcpp::NumericVector MassAmtAdj,
+  Rcpp::NumericVector TotConc,
+  Rcpp::NumericVector TotMoles,
+  Rcpp::NumericVector SpecKISTempAdj,
+  Rcpp::NumericVector SpecCtoMAdj,
+  Rcpp::NumericVector SpecConc,
+  Rcpp::NumericVector SpecActivityCoef,
+  Rcpp::NumericVector WHAMSpecCharge,
+  double IonicStrength,
+  Rcpp::NumericVector Resid) ;
 
 void UpdateTotals(int NComp, 
                   int NSpec, 

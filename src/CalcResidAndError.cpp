@@ -40,7 +40,7 @@ void CalcResidAndError(int NComp,
 
   /* variables: */
   int iComp; // loop counters
-  Rcpp::NumericVector TotHSMoles(2);
+  /*Rcpp::NumericVector TotHSMoles(2);
   
   TotHSMoles(iHA) = 0.0;
   TotHSMoles(iFA) = 0.0;
@@ -50,7 +50,7 @@ void CalcResidAndError(int NComp,
     } else if (SpecActCorr(iComp) == "WHAMFA") {
       TotHSMoles(iFA) = TotMoles(iComp);
     }
-  }
+  }*/
 
   // Calculate the residuals
   Resid = CalcTotMoles - TotMoles;
@@ -62,10 +62,10 @@ void CalcResidAndError(int NComp,
     if ((CompType(iComp) == "FixedConc") || (CompType(iComp) == "FixedAct")) {
       Resid(iComp) = 0.0;
       CompError(iComp) = 0.0;
-    } else if (SpecActCorr(iComp) == "WHAMHA") {
-      CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iHA]);
-    } else if (SpecActCorr(iComp) == "WHAMFA") {
-      CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iFA]);
+    //} else if (SpecActCorr(iComp) == "WHAMHA") {
+    //  CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iHA]);
+    //} else if (SpecActCorr(iComp) == "WHAMFA") {
+    //  CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iFA]);
     }
   }  
   

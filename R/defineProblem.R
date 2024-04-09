@@ -44,16 +44,16 @@
 #'  \item{\code{MassName, MassAmt, MassUnit}}{The name, amount, and units for
 #'    each mass compartment.}
 #'  \item{\code{InLabName}}{The names of the input label fields.}
-#'  \item{\code{InVarName, InVarMC, InVarType}}{The name, mass compartment
+#'  \item{\code{InVarName, InVarMCR, InVarType}}{The name, mass compartment
 #'    number, and type of each input variable.}
 #'  \item{\code{InCompName}}{The names of the input components.}
-#'  \item{\code{CompName, CompCharge, CompMC, CompType, CompActCorr,
+#'  \item{\code{CompName, CompCharge, CompMCR, CompType, CompActCorr,
 #'    CompSiteDens}}{The names, charges, mass compartments, types, activity
 #'    correction methods, and site densities of each component.}
 #'  \item{\code{DefCompName, DefCompFromNum, DefCompFromVar, DefCompCharge,
-#'    DefCompMC, DefCompType, DefCompActCorr, DefCompSiteDens}}{The ... of
+#'    DefCompMCR, DefCompType, DefCompActCorr, DefCompSiteDens}}{The ... of
 #'    defined components.}
-#'  \item{\code{SpecName, SpecMC, SpecActCorr, SpecNC, SpecCompList, SpecStoich,
+#'  \item{\code{SpecName, SpecMCR, SpecActCorr, SpecNC, SpecCompList, SpecStoich,
 #'    SpecLogK, SpecDeltaH, SpecTempKelvin, SpecCtoM, SpecCharge}}{The...of species
 #'    formation reactions}
 #'  \item{\code{PhaseName, PhaseNC, PhaseCompList, PhaseStoich, PhaseLogK,
@@ -112,8 +112,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   MassName = as.character(trimws(Tmp[, 1]))
   MassAmt = as.numeric(Tmp[, 2])
   MassUnit = as.character(trimws(Tmp[, 3]))
-  AqueousMC = which(tolower(MassName) %in% c("water", "aqueous"))
-  BioticLigMC = which(grepl("BL", MassName, ignore.case = TRUE) |
+  AqueousMCR = which(tolower(MassName) %in% c("water", "aqueous"))
+  BioticLigMCR = which(grepl("BL", MassName, ignore.case = TRUE) |
                         grepl("gill", MassName, ignore.case = TRUE))
 
   # read input Labels
@@ -127,11 +127,11 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                  nrows = NInVar, strip.white = TRUE)
   InVarName = as.character(trimws(Tmp[, 1]))
-  InVarMC = as.character(trimws(Tmp[, 2]))
-  InVarMC = match(trimws(Tmp[, 2]), MassName)
+  InVarMCR = as.character(trimws(Tmp[, 2]))
+  InVarMCR = match(trimws(Tmp[, 2]), MassName)
   InVarType = as.character(trimws(Tmp[, 3]))
   stopifnot(!any(duplicated(InVarName)))
-  stopifnot(all(!is.na(InVarMC)))
+  stopifnot(all(!is.na(InVarMCR)))
   stopifnot(all(InVarType %in% c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
                                  "WHAM-HAFA", "PercHA", "PercAFA")))
   stopifnot("Temperature" %in% InVarType)
@@ -153,7 +153,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   InCompName = CompName = as.character(trimws(Tmp[, 1]))
   CompCharge = as.integer(Tmp[, 2])
   # CompMCName = as.character(trimws(Tmp[, 3]))
-  CompMC = match(trimws(Tmp[, 3]), MassName)
+  CompMCR = match(trimws(Tmp[, 3]), MassName)
   CompType = as.character(trimws(Tmp[, 4]))
   CompActCorr = as.character(trimws(Tmp[, 5]))
   CompSiteDens = array(1.0, dim = NInComp)
@@ -161,21 +161,21 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   # Add pH to the component list, if needed
   for (iMass in 1:NMass){#Must have either pH or H in non-BL compartments
     if (grepl("Water", MassName[iMass], ignore.case = TRUE)) {
-      stopifnot(xor(("H" %in% CompName[CompMC == iMass]),
-                    ("pH" %in% InVarType[InVarMC == iMass])))
-      if ("pH" %in% InVarType[InVarMC == iMass]) {
+      stopifnot(xor(("H" %in% CompName[CompMCR == iMass]),
+                    ("pH" %in% InVarType[InVarMCR == iMass])))
+      if ("pH" %in% InVarType[InVarMCR == iMass]) {
         NComp = NComp + 1L
         CompName = c(CompName, "H")
         CompCharge = c(CompCharge, 1L)
-        CompMC = c(CompMC, iMass)
+        CompMCR = c(CompMCR, iMass)
         # CompMCName = c(CompMCName, MassName[iMass])
         CompType = c(CompType, "FixedAct")
         CompActCorr = c(CompActCorr, "Debye")
         CompSiteDens = c(CompSiteDens, 1.0)
       }
     } else {
-      if (("H" %in% CompName[CompMC == iMass]) ||
-            ("pH" %in% InVarType[InVarMC == iMass])) {
+      if (("H" %in% CompName[CompMCR == iMass]) ||
+            ("pH" %in% InVarType[InVarMCR == iMass])) {
         stop("pH/[H+] specified for non-water mass compartment.")
       }
     }
@@ -193,7 +193,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompFromNum[!is.na(DefCompFromVar)] = NA
     DefCompCharge = as.integer(Tmp[, 3])
     # DefCompMCName = as.character(trimws(Tmp[, 4]))
-    DefCompMC = match(trimws(Tmp[, 4]), MassName)
+    DefCompMCR = match(trimws(Tmp[, 4]), MassName)
     DefCompType = as.character(trimws(Tmp[, 5]))
     DefCompActCorr = as.character(trimws(Tmp[, 6]))
     DefCompSiteDens = as.numeric(Tmp[, 7])
@@ -203,7 +203,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompFromVar = character()
     DefCompCharge = integer()
     # DefCompMCName = character()
-    DefCompMC = integer()
+    DefCompMCR = integer()
     DefCompType = character()
     DefCompActCorr = character()
     DefCompSiteDens = numeric()
@@ -213,7 +213,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   NComp = NComp + NDefComp
   CompName = c(CompName, DefCompName)
   CompCharge = c(CompCharge, DefCompCharge)
-  CompMC = c(CompMC, DefCompMC)
+  CompMCR = c(CompMCR, DefCompMCR)
   # CompMCName = c(CompMCName, DefCompMCName)
   CompType = c(CompType, DefCompType)
   CompActCorr = c(CompActCorr, DefCompActCorr)
@@ -221,7 +221,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
   # Create variables for species information
   SpecName = character(NSpec)
-  SpecMC = integer(NSpec)
+  SpecMCR = integer(NSpec)
   # SpecMCName = character(NSpec)
   SpecActCorr = integer(NSpec)
   SpecNC = integer(NSpec)
@@ -238,7 +238,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   TmpSplit = strsplit(Tmp, ",")
   for (i in 1:NSpec) {
     SpecName[i] = as.character(trimws(TmpSplit[[i]][1]))
-    SpecMC[i] = as.integer(match(trimws(TmpSplit[[i]][2]), MassName))
+    SpecMCR[i] = as.integer(match(trimws(TmpSplit[[i]][2]), MassName))
     # SpecMCName[i] = as.character(trimws(TmpSplit[[i]][2]))
     SpecActCorr[i] = as.character(trimws(TmpSplit[[i]][3]))
     SpecNC[i] = as.integer(trimws(TmpSplit[[i]][4]))
@@ -350,7 +350,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   # Add components to the species list
   NSpec = NComp + NSpec
   SpecName = c(CompName, SpecName)
-  SpecMC = c(CompMC, SpecMC)
+  SpecMCR = c(CompMCR, SpecMCR)
   # SpecMCName = c(CompMCName, SpecMCName)
   SpecActCorr = c(CompActCorr, SpecActCorr)
   SpecNC = c(array(1L, NComp), SpecNC)
@@ -367,12 +367,12 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   SpecCompList = SpecCompList[, 1:max(which(colSums(SpecCompList) > 0))]
 
   # Final positions of special definition parameters
-  MetalComp = which(SpecName %in% MetalName)
-  BLComp = which(SpecName %in% BLName)
+  MetalCompR = which(SpecName %in% MetalName)
+  BLCompR = which(SpecName %in% BLName)
 
   # error catching
   stopifnot(
-    all(!is.na(c(CompMC, SpecMC))),
+    all(!is.na(c(CompMCR, SpecMCR))),
     all(CompType %in% c("MassBal", "FixedAct", "FixedConc", "Substituted", "ChargeBal",
                         "SurfPot", "DonnanChargeBal")),
     all(c(CompActCorr, SpecActCorr) %in% c("None", "Debye", "Davies", "WHAM"))
@@ -400,22 +400,22 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     MassName = MassName,
     MassAmt = MassAmt,
     MassUnit = MassUnit,
-    AqueousMC = AqueousMC,
-    BioticLigMC = BioticLigMC,
+    AqueousMCR = AqueousMCR,
+    BioticLigMCR = BioticLigMCR,
 
     # Input Labels
     InLabName = InLabName,
 
     # Input Variables
     InVarName = InVarName,
-    InVarMC = InVarMC,
+    InVarMCR = InVarMCR,
     InVarType = InVarType,
 
     # Input Components
     InCompName = InCompName,
     CompName = CompName,
     CompCharge = CompCharge,
-    CompMC = CompMC,
+    CompMCR = CompMCR,
     # CompMCName = CompMCName,
     CompType = CompType,
     CompActCorr = CompActCorr,
@@ -426,7 +426,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompFromNum = DefCompFromNum,
     DefCompFromVar = DefCompFromVar,
     DefCompCharge = DefCompCharge,
-    DefCompMC = DefCompMC,
+    DefCompMCR = DefCompMCR,
     # DefCompMCName = DefCompMCName,
     DefCompType = DefCompType,
     DefCompActCorr = DefCompActCorr,
@@ -434,7 +434,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
     # Formation Reactions
     SpecName = SpecName,
-    SpecMC = SpecMC,
+    SpecMCR = SpecMCR,
     # SpecMCName = SpecMCName,
     SpecActCorr = SpecActCorr,
     SpecNC = SpecNC,
@@ -456,11 +456,11 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
     # Special Definitions
     BLName = BLName,
-    BLComp = BLComp,
+    BLCompR = BLCompR,
     MetalName = MetalName,
-    MetalComp = MetalComp,
+    MetalCompR = MetalCompR,
     BLMetalName = BLMetalName,
-    # BLMetalSpecs = BLMetalSpecs,#this needs to be figured out after ExpandWHAM
+    # BLMetalSpecsR = BLMetalSpecs,#this needs to be figured out after ExpandWHAM
     DoWHAM = DoWHAM,
 
     # Critical Accumulation Table
@@ -475,7 +475,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
                        list(WdatFile = WdatFile, WHAMVer = WHAMVer)))
     Out[names(Out2)] = Out2
   } else {
-    Out$WHAMDonnanMC = array(NA, dim = 2, dimnames = list(c("HA","FA")))
+    Out$WHAMDonnanMCR = array(NA, dim = 2, dimnames = list(c("HA","FA")))
     Out$wDLF = NA
     Out$wKZED = NA
     Out$wP = array(NA, dim = 2, dimnames = list(c("HA","FA")))
@@ -493,7 +493,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
   # Final positions of special definition parameters
   BLMetalSpecs = which(Out$SpecName %in% BLMetalName)
-  Out$BLMetalSpecs = BLMetalSpecs
+  Out$BLMetalSpecsR = BLMetalSpecs
 
   if (WriteLog) {
     CHESSLog(Out, ParamFile)

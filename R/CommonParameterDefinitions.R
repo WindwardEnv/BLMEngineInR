@@ -13,10 +13,12 @@
 #' @param MassAmt numeric vector (NMass), The amount of each mass compartment.
 #' @param MassUnit character vector (NMass), The units for each mass
 #'   compartment.
-#' @param AqueousMC integer, the (1-based) position of the water/aqueous mass
+#' @param AqueousMCR integer, the (1-based) position of the water/aqueous mass
 #'   compartment.
-#' @param BioticLigMC integer, the (1-based) position of the biotic ligand mass
+#' @param BioticLigMCR integer, the (1-based) position of the biotic ligand mass
 #'   compartment(s).
+#' @param WHAMDonnanMCR integer (2), the mass compartments corresponding to the
+#'   humic acid (1) and fulvic acid (2) Donnan layers.
 #' @param WHAMDonnanMC integer (2), the mass compartments corresponding to the
 #'   humic acid (0) and fulvic acid (1) Donnan layers.
 #'
@@ -26,8 +28,10 @@
 #'
 #' @param NInVar integer, the number of input variables
 #' @param InVarName character vector (NInVar), The name of each input variable.
+#' @param InVarMCR integer vector (NInVar), The mass compartment of each input
+#'   variable. (1-based)
 #' @param InVarMC integer vector (NInVar), The mass compartment of each input
-#'   variable.
+#'   variable. (0-based)
 #' @param InVarType character vector (NInVar), The type of each input variable.
 #'   Should be one of "Temperature" (the temperature in degrees C), "pH" (the
 #'   -log[H]...you know, pH), "WHAM-HA", "WHAM-FA", "WHAM-HAFA" (Windemere Humic
@@ -50,8 +54,10 @@
 #'   deriving the concentration of each defined component
 #' @param DefCompCharge signed integer vector (NDefComp), the charge of each
 #'   defined component
+#' @param DefCompMCR integer vector (NDefComp), the mass compartment number each
+#'   defined component (1-based)
 #' @param DefCompMC integer vector (NDefComp), the mass compartment number each
-#'   defined component
+#'   defined component (0-based)
 #' @param DefCompType character vector (NDefComp), the type of each defined
 #'   component
 #' @param DefCompActCorr character vector (NDefComp), the activity correction
@@ -66,8 +72,10 @@
 #'   simulation
 #' @param CompCharge signed integer vector (NComp), the charge of each component
 #'   in the simulation
+#' @param CompMCR integer vector (NComp), the mass compartment of each component
+#'   in the simulation (1-based)
 #' @param CompMC integer vector (NComp), the mass compartment of each component
-#'   in the simulation
+#'   in the simulation (0-based)
 #' @param CompCtoM numeric vector (NSpec), the concentration to mass conversion
 #'   factor of the components
 #' @param CompType character vector (NComp), the type of each component in the
@@ -87,8 +95,10 @@
 #'   formation reactions in the simulation
 #' @param SpecName character vector (NSpec), the name of the chemical species
 #'   for which we have formation reactions
+#' @param SpecMCR integer vector (NSpec), the mass compartment of the chemical
+#'   species for which we have formation reactions (1-based)
 #' @param SpecMC integer vector (NSpec), the mass compartment of the chemical
-#'   species for which we have formation reactions
+#'   species for which we have formation reactions (0-based)
 #' @param SpecActCorr character vector (NSpec), the activity correction method
 #'   of the chemical species for which we have formation reactions
 #' @param SpecNC integer vector (NSpec), the number of components for the
@@ -149,12 +159,20 @@
 #'   associated with toxic effects.
 #' @param BLMetalName The names of the species that are the biotic ligand-bound
 #'   metal associated with toxic effects.
-#' @param BLComp integer vector (NBL), the (1-based) position of the biotic
+#' @param BLCompR integer vector (NBL), the (1-based) position of the biotic
 #'   ligand component(s) in the component arrays
-#' @param MetalComp integer vector (NMetal), the (1-based) position of the metal
+#' @param BLComp integer vector (NBL), the (0-based) position of the biotic
+#'   ligand component(s) in the component arrays
+#' @param MetalCompR integer vector (NMetal), the (1-based) position of the metal
 #'   component(s) in the component arrays (i.e., which is the toxic metal
 #'   component)
-#' @param BLMetalSpecs integer vector (NBLMetal), the (1-based) positions of the
+#' @param MetalComp integer vector (NMetal), the (0-based) position of the metal
+#'   component(s) in the component arrays (i.e., which is the toxic metal
+#'   component)
+#' @param BLMetalSpecsR integer vector (NBLMetal), the (1-based) positions of the
+#'   species in the arrays which contribute to toxicity (i.e., which species are
+#'   the toxic metal bound to the relevant biotic ligand)
+#' @param BLMetalSpecs integer vector (NBLMetal), the (0-based) positions of the
 #'   species in the arrays which contribute to toxicity (i.e., which species are
 #'   the toxic metal bound to the relevant biotic ligand)
 #' @param DoWHAM logical, TRUE = there are WHAM species, FALSE = no WHAM species

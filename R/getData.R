@@ -101,7 +101,7 @@ ReadInputsFromFile = function(
 #' @param NInVar integer; Number of input variables
 #' @param InVarName character vector of length `NInVar`; Names of input
 #'   variables
-#' @param InVarMC integer vector of length `NInVar`;  Mass compartments of input
+#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of input
 #'   variables
 #' @param InVarType character vector of length `NInVar`; Types of input
 #'   variables
@@ -138,7 +138,7 @@ ReadInputsFromFile = function(
 MatchInputsToProblem = function(
     NObs, InVarObs, InCompObs, #inputs from file
     #information from DefineProblem:
-    NInVar, InVarName, InVarMC, InVarType,
+    NInVar, InVarName, InVarMCR, InVarType,
     NInComp, InCompName,
     NComp, CompName,
     NDefComp, DefCompName, DefCompFromNum, DefCompFromVar, DefCompSiteDens) {
@@ -171,13 +171,13 @@ MatchInputsToProblem = function(
       # Initialize FracAFA and FracHA with the needed values
       FracAFACol = matrix(1, nrow = NObs, ncol = 1)
       FracHACol = matrix(NA, nrow = NObs, ncol = 1)
-      if (any((InVarMC %in% InVarMC[i]) & (InVarType %in% "PercAFA"))) {
-        FracAFACol = OM[, InVarName[(InVarMC %in% InVarMC[i]) &
+      if (any((InVarMCR %in% InVarMCR[i]) & (InVarType %in% "PercAFA"))) {
+        FracAFACol = OM[, InVarName[(InVarMCR %in% InVarMCR[i]) &
                                       (InVarType %in% "PercAFA")],
                         drop = FALSE] / 100
       }
-      if (any((InVarMC %in% InVarMC[i]) & (InVarType %in% "PercHA"))) {
-        FracHACol = OM[, InVarName[(InVarMC %in% InVarMC[i]) &
+      if (any((InVarMCR %in% InVarMCR[i]) & (InVarType %in% "PercHA"))) {
+        FracHACol = OM[, InVarName[(InVarMCR %in% InVarMCR[i]) &
                                      (InVarType %in% "PercHA")],
                        drop = FALSE] / 100
       }
@@ -281,7 +281,7 @@ MatchInputsToProblem = function(
 #' @param NInVar integer; Number of input variables
 #' @param InVarName character vector of length `NInVar`; Names of input
 #'   variables
-#' @param InVarMC integer vector of length `NInVar`;  Mass compartments of input
+#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of input
 #'   variables
 #' @param InVarType character vector of length `NInVar`; Types of input
 #'   variables
@@ -323,7 +323,7 @@ MatchInputsToProblem = function(
 #' @noRd
 GetData = function(InputFile,
                    NInLab, InLabName,
-                   NInVar, InVarName, InVarMC, InVarType,
+                   NInVar, InVarName, InVarMCR, InVarType,
                    NInComp, InCompName,
                    NComp, CompName,
                    NDefComp, DefCompName, DefCompFromNum,
@@ -344,7 +344,7 @@ GetData = function(InputFile,
                               InCompObs = Out$InCompObs,
                               NInVar = NInVar,
                               InVarName = InVarName,
-                              InVarMC = InVarMC,
+                              InVarMCR = InVarMCR,
                               InVarType = InVarType,
                               NInComp = NInComp,
                               InCompName = InCompName,

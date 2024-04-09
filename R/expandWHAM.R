@@ -12,7 +12,7 @@
 #' @param NInVar integer; Number of input variables
 #' @param InVarName character vector of length `NInVar`; Names of input
 #'   variables
-#' @param InVarMC integer vector of length `NInVar`;  Mass compartments of input
+#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of input
 #'   variables
 #' @param InVarType character vector of length `NInVar`; Types of input
 #'   variables
@@ -21,7 +21,7 @@
 #'   and returned)
 #' @param CompCharge integer vector of length `NComp`; the charge of the
 #'   components as free ions (modified and returned)
-#' @param CompMC integer vector of length `NComp`; Which mass compartment the
+#' @param CompMCR integer vector of length `NComp`; Which mass compartment the
 #'   component belongs to (modified and returned)
 #' @param CompType character vector of length `NComp`; the type of component
 #'   (modified and returned)
@@ -38,7 +38,7 @@
 #'   to form the defined component (modified and returned)
 #' @param DefCompCharge integer vector of length `NDefComp`; the charge of the
 #'   defined components as free ions (modified and returned)
-#' @param DefCompMC integer vector of length `NDefComp`; Which mass compartment
+#' @param DefCompMCR integer vector of length `NDefComp`; Which mass compartment
 #'   the defined component belongs to (modified and returned)
 #' @param DefCompType character vector of length `NDefComp`; the type of defined
 #'   component (modified and returned)
@@ -50,7 +50,7 @@
 #' @param NSpec Number of species (modified and returned)
 #' @param SpecName character vector of length `NSpec`; species names (modified
 #'   and returned)
-#' @param SpecMC integer vector of length `NSpec`; which mass compartment the
+#' @param SpecMCR integer vector of length `NSpec`; which mass compartment the
 #'   speces belongs to (modified and returned)
 #' @param SpecActCorr character vector of length `NSpec`; the method to use for
 #'   activity corrections with this species (modified and returned)
@@ -88,12 +88,12 @@ ExpandWHAM = function(NMass,
                       MassUnit,
                       NInVar,
                       InVarName,
-                      InVarMC,
+                      InVarMCR,
                       InVarType,
                       NComp,
                       CompName,
                       CompCharge,
-                      CompMC,
+                      CompMCR,
                       CompType,
                       CompActCorr,
                       CompSiteDens,
@@ -102,13 +102,13 @@ ExpandWHAM = function(NMass,
                       DefCompFromNum,
                       DefCompFromVar,
                       DefCompCharge,
-                      DefCompMC,
+                      DefCompMCR,
                       DefCompType,
                       DefCompActCorr,
                       DefCompSiteDens,
                       NSpec,
                       SpecName,
-                      SpecMC,
+                      SpecMCR,
                       SpecActCorr,
                       SpecNC,
                       SpecCompList,
@@ -325,7 +325,7 @@ ExpandWHAM = function(NMass,
   NComp_orig = NComp
   CompName_orig = CompName
   CompCharge_orig = CompCharge
-  CompMC_orig = CompMC
+  CompMCR_orig = CompMCR
   CompType_orig = CompType
   CompActCorr_orig = CompActCorr
   CompSiteDens_orig = CompSiteDens
@@ -335,14 +335,14 @@ ExpandWHAM = function(NMass,
   DefCompFromNum_orig = DefCompFromNum
   DefCompFromVar_orig = DefCompFromVar
   DefCompCharge_orig = DefCompCharge
-  DefCompMC_orig = DefCompMC
+  DefCompMCR_orig = DefCompMCR
   DefCompType_orig = DefCompType
   DefCompActCorr_orig = DefCompActCorr
   DefCompSiteDens_orig = DefCompSiteDens
 
   NSpec_orig = NSpec
   SpecName_orig = SpecName
-  SpecMC_orig = SpecMC
+  SpecMCR_orig = SpecMCR
   SpecActCorr_orig = SpecActCorr
   SpecCharge_orig = SpecStoich %*% CompCharge
   SpecStoich_orig = SpecStoich
@@ -362,9 +362,9 @@ ExpandWHAM = function(NMass,
 
   for (iInVar in InVarWHAM) {
 
-    iMass = InVarMC[iInVar] # nolint: object_name_linter.
+    iMass = InVarMCR[iInVar] # nolint: object_name_linter.
     ChargedSpecName = SpecName_orig[#(SpecCharge_orig != 0) &
-                                      (SpecMC_orig == iMass)]
+                                      (SpecMCR_orig == iMass)]
     NChargedSpec = length(ChargedSpecName)
     SpecKsel = array(1, dim = c(NChargedSpec, 2),
                      dimnames = list(ChargedSpecName, c("HA", "FA")))
@@ -382,16 +382,16 @@ ExpandWHAM = function(NMass,
       WHAMFracAdd = c("FA")
     } else if (InVarType[iInVar] == "WHAM-HAFA") {
       WHAMFracAdd = c("HA", "FA")
-      if (!any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercHA")) {
+      if (!any(InVarType[InVarMCR == InVarMCR[iInVar]] %in% "PercHA")) {
         stop("Must have PercHA input variable in mass compartment if specifying a WHAM-HAFA input variable.") # nolint: line_length_linter.
       }
     }
     if ((InVarType[iInVar] %in% c("WHAM-FA", "WHAM-HA")) &&
-          any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercHA")) {
+          any(InVarType[InVarMCR == InVarMCR[iInVar]] %in% "PercHA")) {
       stop("PercHA input variable specified in mass compartment with WHAM-HA or WHAM-FA input variable.") # nolint: line_length_linter.
     }
     if ((InVarType[iInVar] %in% c("WHAM-HA")) &&
-        any(InVarType[InVarMC == InVarMC[iInVar]] %in% "PercAFA")) {
+        any(InVarType[InVarMCR == InVarMCR[iInVar]] %in% "PercAFA")) {
       stop("PercAFA input variable specified in mass compartment with WHAM-HA input variable.") # nolint: line_length_linter.
     }
     NWHAMFracAdd = length(WHAMFracAdd)
@@ -421,13 +421,13 @@ ExpandWHAM = function(NMass,
     NDonnanComp = NWHAMFracAdd
     DonnanCompName = paste0("Donnan", WHAMFracAdd)
     DonnanMassName = paste(MassName_orig[iMass], DonnanCompName, sep = "_")
-    DonnanMC = array(NMass_orig + (1:NDonnanComp), dim = NDonnanComp,
+    DonnanMCR = array(NMass_orig + (1:NDonnanComp), dim = NDonnanComp,
                      dimnames = list(WHAMFracAdd))
 
     # BulkMassName = paste0(MassName_orig[iMass], "_Bulk")
-    # BulkMC = NMass_orig + NDonnanComp + 1
+    # BulkMCR = NMass_orig + NDonnanComp + 1
 
-    NMass = NMass_orig + NDonnanComp + 1
+    NMass = NMass_orig + NDonnanComp #+ 1
     # MassName = c(MassName_orig, DonnanMassName, BulkMassName)
     MassName = c(MassName_orig, DonnanMassName)
     MassAmt = c(MassAmt_orig,
@@ -459,12 +459,12 @@ ExpandWHAM = function(NMass,
                    array(0L, dim = NDonnanComp,
                          dimnames = list(DonnanCompName)),
                    array(0L, dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    CompMC = c(CompMC_orig,
+    CompMCR = c(CompMCR_orig,
                # array(NMass + match(WHAMFracAdd, c("HA", "FA")),
-               array(DonnanMC,#iMass, #DonnanMC[WHAMFracAdd],
+               array(DonnanMCR,#iMass, #DonnanMCR[WHAMFracAdd],
                      dim = NDonnanComp,
                      dimnames = list(DonnanCompName)),
-               # array(BulkMC, dim = NWHAMComp, dimnames = list(WHAMCompName)))
+               # array(BulkMCR, dim = NWHAMComp, dimnames = list(WHAMCompName)))
                array(iMass, dim = NWHAMComp, dimnames = list(WHAMCompName)))
     CompType = c(CompType_orig,
                  array(DonnanCompName, NDonnanComp,
@@ -495,12 +495,12 @@ ExpandWHAM = function(NMass,
       DefCompCharge_orig,
       array(0L, dim = NDonnanComp, dimnames = list(DonnanCompName)),
       array(0L, dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    DefCompMC = c(DefCompMC_orig,
+    DefCompMCR = c(DefCompMCR_orig,
                   # array(NMass + match(WHAMFracAdd, c("HA", "FA")),
-                  array(DonnanMC, #iMass, #DonnanMC[WHAMFracAdd],
+                  array(DonnanMCR, #iMass, #DonnanMCR[WHAMFracAdd],
                         dim = NDonnanComp,
                         dimnames = list(DonnanCompName)),
-                  # array(BulkMC, dim = NWHAMComp, dimnames = list(WHAMCompName)))
+                  # array(BulkMCR, dim = NWHAMComp, dimnames = list(WHAMCompName)))
                   array(iMass, dim = NWHAMComp, dimnames = list(WHAMCompName)))
     DefCompType = c(DefCompType_orig,
                     array(DonnanCompName, dim = NDonnanComp,
@@ -530,13 +530,13 @@ ExpandWHAM = function(NMass,
     StartSpec = NSpec_orig + NDonnanSpec + 1L
     NSpec = NSpec_orig + NWHAMSpec + NDonnanSpec
     SpecName = c(SpecName_orig, DonnanSpecName, WHAMSpecName)
-    SpecMC = c(SpecMC_orig,
-               array(c(DonnanMC,
-                       rep(DonnanMC, each = NChargedSpec)), #iMass, #DonnanMC[WHAMFracAdd],
+    SpecMCR = c(SpecMCR_orig,
+               array(c(DonnanMCR,
+                       rep(DonnanMCR, each = NChargedSpec)), #iMass, #DonnanMCR[WHAMFracAdd],
                      dim = NDonnanSpec,
                      dimnames = list(DonnanSpecName)),
                # this should always be water
-               # array(BulkMC, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
+               # array(BulkMCR, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
                array(iMass, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
     SpecActCorr = c(SpecActCorr_orig,
                     array(c(DonnanCompName,
@@ -836,20 +836,20 @@ ExpandWHAM = function(NMass,
   names(MassUnit) = MassName
   names(CompSiteDens) = CompName
   names(DefCompSiteDens) = DefCompName
-  names(SpecMC) = SpecName
+  names(SpecMCR) = SpecName
   names(SpecActCorr) = SpecName
   rownames(SpecStoich) = SpecName
   names(SpecLogK) = SpecName
   names(SpecDeltaH) = SpecName
   names(SpecTempKelvin) = SpecName
-  WHAMDonnanMC = array(DonnanMC[c("HA","FA")], dim = 2,
+  WHAMDonnanMCR = array(DonnanMCR[c("HA","FA")], dim = 2,
                        dimnames = list(c("HA","FA")))
 
   # Re-ordering species so components are in front
   Reorder = match(c(CompName, SpecName[SpecName %in% CompName == FALSE]),
                   SpecName)
   SpecName = SpecName[Reorder]
-  SpecMC = SpecMC[Reorder]
+  SpecMCR = SpecMCR[Reorder]
   SpecActCorr = SpecActCorr[Reorder]
   SpecStoich = SpecStoich[Reorder, ]
   SpecLogK = SpecLogK[Reorder]
@@ -892,13 +892,13 @@ ExpandWHAM = function(NMass,
     MassName = MassName,
     MassAmt = MassAmt,
     MassUnit = MassUnit,
-    WHAMDonnanMC = WHAMDonnanMC,
+    WHAMDonnanMCR = WHAMDonnanMCR,
 
     # Components
     NComp = NComp,
     CompName = CompName,
     CompCharge = CompCharge,
-    CompMC = CompMC,
+    CompMCR = CompMCR,
     CompType = CompType,
     CompActCorr = CompActCorr,
     CompSiteDens = CompSiteDens,
@@ -909,7 +909,7 @@ ExpandWHAM = function(NMass,
     DefCompCharge = DefCompCharge,
     DefCompFromNum = DefCompFromNum,
     DefCompFromVar = DefCompFromVar,
-    DefCompMC = DefCompMC,
+    DefCompMCR = DefCompMCR,
     DefCompType = DefCompType,
     DefCompActCorr = DefCompActCorr,
     DefCompSiteDens = DefCompSiteDens,
@@ -917,7 +917,7 @@ ExpandWHAM = function(NMass,
     # Formation Reactions
     NSpec = NSpec,
     SpecName = SpecName,
-    SpecMC = SpecMC,
+    SpecMCR = SpecMCR,
     SpecActCorr = SpecActCorr,
     SpecNC = SpecNC,
     SpecCompList = SpecCompList,

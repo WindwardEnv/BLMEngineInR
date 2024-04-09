@@ -101,11 +101,12 @@ BLM = function(ParamFile = character(),
 
   # Initialize the output array
   MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength")
-  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMC],")")
+  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMCR],")")
   SpecMolesCols = paste0(SpecName," (mol)")
   SpecActCols = paste0("Act.", SpecName)
-  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMC],")")
+  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMCR],")")
   TotMolesCols = paste0("T.", CompName, " (mol)")
+  ZCols = paste0("Z_", c("HA","FA"))
   MassAmtCols = paste0(MassName, " (",ThisProblem$MassUnit,")")
   Out = data.frame(Obs = 1:AllInput$NObs)
   Out = cbind(Out, AllInput$InLabObs)
@@ -120,6 +121,7 @@ BLM = function(ParamFile = character(),
   Out[, SpecMolesCols] = NA
   Out[, TotConcCols] = NA
   Out[, TotMolesCols] = NA
+  Out[, ZCols] = NA
   Out[, MassAmtCols] = NA
   # Out = array(
   #   NA,
@@ -155,6 +157,7 @@ BLM = function(ParamFile = character(),
     Out[iObs, SpecMolesCols] = Tmp$SpecMoles
     Out[iObs, TotConcCols] = Tmp$CalcTotConc
     Out[iObs, TotMolesCols] = Tmp$CalcTotMoles
+    Out[iObs, ZCols] = Tmp$WHAMSpecCharge
     Out[iObs, MassAmtCols] = Tmp$MassAmt
 
   }
@@ -163,7 +166,7 @@ BLM = function(ParamFile = character(),
   if (ThisProblem$DoWHAM) {
     for (iComp in CompName){
       OrgCols = colnames(Out)[
-        grepl(iComp, colnames(Out)) & grepl("mol/L", colnames(Out)) &
+        grepl(iComp, colnames(Out)) & grepl("mol", colnames(Out)) &
           (grepl("DOC", colnames(Out)) | grepl("Donnan", colnames(Out)))
       ]
       Out[,paste0("TOrg.",iComp," (mol/L)")] = rowSums(Out[, OrgCols])
