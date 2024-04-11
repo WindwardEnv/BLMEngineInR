@@ -45,6 +45,8 @@ BLM = function(ParamFile = character(),
                MaxIter = 30L,
                DoPartialStepsAlways = FALSE) {
 
+  StartTime = Sys.time()
+
   # error catching
   stopifnot(file.exists(ParamFile))
   stopifnot(file.exists(InputFile))
@@ -176,7 +178,7 @@ BLM = function(ParamFile = character(),
     }
   }
 
-
+  print(Sys.time() - StartTime)
 
   return(Out)
 

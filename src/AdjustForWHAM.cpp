@@ -298,46 +298,45 @@ void AdjustForWHAMBeforeCalcSpecies(
 //' @param HumicSubstGramsPerLiter NumericVector, length of 2, grams per liter 
 //'   of each organic matter component (HA and FA) in solution
 //' 
-void AdjustForWHAMAfterCalcSpecies(
-  int NComp,
-  Rcpp::CharacterVector CompType,
-  Rcpp::NumericVector &TotConc,
-  Rcpp::NumericVector &TotMoles,
-  int NSpec,
-  Rcpp::NumericVector &SpecConc,
-  Rcpp::NumericVector SpecActivityCoef,
-  Rcpp::IntegerVector SpecMC,
-  Rcpp::CharacterVector SpecActCorr,
-  Rcpp::IntegerVector SpecCharge,
-  Rcpp::NumericVector SpecCtoMAdj,  
-  Rcpp::NumericVector &WHAMSpecCharge,
-  int AqueousMC,
-  Rcpp::NumericVector HumicSubstGramsPerLiter,
-  bool UpdateZED
-) {
+void AdjustForWHAMAfterCalcSpecies(int NComp,
+                                   Rcpp::CharacterVector CompType,
+                                   Rcpp::NumericVector &TotConc,
+                                   Rcpp::NumericVector &TotMoles,
+                                   int NSpec,
+                                   Rcpp::CharacterVector SpecName,
+                                   Rcpp::NumericVector &SpecConc,
+                                   Rcpp::NumericVector SpecKISTempAdj,
+                                   Rcpp::IntegerMatrix SpecStoich,
+                                   Rcpp::NumericVector SpecActivityCoef,
+                                   Rcpp::IntegerVector SpecMC,
+                                   Rcpp::CharacterVector SpecActCorr,
+                                   Rcpp::IntegerVector SpecCharge,
+                                   Rcpp::NumericVector SpecCtoMAdj,  
+                                   Rcpp::NumericVector &WHAMSpecCharge,
+                                   int AqueousMC,
+                                   Rcpp::NumericVector HumicSubstGramsPerLiter,
+                                   bool UpdateZED) {
 
   /* variables */
+  const double ConvCrit = 0.000001;
+  const int MaxIter = 10;
   int iComp;
-  int iSpec;
   Rcpp::NumericVector NewWHAMSpecCharge(2);
+  Rcpp::NumericVector CompConc(NComp);
+  for (iComp = 0; iComp < NComp; iComp++) { CompConc(iComp) = SpecConc(iComp); }
+  
+  // Update the WHAM component concentrations
+  for (iComp = 0; iComp < NComp; iComp++) {
+    if ((SpecActCorr(iComp) == "WHAMHA") || (SpecActCorr(iComp) == "WHAMFA")) {
 
-  /* The cation species concentrations should be canceled out if Z_HS is 
-     positive, and anion species concentrations should be canceled out if Z_HS
-     is negative */
-  /*
-  ******MOVED INTO CalcSpecConc**********
+      SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
+                       NComp, CompConc,
+                       NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
+                       SpecActCorr, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
+                       WHAMSpecCharge);
 
-  for (iSpec = NComp; iSpec < NSpec; iSpec++) {
-    if ((SpecActCorr(iSpec) == "DonnanHA") && 
-        (((WHAMSpecCharge(iHA) < 0) && (SpecCharge(iSpec) < 0)) || 
-         ((WHAMSpecCharge(iHA) > 0) && (SpecCharge(iSpec) > 0)))) {
-      SpecConc[iSpec] = 0.0;
-    } else if ((SpecActCorr(iSpec) == "DonnanFA") &&
-               (((WHAMSpecCharge(iFA) < 0) && (SpecCharge(iSpec) < 0)) || 
-                ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
-      SpecConc[iSpec] = 0.0;
     }
-  }*/
+  }
 
   //Calculate the charge on the organic matter
   if (UpdateZED) {
@@ -348,7 +347,7 @@ void AdjustForWHAMAfterCalcSpecies(
     WHAMSpecCharge(iFA) = WHAMSpecCharge(iFA) + ((NewWHAMSpecCharge(iFA) - WHAMSpecCharge(iFA)) / 5);
   }
 
-  // Set -Z_HS to the "known" total for the Donnan component
+  // Set -Z_HS*Th to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
     if (CompType(iComp) == "DonnanHA") {
       TotMoles[iComp] = abs(WHAMSpecCharge[iHA]) * HumicSubstGramsPerLiter[iHA];
@@ -358,124 +357,19 @@ void AdjustForWHAMAfterCalcSpecies(
       TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
     }
   }
-}
-
-
-void AdjustDonnanRatio(
-  int NComp,
-  int NSpec,
-  Rcpp::NumericVector &CompConc,
-  Rcpp::CharacterVector CompType,
-  Rcpp::NumericVector TotMoles,
-  Rcpp::NumericVector SpecKISTempAdj,
-  Rcpp::IntegerMatrix SpecStoich,
-  Rcpp::CharacterVector SpecName,
-  Rcpp::CharacterVector SpecActCorr,
-  Rcpp::NumericVector SpecActivityCoef,
-  Rcpp::NumericVector SpecCtoMAdj,
-  Rcpp::IntegerVector SpecCharge,
-  Rcpp::NumericVector WHAMSpecCharge
-) {
-
-  Rcpp::NumericVector SpecConc(NSpec);
-  Rcpp::NumericVector CalcTotMoles(NComp);
-
-  const double ConvCrit = 0.000001;
-  const int MaxIter = 10;
-  double DonnanChargeBalError;
-  int iComp, iSpec, Iter;
-
 
   // Update the Donnan layers the way WHAM does it
   for (iComp = 0; iComp < NComp; iComp++) {
-    Iter = 0;
     if ((CompType(iComp) == "DonnanHA") || (CompType(iComp) == "DonnanFA")) {
 
-      DonnanChargeBalError = ConvCrit * 999;
-      while ((DonnanChargeBalError > ConvCrit) && (Iter < MaxIter)) {
-        Iter++;
-        SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                                SpecName, SpecActCorr, SpecActivityCoef, 
-                                true, SpecCharge, WHAMSpecCharge);
-        
-        CalcTotMoles(iComp) = 0;
-        for (iSpec = 0; iSpec < NSpec; iSpec++){
-          if (SpecStoich(iSpec, iComp) != 0) {
-            CalcTotMoles(iComp) += SpecConc(iSpec) * SpecCtoMAdj(iSpec) * SpecStoich(iSpec, iComp);
-          }
-        }
-        //CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, SpecStoich);
-
-        //CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
-        CompConc(iComp) = CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp);
-        //if (CompConc(iComp) <= 1.0) {
-        //  CompConc(iComp) = 1.0;
-        //  break;
-        //}
-        //DonnanChargeBalError = pow(2 * (TotMoles(iComp) - CalcTotMoles(iComp)) / (TotMoles(iComp) + CalcTotMoles(iComp)), 2);
-        DonnanChargeBalError = abs(TotMoles(iComp) - CalcTotMoles(iComp)) / TotMoles(iComp);
-
-      }
+      SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
+                       NComp, CompConc,
+                       NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
+                       SpecActCorr, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
+                       WHAMSpecCharge);
     }
   }
 
 }
 
-void AdjustWHAMComponents(
-  int NComp,
-  int NSpec,
-  Rcpp::NumericVector &CompConc,
-  Rcpp::CharacterVector CompType,
-  Rcpp::NumericVector TotMoles,
-  Rcpp::NumericVector SpecKISTempAdj,
-  Rcpp::IntegerMatrix SpecStoich,
-  Rcpp::CharacterVector SpecName,
-  Rcpp::CharacterVector SpecActCorr,
-  Rcpp::NumericVector SpecActivityCoef,
-  Rcpp::NumericVector SpecCtoMAdj,
-  Rcpp::IntegerVector SpecCharge,
-  Rcpp::NumericVector WHAMSpecCharge
-) {
 
-  Rcpp::NumericVector SpecConc(NSpec);
-  Rcpp::NumericVector CalcTotMoles(NComp);
-
-  const double ConvCrit = 0.000001;
-  const int MaxIter = 10;
-  double CompErrori;
-  int iComp, iSpec, Iter;
-
-
-  // Update the WHAM component concentrations
-  for (iComp = 0; iComp < NComp; iComp++) {
-    Iter = 0;
-    if ((SpecActCorr(iComp) == "WHAMHA") || (SpecActCorr(iComp) == "WHAMFA")) {
-
-      CompErrori = ConvCrit * 999;
-      while ((CompErrori > ConvCrit) && (Iter < MaxIter)) {
-        Iter++;
-        SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                                SpecName, SpecActCorr, SpecActivityCoef, true, SpecCharge, WHAMSpecCharge);
-
-        CalcTotMoles(iComp) = 0;
-        for (iSpec = 0; iSpec < NSpec; iSpec++){
-          if (SpecStoich(iSpec, iComp) != 0) {
-            CalcTotMoles(iComp) += SpecConc(iSpec) * SpecCtoMAdj(iSpec) * SpecStoich(iSpec, iComp);
-          }
-        }
-        //CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, SpecStoich);
-
-        //CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
-        CompConc(iComp) = CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp);
-        if (CompConc(iComp) <= 0.0) {
-          CompConc(iComp) = 1.0E-20;
-          break;
-        }
-        //CompErrori = pow(2 * (TotMoles(iComp) - CalcTotMoles(iComp)) / (TotMoles(iComp) + CalcTotMoles(iComp)), 2);
-        CompErrori = abs(TotMoles(iComp) - CalcTotMoles(iComp)) / TotMoles(iComp);
-      }
-      
-    }
-  }
-
-}

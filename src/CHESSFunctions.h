@@ -20,6 +20,11 @@ Rcpp::NumericVector CalcIterationTotalMoles(int NComp,
                                             Rcpp::NumericVector SpecMoles,
                                             Rcpp::IntegerMatrix SpecStoich);
 
+double CalcCompTotalMoles(int iComp,
+                          int NSpec,
+                          Rcpp::NumericVector SpecMoles,
+                          Rcpp::IntegerMatrix SpecStoich);
+
 void CalcResidAndError(int NComp,
                        Rcpp::NumericVector CalcTotMoles,
                        Rcpp::NumericVector TotMoles,
@@ -71,6 +76,23 @@ void CompUpdate(int NComp,
                 Rcpp::NumericVector CompConcStep,
                 Rcpp::CharacterVector CompType,
                 Rcpp::NumericVector &CompConc);
+
+void SimpleAdjustComp(int iComp,
+                      double ConvCrit,
+                      int MaxIter,
+                      double TotMolesi,
+                      int NComp,
+                      Rcpp::NumericVector &CompConc,
+                      int NSpec,
+                      Rcpp::NumericVector &SpecConc,
+                      Rcpp::NumericVector SpecKISTempAdj,
+                      Rcpp::IntegerMatrix SpecStoich,
+                      Rcpp::CharacterVector SpecName,
+                      Rcpp::CharacterVector SpecActCorr,
+                      Rcpp::NumericVector SpecActivityCoef,
+                      Rcpp::NumericVector SpecCtoMAdj,
+                      Rcpp::IntegerVector SpecCharge,
+                      Rcpp::NumericVector WHAMSpecCharge);
 
 Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
                                  Rcpp::NumericVector SpecCtoM, 
@@ -289,55 +311,24 @@ void AdjustForWHAMBeforeCalcSpecies(
   double wKZED
 );
 
-void AdjustForWHAMAfterCalcSpecies(
-  int NComp,
-  Rcpp::CharacterVector CompType,
-  Rcpp::NumericVector &TotConc,
-  Rcpp::NumericVector &TotMoles,
-  int NSpec,
-  Rcpp::NumericVector &SpecConc,
-  Rcpp::NumericVector SpecActivityCoef,
-  Rcpp::IntegerVector SpecMC,
-  Rcpp::CharacterVector SpecActCorr,
-  Rcpp::IntegerVector SpecCharge,
-  Rcpp::NumericVector SpecCtoMAdj,  
-  Rcpp::NumericVector &WHAMSpecCharge,
-  int AqueousMC,
-  Rcpp::NumericVector HumicSubstGramsPerLiter,
-  bool UpdateZED
-);
-
-void AdjustDonnanRatio(
-  int NComp,
-  int NSpec,
-  Rcpp::NumericVector &CompConc,
-  Rcpp::CharacterVector CompType,
-  Rcpp::NumericVector TotMoles,
-  Rcpp::NumericVector SpecKISTempAdj,
-  Rcpp::IntegerMatrix SpecStoich,
-  Rcpp::CharacterVector SpecName,
-  Rcpp::CharacterVector SpecActCorr,
-  Rcpp::NumericVector SpecActivityCoef,
-  Rcpp::NumericVector SpecCtoMAdj,
-  Rcpp::IntegerVector SpecCharge,
-  Rcpp::NumericVector WHAMSpecCharge
-);
-
-void AdjustWHAMComponents(
-  int NComp,
-  int NSpec,
-  Rcpp::NumericVector &CompConc,
-  Rcpp::CharacterVector CompType,
-  Rcpp::NumericVector TotMoles,
-  Rcpp::NumericVector SpecKISTempAdj,
-  Rcpp::IntegerMatrix SpecStoich,
-  Rcpp::CharacterVector SpecName,
-  Rcpp::CharacterVector SpecActCorr,
-  Rcpp::NumericVector SpecActivityCoef,
-  Rcpp::NumericVector SpecCtoMAdj,
-  Rcpp::IntegerVector SpecCharge,
-  Rcpp::NumericVector WHAMSpecCharge
-);
+void AdjustForWHAMAfterCalcSpecies(int NComp,
+                                   Rcpp::CharacterVector CompType,
+                                   Rcpp::NumericVector &TotConc,
+                                   Rcpp::NumericVector &TotMoles,
+                                   int NSpec,
+                                   Rcpp::CharacterVector SpecName,
+                                   Rcpp::NumericVector &SpecConc,
+                                   Rcpp::NumericVector SpecKISTempAdj,
+                                   Rcpp::IntegerMatrix SpecStoich,
+                                   Rcpp::NumericVector SpecActivityCoef,
+                                   Rcpp::IntegerVector SpecMC,
+                                   Rcpp::CharacterVector SpecActCorr,
+                                   Rcpp::IntegerVector SpecCharge,
+                                   Rcpp::NumericVector SpecCtoMAdj,  
+                                   Rcpp::NumericVector &WHAMSpecCharge,
+                                   int AqueousMC,
+                                   Rcpp::NumericVector HumicSubstGramsPerLiter,
+                                   bool UpdateZED);
 
 double CHESSIter(
   Rcpp::NumericVector CompConcStep,

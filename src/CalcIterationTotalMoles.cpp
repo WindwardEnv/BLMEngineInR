@@ -42,3 +42,26 @@ Rcpp::NumericVector CalcIterationTotalMoles(int NComp,
   return CalcTotMoles;
 
 }
+
+double CalcCompTotalMoles(int iComp,
+                          int NSpec,
+                          Rcpp::NumericVector SpecMoles,
+                          Rcpp::IntegerMatrix SpecStoich) {
+
+  /* output */
+  double CalcTotMolesi;
+
+  /* variables: */
+  int iSpec; // loop counters
+  
+  // Calculate the total moles and concentrations from species concentrations
+  CalcTotMolesi = 0.0;
+  for (iSpec = 0; iSpec < NSpec; iSpec++){
+    if (SpecStoich(iSpec, iComp) != 0) {
+      CalcTotMolesi += SpecMoles(iSpec) * SpecStoich(iSpec, iComp);
+    }
+  }
+
+  return CalcTotMolesi;
+
+}

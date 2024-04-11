@@ -3,22 +3,22 @@ rm(list = ls())
 devtools::load_all()
 
 
-# # ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
-# ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
-# InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
+# ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
+ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
+InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
 
 # ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
 # # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
 # InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 
-ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
-# ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
-InputFile = "scrap/parameter file format/full_organic.blm4"
+# ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+# # ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
+# InputFile = "scrap/parameter file format/full_organic.blm4"
 
 # ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
 # InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
 
-DoTox = F
+DoTox = TRUE
 iCA = 1L
 QuietFlag ="Quiet"
 ConvergenceCriteria = 0.0001
@@ -34,7 +34,6 @@ FunctionInputs$InputFile = InputFile
 AllInput = do.call("GetData", args = FunctionInputs)
 
 # test stuff
-start.time = Sys.time()
 # capture.output(
 ResultsTable <- BLM(
   ParamFile = ParamFile,
@@ -47,8 +46,6 @@ ResultsTable <- BLM(
   DoPartialStepsAlways = DoPartialStepsAlways
 )
 # , file = "scrap/debug.txt")
-end.time = Sys.time()
-end.time - start.time
 
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
@@ -64,7 +61,8 @@ ResultsTable[,paste0(ThisProblem$SpecName[grepl("Cu",ThisProblem$SpecName)]," (m
 ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
 
 # OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_inorg_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:26))
-OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:(6+65)))
+OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_inorg_TOX.det.xlsx", sheet = 1, rows = c(5, 7:26))
+# OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:(6+65)))
 OldBLMResultsTable$Obs = 1:nrow(OldBLMResultsTable)
 OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
 OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
@@ -76,13 +74,6 @@ OldBLMResultsTable$Z_HA = OldBLMResultsTable$Z_HS
 OldBLMResultsTable$Z_FA = OldBLMResultsTable$Z_FS
 
 
-Org.Cu.cols = colnames(ResultsTable)[(grepl("DOC", colnames(ResultsTable)) |
-                                        grepl("Donnan", colnames(ResultsTable))) &
-                                       grepl("Cu", colnames(ResultsTable)) &
-                                       grepl("[(]mol[)]", colnames(ResultsTable))]
-cbind(rowSums(ResultsTable[,Org.Cu.cols]),
-      ResultsTable$`TOrg.Cu (mol/L)`,
-      OldBLMResultsTable$`TOrg.Cu (mol/L)`)
 
 # ResultsTable[iObs, c("IonicStrength", "Water_DonnanHA (L)","Water_DonnanFA (L)",
 #                      "DonnanHA (mol/L)","DonnanFA (mol/L)")]

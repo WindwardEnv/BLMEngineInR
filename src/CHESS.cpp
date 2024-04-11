@@ -224,8 +224,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
   int Counter;
 
-  int CompToChange = 0;
-  double CompChangeAmt = 0.0;
   
   // Initialize some variables
   for (iComp = 0; iComp < NComp; iComp++) { CompPosInSpec(iComp) = iComp; }
@@ -241,104 +239,14 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   TotMoles = TotConc * CompCtoM;
 
   // Do the temperature adjustments on the binding constants
-  //SysTempKelvin = 288;
   SpecKTempAdj = TempCorrection(SysTempKelvin, NSpec, SpecK, SpecTempKelvin, 
                                 SpecDeltaH);
   SpecKISTempAdj = clone(SpecKTempAdj);
-
-  //for (int iSpec = 0; iSpec < NSpec; iSpec++){
-  //  Rcpp::Rcout << SpecName[iSpec] << " logK = " << log10(SpecKTempAdj[iSpec]) << std::endl;
-  //}
-  
 
   // Get initial values for component concentrations
   CompConc = InitialGuess(TotConc, SpecCtoMAdj, CompType, SpecKISTempAdj, 
                           SpecStoich, SpecName, NComp, NSpec);
   SpecConc[CompPosInSpec] = clone(CompConc);
-
-  if (false) {
-    //LAST WHAM ITER FROM PB BLM
-    
-    WHAMSpecCharge[0] = -0.001055782;
-    WHAMSpecCharge[1] = -0.002757042;
-    TotMoles[10] = abs(WHAMSpecCharge[0]) * HumicSubstGramsPerLiter[0];
-    TotMoles[11] = abs(WHAMSpecCharge[1]) * HumicSubstGramsPerLiter[1];
-    MassAmtAdj[AqueousMC] =  0.999939401;
-    MassAmtAdj[WHAMDonnanMC[iHA]] = 5.65E-07;
-    MassAmtAdj[WHAMDonnanMC[iFA]] = 6.00E-05;
-    for (int iSpec = 0; iSpec < NSpec; iSpec++) {    
-      if ((SpecActCorr[iSpec] == "WHAMHA") || (SpecActCorr[iSpec] == "WHAMFA")) {
-        SpecCtoMAdj[iSpec] = MassAmt[AqueousMC];
-      } else {
-        SpecCtoMAdj[iSpec] = MassAmtAdj[SpecMC[iSpec]];
-      }
-    }	
-    TotConc[10] = TotMoles[10] / SpecCtoMAdj[10];
-    TotConc[11] = TotMoles[11] / SpecCtoMAdj[11];   
-
-    CompConc[0] = 9.59993363565727E-08;
-    CompConc[1] = 3.68278171517698E-05;
-    CompConc[2] = 0.000061754236008998;
-    CompConc[3] = 0.000137555074214308;
-    CompConc[4] = 6.71355101983406E-06;
-    CompConc[5] = 9.85195915618222E-05;
-    CompConc[6] = 6.69941662102341E-06;
-    CompConc[7] = 1.94743882686021E-07;
-    CompConc[8] = 2.76256091289306E-08;
-    CompConc[10] = 4.001807;
-    CompConc[11] = 1.712652;
-    CompConc[12] = 3.90672800784937E-13;//HA monodentate start
-    CompConc[13] = 1.47731944186428E-12;
-    CompConc[14] = 5.08513478543844E-12;
-    CompConc[15] = 1.34857790600327E-11;
-    CompConc[16] = 1.45907868350776E-10;
-    CompConc[17] = 1.68683394297017E-10;
-    CompConc[18] = 1.70597781345935E-10;
-    CompConc[19] = 1.70737081609003E-10;
-    CompConc[20] = 1.62318730585003E-16;//HA bidentate start
-    CompConc[21] = 8.72449447745709E-16;
-    CompConc[22] = 1.62691821629889E-15;
-    CompConc[23] = 1.62770370103955E-15;
-    CompConc[24] = 8.77842067578099E-16;
-    CompConc[25] = 1.6450367927837E-15;
-    CompConc[26] = 1.64789379713423E-15;
-    CompConc[27] = 1.23358746610706E-15;
-    CompConc[28] = 1.65308852570421E-15;
-    CompConc[29] = 1.65314162960448E-15;
-    CompConc[30] = 1.65428833978588E-15;
-    CompConc[31] = 1.65448109374049E-15;
-    CompConc[32] = 8.56767594077975E-14;//FA monodentate start
-    CompConc[33] = 1.09999978532507E-12;
-    CompConc[34] = 1.24955490848289E-11;
-    CompConc[35] = 6.18627774290784E-11;
-    CompConc[36] = 3.58950110306434E-09;
-    CompConc[37] = 6.22238094341529E-09;
-    CompConc[38] = 6.28905895093181E-09;
-    CompConc[39] = 6.29003322009559E-09;
-    CompConc[40] = 1.23989844969647E-18;//FA bidentate start
-    CompConc[41] = 1.15544203776794E-16;
-    CompConc[42] = 1.29419496326124E-14;
-    CompConc[43] = 1.30726020153824E-14;
-    CompConc[44] = 1.16407613144101E-16;
-    CompConc[45] = 6.23586088186863E-14;
-    CompConc[46] = 8.38894475929258E-14;
-    CompConc[47] = 2.59685374121812E-16;
-    CompConc[48] = 1.43888965697356E-13;
-    CompConc[49] = 1.43984008436532E-13;
-    CompConc[50] = 1.51818397868478E-13;
-    CompConc[51] = 1.52391684761759E-13;
-    
-    //for (int iComp = 10; iComp < NComp; iComp++) {
-    //  if (iComp != 10) {CompType[iComp] = "FixedConc";}
-    //}
-    
-    SpecConc[CompPosInSpec] = clone(CompConc);
-    IonicStrength = 0.000534679;
-    SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
-                                      IonicStrength, SysTempKelvin);
-    SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKTempAdj, SpecStoich, 
-                            SpecName, SpecActCorr, SpecActivityCoef, DoWHAM, SpecCharge, WHAMSpecCharge);
-  }
 
   // Run through CHESS calculations with initial values
   MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, CompType,
