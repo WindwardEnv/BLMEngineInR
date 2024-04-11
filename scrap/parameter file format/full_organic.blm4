@@ -1,4 +1,4 @@
-65
+5
 ObsNum, ID,            ID2,                   Temp,  pH,   DOC,   HA,   Cu,           Ca,           Mg,           Na,           K,            SO4,          Cl,           CO3
 n/a,    n/a,           n/a,                   deg C, SU,   mgC/L, %,    mol/L,        mol/L,        mol/L,        mol/L,        mol/L,        mol/L,        mol/L,        mol/L
 1,      Full_Organic,  Hard ser 10,           15,    7.57, 0.01,  10,   4.2112E-07,   3.742700e-05, 6.274425e-05, 1.375612e-04, 6.713850e-06, 9.993587e-05, 6.699012e-06, 1.374837e-04

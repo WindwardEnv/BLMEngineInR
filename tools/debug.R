@@ -2,28 +2,38 @@ rm(list = ls())
 # devtools::clean_dll()
 devtools::load_all()
 
+DoTox = TRUE
+iCA = 1L
+QuietFlag ="Quiet"
+ConvergenceCriteria = 0.001
+MaxIter = 50L
+DoPartialStepsAlways = FALSE
 
-# ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
-ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
-InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
+
+# # ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
+# ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
+# InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
+# oldBLMOutFile = if (DoTox){
+#   "scrap/old BLM/full_inorg_TOX.det.xlsx"
+# } else {
+#   "scrap/old BLM/full_inorg_SPEC.det.xlsx"
+# }
 
 # ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
 # # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
 # InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 
-# ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
-# # ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
-# InputFile = "scrap/parameter file format/full_organic.blm4"
+ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+# ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
+InputFile = "scrap/parameter file format/full_organic.blm4"
+oldBLMOutFile = if (DoTox){
+  "scrap/old BLM/full_organic_TOX.det.xlsx"
+} else {
+  "scrap/old BLM/full_organic_SPEC.det.xlsx"
+}
 
 # ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
 # InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
-
-DoTox = TRUE
-iCA = 1L
-QuietFlag ="Quiet"
-ConvergenceCriteria = 0.0001
-MaxIter = 100L
-DoPartialStepsAlways = FALSE
 
 
 ThisProblem = DefineProblem(ParamFile, WriteLog = TRUE)
@@ -60,20 +70,26 @@ ResultsTable[,paste0(ThisProblem$SpecName[grepl("Cu",ThisProblem$SpecName)]," (m
 
 ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
 
-# OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_inorg_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:26))
-OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_inorg_TOX.det.xlsx", sheet = 1, rows = c(5, 7:26))
-# OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:(6+65)))
+OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, startRow = 7, colNames = FALSE)
+OldBLMheader = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, rows = 5:6, colNames = FALSE)
+OldBLMheader[1, ] = gsub("BL","BL1",OldBLMheader[1, ])
+colnames(OldBLMResultsTable) =
+  apply(OldBLMheader, MARGIN = 2,
+        FUN = function(X){
+          if (is.na(X[2])) {return(X[1])}
+          if (X[1] == X[2]) {return(X[1])}
+          paste0(X[1], " (", gsub(" / ","/", X[2]), ")")
+        })
 OldBLMResultsTable$Obs = 1:nrow(OldBLMResultsTable)
-OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
-OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
-colnames(OldBLMResultsTable)[paste0(colnames(OldBLMResultsTable), " (mol/L)") %in% colnames(ResultsTable)] =
-  paste0(colnames(OldBLMResultsTable)[paste0(colnames(OldBLMResultsTable), " (mol/L)") %in% colnames(ResultsTable)], " (mol/L)")
+OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$`Site Label`))
+OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$`Sample Label`))
 OldBLMResultsTable$`DonnanHA (mol/L)` = OldBLMResultsTable$Ratio_HS
 OldBLMResultsTable$`DonnanFA (mol/L)` = OldBLMResultsTable$Ratio_FS
 OldBLMResultsTable$Z_HA = OldBLMResultsTable$Z_HS
 OldBLMResultsTable$Z_FA = OldBLMResultsTable$Z_FS
 
-
+ResultsTable[, c("ID","ID2","T.Cu (mol)","Cu (mol/L)", "BL1-Cu (mol/kg wet)", "BL1-CuOH (mol/kg wet)")]
+OldBLMResultsTable[, c("ID","ID2","T.Cu (mol)","Cu (mol/L)","BL1-Cu (mol/kg wet)","BL1-CuOH (mol/kg wet)")]
 
 # ResultsTable[iObs, c("IonicStrength", "Water_DonnanHA (L)","Water_DonnanFA (L)",
 #                      "DonnanHA (mol/L)","DonnanFA (mol/L)")]
