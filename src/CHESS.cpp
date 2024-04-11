@@ -376,14 +376,14 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     UpdateZED = true;//!UpdateZED;
     
     // Calculate the Jacobian Matrix
-    /*JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
+    JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
                               SpecMC, SpecCtoMAdj, SpecActCorr, SpecCharge, 
                               SpecKISTempAdj, IonicStrength, DoWHAM, 
                               HumicSubstGramsPerLiter, WHAMSpecCharge, 
                               wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
                               AqueousMC, WHAMDonnanMC,  MetalComp, NBLMetal, BLMetalSpecs, 
                               DoTox);
-    NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
+    /*NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
                        CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
                        SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
                        WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
@@ -391,13 +391,13 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                        MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
                        TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
                        SpecActivityCoef, WHAMSpecCharge,
-                       IonicStrength, Resid);
+                       IonicStrength, Resid);*/
 
     CompConcStepFull = CalcStep(JacobianMatrix, Resid, 
                                   CompConc, TotMoles, CalcTotMoles, 
-                                  NComp, CompType, CompName);*/
-    CompConcStepFull = CalcStepBrute(NComp, CompName, CompType, CompConc, 
-                                     TotMoles, CalcTotMoles);
+                                  NComp, CompType, CompName);
+    //CompConcStepFull = CalcStepBrute(NComp, CompName, CompType, CompConc, 
+    //                                 TotMoles, CalcTotMoles);
     
     if (QuietFlag == "Debug") {
       //Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;

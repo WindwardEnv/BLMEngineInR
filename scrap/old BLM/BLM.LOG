@@ -260,7 +260,7 @@ CuHCO3
     0    1    0    0    0    0    0    0    0    2    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
     0    1    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
     1    1    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
-CHESS ver 3.00 Log for Batch simulation described in Cu_freshwater_acute_and_chronic_2017-01-17.dat
+CHESS ver 3.00 Log for Batch simulation described in C:\Program Files (x86)\Biotic Ligand Model - Research Mode\Model\Cu_freshwater_acute_and_chronic_2017-01-17.dat
 --------------------------------------------------------------------------------
 Component     Species Type   Activity       Site Density
 H             Aqueous        Davies          1

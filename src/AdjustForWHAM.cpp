@@ -408,10 +408,10 @@ void AdjustDonnanRatio(
 
         //CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
         CompConc(iComp) = CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp);
-        if (CompConc(iComp) <= 1.0) {
-          CompConc(iComp) = 1.0;
-          break;
-        }
+        //if (CompConc(iComp) <= 1.0) {
+        //  CompConc(iComp) = 1.0;
+        //  break;
+        //}
         //DonnanChargeBalError = pow(2 * (TotMoles(iComp) - CalcTotMoles(iComp)) / (TotMoles(iComp) + CalcTotMoles(iComp)), 2);
         DonnanChargeBalError = abs(TotMoles(iComp) - CalcTotMoles(iComp)) / TotMoles(iComp);
 

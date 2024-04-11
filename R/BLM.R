@@ -164,11 +164,14 @@ BLM = function(ParamFile = character(),
 
   # Make summary columns for organically-bound components
   if (ThisProblem$DoWHAM) {
-    for (iComp in CompName){
-      OrgCols = colnames(Out)[
-        grepl(iComp, colnames(Out)) & grepl("mol", colnames(Out)) &
-          (grepl("DOC", colnames(Out)) | grepl("Donnan", colnames(Out)))
-      ]
+    for (iComp in ThisProblem$InCompName){
+      OrgCols = SpecMolesCols[grepl(iComp, SpecMolesCols) &
+                                (grepl("DOC", SpecMolesCols) |
+                                   grepl("Donnan", SpecMolesCols))]
+      # OrgCols = colnames(Out)[
+      #   grepl(iComp, colnames(Out)) & grepl("[(]mol[)]", colnames(Out)) &
+      #     (grepl("DOC", colnames(Out)) | grepl("Donnan", colnames(Out)))
+      # ]
       Out[,paste0("TOrg.",iComp," (mol/L)")] = rowSums(Out[, OrgCols])
     }
   }

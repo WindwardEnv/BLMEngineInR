@@ -7,20 +7,20 @@ devtools::load_all()
 # ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
 # InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
 
-ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
-# ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
-InputFile = "scrap/parameter file format/abbrev_organic.blm4"
+# ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
+# # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
+# InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 
-# # ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
 # ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
-# InputFile = "scrap/parameter file format/full_organic.blm4"
+InputFile = "scrap/parameter file format/full_organic.blm4"
 
 # ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
 # InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
 
 DoTox = F
 iCA = 1L
-QuietFlag ="Debug"
+QuietFlag ="Quiet"
 ConvergenceCriteria = 0.0001
 MaxIter = 100L
 DoPartialStepsAlways = FALSE
@@ -50,7 +50,6 @@ ResultsTable <- BLM(
 end.time = Sys.time()
 end.time - start.time
 
-ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
 ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
@@ -62,9 +61,10 @@ ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
 # ResultsTable[,c("Cu (mol)","BL1-Cu (mol)","BL1-CuOH (mol)", "CuOH (mol)", "Cu(OH)2 (mol)","CuSO4 (mol)","CuCO3 (mol)", "Cu(CO3)2 (mol)","CuCl (mol)","CuHCO3 (mol)")] / ResultsTable$`T.Cu (mol)` * 100
 ResultsTable[,paste0(ThisProblem$SpecName[grepl("Cu",ThisProblem$SpecName)]," (mol)")] / ResultsTable$`T.Cu (mol)` * 100
 
+ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
 
-OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_inorg_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:26))
-# OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:55))
+# OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_inorg_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:26))
+OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:(6+65)))
 OldBLMResultsTable$Obs = 1:nrow(OldBLMResultsTable)
 OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
 OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
@@ -74,6 +74,15 @@ OldBLMResultsTable$`DonnanHA (mol/L)` = OldBLMResultsTable$Ratio_HS
 OldBLMResultsTable$`DonnanFA (mol/L)` = OldBLMResultsTable$Ratio_FS
 OldBLMResultsTable$Z_HA = OldBLMResultsTable$Z_HS
 OldBLMResultsTable$Z_FA = OldBLMResultsTable$Z_FS
+
+
+Org.Cu.cols = colnames(ResultsTable)[(grepl("DOC", colnames(ResultsTable)) |
+                                        grepl("Donnan", colnames(ResultsTable))) &
+                                       grepl("Cu", colnames(ResultsTable)) &
+                                       grepl("[(]mol[)]", colnames(ResultsTable))]
+cbind(rowSums(ResultsTable[,Org.Cu.cols]),
+      ResultsTable$`TOrg.Cu (mol/L)`,
+      OldBLMResultsTable$`TOrg.Cu (mol/L)`)
 
 # ResultsTable[iObs, c("IonicStrength", "Water_DonnanHA (L)","Water_DonnanFA (L)",
 #                      "DonnanHA (mol/L)","DonnanFA (mol/L)")]
@@ -132,21 +141,32 @@ OldBLMResultsTable$Z_FA = OldBLMResultsTable$Z_FS
 
 ResultsTable$SerLab = gsub(".+ ([0-9.]+)$", "\\1", ResultsTable$ID2)
 ResultsTable$Ser = gsub("ser .+","ser", ResultsTable$ID2)
+palette("Paired")
 leg.dat = data.frame(
-  Ser = c("Hard ser", "DOC ser", "pH ser", "Temp ser",
-          "hi DOC Hard ser", "hi DOC pH ser", "hi DOC Temp ser"),
-  col = 2:8
+  Ser = c("Hard ser", "DOC ser", "pH ser", "Temp ser", "Cu ser",
+          "hi DOC Hard ser", "hi DOC pH ser", "hi DOC Temp ser", "hi DOC Cu ser"),
+  col = c(1, 10, 3, 5, 7,
+          2, 4, 6, 8)
 )
 ResultsTable$col = leg.dat$col[match(ResultsTable$Ser, leg.dat$Ser)]
 
+
+layout(matrix(c(2,3,4,1,5,6,7,1,8,9,10,1), byrow = T, nrow = 3, ncol = 4),
+       widths = c(1,1,1,lcm(4)))
+i.plot = 1
 for (i.col in intersect(colnames(ResultsTable),
                         colnames(OldBLMResultsTable))) {
   if (all(!is.na(is.numeric(ResultsTable[,i.col]))) &&
       # !grepl("T[.]", i.col) &&
       (i.col %in% c("Obs","ID","ID2","#.Iter.", "DDL.Na") == FALSE)) {
 
-    ResultsTable[is.infinite(ResultsTable[, i.col]), i.col] = NA
+    if (i.plot == 1) {
+      par(mar = c(0,0,2,0))
+      plot.new()
+      legend("topleft", legend = leg.dat$Ser, pch = 16, col = leg.dat$col)
+    }
 
+    ResultsTable[is.infinite(ResultsTable[, i.col]), i.col] = NA
     ax.lim = range(OldBLMResultsTable[, i.col], na.rm = T)
     if (all(ax.lim > 0)) {
       ax.lim[1] = 10^(floor(log10(ax.lim[1])))
@@ -156,13 +176,14 @@ for (i.col in intersect(colnames(ResultsTable),
                  max(pretty(ax.lim)))
     }
 
-    layout(matrix(1:2, ncol = 2), widths = c(1, lcm(3)))
+    # layout(matrix(1:2, ncol = 2), widths = c(1, lcm(3)))
     par(mar = c(5,5,2,1))
     plot(x = OldBLMResultsTable[,i.col],
          y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable[,i.col])),
          col = ResultsTable$col,
          pch = ifelse(ResultsTable[, i.col] < ax.lim[1], 6,
-                      ifelse(ResultsTable[, i.col] > ax.lim[2], 2, 16)),
+                      ifelse(ResultsTable[, i.col] > ax.lim[2], 2,
+                             ifelse(ResultsTable$FinalIter >= MaxIter, 1, 16))),
          main = i.col,
          xlab = "BLM Version 3.41.2.45",
          ylab = "BLM in R",
@@ -179,9 +200,9 @@ for (i.col in intersect(colnames(ResultsTable),
          cex = 0.5)
     abline(a = 0, b = 1)
 
-    par(mar = c(0,0,2,0))
-    plot.new()
-    legend("topleft", legend = leg.dat$Ser, pch = 16, col = leg.dat$col)
+    i.plot = i.plot + 1
+    if (i.plot > 9){i.plot = 1}
+
   }
 }
 
