@@ -4,7 +4,7 @@ devtools::load_all()
 
 DoTox = TRUE
 iCA = 1L
-QuietFlag ="Debug"
+QuietFlag ="Quiet"
 ConvergenceCriteria = 0.001
 MaxIter = 50L
 DoPartialStepsAlways = FALSE
