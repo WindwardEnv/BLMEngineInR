@@ -324,6 +324,9 @@ void AdjustForWHAMAfterCalcSpecies(
   /* The cation species concentrations should be canceled out if Z_HS is 
      positive, and anion species concentrations should be canceled out if Z_HS
      is negative */
+  /*
+  ******MOVED INTO CalcSpecConc**********
+
   for (iSpec = NComp; iSpec < NSpec; iSpec++) {
     if ((SpecActCorr(iSpec) == "DonnanHA") && 
         (((WHAMSpecCharge(iHA) < 0) && (SpecCharge(iSpec) < 0)) || 
@@ -334,7 +337,7 @@ void AdjustForWHAMAfterCalcSpecies(
                 ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
       SpecConc[iSpec] = 0.0;
     }
-  }
+  }*/
 
   //Calculate the charge on the organic matter
   if (UpdateZED) {
@@ -369,7 +372,9 @@ void AdjustDonnanRatio(
   Rcpp::CharacterVector SpecName,
   Rcpp::CharacterVector SpecActCorr,
   Rcpp::NumericVector SpecActivityCoef,
-  Rcpp::NumericVector SpecCtoMAdj
+  Rcpp::NumericVector SpecCtoMAdj,
+  Rcpp::IntegerVector SpecCharge,
+  Rcpp::NumericVector WHAMSpecCharge
 ) {
 
   Rcpp::NumericVector SpecConc(NSpec);
@@ -390,7 +395,8 @@ void AdjustDonnanRatio(
       while ((DonnanChargeBalError > ConvCrit) && (Iter < MaxIter)) {
         Iter++;
         SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                                SpecName, SpecActCorr, SpecActivityCoef);
+                                SpecName, SpecActCorr, SpecActivityCoef, 
+                                true, SpecCharge, WHAMSpecCharge);
         
         CalcTotMoles(iComp) = 0;
         for (iSpec = 0; iSpec < NSpec; iSpec++){
@@ -400,7 +406,8 @@ void AdjustDonnanRatio(
         }
         //CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, SpecStoich);
 
-        CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
+        //CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
+        CompConc(iComp) = CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp);
         if (CompConc(iComp) <= 1.0) {
           CompConc(iComp) = 1.0;
           break;
@@ -409,13 +416,46 @@ void AdjustDonnanRatio(
         DonnanChargeBalError = abs(TotMoles(iComp) - CalcTotMoles(iComp)) / TotMoles(iComp);
 
       }
-    } else if ((SpecActCorr(iComp) == "WHAMHA") || (SpecActCorr(iComp) == "WHAMFA")) {
+    }
+  }
 
-      DonnanChargeBalError = ConvCrit * 999;
-      while ((DonnanChargeBalError > ConvCrit) && (Iter < MaxIter)) {
+}
+
+void AdjustWHAMComponents(
+  int NComp,
+  int NSpec,
+  Rcpp::NumericVector &CompConc,
+  Rcpp::CharacterVector CompType,
+  Rcpp::NumericVector TotMoles,
+  Rcpp::NumericVector SpecKISTempAdj,
+  Rcpp::IntegerMatrix SpecStoich,
+  Rcpp::CharacterVector SpecName,
+  Rcpp::CharacterVector SpecActCorr,
+  Rcpp::NumericVector SpecActivityCoef,
+  Rcpp::NumericVector SpecCtoMAdj,
+  Rcpp::IntegerVector SpecCharge,
+  Rcpp::NumericVector WHAMSpecCharge
+) {
+
+  Rcpp::NumericVector SpecConc(NSpec);
+  Rcpp::NumericVector CalcTotMoles(NComp);
+
+  const double ConvCrit = 0.000001;
+  const int MaxIter = 10;
+  double CompErrori;
+  int iComp, iSpec, Iter;
+
+
+  // Update the WHAM component concentrations
+  for (iComp = 0; iComp < NComp; iComp++) {
+    Iter = 0;
+    if ((SpecActCorr(iComp) == "WHAMHA") || (SpecActCorr(iComp) == "WHAMFA")) {
+
+      CompErrori = ConvCrit * 999;
+      while ((CompErrori > ConvCrit) && (Iter < MaxIter)) {
         Iter++;
         SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                                SpecName, SpecActCorr, SpecActivityCoef);
+                                SpecName, SpecActCorr, SpecActivityCoef, true, SpecCharge, WHAMSpecCharge);
 
         CalcTotMoles(iComp) = 0;
         for (iSpec = 0; iSpec < NSpec; iSpec++){
@@ -425,15 +465,16 @@ void AdjustDonnanRatio(
         }
         //CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, SpecStoich);
 
-        CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
+        //CompConc(iComp) = ((CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp)) + CompConc(iComp)) / 2;
+        CompConc(iComp) = CompConc(iComp) * TotMoles(iComp) / CalcTotMoles(iComp);
         if (CompConc(iComp) <= 0.0) {
           CompConc(iComp) = 1.0E-20;
           break;
         }
-        //DonnanChargeBalError = pow(2 * (TotMoles(iComp) - CalcTotMoles(iComp)) / (TotMoles(iComp) + CalcTotMoles(iComp)), 2);
-        DonnanChargeBalError = abs(TotMoles(iComp) - CalcTotMoles(iComp)) / TotMoles(iComp);
-
+        //CompErrori = pow(2 * (TotMoles(iComp) - CalcTotMoles(iComp)) / (TotMoles(iComp) + CalcTotMoles(iComp)), 2);
+        CompErrori = abs(TotMoles(iComp) - CalcTotMoles(iComp)) / TotMoles(iComp);
       }
+      
     }
   }
 

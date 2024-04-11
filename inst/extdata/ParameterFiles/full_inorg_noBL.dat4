@@ -1,19 +1,18 @@
 Column model parameter file, Ver 4.00
 --------------------------------------------------------------------------------
-2,  Number of Mass Compartments
+1,  Number of Mass Compartments
 3,  Input Labels
 2,  Input Variables
 8,  Input Components 
-1,  Defined Components
-22, Species
+0,  Defined Components
+16, Species
 0,  Phases
-4,  Number of Special Definitions
+1,  Number of Special Definitions
 1,  Number of Critical Values     
 --------------------------------------------------------------------------------
 Mass Compartment List
 Compartment,   C to M,     Units label
-Water,         1,          L                 
-BL,            1,          kg wet
+Water,         1,          L
 --------------------------------------------------------------------------------
 Input Labels
 ObsNum
@@ -38,16 +37,9 @@ CO3,       -2,     Water,       MassBal,  Debye
 --------------------------------------------------------------------------------
 Defined components                                    
 Component,  From,     Charge,   Compartment, Type,    Activity,   Site Den 
-BL1,        1.78E-05, -1,       BL,          MassBal, None,       3E-5
 --------------------------------------------------------------------------------      
 Formation Reactions
-Species, Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,       Delta H,   Temp
-BL1-Cu,  BL,       None,  2,  BL1, 1,   Cu,  1,            7.400,         0.000,  0.000
-BL1-CuOH,BL,       None,  3,  BL1, 1,   Cu,  1,  H,  -1,  -1.300,         0.000,  0.000
-BL1-Ca,  BL,       None,  2,  BL1, 1,   Ca,  1,            3.600,         0.000,  0.000
-BL1-Mg,  BL,       None,  2,  BL1, 1,   Mg,  1,            3.600,         0.000,  0.000
-BL1-H,   BL,       None,  2,  BL1, 1,    H,  1,            5.400,         0.000,  0.000
-BL1-Na,  BL,       None,  2,  BL1, 1,   Na,  1,            3.000,         0.000,  0.000
+Species, Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,        Delta H, Temp
 OH,      Water,    Debye, 1,  H,  -1,                    -14.000,    56186.73738, 298.1514609
 HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,   -14997.55155, 298.1514609
 H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,   -24166.23162, 298.1514609
@@ -71,9 +63,6 @@ Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Mol
 Special Definitions
 Definition, Species
 Metal,      Cu
-BL,         BL1
-BL-Metal,   BL1-Cu
-BL-Metal,   BL1-CuOH
 --------------------------------------------------------------------------------
 Critical Accumulation Table
 #, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous

@@ -3,14 +3,16 @@ rm(list = ls())
 devtools::load_all()
 
 
-ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
-InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
+# # ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
+# ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
+# InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
 
-# ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
-# # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
-# InputFile = "scrap/parameter file format/abbrev_organic.blm4"
+ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
+# ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
+InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 
-# ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+# # ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+# ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
 # InputFile = "scrap/parameter file format/full_organic.blm4"
 
 # ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
@@ -37,19 +39,19 @@ start.time = Sys.time()
 ResultsTable <- BLM(
   ParamFile = ParamFile,
   InputFile = InputFile,
-  DoTox = F,
-  # iCA = 1L,
-  QuietFlag ="Debug",
-  ConvergenceCriteria = 0.0001,
-  MaxIter = 100L,
-  DoPartialStepsAlways = FALSE
+  DoTox = DoTox,
+  iCA = iCA,
+  QuietFlag = QuietFlag,
+  ConvergenceCriteria = ConvergenceCriteria,
+  MaxIter = MaxIter,
+  DoPartialStepsAlways = DoPartialStepsAlways
 )
 # , file = "scrap/debug.txt")
 end.time = Sys.time()
 end.time - start.time
-#
+
 ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
-#
+
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
 ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
 # iObs = which((ResultsTable$FinalIter < 30) & !is.na(ResultsTable$FinalMaxError))[1]
@@ -57,11 +59,12 @@ ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
 # ResultsTable[, c("ID2","T.Cu (mol/L)","T.Cu (mol)","Water (L)", "Water_DonnanHA (L)","Water_DonnanFA (L)")]
 
 
+# ResultsTable[,c("Cu (mol)","BL1-Cu (mol)","BL1-CuOH (mol)", "CuOH (mol)", "Cu(OH)2 (mol)","CuSO4 (mol)","CuCO3 (mol)", "Cu(CO3)2 (mol)","CuCl (mol)","CuHCO3 (mol)")] / ResultsTable$`T.Cu (mol)` * 100
+ResultsTable[,paste0(ThisProblem$SpecName[grepl("Cu",ThisProblem$SpecName)]," (mol)")] / ResultsTable$`T.Cu (mol)` * 100
 
 
-
-OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx",
-                                         sheet = 1, rows = c(5, 7:55))
+OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_inorg_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:26))
+# OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:55))
 OldBLMResultsTable$Obs = 1:nrow(OldBLMResultsTable)
 OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
 OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
@@ -139,7 +142,7 @@ ResultsTable$col = leg.dat$col[match(ResultsTable$Ser, leg.dat$Ser)]
 for (i.col in intersect(colnames(ResultsTable),
                         colnames(OldBLMResultsTable))) {
   if (all(!is.na(is.numeric(ResultsTable[,i.col]))) &&
-      !grepl("T[.]", i.col) &&
+      # !grepl("T[.]", i.col) &&
       (i.col %in% c("Obs","ID","ID2","#.Iter.", "DDL.Na") == FALSE)) {
 
     ResultsTable[is.infinite(ResultsTable[, i.col]), i.col] = NA

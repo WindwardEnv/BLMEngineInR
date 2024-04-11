@@ -46,7 +46,10 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
                                  Rcpp::IntegerMatrix SpecStoich,
                                  Rcpp::CharacterVector SpecName,
                                  Rcpp::CharacterVector SpecActCorr,
-                                 Rcpp::NumericVector SpecActivityCoef);
+                                 Rcpp::NumericVector SpecActivityCoef,
+                                 bool DoWHAM,
+                                 Rcpp::IntegerVector SpecCharge,
+                                 Rcpp::NumericVector WHAMSpecCharge);
 
 Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
                              Rcpp::NumericVector Resid,
@@ -56,6 +59,13 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
                              int NComp,
                              Rcpp::CharacterVector CompType,
                              Rcpp::CharacterVector CompName);
+
+Rcpp::NumericVector CalcStepBrute(int NComp, 
+                                  Rcpp::CharacterVector CompName, 
+                                  Rcpp::CharacterVector CompType, 
+                                  Rcpp::NumericVector CompConc, 
+                                  Rcpp::NumericVector TotMoles, 
+                                  Rcpp::NumericVector CalcTotMoles);
 
 void CompUpdate(int NComp, 
                 Rcpp::NumericVector CompConcStep,
@@ -308,7 +318,25 @@ void AdjustDonnanRatio(
   Rcpp::CharacterVector SpecName,
   Rcpp::CharacterVector SpecActCorr,
   Rcpp::NumericVector SpecActivityCoef,
-  Rcpp::NumericVector SpecCtoMAdj
+  Rcpp::NumericVector SpecCtoMAdj,
+  Rcpp::IntegerVector SpecCharge,
+  Rcpp::NumericVector WHAMSpecCharge
+);
+
+void AdjustWHAMComponents(
+  int NComp,
+  int NSpec,
+  Rcpp::NumericVector &CompConc,
+  Rcpp::CharacterVector CompType,
+  Rcpp::NumericVector TotMoles,
+  Rcpp::NumericVector SpecKISTempAdj,
+  Rcpp::IntegerMatrix SpecStoich,
+  Rcpp::CharacterVector SpecName,
+  Rcpp::CharacterVector SpecActCorr,
+  Rcpp::NumericVector SpecActivityCoef,
+  Rcpp::NumericVector SpecCtoMAdj,
+  Rcpp::IntegerVector SpecCharge,
+  Rcpp::NumericVector WHAMSpecCharge
 );
 
 double CHESSIter(

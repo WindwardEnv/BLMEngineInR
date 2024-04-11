@@ -13,7 +13,7 @@ Column model parameter file, Ver 4.00
 Mass Compartment List
 Compartment,   C to M,     Units label
 Water,         1,          L
-BL,            0.1,        g wt
+BL,            1,          kg wet
 --------------------------------------------------------------------------------
 Input Labels
 ID
@@ -29,7 +29,7 @@ CO3,       -2,     Water,       MassBal,  Debye
 --------------------------------------------------------------------------------
 Defined components                                    
 Component,  From,     Charge,   Compartment, Type,    Activity,   Site Den 
-BL1,        1.78E-05, -1,       BL,          MassBal, None,       1
+BL1,        1.78E-05, -1,       BL,          MassBal, None,       3E-5
 --------------------------------------------------------------------------------      
 Formation Reactions
 Species,  Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,  Delta H,   Temp

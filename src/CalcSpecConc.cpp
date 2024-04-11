@@ -34,7 +34,10 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
                                  Rcpp::IntegerMatrix SpecStoich,
                                  Rcpp::CharacterVector SpecName,
                                  Rcpp::CharacterVector SpecActCorr,
-                                 Rcpp::NumericVector SpecActivityCoef) {
+                                 Rcpp::NumericVector SpecActivityCoef,
+                                 bool DoWHAM,
+                                 Rcpp::IntegerVector SpecCharge,
+                                 Rcpp::NumericVector WHAMSpecCharge) {
   /* outputs */
   Rcpp::NumericVector SpecConc(NSpec);//species concentrations
     SpecConc.names() = SpecName;
@@ -73,6 +76,22 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
       }
     }
   }
+
+  if (DoWHAM) {
+    for (iSpec = NComp; iSpec < NSpec; iSpec++) {
+      if ((SpecActCorr(iSpec) == "DonnanHA") && 
+          (((WHAMSpecCharge(iHA) < 0) && (SpecCharge(iSpec) < 0)) || 
+          ((WHAMSpecCharge(iHA) > 0) && (SpecCharge(iSpec) > 0)))) {
+        SpecActivity[iSpec] = 0.0;
+      } else if ((SpecActCorr(iSpec) == "DonnanFA") &&
+                (((WHAMSpecCharge(iFA) < 0) && (SpecCharge(iSpec) < 0)) || 
+                  ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
+        SpecActivity[iSpec] = 0.0;
+      }
+    }
+  }
+    
+
   SpecConc = SpecActivity / SpecActivityCoef;
   return(SpecConc);
 }

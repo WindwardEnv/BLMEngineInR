@@ -96,11 +96,11 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
     for (iComp2 = 0; iComp2 < NComp; iComp2++) {
       Cj = SpecConc[iComp2];
       for (iHS = 0; iHS < 2; iHS++) {
-        if (WHAMSpecCharge[iHS] == 0) {
+        Th = HumicSubstGramsPerLiter[iHS];
+        if ((Th == 0) || (WHAMSpecCharge[iHS] == 0)) {
           dVDLmaxdC(iHS, iComp2) = 0.0;
           dZhdC(iHS, iComp2) = 0.0;
         } else {
-          Th = HumicSubstGramsPerLiter[iHS];
           Sum = 0.0;
           Sum2 = 0.0;
           for (iSpec = 0; iSpec < NSpec; iSpec++) {
@@ -126,6 +126,9 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
           pow(wDLF + MaxVolDiffuse[iHA] + MaxVolDiffuse[iFA], 2);
       }
 
+      //Rcpp::Rcout << "dZhdC = [" << std::endl << dZhdC << std::endl << "]" << std::endl;
+      //Rcpp::Rcout << "dVDLmaxdC = [" << std::endl << dVDLmaxdC << std::endl << "]" << std::endl;
+      //Rcpp::Rcout << "dVDLdC = [" << std::endl << dVDLdC << std::endl << "]" << std::endl;
 
       for (iSpec = 0; iSpec < NSpec; iSpec++) {
         if (iSpec < NComp) {
@@ -159,6 +162,10 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
           dVidC(iSpec, iComp2) = 0.0;
         }
       }
+
+      //Rcpp::Rcout << "dVidC = [" << std::endl << dVidC << std::endl << "]" << std::endl;
+      //Rcpp::Rcout << "dKidC = [" << std::endl << dKidC << std::endl << "]" << std::endl;
+      
     }
   } else {
     for (iComp2 = 0; iComp2 < NComp; iComp2++) {
@@ -355,7 +362,7 @@ Rcpp::NumericMatrix NumericalJacobian(
     MassAmtAdjMod = clone(MassAmtAdj);
     for (i = 0; i < NComp; i++) {
       if (i == iComp2) {
-        CompConcStepMod[i] = -0.001 * SpecConc[iComp2];
+        CompConcStepMod[i] = -0.00001 * SpecConc[iComp2];
       } else {
         CompConcStepMod[i] = 0;
       }

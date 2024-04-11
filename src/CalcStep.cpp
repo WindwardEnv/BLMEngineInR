@@ -27,16 +27,22 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
                              Rcpp::CharacterVector CompName){
   /* output */
   Rcpp::NumericVector CompConcStep(NComp);
-  CompConcStep.names() = CompName;
+    CompConcStep.names() = CompName;
 
   /* variables */
   int iComp, iComp2;
   int i, j;
   int NSolve;
+  Rcpp::LogicalVector CompSolve(NComp);
   NSolve = 0;
   for (iComp = 0; iComp < NComp; iComp++){
-    if ((CompType(iComp) != "FixedConc") && (CompType(iComp) != "FixedAct")) { 
+    if ((CompType(iComp) != "FixedConc") && (CompType(iComp) != "FixedAct")
+        //&& (CompType(iComp) != "DonnanHA") && (CompType(iComp) != "DonnanFA")
+       ) { 
+      CompSolve[iComp] = true;
       NSolve++; 
+    } else {
+      CompSolve[iComp] = false;
     }
   }
   
@@ -53,13 +59,12 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   //Pull out sub-set that should be solved
   i = 0;
   for (iComp = 0; iComp < NComp; iComp++){
-    if ((CompType(iComp) != "FixedConc") && (CompType(iComp) != "FixedAct")) {
+    if (CompSolve[iComp]) {
       ResidSolve(i) = Resid(iComp);
       //ArmaResidSolve(i, 0) = Resid(iComp);
       j = 0;
       for (iComp2 = 0; iComp2 < NComp; iComp2++){
-        if ((CompType(iComp2) != "FixedConc") && 
-            (CompType(iComp2) != "FixedAct")) {
+        if (CompSolve[iComp2]) {
           JacobianMatrixSolve(i, j) = JacobianMatrix(iComp, iComp2);
           //ArmaJacobianMatSolve(i, j) = JacobianMatrix(iComp, iComp2);
           j++;
@@ -112,7 +117,7 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
       Rcpp::Rcout << "Singluar Matrix?" << std::endl;
       i = 0;
       for (iComp = 0; iComp < NComp; iComp++){
-        if ((CompType(iComp) != "FixedConc") && (CompType(iComp) != "FixedAct")) {
+        if (CompSolve[iComp]) {
           //CompConcStepSolve(i) = CompConc(iComp) * (1 - (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 5);          
           CompConcStepSolve(i) = CompConc(iComp) * (-1) * (TotMoles(iComp) / CalcTotMoles(iComp));
           i++;
@@ -139,14 +144,39 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
 
   i = 0;
   for (iComp = 0; iComp < NComp; iComp++){
-    if ((CompType(iComp) == "FixedConc") || (CompType(iComp) == "FixedAct")) {
-      CompConcStep(iComp) = 0;
-    } else {
+    if (CompSolve[iComp]) {
       CompConcStep(iComp) = CompConcStepSolve(i);      
       //CompConcStep(iComp) = ArmaCompConcStepSolve(i, 0);
       i++;
+    } else {
+      CompConcStep(iComp) = 0;
     }
   }
   return CompConcStep;
 }
 
+Rcpp::NumericVector CalcStepBrute(int NComp, 
+                                  Rcpp::CharacterVector CompName, 
+                                  Rcpp::CharacterVector CompType, 
+                                  Rcpp::NumericVector CompConc, 
+                                  Rcpp::NumericVector TotMoles, 
+                                  Rcpp::NumericVector CalcTotMoles) {
+  /*outputs*/
+  Rcpp::NumericVector CompConcStep(NComp);
+    CompConcStep.names() = CompName;
+  
+  /*varaibles*/
+  int iComp;
+
+  for (iComp = 0; iComp < NComp; iComp++){
+    if ((CompType(iComp) != "FixedConc") && (CompType(iComp) != "FixedAct")
+        //&& (CompType(iComp) != "DonnanHA") && (CompType(iComp) != "DonnanFA")
+       ) { 
+      CompConcStep(iComp) = CompConc(iComp) * (1 - TotMoles(iComp) / CalcTotMoles(iComp));
+    } else {
+      CompConcStep(iComp) = 0.0;
+    }
+  }
+
+  return CompConcStep;
+}

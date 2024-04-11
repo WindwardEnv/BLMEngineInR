@@ -60,7 +60,7 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
   for (iRound = 1; iRound <= 3; iRound++) {
 	  /* Calc Species */
     //CalcSpecConc(NComp, NSpec, CompConc, SpecK, SpecStoich, SpecName, 
-    //             SpecActCorr, SpecActivityCoef);
+    //             SpecActCorr, SpecActivityCoef, DoWHAM, SpecCharge, WHAMSpecCharge);
 	  for (iSpec = 0; iSpec < NSpec; iSpec ++) {
       SpecConc(iSpec) = SpecK(iSpec);
       for (iComp = 0; iComp < NComp; iComp ++) {
