@@ -102,9 +102,10 @@ Rcpp::NumericMatrix NumericalJacobian(
               CalcTotMolesMod, WHAMSpecChargeMod, WhichMaxMod,
               IonicStrengthMod, ResidMod, CompErrorMod);
 
+    dConcComp2 = (SpecConcMod[iComp2] - SpecConc[iComp2]);
+    
     for (iComp1 = 0; iComp1 < NComp; iComp1++) {
       dResidComp1 = (ResidMod[iComp1] - Resid[iComp1]);
-      dConcComp2 = (SpecConcMod[iComp2] - SpecConc[iComp2]);
       if (dConcComp2 == 0) {
         JacobianMatrix(iComp1, iComp2) = 0;
       } else {

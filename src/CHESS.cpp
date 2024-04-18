@@ -245,7 +245,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
   // Get initial values for component concentrations
   CompConc = InitialGuess(TotConc, SpecCtoMAdj, CompType, SpecKISTempAdj, 
-                          SpecStoich, SpecName, NComp, NSpec);
+                          SpecStoich, SpecName, NComp, NSpec, 
+                          DoTox, NBLMetal, BLMetalSpecs, MetalComp, CATarget);
   SpecConc[CompPosInSpec] = clone(CompConc);
 
   // Run through CHESS calculations with initial values
@@ -308,8 +309,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     //                                 TotMoles, CalcTotMoles);
     
     if (QuietFlag == "Debug") {
-      //Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
-      //Rcpp::Rcout << "NumericalJacobianMatrix = [" <<std::endl << NumericalJacobianMatrix << "]" << std::endl;
+      Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
+      Rcpp::Rcout << "NumericalJacobianMatrix = [" <<std::endl << NumericalJacobianMatrix << "]" << std::endl;
       Rcpp::Rcout << "iComp\tSpecName\tSpecConc\tResid\tError\tStep" << std::endl;
       for (iComp = 0; iComp < NComp; iComp++) {
         Rcpp::Rcout << iComp << "\t" 

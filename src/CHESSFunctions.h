@@ -101,7 +101,12 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
                                  Rcpp::IntegerMatrix SpecStoich,
                                  Rcpp::CharacterVector SpecName,
                                  int NComp,
-                                 int NSpec);
+                                 int NSpec, 
+                                 bool DoTox,
+                                 int NBLMetal, 
+                                 Rcpp::IntegerVector BLMetalSpecs, 
+                                 int MetalComp,
+                                 double CATarget);
 
 Rcpp::NumericMatrix Jacobian (int NComp, //number of components
                               int NSpec, //number of species
