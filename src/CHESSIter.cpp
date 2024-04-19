@@ -170,11 +170,11 @@ double CHESSIter(
                     SpecActCorr,  
                     Resid, CompError);
 
-  // Adjust Resid and CompError for toxicity mode
+  /*// Adjust Resid and CompError for toxicity mode
   if (DoTox) {
     AdjustForToxMode(NBLMetal, BLMetalSpecs, MetalComp, CATarget, SpecConc,
                       Resid, CompError);
-  }
+  }*/
 
   // Determine which component has the highest error fraction
   MaxError = MaxCompError(NComp, CompError, WhichMax);

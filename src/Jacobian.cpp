@@ -181,8 +181,8 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
     for (iComp2 = 0; iComp2 < NComp; iComp2++) {
       Name2 = CompName[iComp2];
       Sum = 0;
-      if (DoTox && (iComp1 == MetalComp)) {
-        /* Toxicity mode the metal's derivatives are relative to the CA error */
+      /*if (DoTox && (iComp1 == MetalComp)) {
+        // Toxicity mode the metal's derivatives are relative to the CA error
         for (i = 0; i < NBLMetal; i++) {
           iSpec = BLMetalSpecs[i];
           Sum += (SpecStoich(iSpec, iComp2) * //SpecStoich(iSpec, iComp1) *
@@ -193,7 +193,7 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
         } else {
           JacobianMatrix(iComp1, iComp2) = Sum / (SpecConc[iComp2]);// * SpecCtoM(iComp2));
         }
-      } else if ((SpecActCorr[iComp1] == "WHAMHA") || 
+      } else */if ((SpecActCorr[iComp1] == "WHAMHA") || 
                  (SpecActCorr[iComp1] == "WHAMFA")) {
         /* WHAM species shouldn't have their CToM adjusted, but just to be sure, 
            let's take it out of the calculation. */

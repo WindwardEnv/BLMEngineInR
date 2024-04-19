@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+#include <math.h>
 #include "CHESSFunctions.h"
 
 //' @title CHemical Equilibria in Soils and Solutions
@@ -224,6 +225,18 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
   int Counter;
 
+  // variables for old-style tox mode
+  int ToxIter;
+  double CalcCA;
+  int i, iSpec;
+  double ToxError;
+  double ToxResid;
+  double LoMeConc, HiMeConc;
+  double LoToxResid, HiToxResid;
+  bool ToxBracket;
+  double ToxStepLim;
+  double ToxFPStep;
+  double ToxBiStep;
   
   // Initialize some variables
   for (iComp = 0; iComp < NComp; iComp++) { CompPosInSpec(iComp) = iComp; }
@@ -236,7 +249,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   SpecCtoM = MassAmtAdj[SpecMC];
   SpecCtoMAdj = clone(SpecCtoM);
   CompCtoM = SpecCtoM[CompPosInSpec];
-  TotMoles = TotConc * CompCtoM;
 
   // Do the temperature adjustments on the binding constants
   SpecKTempAdj = TempCorrection(SysTempKelvin, NSpec, SpecK, SpecTempKelvin, 
@@ -247,258 +259,375 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   CompConc = InitialGuess(TotConc, SpecCtoMAdj, CompType, SpecKISTempAdj, 
                           SpecStoich, SpecName, NComp, NSpec, 
                           DoTox, NBLMetal, BLMetalSpecs, MetalComp, CATarget);
-  SpecConc[CompPosInSpec] = clone(CompConc);
+  SpecConc[CompPosInSpec] = clone(CompConc);  
+  TotMoles = TotConc * CompCtoM;
 
-  // Run through CHESS calculations with initial values
-  MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, CompType,
-                       CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
-                       SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC, 
-                       WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius, 
-                       wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
-                       MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
-                       TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
-                       SpecActivityCoef, CalcTotMoles, WHAMSpecCharge,
-                       WhichMax, IonicStrength, Resid, CompError);
+  if (DoTox) {
+    ToxIter = 0;
+    CalcToxError(NBLMetal, BLMetalSpecs, MetalComp, CATarget, SpecConc, 
+                 ToxResid, ToxError);
+  } else {
+    ToxIter = MaxIter - 1;
+    ToxError = ConvergenceCriteria * 999;
+  }  
+  while ((ToxError > ConvergenceCriteria) & (ToxIter < MaxIter)) {
 
-  // Begin iterating
-  Iter = 0;
-  bool UpdateZED = true;
-  while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter)) {
+    ToxIter++;
 
-    /*if (QuietFlag == "Debug") {
-      Rcpp::Rcout << "Iter=" << Iter 
-        << ", WhichMax=" << CompName(WhichMax) 
-        << ", MaxError=" << MaxError 
-        << ", WHAMSpecCharge=" << WHAMSpecCharge 
-        << ", Resid=" << Resid 
-        << ", TotMoles=" << TotMoles 
-        << ", CalcTotConc=" << CalcTotConc 
-        << ", CalcTotMoles=" << CalcTotMoles 
-        << ", SpecConc=" << SpecConc 
-        << ", SpecMoles=" << SpecMoles
-        << ", MassAmtAdj=" << MassAmtAdj
-        << std::endl;
-    }*/
+    /* BEGIN SPECIATION ITERATIONS */
 
-    // update the iteration counter
-    Iter++;
-    UpdateZED = true;//!UpdateZED;
-    
-    // Calculate the Jacobian Matrix
-    JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
-                              SpecMC, SpecCtoMAdj, SpecActCorr, SpecCharge, 
-                              SpecKISTempAdj, IonicStrength, DoWHAM, 
-                              HumicSubstGramsPerLiter, WHAMSpecCharge, 
-                              wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
-                              AqueousMC, WHAMDonnanMC,  MetalComp, NBLMetal, BLMetalSpecs, 
-                              DoTox);
-    /*NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
-                       CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
-                       SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
-                       WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
-                       wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
-                       MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
-                       TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
-                       SpecActivityCoef, WHAMSpecCharge,
-                       IonicStrength, Resid);*/
+    // Run through CHESS calculations with initial values
+    MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, CompType,
+                        CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
+                        SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC, 
+                        WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius, 
+                        wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
+                        MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
+                        TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
+                        SpecActivityCoef, CalcTotMoles, WHAMSpecCharge,
+                        WhichMax, IonicStrength, Resid, CompError);
 
-    CompConcStepFull = CalcStep(JacobianMatrix, Resid, 
-                                  CompConc, TotMoles, CalcTotMoles, 
-                                  NComp, CompType, CompName);
-    //CompConcStepFull = CalcStepBrute(NComp, CompName, CompType, CompConc, 
-    //                                 TotMoles, CalcTotMoles);
-    
-    if (QuietFlag == "Debug") {
-      Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
-      Rcpp::Rcout << "NumericalJacobianMatrix = [" <<std::endl << NumericalJacobianMatrix << "]" << std::endl;
-      Rcpp::Rcout << "iComp\tSpecName\tSpecConc\tResid\tError\tStep" << std::endl;
-      for (iComp = 0; iComp < NComp; iComp++) {
-        Rcpp::Rcout << iComp << "\t" 
-                    << SpecName[iComp] << "\t" 
-                    << SpecConc[iComp] << "   " 
-                    << Resid[iComp] << "   " 
-                    << CompError[iComp] << "   "
-                    << CompConcStepFull[iComp]
-                    << std::endl;
-        //Rcpp::Rcout << "Resid[" << SpecName[iComp] << "]=" << 
-        //  Resid[iComp] << std::endl;
-        //Rcpp::Rcout << "CompConcStepFull[" << SpecName[iComp] << "]=" << 
-        //  CompConcStepFull[iComp] << std::endl;
-      }
-    }   
+    // Begin iterating
+    Iter = 0;
+    bool UpdateZED = true;
+    while ((Iter == 0) || 
+           ((MaxError > ConvergenceCriteria) & (Iter < MaxIter))) {
 
-    // Do a full N-R step
-    SpecKISTempAdjFull = clone(SpecKISTempAdj);
-    SpecCtoMAdjFull = clone(SpecCtoMAdj);
-    SpecConcFull = clone(SpecConc);
-    SpecActivityCoefFull = clone(SpecActivityCoef);
-    TotConcFull = clone(TotConc);
-    TotMolesFull = clone(TotMoles);
-    WHAMSpecChargeFull = clone(WHAMSpecCharge);
-    MassAmtAdjFull = clone(MassAmtAdj);
-    MaxErrorFull = CHESSIter(CompConcStepFull, NMass, MassAmt, NComp, CompName, 
-                        CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
-                        SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
-                        DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
-                        wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
-                        MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
-                        //parameters that are modified and returned:
-                        MassAmtAdjFull, TotConcFull, TotMolesFull, SpecKISTempAdjFull, 
-                        SpecCtoMAdjFull, SpecConcFull, SpecActivityCoefFull,
-                        CalcTotMolesFull, WHAMSpecChargeFull, WhichMaxFull, 
-                        IonicStrengthFull, ResidFull, CompErrorFull);
-
-    DoPartialSteps = false;
-    if (DoPartialStepsAlways) {
-      if (MaxErrorFull > MaxError) {
-        // Do a half-step
-        StepSizeAlt = std::pow(0.5, 0.5);//this just ensures it starts at 0.5
-        DoPartialSteps = true;
-        if (QuietFlag == "Debug") { Rcpp::Rcout << "Little Step." << std::endl; }
-      } else if (MaxErrorFull > (MaxError * 0.9)) {
-        // Do a double-step
-        StepSizeAlt = std::pow(1.5, 0.5);
-        DoPartialSteps = true;
-        if (QuietFlag == "Debug") { Rcpp::Rcout << "Big Step." << std::endl; }
-      }
-    }
-    
-    DoPartialSteps = DoPartialSteps && DoPartialStepsAlways;
-    //MaxErrorInterp = MaxError + 999;
-    MaxErrorAlt = MaxError + 999;
-
-    if (DoPartialSteps) {      
-      if (QuietFlag == "Debug") {
-        Rcpp::Rcout << 
-        "Counter StepSizeAlt MaxErrorAlt"
-        << std::endl;
-      }
-
-      Counter = 0;
-      while((Counter < 3) && (MaxErrorAlt > MaxError)) {
-        Counter++;
-        StepSizeAlt = std::pow(StepSizeAlt, 2);
-        SpecKISTempAdjAlt = clone(SpecKISTempAdj);
-        SpecCtoMAdjAlt = clone(SpecCtoMAdj);
-        SpecConcAlt = clone(SpecConc);
-        SpecActivityCoef = clone(SpecActivityCoef);
-        TotConcAlt = clone(TotConc);
-        TotMolesAlt = clone(TotMoles);
-        WHAMSpecChargeAlt = clone(WHAMSpecCharge);
-        MassAmtAdjAlt = clone(MassAmtAdj);
-        CompConcStepAlt = CompConcStepFull * StepSizeAlt;
-        MaxErrorAlt = CHESSIter(CompConcStepAlt, NMass, MassAmt, NComp, CompName, 
-                            CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
-                            SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
-                            DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
-                            wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
-                            MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
-                            MassAmtAdjAlt, TotConcAlt, TotMolesAlt, SpecKISTempAdjAlt, 
-                            SpecCtoMAdjAlt, SpecConcAlt, SpecActivityCoefAlt, 
-                            CalcTotMolesAlt, WHAMSpecChargeAlt, WhichMaxAlt, 
-                            IonicStrengthAlt, ResidAlt, CompErrorAlt);
-        if (QuietFlag == "Debug") {
-          Rcpp::Rcout << 
-          Counter << " " << 
-          StepSizeAlt << " " << 
-          MaxErrorAlt
+      /*if (QuietFlag == FLAG_DEBUG) {
+        Rcpp::Rcout << "Iter=" << Iter 
+          << ", WhichMax=" << CompName(WhichMax) 
+          << ", MaxError=" << MaxError 
+          << ", WHAMSpecCharge=" << WHAMSpecCharge 
+          << ", Resid=" << Resid 
+          << ", TotMoles=" << TotMoles 
+          << ", CalcTotConc=" << CalcTotConc 
+          << ", CalcTotMoles=" << CalcTotMoles 
+          << ", SpecConc=" << SpecConc 
+          << ", SpecMoles=" << SpecMoles
+          << ", MassAmtAdj=" << MassAmtAdj
           << std::endl;
-        }
-      }
-
-      /*if (MaxErrorAlt < MaxError) {
-       
-        // linearly interpolate for a potential best step
-        StepSizeInterp = 1 - MaxErrorFull * (1 - StepSizeAlt) /
-          (MaxErrorFull - MaxErrorAlt);
-        SpecKISTempAdjInterp = clone(SpecKISTempAdj);
-        SpecCtoMAdjInterp = clone(SpecCtoMAdj);
-        SpecConcInterp = clone(SpecConc);
-        TotConcInterp = clone(TotConc);
-        TotMolesInterp = clone(TotMoles);
-        WHAMSpecChargeInterp = clone(WHAMSpecCharge);
-        MassAmtAdjInterp = clone(MassAmtAdj);
-        CompConcStepInterp = CompConcStepFull * StepSizeInterp;
-        MaxErrorInterp = CHESSIter(CompConcStepInterp, NMass, MassAmt, NComp, CompName, 
-                            CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
-                            SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
-                            DoWHAM, WHAMSpecChargeInterp, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
-                            wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
-                            MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
-                            MassAmtAdjInterp, TotConcInterp, TotMolesInterp, SpecKISTempAdjInterp, 
-                            SpecCtoMAdjInterp, SpecConcInterp, CalcTotMolesInterp, 
-                            WhichMaxInterp, IonicStrengthInterp, ResidInterp, 
-                            CompErrorInterp);
-      }
-
-      if (MaxErrorInterp > MaxErrorAlt){
-        // interpolation didn't help us
-        MaxErrorInterp = MaxError + 999;
       }*/
 
-    }
-    
-    /*if (MaxErrorInterp < MaxError) {
-      // Store the best partial step in the main variables
-      MaxError = MaxErrorInterp;
-      WhichMax = WhichMaxInterp;
-      IonicStrength = IonicStrengthInterp;
-      Resid = clone(ResidInterp);
-      CompError = clone(CompErrorInterp);
-      MassAmtAdj = clone(MassAmtAdjInterp);
-      TotConc = clone(TotConcInterp);
-      TotMoles = clone(TotMolesInterp);
-      SpecKISTempAdj = clone(SpecKISTempAdjInterp);
-      SpecCtoMAdj = clone(SpecCtoMAdjInterp);
-      SpecConc = clone(SpecConcInterp);
-      SpecActivityCoef = clone(SpecActivityCoefInterp);
-      CalcTotMoles = clone(CalcTotMolesInterp);
-      WHAMSpecCharge = clone(WHAMSpecChargeInterp);
-    } else */if (MaxErrorAlt < MaxError) {
-      //Store Alt in the main veriables
-      MaxError = MaxErrorAlt;
-      WhichMax = WhichMaxAlt;
-      IonicStrength = IonicStrengthAlt;
-      Resid = clone(ResidAlt);
-      CompError = clone(CompErrorAlt);
-      MassAmtAdj = clone(MassAmtAdjAlt);
-      TotConc = clone(TotConcAlt);
-      TotMoles = clone(TotMolesAlt);
-      SpecKISTempAdj = clone(SpecKISTempAdjAlt);
-      SpecCtoMAdj = clone(SpecCtoMAdjAlt);
-      SpecConc = clone(SpecConcAlt);
-      SpecActivityCoef = clone(SpecActivityCoefAlt);
-      CalcTotMoles = clone(CalcTotMolesAlt);
-      WHAMSpecCharge = clone(WHAMSpecChargeAlt);
-    } else {
-      // Partial Steps has failed, just revert to full
-      MaxError = MaxErrorFull;
-      WhichMax = WhichMaxFull;
-      IonicStrength = IonicStrengthFull;
-      Resid = clone(ResidFull);
-      CompError = clone(CompErrorFull);
-      MassAmtAdj = clone(MassAmtAdjFull);
-      TotConc = clone(TotConcFull);
-      TotMoles = clone(TotMolesFull);
-      SpecKISTempAdj = clone(SpecKISTempAdjFull);
-      SpecCtoMAdj = clone(SpecCtoMAdjFull);
-      SpecConc = clone(SpecConcFull);
-      SpecActivityCoef = clone(SpecActivityCoefFull);
-      CalcTotMoles = clone(CalcTotMolesFull);
-      WHAMSpecCharge = clone(WHAMSpecChargeFull);
-    }
-    
-    SpecMoles = SpecConc * SpecCtoMAdj;
-    //CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
-    //TotMoles = TotConc * CompCtoMAdj;
-    CalcTotConc = CalcTotMoles / CompCtoM;//Adj;
+      // update the iteration counter
+      Iter++;
+      UpdateZED = !UpdateZED;//true;//
+      
+      // Calculate the Jacobian Matrix
+      JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
+                                SpecMC, SpecCtoMAdj, SpecActCorr, SpecCharge, 
+                                SpecKISTempAdj, IonicStrength, DoWHAM, 
+                                HumicSubstGramsPerLiter, WHAMSpecCharge, 
+                                wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
+                                AqueousMC, WHAMDonnanMC,  MetalComp, NBLMetal, BLMetalSpecs, 
+                                DoTox);
+      /*NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
+                        CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
+                        SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
+                        WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
+                        wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
+                        MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
+                        TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
+                        SpecActivityCoef, WHAMSpecCharge,
+                        IonicStrength, Resid);*/
 
-  } // while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
+      CompConcStepFull = CalcStep(JacobianMatrix, Resid, 
+                                    CompConc, TotMoles, CalcTotMoles, 
+                                    NComp, CompType, CompName);
+      //CompConcStepFull = CalcStepBrute(NComp, CompName, CompType, CompConc, 
+      //                                 TotMoles, CalcTotMoles);
+      
+      if (QuietFlag == FLAG_DEBUG) {
+        //Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
+        //Rcpp::Rcout << "NumericalJacobianMatrix = [" <<std::endl << NumericalJacobianMatrix << "]" << std::endl;
+        Rcpp::Rcout << "iComp\tSpecName\tSpecConc\tResid\tError\tStep" << std::endl;
+        for (iComp = 0; iComp < NComp; iComp++) {
+          Rcpp::Rcout << iComp << "\t" 
+                      << SpecName[iComp] << "\t" 
+                      << SpecConc[iComp] << "   " 
+                      << Resid[iComp] << "   " 
+                      << CompError[iComp] << "   "
+                      << CompConcStepFull[iComp]
+                      << std::endl;
+          //Rcpp::Rcout << "Resid[" << SpecName[iComp] << "]=" << 
+          //  Resid[iComp] << std::endl;
+          //Rcpp::Rcout << "CompConcStepFull[" << SpecName[iComp] << "]=" << 
+          //  CompConcStepFull[iComp] << std::endl;
+        }
+      }   
+
+      // Do a full N-R step
+      SpecKISTempAdjFull = clone(SpecKISTempAdj);
+      SpecCtoMAdjFull = clone(SpecCtoMAdj);
+      SpecConcFull = clone(SpecConc);
+      SpecActivityCoefFull = clone(SpecActivityCoef);
+      TotConcFull = clone(TotConc);
+      TotMolesFull = clone(TotMoles);
+      WHAMSpecChargeFull = clone(WHAMSpecCharge);
+      MassAmtAdjFull = clone(MassAmtAdj);
+      MaxErrorFull = CHESSIter(CompConcStepFull, NMass, MassAmt, NComp, CompName, 
+                          CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                          SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
+                          DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
+                          wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
+                          MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
+                          //parameters that are modified and returned:
+                          MassAmtAdjFull, TotConcFull, TotMolesFull, SpecKISTempAdjFull, 
+                          SpecCtoMAdjFull, SpecConcFull, SpecActivityCoefFull,
+                          CalcTotMolesFull, WHAMSpecChargeFull, WhichMaxFull, 
+                          IonicStrengthFull, ResidFull, CompErrorFull);
+
+      DoPartialSteps = false;
+      if (DoPartialStepsAlways) {
+        if (MaxErrorFull > MaxError) {
+          // Do a half-step
+          StepSizeAlt = std::pow(0.5, 0.5);//this just ensures it starts at 0.5
+          DoPartialSteps = true;
+          if (QuietFlag == FLAG_DEBUG) { Rcpp::Rcout << "Little Step." << std::endl; }
+        } else if (MaxErrorFull > (MaxError * 0.9)) {
+          // Do a double-step
+          StepSizeAlt = std::pow(1.5, 0.5);
+          DoPartialSteps = true;
+          if (QuietFlag == FLAG_DEBUG) { Rcpp::Rcout << "Big Step." << std::endl; }
+        }
+      }
+      
+      DoPartialSteps = DoPartialSteps && DoPartialStepsAlways;
+      //MaxErrorInterp = MaxError + 999;
+      MaxErrorAlt = MaxError + 999;
+
+      if (DoPartialSteps) {      
+        if (QuietFlag == FLAG_DEBUG) {
+          Rcpp::Rcout << 
+          "Counter StepSizeAlt MaxErrorAlt"
+          << std::endl;
+        }
+
+        Counter = 0;
+        while((Counter < 3) && (MaxErrorAlt > MaxError)) {
+          Counter++;
+          StepSizeAlt = std::pow(StepSizeAlt, 2);
+          SpecKISTempAdjAlt = clone(SpecKISTempAdj);
+          SpecCtoMAdjAlt = clone(SpecCtoMAdj);
+          SpecConcAlt = clone(SpecConc);
+          SpecActivityCoef = clone(SpecActivityCoef);
+          TotConcAlt = clone(TotConc);
+          TotMolesAlt = clone(TotMoles);
+          WHAMSpecChargeAlt = clone(WHAMSpecCharge);
+          MassAmtAdjAlt = clone(MassAmtAdj);
+          CompConcStepAlt = CompConcStepFull * StepSizeAlt;
+          MaxErrorAlt = CHESSIter(CompConcStepAlt, NMass, MassAmt, NComp, CompName, 
+                              CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                              SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
+                              DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
+                              wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
+                              MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
+                              MassAmtAdjAlt, TotConcAlt, TotMolesAlt, SpecKISTempAdjAlt, 
+                              SpecCtoMAdjAlt, SpecConcAlt, SpecActivityCoefAlt, 
+                              CalcTotMolesAlt, WHAMSpecChargeAlt, WhichMaxAlt, 
+                              IonicStrengthAlt, ResidAlt, CompErrorAlt);
+          if (QuietFlag == FLAG_DEBUG) {
+            Rcpp::Rcout << 
+            Counter << " " << 
+            StepSizeAlt << " " << 
+            MaxErrorAlt
+            << std::endl;
+          }
+        }
+
+        /*if (MaxErrorAlt < MaxError) {
+        
+          // linearly interpolate for a potential best step
+          StepSizeInterp = 1 - MaxErrorFull * (1 - StepSizeAlt) /
+            (MaxErrorFull - MaxErrorAlt);
+          SpecKISTempAdjInterp = clone(SpecKISTempAdj);
+          SpecCtoMAdjInterp = clone(SpecCtoMAdj);
+          SpecConcInterp = clone(SpecConc);
+          TotConcInterp = clone(TotConc);
+          TotMolesInterp = clone(TotMoles);
+          WHAMSpecChargeInterp = clone(WHAMSpecCharge);
+          MassAmtAdjInterp = clone(MassAmtAdj);
+          CompConcStepInterp = CompConcStepFull * StepSizeInterp;
+          MaxErrorInterp = CHESSIter(CompConcStepInterp, NMass, MassAmt, NComp, CompName, 
+                              CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                              SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
+                              DoWHAM, WHAMSpecChargeInterp, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
+                              wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
+                              MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
+                              MassAmtAdjInterp, TotConcInterp, TotMolesInterp, SpecKISTempAdjInterp, 
+                              SpecCtoMAdjInterp, SpecConcInterp, CalcTotMolesInterp, 
+                              WhichMaxInterp, IonicStrengthInterp, ResidInterp, 
+                              CompErrorInterp);
+        }
+
+        if (MaxErrorInterp > MaxErrorAlt){
+          // interpolation didn't help us
+          MaxErrorInterp = MaxError + 999;
+        }*/
+
+      }
+      
+      /*if (MaxErrorInterp < MaxError) {
+        // Store the best partial step in the main variables
+        MaxError = MaxErrorInterp;
+        WhichMax = WhichMaxInterp;
+        IonicStrength = IonicStrengthInterp;
+        Resid = clone(ResidInterp);
+        CompError = clone(CompErrorInterp);
+        MassAmtAdj = clone(MassAmtAdjInterp);
+        TotConc = clone(TotConcInterp);
+        TotMoles = clone(TotMolesInterp);
+        SpecKISTempAdj = clone(SpecKISTempAdjInterp);
+        SpecCtoMAdj = clone(SpecCtoMAdjInterp);
+        SpecConc = clone(SpecConcInterp);
+        SpecActivityCoef = clone(SpecActivityCoefInterp);
+        CalcTotMoles = clone(CalcTotMolesInterp);
+        WHAMSpecCharge = clone(WHAMSpecChargeInterp);
+      } else */if (MaxErrorAlt < MaxError) {
+        //Store Alt in the main veriables
+        MaxError = MaxErrorAlt;
+        WhichMax = WhichMaxAlt;
+        IonicStrength = IonicStrengthAlt;
+        Resid = clone(ResidAlt);
+        CompError = clone(CompErrorAlt);
+        MassAmtAdj = clone(MassAmtAdjAlt);
+        TotConc = clone(TotConcAlt);
+        TotMoles = clone(TotMolesAlt);
+        SpecKISTempAdj = clone(SpecKISTempAdjAlt);
+        SpecCtoMAdj = clone(SpecCtoMAdjAlt);
+        SpecConc = clone(SpecConcAlt);
+        SpecActivityCoef = clone(SpecActivityCoefAlt);
+        CalcTotMoles = clone(CalcTotMolesAlt);
+        WHAMSpecCharge = clone(WHAMSpecChargeAlt);
+      } else {
+        // Partial Steps has failed, just revert to full
+        MaxError = MaxErrorFull;
+        WhichMax = WhichMaxFull;
+        IonicStrength = IonicStrengthFull;
+        Resid = clone(ResidFull);
+        CompError = clone(CompErrorFull);
+        MassAmtAdj = clone(MassAmtAdjFull);
+        TotConc = clone(TotConcFull);
+        TotMoles = clone(TotMolesFull);
+        SpecKISTempAdj = clone(SpecKISTempAdjFull);
+        SpecCtoMAdj = clone(SpecCtoMAdjFull);
+        SpecConc = clone(SpecConcFull);
+        SpecActivityCoef = clone(SpecActivityCoefFull);
+        CalcTotMoles = clone(CalcTotMolesFull);
+        WHAMSpecCharge = clone(WHAMSpecChargeFull);
+      }
+      
+      SpecMoles = SpecConc * SpecCtoMAdj;
+      //CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
+      //TotMoles = TotConc * CompCtoMAdj;
+      CalcTotConc = CalcTotMoles / CompCtoM;//Adj;
+
+    } // while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
+
+    /* END SPECIATION ITERATIONS */
+
+    if (DoTox){
+
+      if (MaxError > ConvergenceCriteria) {
+        Rcpp::Rcout << ToxIter << ", Speciation did not converge...trying new InitialGues."  << std::endl;
+        // Get initial values for component concentrations
+        CompConc = InitialGuess(TotConc, SpecCtoM, CompType, SpecKTempAdj, 
+                                SpecStoich, SpecName, NComp, NSpec, 
+                                false, NBLMetal, BLMetalSpecs, MetalComp, CATarget);
+        SpecConc[CompPosInSpec] = clone(CompConc);
+        WHAMSpecCharge[0] = -0.0001;
+        WHAMSpecCharge[1] = -0.0001;
+        IonicStrength = 0.1;
+      } else {
+        // Calculate ToxError and adjust SpecConc[MetalComp]
+        CalcToxError(NBLMetal, BLMetalSpecs, MetalComp, CATarget, SpecConc, 
+                    ToxResid, ToxError);
+
+        if (ToxIter == 1) {
+          Rcpp::Rcout << "ToxIter, SpecIter,  Cu, ToxResid, ToxError"  << std::endl;
+        }
+        Rcpp::Rcout << ToxIter << ", " << 
+                      Iter << ", " <<
+                      TotMoles[MetalComp] << ", " << 
+                      ToxResid << ", " << 
+                      ToxError  << std::endl;
+        
+        if ((ToxIter == 1) || (std::remainder(ToxIter, 50) == 0)) {
+          LoToxResid = ToxResid;
+          HiToxResid = ToxResid;
+          LoMeConc = TotMoles[MetalComp];
+          HiMeConc = TotMoles[MetalComp];
+          ToxBracket = false;
+        }
+        if (!ToxBracket && (std::signbit(ToxResid) != std::signbit(LoToxResid))) {
+          ToxBracket = true;
+          if (std::signbit(ToxResid)) {
+            HiToxResid = LoToxResid;
+            HiMeConc = LoMeConc;
+          } else {
+            LoToxResid = HiToxResid;
+            LoMeConc = HiMeConc;
+          }
+        }
+        
+        if (ToxBracket){
+          // we bracket so use false position
+          if (std::signbit(ToxResid)) {
+            LoToxResid = ToxResid;
+            LoMeConc = TotMoles[MetalComp];
+          } else {
+            HiToxResid = ToxResid;
+            HiMeConc = TotMoles[MetalComp];
+          }
+
+          ToxFPStep = LoMeConc + (HiMeConc - LoMeConc) * LoToxResid / (LoToxResid - HiToxResid);//false position
+          //if (std::remainder(ToxIter, 10) == 0) {
+          //  // bisection otherwise (to prevent FP stalling)
+          //  TotMoles[MetalComp] = (LoMeConc + HiMeConc) / 2;//bisection
+          //} else {
+            // false position when it gives us a big enough step
+            TotMoles[MetalComp] = ToxFPStep;
+          //}
+        } else {
+          // we don't bracket, keep expanding the range until we do
+          if (std::signbit(ToxResid)) {
+            LoToxResid = HiToxResid;
+            LoMeConc = HiMeConc;
+            HiToxResid = ToxResid;
+            HiMeConc = TotMoles[MetalComp];
+            ToxFPStep = LoMeConc + (HiMeConc - LoMeConc) * LoToxResid / (LoToxResid - HiToxResid) * 1.1;
+            ToxStepLim = 10 * TotMoles[MetalComp];
+            if ((ToxFPStep > ToxStepLim) || (ToxFPStep <= 0.0) || (ToxIter == 1)) {
+              TotMoles[MetalComp] = ToxStepLim;
+            } else {
+              TotMoles[MetalComp] = ToxFPStep;
+            }
+          } else {
+            HiToxResid = LoToxResid;
+            HiMeConc = LoMeConc;
+            LoToxResid = ToxResid;
+            LoMeConc = TotMoles[MetalComp];
+            ToxFPStep = LoMeConc + (HiMeConc - LoMeConc) * LoToxResid / (LoToxResid - HiToxResid) * 1.1;
+            ToxStepLim = 0.1 * TotMoles[MetalComp];
+            if ((ToxFPStep < ToxStepLim) || (ToxFPStep <= 0.0) || (ToxIter == 1)) {
+              TotMoles[MetalComp] = ToxStepLim;
+            } else {
+              TotMoles[MetalComp] = ToxFPStep;
+            }
+          }
+        }
+        
+        TotConc[MetalComp] = TotMoles[MetalComp] * CompCtoM[MetalComp];     
+        MaxError = ToxError;
+
+      }
+      
+    }
+  }
 
   SpecMoles = SpecConc * SpecCtoMAdj;
   SpecAct = SpecConc * SpecActivityCoef;
 
-  if (QuietFlag == "Debug") {
+  if (QuietFlag == FLAG_DEBUG) {
       Rcpp::Rcout << "Iter=" << Iter 
         << ", WhichMax=" << CompName(WhichMax) 
         << ", MaxError=" << MaxError 
@@ -515,6 +644,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
   return Rcpp::List::create(
       Rcpp::Named("FinalIter") = Iter,
+      Rcpp::Named("FinalToxIter") = ToxIter,
       Rcpp::Named("FinalMaxError") = MaxError,
       Rcpp::Named("IonicStrength") = IonicStrength,
       Rcpp::Named("SpecConc") = SpecConc,

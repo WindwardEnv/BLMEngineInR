@@ -4,9 +4,9 @@ devtools::load_all()
 
 DoTox = TRUE
 iCA = 1L
-QuietFlag ="Debug"
+QuietFlag ="Quiet"
 ConvergenceCriteria = 0.001
-MaxIter = 50L
+MaxIter = 1000L
 DoPartialStepsAlways = FALSE
 
 
@@ -59,8 +59,9 @@ ResultsTable <- BLM(
 
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
-ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
-# iObs = which((ResultsTable$FinalIter < 30) & !is.na(ResultsTable$FinalMaxError))[1]
+ResultsTable[, c("Obs","ID2","FinalIter","FinalToxIter","FinalMaxError")]
+ResultsTable$ObsNum[which((ResultsTable$FinalToxIter >= MaxIter) & (ResultsTable$FinalMaxError > ConvergenceCriteria))]
+# (iObs = which((ResultsTable$FinalIter < MaxIter) & !is.na(ResultsTable$FinalMaxError))[1])
 # ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]
 # ResultsTable[, c("ID2","T.Cu (mol/L)","T.Cu (mol)","Water (L)", "Water_DonnanHA (L)","Water_DonnanFA (L)")]
 
@@ -88,8 +89,10 @@ OldBLMResultsTable$`DonnanFA (mol/L)` = OldBLMResultsTable$Ratio_FS
 OldBLMResultsTable$Z_HA = OldBLMResultsTable$Z_HS
 OldBLMResultsTable$Z_FA = OldBLMResultsTable$Z_FS
 
-ResultsTable[, c("ID","ID2","T.Cu (mol)","Cu (mol/L)", "BL1-Cu (mol/kg wet)", "BL1-CuOH (mol/kg wet)")]
-OldBLMResultsTable[, c("ID","ID2","T.Cu (mol)","Cu (mol/L)","BL1-Cu (mol/kg wet)","BL1-CuOH (mol/kg wet)")]
+head(ResultsTable[, c("ID","ID2","T.Cu (mol)","Cu (mol/L)", "BL1-Cu (mol/kg wet)", "BL1-CuOH (mol/kg wet)")])
+head(OldBLMResultsTable[, c("ID","ID2","T.Cu (mol)","Cu (mol/L)","BL1-Cu (mol/kg wet)","BL1-CuOH (mol/kg wet)")])
+head(ResultsTable[, c("ObsNum","ID2", "BL1 (mol/kg wet)","BL1-Cu (mol/kg wet)", "BL1-CuOH (mol/kg wet)","BL1-Ca (mol/kg wet)", "BL1-Mg (mol/kg wet)", "BL1-H (mol/kg wet)", "BL1-Na (mol/kg wet)")])
+head(OldBLMResultsTable[, c("Obs","ID2","BL1 (mol/kg wet)","BL1-Cu (mol/kg wet)", "BL1-CuOH (mol/kg wet)","BL1-Ca (mol/kg wet)", "BL1-Mg (mol/kg wet)", "BL1-H (mol/kg wet)", "BL1-Na (mol/kg wet)")])
 
 # ResultsTable[iObs, c("IonicStrength", "Water_DonnanHA (L)","Water_DonnanFA (L)",
 #                      "DonnanHA (mol/L)","DonnanFA (mol/L)")]

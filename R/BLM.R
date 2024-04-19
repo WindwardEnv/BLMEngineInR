@@ -102,7 +102,7 @@ BLM = function(ParamFile = character(),
     formalArgs("CHESS") %in% names(FunctionInputs) == FALSE]
 
   # Initialize the output array
-  MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength")
+  MiscOutputCols = c("FinalIter", "FinalToxIter", "FinalMaxError", "IonicStrength")
   SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMCR],")")
   SpecMolesCols = paste0(SpecName," (mol)")
   SpecActCols = paste0("Act.", SpecName)
@@ -177,6 +177,8 @@ BLM = function(ParamFile = character(),
       Out[,paste0("TOrg.",iComp," (mol/L)")] = rowSums(Out[, OrgCols])
     }
   }
+
+  if (!DoTox) {Out$FinalToxIter = NULL}
 
   print(Sys.time() - StartTime)
 

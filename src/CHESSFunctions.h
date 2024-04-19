@@ -41,6 +41,14 @@ void AdjustForToxMode(int NBLMetal,
                       Rcpp::NumericVector &Resid,
                       Rcpp::NumericVector &CompError);
 
+void CalcToxError (int NBLMetal, 
+                   Rcpp::IntegerVector BLMetalSpecs, 
+                   int MetalComp,
+                   double CATarget,
+                   Rcpp::NumericVector SpecConc,
+                   double &ToxResid,
+                   double &ToxError) ;
+
 double MaxCompError(int NComp, Rcpp::NumericVector CompError, 
                     int &WhichMax);
                     
@@ -94,7 +102,7 @@ void SimpleAdjustComp(int iComp,
                       Rcpp::IntegerVector SpecCharge,
                       Rcpp::NumericVector WHAMSpecCharge);
 
-Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
+Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
                                  Rcpp::NumericVector SpecCtoM, 
                                  Rcpp::CharacterVector CompType,
 									               Rcpp::NumericVector SpecK,
@@ -385,5 +393,7 @@ double CHESSIter(
 
 const int iHA = 0; // humic acid = 0
 const int iFA = 1; // fulvic acid = 1
+
+const Rcpp::String FLAG_DEBUG = "Debug";
 
 #endif //__CHESSFUNCTIONS_H__

@@ -1,6 +1,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include <vector>
+#include <cfloat>
 #include <RcppArmadillo.h>
 #include "RcppArmaHelper.h"
 
@@ -94,6 +95,26 @@ arma::mat SvdInverse(arma::mat X) {
 
   arma::svd(U,s,V,X);
   arma::mat dinv = arma::diagmat(1/s);
+
+  double max_d = arma::max(1 / s);
+  double min_d = arma::min(1 / s);
+  double condition = min_d / max_d;
+  double condition_limit = pow(10, - DBL_DIG * 0.95);
+  if (condition < condition_limit) {
+    double near_zero_limit = max_d * condition_limit;
+    for (int i = 0; i < s.size(); i++) {
+      if (dinv[i,i] < near_zero_limit) {
+        dinv[i,i] = 0.0;
+      }
+    }
+  }
+
+  Rcpp::NumericMatrix Rcppdinv = MatrixToRcppMatrix(dinv);
+  bool tmp = false;
+  if (tmp) {Rcpp::Rcout << Rcppdinv << std::endl;}
+
+  
+
   UT = trans(U);
   Xinv = V * dinv * UT;
 
