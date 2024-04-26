@@ -96,27 +96,50 @@ arma::mat SvdInverse(arma::mat X) {
   arma::svd(U,s,V,X);
   arma::mat dinv = arma::diagmat(1/s);
 
-  double max_d = arma::max(1 / s);
-  double min_d = arma::min(1 / s);
-  double condition = min_d / max_d;
-  double condition_limit = pow(10, - DBL_DIG * 0.95);
-  if (condition < condition_limit) {
-    double near_zero_limit = max_d * condition_limit;
+  bool tmp = false;  
+  if (tmp) {
+    Rcpp::NumericMatrix RcppU = MatrixToRcppMatrix(U);
+    Rcpp::Rcout << RcppU << std::endl;
+  }  
+  if (tmp) {
+    Rcpp::NumericMatrix RcppV = MatrixToRcppMatrix(V);
+    Rcpp::Rcout << RcppV << std::endl;
+  }  
+  if (tmp) {
+    Rcpp::NumericMatrix RcppX = MatrixToRcppMatrix(X);
+    Rcpp::Rcout << RcppX << std::endl;
+  }
+  if (tmp) {
+    Rcpp::NumericMatrix Rcppdinv = MatrixToRcppMatrix(s);
+    Rcpp::Rcout << 1 / Rcppdinv << std::endl;
+    Rcpp::Rcout << Rcppdinv << std::endl;
+  }  
+  
+  double max_dinv = arma::max(1 / s);
+  double min_dinv = arma::min(1 / s);
+  double condition = max_dinv / min_dinv;
+  const double condition_limit = 4.5036e+15;//707945784384137.38;//100000000000000000000.0;//pow(10, DBL_DIG * 0.99);
+  //                             012345678901234567890123456789012
+  int n_zero = 0;
+  if (condition > condition_limit) {
+    double near_zero_limit = min_dinv * condition_limit;
     for (int i = 0; i < s.size(); i++) {
-      if (dinv[i,i] < near_zero_limit) {
-        dinv[i,i] = 0.0;
+      if (dinv(i,i) > near_zero_limit) {
+        dinv(i,i) = 0.0;
+        n_zero++;
       }
     }
   }
 
-  Rcpp::NumericMatrix Rcppdinv = MatrixToRcppMatrix(dinv);
-  bool tmp = false;
-  if (tmp) {Rcpp::Rcout << Rcppdinv << std::endl;}
-
-  
+  //Rcpp::Rcout << "     " << condition << ", " << max_dinv << ", " << min_dinv << ", " << n_zero << std::endl;
 
   UT = trans(U);
   Xinv = V * dinv * UT;
+
+  if (tmp) {
+    Rcpp::NumericMatrix RcppXinv = MatrixToRcppMatrix(Xinv);
+    Rcpp::Rcout << RcppXinv << std::endl;
+  }
 
   return Xinv;
 }

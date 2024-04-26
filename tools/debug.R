@@ -2,10 +2,10 @@ rm(list = ls())
 # devtools::clean_dll()
 devtools::load_all()
 
-DoTox = TRUE
+DoTox = FALSE
 iCA = 1L
 QuietFlag ="Quiet"
-ConvergenceCriteria = 0.001
+ConvergenceCriteria = 0.0001
 MaxIter = 1000L
 DoPartialStepsAlways = FALSE
 
@@ -19,8 +19,9 @@ DoPartialStepsAlways = FALSE
 #   "scrap/old BLM/full_inorg_SPEC.det.xlsx"
 # }
 
-# ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
+# # ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
 # # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
+# ParamFile = "scrap/parameter file format/abbrev_organic(3).dat4"
 # InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 
 ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
@@ -59,6 +60,7 @@ ResultsTable <- BLM(
 
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
+ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
 ResultsTable[, c("Obs","ID2","FinalIter","FinalToxIter","FinalMaxError")]
 ResultsTable$ObsNum[which((ResultsTable$FinalToxIter >= MaxIter) & (ResultsTable$FinalMaxError > ConvergenceCriteria))]
 # (iObs = which((ResultsTable$FinalIter < MaxIter) & !is.na(ResultsTable$FinalMaxError))[1])

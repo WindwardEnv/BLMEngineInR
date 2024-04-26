@@ -18,7 +18,7 @@ CHESS(
   TotConc,
   NSpec,
   SpecName,
-  SpecMC,
+  SpecMCR,
   SpecK,
   SpecTempKelvin,
   SpecDeltaH,
@@ -26,8 +26,8 @@ CHESS(
   SpecCharge,
   SpecActCorr,
   DoWHAM,
-  AqueousMC,
-  WHAMDonnanMC,
+  AqueousMCR,
+  WHAMDonnanMCR,
   HumicSubstGramsPerLiter,
   wMolWt,
   wRadius,
@@ -37,9 +37,9 @@ CHESS(
   SysTempKelvin,
   DoTox,
   MetalName,
-  MetalComp,
+  MetalCompR,
   NBLMetal,
-  BLMetalSpecs,
+  BLMetalSpecsR,
   CATarget
 )
 }
@@ -79,7 +79,7 @@ component in the simulation (units of e.g., mol/L and mol/kg)}
 \item{SpecName}{character vector (NSpec), the name of the chemical species
 for which we have formation reactions}
 
-\item{SpecMC}{IntegerVector (NSpec), the mass compartment of the chemical
+\item{SpecMCR}{IntegerVector (NSpec), the mass compartment of the chemical
 species for which we have formation reactions}
 
 \item{SpecK}{numeric vector (NSpec), the equilibrium coefficient of the
@@ -102,14 +102,15 @@ of the chemical species for which we have formation reactions}
 
 \item{DoWHAM}{boolean, true=there are WHAM species, false=no WHAM species}
 
-\item{AqueousMC}{integer, the (1-based) position of the water/aqueous mass
+\item{AqueousMCR}{integer, the (1-based) position of the water/aqueous mass
 compartment. (transformed to 0-based at the beginning of the function)}
 
-\item{WHAMDonnanMC}{the mass compartments corresponding to the
+\item{WHAMDonnanMCR}{the mass compartments corresponding to the
 humic acid (0) and fulvic acid (1) Donnan layers. (transformed to 0-based
 at the beginning of the function)}
 
-\item{HumicSubstGramsPerLiter}{numeric (2), moles of each organic matter component in solution}
+\item{HumicSubstGramsPerLiter}{NumericVector, length of 2, grams per liter 
+of each organic matter component (HA and FA) in solution}
 
 \item{wMolWt}{numeric (2), WHAM's molecular weight parameter for organic
 matter}
@@ -131,15 +132,17 @@ concentration is adjusted to try to match the CATarget with BLMetalSpecs}
 
 \item{MetalName}{character string, the name of the toxic metal}
 
-\item{MetalComp}{integer, the position of the metal in the component arrays
-(i.e., which is the toxic metal component) Note: this are base-1 indexed.}
+\item{MetalCompR}{integer, the position of the metal in the component arrays
+(i.e., which is the toxic metal component) Note: this is base-1 indexed on
+input then converted.}
 
 \item{NBLMetal}{integer, the number of biotic ligand-bound metal species 
 that are associated with toxic effects.}
 
-\item{BLMetalSpecs}{integer vector, the positions of the species in the
+\item{BLMetalSpecsR}{integer vector, the positions of the species in the
 arrays which contribute to toxicity (i.e., which species are the toxic
-metal bound to the relevant biotic ligand) Note: these are base-1 indexed.}
+metal bound to the relevant biotic ligand) Note: these are base-1 indexed
+on input then converted.}
 
 \item{CATarget}{numeric, the target critical accumulation in units of mol /
 kg (only used when DoTox == TRUE)}

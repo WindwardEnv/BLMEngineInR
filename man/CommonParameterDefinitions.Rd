@@ -13,11 +13,14 @@
 \item{MassUnit}{character vector (NMass), The units for each mass
 compartment.}
 
-\item{AqueousMC}{integer, the (1-based) position of the water/aqueous mass
+\item{AqueousMCR}{integer, the (1-based) position of the water/aqueous mass
 compartment.}
 
-\item{BioticLigMC}{integer, the (1-based) position of the biotic ligand mass
+\item{BioticLigMCR}{integer, the (1-based) position of the biotic ligand mass
 compartment(s).}
+
+\item{WHAMDonnanMCR}{integer (2), the mass compartments corresponding to the
+humic acid (1) and fulvic acid (2) Donnan layers.}
 
 \item{WHAMDonnanMC}{integer (2), the mass compartments corresponding to the
 humic acid (0) and fulvic acid (1) Donnan layers.}
@@ -31,8 +34,11 @@ fields.}
 
 \item{InVarName}{character vector (NInVar), The name of each input variable.}
 
+\item{InVarMCR}{integer vector (NInVar), The mass compartment of each input
+variable. (1-based)}
+
 \item{InVarMC}{integer vector (NInVar), The mass compartment of each input
-variable.}
+variable. (0-based)}
 
 \item{InVarType}{character vector (NInVar), The type of each input variable.
 Should be one of "Temperature" (the temperature in degrees C), "pH" (the
@@ -62,8 +68,11 @@ deriving the concentration of each defined component}
 \item{DefCompCharge}{signed integer vector (NDefComp), the charge of each
 defined component}
 
+\item{DefCompMCR}{integer vector (NDefComp), the mass compartment number each
+defined component (1-based)}
+
 \item{DefCompMC}{integer vector (NDefComp), the mass compartment number each
-defined component}
+defined component (0-based)}
 
 \item{DefCompType}{character vector (NDefComp), the type of each defined
 component}
@@ -84,8 +93,11 @@ simulation}
 \item{CompCharge}{signed integer vector (NComp), the charge of each component
 in the simulation}
 
+\item{CompMCR}{integer vector (NComp), the mass compartment of each component
+in the simulation (1-based)}
+
 \item{CompMC}{integer vector (NComp), the mass compartment of each component
-in the simulation}
+in the simulation (0-based)}
 
 \item{CompCtoM}{numeric vector (NSpec), the concentration to mass conversion
 factor of the components}
@@ -114,8 +126,11 @@ formation reactions in the simulation}
 \item{SpecName}{character vector (NSpec), the name of the chemical species
 for which we have formation reactions}
 
+\item{SpecMCR}{integer vector (NSpec), the mass compartment of the chemical
+species for which we have formation reactions (1-based)}
+
 \item{SpecMC}{integer vector (NSpec), the mass compartment of the chemical
-species for which we have formation reactions}
+species for which we have formation reactions (0-based)}
 
 \item{SpecActCorr}{character vector (NSpec), the activity correction method
 of the chemical species for which we have formation reactions}
@@ -204,14 +219,25 @@ associated with toxic effects.}
 \item{BLMetalName}{The names of the species that are the biotic ligand-bound
 metal associated with toxic effects.}
 
-\item{BLComp}{integer vector (NBL), the (1-based) position of the biotic
+\item{BLCompR}{integer vector (NBL), the (1-based) position of the biotic
 ligand component(s) in the component arrays}
 
-\item{MetalComp}{integer vector (NMetal), the (1-based) position of the metal
+\item{BLComp}{integer vector (NBL), the (0-based) position of the biotic
+ligand component(s) in the component arrays}
+
+\item{MetalCompR}{integer vector (NMetal), the (1-based) position of the metal
 component(s) in the component arrays (i.e., which is the toxic metal
 component)}
 
-\item{BLMetalSpecs}{integer vector (NBLMetal), the (1-based) positions of the
+\item{MetalComp}{integer vector (NMetal), the (0-based) position of the metal
+component(s) in the component arrays (i.e., which is the toxic metal
+component)}
+
+\item{BLMetalSpecsR}{integer vector (NBLMetal), the (1-based) positions of the
+species in the arrays which contribute to toxicity (i.e., which species are
+the toxic metal bound to the relevant biotic ligand)}
+
+\item{BLMetalSpecs}{integer vector (NBLMetal), the (0-based) positions of the
 species in the arrays which contribute to toxicity (i.e., which species are
 the toxic metal bound to the relevant biotic ligand)}
 

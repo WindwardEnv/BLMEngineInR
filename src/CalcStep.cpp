@@ -36,8 +36,8 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   Rcpp::LogicalVector CompSolve(NComp);
   NSolve = 0;
   for (iComp = 0; iComp < NComp; iComp++){
-    if ((CompType(iComp) != "FixedConc") && (CompType(iComp) != "FixedAct")
-        //&& (CompType(iComp) != "DonnanHA") && (CompType(iComp) != "DonnanFA")
+    if ((CompType(iComp) != TYPE_FIXEDCONC) && (CompType(iComp) != TYPE_FIXEDACT)
+        //&& (CompType(iComp) != TYPE_DONNANHA) && (CompType(iComp) != TYPE_DONNANFA)
        ) { 
       CompSolve[iComp] = true;
       NSolve++; 
@@ -51,22 +51,22 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   Rcpp::NumericMatrix JacobianMatrixSolve(NSolve, NSolve);
   Rcpp::NumericMatrix JacobianMatrixInv(NSolve, NSolve);
 
-  /*arma::mat ArmaCompConcStepSolve(NSolve, 1);
+  arma::mat ArmaCompConcStepSolve(NSolve, 1);
   arma::mat ArmaResidSolve(NSolve, 1);
   arma::mat ArmaJacobianMatSolve(NSolve, NSolve);
-  arma::mat ArmaJacobianMatInv(NSolve, NSolve);*/
+  arma::mat ArmaJacobianMatInv(NSolve, NSolve);
   
   //Pull out sub-set that should be solved
   i = 0;
   for (iComp = 0; iComp < NComp; iComp++){
     if (CompSolve[iComp]) {
       ResidSolve(i) = Resid(iComp);
-      //ArmaResidSolve(i, 0) = Resid(iComp);
+      ArmaResidSolve(i, 0) = Resid(iComp);
       j = 0;
       for (iComp2 = 0; iComp2 < NComp; iComp2++){
         if (CompSolve[iComp2]) {
           JacobianMatrixSolve(i, j) = JacobianMatrix(iComp, iComp2);
-          //ArmaJacobianMatSolve(i, j) = JacobianMatrix(iComp, iComp2);
+          ArmaJacobianMatSolve(i, j) = JacobianMatrix(iComp, iComp2);
           j++;
         }
       }
@@ -96,37 +96,57 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
 
  
   try {
-    // find the matrix inverse of JacobianMatrix by SVD
+    
+    /*// find the matrix inverse of JacobianMatrix by SVD
     JacobianMatrixInv = SvdInverse(JacobianMatrixSolve);
+
     if (JacobianMatrixInv.nrow() != NSolve) {
       throw 10;
     }
-    CompConcStepSolve = RcppMatMult(JacobianMatrixInv, ResidSolve);
+    CompConcStepSolve = RcppMatMult(JacobianMatrixInv, ResidSolve);*/
     
-    /*// Doing the calculations with Armadillo classes
-    ArmaJacobianMatInv = SvdInverse(ArmaJacobianMatSolve);
+    // Doing the calculations with Armadillo classes
+    bool InverseSuccess;
+    // Start with the general inverse
+    // (https://arma.sourceforge.net/docs.html#inv)
+    InverseSuccess = arma::inv(ArmaJacobianMatInv, ArmaJacobianMatSolve, arma::inv_opts::allow_approx);    
+    
+    if (!InverseSuccess) {
+      // Try to calculate the Moore-Penrose pseudo-invserse (uses SVD)
+      // (https://arma.sourceforge.net/docs.html#pinv)
+      InverseSuccess = arma::pinv(ArmaJacobianMatInv, ArmaJacobianMatSolve);
+    }
+    if (!InverseSuccess) { 
+      throw 20; 
+    }
+    /*ArmaJacobianMatInv = SvdInverse(ArmaJacobianMatSolve);
     if (ArmaJacobianMatInv.n_rows != NSolve) {
       // If we wanted to not do SVD...
       ArmaJacobianMatInv = arma::inv(ArmaJacobianMatSolve);
       throw 10;
-    }
-    ArmaCompConcStepSolve = ArmaJacobianMatInv * ArmaResidSolve;  */
+    }*/
+    ArmaCompConcStepSolve = ArmaJacobianMatInv * ArmaResidSolve;
+    CompConcStepSolve = MatrixToRcppVector(ArmaCompConcStepSolve);
   }
   catch (int e) {
     if (e == 10) {
-      Rcpp::Rcout << "Singluar Matrix?" << std::endl;
-      i = 0;
-      for (iComp = 0; iComp < NComp; iComp++){
-        if (CompSolve[iComp]) {
-          //CompConcStepSolve(i) = CompConc(iComp) * (1 - (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 5);          
-          CompConcStepSolve(i) = CompConc(iComp) * (-1) * (TotMoles(iComp) / CalcTotMoles(iComp));
-          i++;
-        }
-      }
-
+      Rcpp::Rcout << "Singluar Matrix" << std::endl;
+    } else if (e == 20) {
+      Rcpp::Rcout << "Matrix inversion failed." << std::endl;
     } else {
       Rcpp::Rcout << "Unknown exception occurred" << std::endl;
     }
+    
+    // default to a brute-force step value
+    i = 0;
+    for (iComp = 0; iComp < NComp; iComp++){
+      if (CompSolve[iComp]) {
+        //CompConcStepSolve(i) = CompConc(iComp) * (1 - (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 5);          
+        CompConcStepSolve(i) = CompConc(iComp) * (-1) * (TotMoles(iComp) / CalcTotMoles(iComp));
+        i++;
+      }
+    }
+
   }
   /*Rcpp::Rcout << "CompConcStepSolve = [" << CompConcStepSolve << "]" << std::endl;
   std::cout << "ArmaCompConcStepSolve = [";
@@ -169,8 +189,8 @@ Rcpp::NumericVector CalcStepBrute(int NComp,
   int iComp;
 
   for (iComp = 0; iComp < NComp; iComp++){
-    if ((CompType(iComp) != "FixedConc") && (CompType(iComp) != "FixedAct")
-        //&& (CompType(iComp) != "DonnanHA") && (CompType(iComp) != "DonnanFA")
+    if ((CompType(iComp) != TYPE_FIXEDCONC) && (CompType(iComp) != TYPE_FIXEDACT)
+        //&& (CompType(iComp) != TYPE_DONNANHA) && (CompType(iComp) != TYPE_DONNANFA)
        ) { 
       CompConcStep(iComp) = CompConc(iComp) * (1 - TotMoles(iComp) / CalcTotMoles(iComp));
     } else {

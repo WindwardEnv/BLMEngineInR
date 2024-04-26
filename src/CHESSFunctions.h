@@ -395,5 +395,21 @@ const int iHA = 0; // humic acid = 0
 const int iFA = 1; // fulvic acid = 1
 
 const Rcpp::String FLAG_DEBUG = "Debug";
+const Rcpp::String FLAG_QUIET = "Quiet";
+
+const Rcpp::String TYPE_FIXEDCONC = "FixedConc";
+const Rcpp::String TYPE_FIXEDACT = "FixedAct";
+const Rcpp::String TYPE_DONNANHA = "DonnanHA";
+const Rcpp::String TYPE_DONNANFA = "DonnanFA";
+const Rcpp::String TYPE_MASSBAL = "MassBal";
+
+const Rcpp::String ACTYPE_NONE = "None";
+const Rcpp::String ACTYPE_DEBYE = "Debye";
+const Rcpp::String ACTYPE_DAVIES = "Davies";
+const Rcpp::String ACTYPE_DONNANHA = "DonnanHA";
+const Rcpp::String ACTYPE_DONNANFA = "DonnanFA";
+const Rcpp::String ACTYPE_WHAMHA = "WHAMHA";
+const Rcpp::String ACTYPE_WHAMFA = "WHAMFA";
+
 
 #endif //__CHESSFUNCTIONS_H__
