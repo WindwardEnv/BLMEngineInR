@@ -103,7 +103,7 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
       if (CompType(iComp) == TYPE_MASSBAL) {
         //CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTotConc(iComp));
         CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp));
-      } else if ((iRound == 3) && ((CompType(iComp) == TYPE_DONNANHA) || 
+      } else if ((iRound == 1) && ((CompType(iComp) == TYPE_DONNANHA) || 
                                    (CompType(iComp) == TYPE_DONNANFA))) {
         CompConc(iComp) = 10.0;//CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;//
       }

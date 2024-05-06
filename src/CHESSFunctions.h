@@ -411,5 +411,9 @@ const Rcpp::String ACTYPE_DONNANFA = "DonnanFA";
 const Rcpp::String ACTYPE_WHAMHA = "WHAMHA";
 const Rcpp::String ACTYPE_WHAMFA = "WHAMFA";
 
+const int ERROR_MATRIX_INVERSION = 10;
+const int ERROR_SINGULAR_MATRIX = 11;
+const int ERROR_JACOBIAN_NAN = 20;
+
 
 #endif //__CHESSFUNCTIONS_H__

@@ -8,7 +8,7 @@ Column model parameter file, Ver 4.00
 22, Species
 0,  Phases
 5,  Number of Special Definitions
-1,  Number of Critical Values     
+4,  Number of Critical Values     
 --------------------------------------------------------------------------------
 Mass Compartment List
 Compartment,   C to M,     Units label
@@ -81,6 +81,9 @@ WHAM,       V
 Critical Accumulation Table
 #, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
 1, 0.05541,     Ceriodaphnia dubia, Acute,     48h,      Neonate (<24 hr), Mortality, EC50; LC50, Gensemer et al. 2002; Hyne et al. 2005; Naddy et al. 2002; Naddy et al. 2003; Van Genderen et al. 2007,SMEA calculated by median
+2, 0.03395,     FAV,                Acute,     NA,       NA,               FAV,       NA,         US EPA 2007,         none
+3, 0.016975,    CMC,                Acute,     NA,       NA,               CMC,       NA,         US EPA 2007,         FAV / 2
+4, 0.010543478, CCC,                Acute,     NA,       NA,               CCC,       NA,         US EPA 2007,         FAV / 3.22
 --------------------------------------------------------------------------------
 -------Notes--------
 Types: 

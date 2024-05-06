@@ -65,7 +65,8 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
 
   /* variables: */
   double Sum, Sum2;
-  int iComp1, iComp2, iSpec, i, iHS;
+  int iComp1, iComp2, iSpec, iHS;
+  //int i;
   double Sik, Sij, Ci, Cj, Vi, Th, Hi;
   std::string Name1, Name2, NameS;
   Rcpp::String HSName;   
@@ -271,7 +272,12 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
         Sum2 = 0;//TotConc[iComp1] * dVidC(iComp1, iComp2);
         JacobianMatrix(iComp1, iComp2) = Sum - Sum2;
       }
-      
+      if (!std::isfinite(JacobianMatrix(iComp1, iComp2))) {
+        Rcpp::Rcout << "d.Residual(" << CompName[iComp1] << 
+          ") / d.Conc(" << CompName[iComp2] << ") is nan/Inf." << std::endl;
+        JacobianMatrix(iComp1, iComp2) = 0.0;  
+        //throw ERROR_JACOBIAN_NAN;
+      }
     };//NEXT iComp2
   };//NEXT iComp1
 

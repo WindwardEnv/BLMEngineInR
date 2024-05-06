@@ -123,7 +123,7 @@ arma::mat SvdInverse(arma::mat X) {
   int n_zero = 0;
   if (condition > condition_limit) {
     double near_zero_limit = min_dinv * condition_limit;
-    for (int i = 0; i < s.size(); i++) {
+    for (unsigned int i = 0; i < s.size(); i++) {
       if (dinv(i,i) > near_zero_limit) {
         dinv(i,i) = 0.0;
         n_zero++;

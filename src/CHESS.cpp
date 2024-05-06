@@ -310,34 +310,46 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
       // update the iteration counter
       Iter++;
-      UpdateZED = !UpdateZED;//true;//
-      
-      // Calculate the Jacobian Matrix
-      JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
-                                SpecMC, SpecCtoMAdj, SpecActCorr, SpecCharge, 
-                                SpecKISTempAdj, IonicStrength, DoWHAM, 
-                                HumicSubstGramsPerLiter, WHAMSpecCharge, 
-                                wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
-                                AqueousMC, WHAMDonnanMC,  MetalComp, NBLMetal, BLMetalSpecs, 
-                                DoTox);
-      /*NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
-                        CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
-                        SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
-                        WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
-                        wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
-                        MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
-                        TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
-                        SpecActivityCoef, WHAMSpecCharge,
-                        IonicStrength, Resid);*/
+      if (Iter <= 6) {
+        //Rcpp::NumericVector CompConcStepFullBrute(NComp);
+        CompConcStepFull = CalcStepBrute(NComp, CompName, CompType, CompConc, 
+                                         TotMoles, CalcTotMoles);
+      } else {
+        //UpdateZED = true;//!UpdateZED;//             
+        try {
+          // Calculate the Jacobian Matrix
+          JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
+                                  SpecMC, SpecCtoMAdj, SpecActCorr, SpecCharge, 
+                                  SpecKISTempAdj, IonicStrength, DoWHAM, 
+                                  HumicSubstGramsPerLiter, WHAMSpecCharge, 
+                                  wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
+                                  AqueousMC, WHAMDonnanMC,  MetalComp, NBLMetal, BLMetalSpecs, 
+                                  DoTox);
+        
+          /*NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
+                            CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
+                            SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
+                            WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
+                            wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
+                            MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
+                            TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
+                            SpecActivityCoef, WHAMSpecCharge,
+                            IonicStrength, Resid);*/
 
-      CompConcStepFull = CalcStep(JacobianMatrix, Resid, 
-                                    CompConc, TotMoles, CalcTotMoles, 
-                                    NComp, CompType, CompName);
-      Rcpp::NumericVector CompConcStepFullBrute(NComp);
-      CompConcStepFullBrute = CalcStepBrute(NComp, CompName, CompType, CompConc, 
-                                       TotMoles, CalcTotMoles);
+          CompConcStepFull = CalcStep(JacobianMatrix, Resid, 
+                                        CompConc, TotMoles, CalcTotMoles, 
+                                        NComp, CompType, CompName);
+        }
+        catch (int e) {
+          if (e == ERROR_JACOBIAN_NAN){
+            break;
+          }          
+        }
+      }
+
       
-      double StepBrute;
+      
+      /*double StepBrute;
       double StepNR;
       for (iComp = 0; iComp < NComp; iComp++) {
         StepBrute = CompConcStepFullBrute(iComp);
@@ -348,7 +360,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
             abs((StepBrute - StepNR) / (StepBrute + StepNR)) > 1.0) {
           //CompConcStepFull(iComp) = StepBrute;
         }
-      }
+      }*/
 
       if (QuietFlag == FLAG_DEBUG) {
         //Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
