@@ -1,0 +1,104 @@
+Column model parameter file, Ver 4.00
+--------------------------------------------------------------------------------
+2,  Number of Mass Compartments
+2,  Input Labels
+4,  Input Variables
+8,  Input Components 
+1,  Defined Components
+21, Species
+0,  Phases
+5,  Number of Special Definitions
+1,  Number of Critical Values     
+--------------------------------------------------------------------------------
+Mass Compartment List
+Compartment,   C to M,     Units label
+Water,         1,          L             
+BL,            1,          kg wet
+--------------------------------------------------------------------------------
+Input Labels
+ID
+ID2
+--------------------------------------------------------------------------------
+Input Variables
+Variable,  Compartment, Type
+Temp,      Water,       Temperature 
+pH,        Water,       pH
+DOC,       Water,       WHAM-HAFA
+HA,        Water,       PercHA
+--------------------------------------------------------------------------------
+Input Components
+Component, Charge, Compartment, Type,     Activity
+Zn,         2,     Water,       MassBal,  Debye
+Ca,         2,     Water,       MassBal,  Debye
+Mg,         2,     Water,       MassBal,  Debye
+Na,         1,     Water,       MassBal,  Debye
+K,          1,     Water,       MassBal,  Debye
+SO4,       -2,     Water,       MassBal,  Debye
+Cl,        -1,     Water,       MassBal,  Debye
+CO3,       -2,     Water,       MassBal,  Debye
+--------------------------------------------------------------------------------
+Defined components                                    
+Component,  From,     Charge,   Compartment, Type,    Activity,   Site Den 
+BL1,        1.78E-05, -1,       BL,          MassBal, None,       3E-5
+--------------------------------------------------------------------------------      
+Formation Reactions
+Species, Compart., Act.,  NC, C1,  S1,  C2, S2,  C3,  S3,   Log K,  Delta H,  Temp
+BL-Zn,    BL,      None,   2, BL1, 1,   Zn,  1,             5.41,    0.000, 298.15
+BL-ZnOH,  BL,      None,   3, BL1, 1,   Zn,  1,   H, -1,   -2.40,    0.000, 298.15
+BL1-Ca,  BL,       None,  2,  BL1, 1,   Ca,  1,            3.820,    0.000, 298.15
+BL1-Mg,  BL,       None,  2,  BL1, 1,   Mg,  1,            3.310,    0.000, 298.15
+BL1-H,   BL,       None,  2,  BL1, 1,    H,  1,            6.390,    0.000, 298.15
+BL1-Na,  BL,       None,  2,  BL1, 1,   Na,  1,            2.590,    0.000, 298.15
+OH,      Water,    Debye, 1,  H,  -1,                    -13.997,    55810, 298.15
+HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,   -14600, 298.15
+H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,   -23760, 298.15
+MgHCO3,  Water,    Debye, 3,  CO3, 1,   Mg,  1,  H,   1,  11.400,    -9600, 298.15
+MgCO3,   Water,    Debye, 2,  CO3, 1,   Mg,  1,            2.980,    10000, 298.15
+MgSO4,   Water,    Debye, 2,  Mg,  1,  SO4,  1,            2.370,     5800, 298.15
+CaHCO3,  Water,    Debye, 3,  Ca,  1,  CO3,  1,  H,   1,  11.440,     4400, 298.15
+CaCO3,   Water,    Debye, 2,  Ca,  1,  CO3,  1,            3.220,    15000, 298.15
+CaSO4,   Water,    Debye, 2,  Ca,  1,  SO4,  1,            2.300,     7100, 298.15
+ZnOH,    Water,    Debye, 2,  Zn,  1,    H, -1,            5.040,      0.0, 298.15
+Zn(OH)2, Water,    Debye, 2,  Zn,  1,    H, -2,           11.1,        0.0, 298.15
+ZnSO4,   Water,    Debye, 2,  Zn,  1,  SO4,  1,            2.38,    6317.4, 298.15
+ZnCO3,   Water,    Debye, 2,  Zn,  1,  CO3,  1,            4.76,       0.0, 298.15
+ZnCl,    Water,    Debye, 2,  Zn,  1,   Cl,  1,            0.4,     5475.1, 298.15
+ZnHCO3,  Water,    Debye, 3,  Zn,  1,  CO3,  1,   H,  1,  13.12,       0.0, 298.15
+--------------------------------------------------------------------------------
+Phase List
+Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles
+--------------------------------------------------------------------------------
+Special Definitions
+Definition, Species
+Metal,      Cu
+BL,         BL1
+BL-Metal,   BL1-Cu
+BL-Metal,   BL1-CuOH
+WHAM,       V
+--------------------------------------------------------------------------------
+Critical Accumulation Table
+#, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
+1, 5.388,           HC5,                Acute,       NA,        NA,  5th percentile,          NA, DeForest and Van Genderen, 2012,
+--------------------------------------------------------------------------------
+-------Notes--------
+Types: 
+  PB  C++  R/PFile      Comment
+  1   1    MassBal     (Float previously)
+  2   2    FixedConc
+  3   3    Substituted 
+  4   4    ChargeBal   (not useful in BLM)
+  15  15   SurfPot     (keep for now - double layer stuff)
+  -   5    WHAMV
+  -   6    WHAMVI
+  -   7    WHAMVII
+  -   -    WHAMFile=Filename.wdat
+Activity Correction Methods: 
+  PB  C++   R/PFile  
+  1   1     None
+  2   2     Davies
+  3   3     Debye
+  4   4     MoleFraction
+  5   5     ChargeFraction
+  6   6     WHAMHA (usually internal use only)
+  7   7     WHAMFA (usually internal use only)
+  
