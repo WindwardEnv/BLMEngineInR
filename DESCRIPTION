@@ -1,6 +1,6 @@
 Package: BLMEngineInR
 Type: Package
-Version: 0.1.0
+Version: 0.1.1
 Date: 2023-10-02
 Title: BLM Engine In R
 Authors@R: c(person(given = "Robert", family = "Santore", 

@@ -9,14 +9,6 @@ ConvergenceCriteria = 0.0001
 MaxIter = 100L
 DoPartialStepsAlways = FALSE
 
-ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
-InputFile = "scrap/input files/Cu_Cali_WQC.blm4"
-iCA = 2L
-
-ParamFile = "scrap/parameter file format/Zn_full_organic.dat4"
-InputFile = "scrap/input files/Zn_Cali_WQC.blm4"
-iCA = 2L
-
 # # ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
 # ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
 # InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
@@ -31,14 +23,14 @@ iCA = 2L
 # ParamFile = "scrap/parameter file format/abbrev_organic(3).dat4"
 # InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 
-# ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
-# # ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
-# InputFile = "scrap/parameter file format/full_organic.blm4"
-# oldBLMOutFile = if (DoTox){
-#   "scrap/old BLM/full_organic_TOX.det.xlsx"
-# } else {
-#   "scrap/old BLM/full_organic_SPEC.det.xlsx"
-# }
+ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+# ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
+InputFile = "scrap/parameter file format/full_organic.blm4"
+oldBLMOutFile = if (DoTox){
+  "scrap/old BLM/full_organic_TOX.det.xlsx"
+} else {
+  "scrap/old BLM/full_organic_SPEC.det.xlsx"
+}
 
 # ParamFile = "scrap/parameter file format/Zn_full_organic.dat4"
 # InputFile = "scrap/parameter file format/Zn_full_organic.blm4"
@@ -84,198 +76,13 @@ beepr::beep()
 
 save(ResultsTable, file = paste0(InputFile, "_SPEC.RData"))
 
-
-load("scrap/input files/Zn_Cali_WQC.blm4_TOX.RData")
-load("scrap/input files/Zn_Cali_WQC.blm4_SPEC.RData")
-load("scrap/input files/Cu_Cali_WQC.blm4_TOX.RData")
-load("scrap/input files/Cu_Cali_WQC.blm4_SPEC.RData")
-aggregate(
-  1:nrow(ResultsTable),
-  by = list(
-    Converged = !is.na(ResultsTable$FinalMaxError) &
-      (ResultsTable$FinalMaxError < ConvergenceCriteria),
-    ErraticBehavior = is.na(ResultsTable$FinalMaxError),
-    MaxIterationsReached = (ResultsTable$FinalIter == MaxIter)
-  ),
-  FUN = length
-)
-# Zn Toxicity:
-#   Converged ErraticBehavior MaxIterationsReached    x
-# 1      TRUE           FALSE                FALSE 1043
-# 2     FALSE            TRUE                FALSE   28
-# 3     FALSE           FALSE                 TRUE  223
-#
-# Zn Speciation
-#   Converged ErraticBehavior MaxIterationsReached    x
-# 1      TRUE           FALSE                FALSE 1230
-# 2     FALSE            TRUE                FALSE    3
-# 3     FALSE           FALSE                 TRUE   61
-#
-# Cu Toxicity:
-#   Converged ErraticBehavior MaxIterationsReached   x
-# 1      TRUE           FALSE                FALSE 751
-# 2     FALSE            TRUE                FALSE  72
-# 3     FALSE           FALSE                 TRUE  91
-#
-# Cu Speciation
-#   Converged ErraticBehavior MaxIterationsReached   x
-# 1      TRUE           FALSE                FALSE 878
-# 2     FALSE           FALSE                 TRUE  36
-
-load("scrap/input files/Zn_Cali_WQC.blm4_TOX.RData")
-openxlsx::write.xlsx(ResultsTable[, c(
-  "ObsNum",
-  "ID",
-  "ID2",
-  "Temp",
-  "pH",
-  "DOC",
-  "HA",
-  "Input.Zn",
-  "Input.Ca",
-  "Input.Mg",
-  "Input.Na",
-  "Input.K",
-  "Input.SO4",
-  "Input.Cl",
-  "Input.CO3",
-  "FinalIter",
-  "FinalToxIter",
-  "FinalMaxError",
-  "IonicStrength",
-  "T.Zn (mol/L)",
-  intersect(colnames(ResultsTable),
-            c(paste0(ThisProblem$SpecName, " (mol/L)"),
-              paste0(ThisProblem$SpecName, " (mol/kg wet)"),
-              paste0("TOrg.",ThisProblem$CompName, " (mol/L)")))
-)], file = paste0(InputFile, "_TOX.xlsx"))
-summary(ResultsTable$FinalMaxError > ConvergenceCriteria)
-summary(ResultsTable$FinalIter == MaxIter)
-summary(ResultsTable$FinalToxIter == MaxIter)
-did_not_converge = which((ResultsTable$FinalIter == MaxIter))
-AllInput.dncZn = lapply(
-  AllInput,
-  FUN = function(X) {
-    if (is.null(dim(X))){
-      if (length(X) == 1) {
-        out = length(did_not_converge)
-      } else {
-        out = X[did_not_converge]
-      }
-    } else if (length(dim(X)) == 2) {
-      out = X[did_not_converge,]
-    } else {
-      stop(dim(X))
-    }
-    out
-  }
-)
-ResultsTable.dncZn <- BLM(
-  ParamFile = ParamFile,
-  AllInput = AllInput.dncZn,
-  DoTox = TRUE,
-  iCA = 2L,
-  QuietFlag = "Quiet",
-  ConvergenceCriteria = 0.0001,
-  MaxIter = 1000L,
-  DoPartialStepsAlways = DoPartialStepsAlways
-)
-
-load("scrap/input files/Cu_Cali_WQC.blm4_TOX.RData")
-openxlsx::write.xlsx(ResultsTable[, c(
-  "ObsNum",
-  "ID",
-  "ID2",
-  "Temp",
-  "pH",
-  "DOC",
-  "HA",
-  "Input.Cu",
-  "Input.Ca",
-  "Input.Mg",
-  "Input.Na",
-  "Input.K",
-  "Input.SO4",
-  "Input.Cl",
-  "Input.CO3",
-  "FinalIter",
-  "FinalToxIter",
-  "FinalMaxError",
-  "IonicStrength",
-  "T.Cu (mol/L)",
-  intersect(colnames(ResultsTable),
-            c(paste0(ThisProblem$SpecName, " (mol/L)"),
-              paste0(ThisProblem$SpecName, " (mol/kg wet)"),
-              paste0("TOrg.",ThisProblem$CompName, " (mol/L)")))
-)], file = paste0(InputFile, "_TOX.xlsx"))
-summary(ResultsTable$FinalMaxError > ConvergenceCriteria)
-summary(ResultsTable$FinalIter == MaxIter)
-summary(ResultsTable$FinalToxIter == MaxIter)
-did_not_converge = which((ResultsTable$FinalIter == MaxIter))
-AllInput.dncCu = lapply(
-  AllInput,
-  FUN = function(X) {
-    if (is.null(dim(X))){
-      if (length(X) == 1) {
-        out = length(did_not_converge)
-      } else {
-        out = X[did_not_converge]
-      }
-    } else if (length(dim(X)) == 2) {
-      out = X[did_not_converge,]
-    } else {
-      stop(dim(X))
-    }
-    out
-  }
-)
-ResultsTable.dncCu <- BLM(
-  ParamFile = ParamFile,
-  AllInput = AllInput.dncCu,
-  DoTox = TRUE,
-  iCA = 2L,
-  QuietFlag = "Quiet",
-  ConvergenceCriteria = 0.0001,
-  MaxIter = 1000L,
-  DoPartialStepsAlways = DoPartialStepsAlways
-)
-
-ResultsTable_3plus6_UpdateZEDalways_zeroNan = ResultsTable
-save(ResultsTable_3plus6_UpdateZEDalways_zeroNan, file = "scrap/ResultsTable_3plus6_UpdateZEDalways_zeroNan.RData")
-
-
-load("scrap/ResultsTable_3plus6_UpdateZEDalways_zeroNan.RData")
-load("scrap/ResultsTable_3plus3_UpdateZEDalways_zeroNan.RData")
-load("scrap/ResultsTable_3plus3_UpdateZEDalways_BreakNan.RData")
-load("scrap/ResultsTable_3plus3_UpdateZEDalways.RData")
-load("scrap/ResultsTable_3plus3_UpdateZEDin3.RData")
-load("scrap/ResultsTable_3plus3.RData")
-load("scrap/ResultsTable_3iters.RData")
-load("scrap/ResultsTable_10iters.RData")
-
-# save(ResultsTable_10iters, file = "scrap/ResultsTable_10iters.RData")
-# save(ResultsTable_3iters, file = "scrap/ResultsTable_3iters.RData")
-# save(ResultsTable_3plus3, file = "scrap/ResultsTable_3plus3.RData")
-# save(ResultsTable_3plus3_UpdateZEDin3, file = "scrap/ResultsTable_3plus3_UpdateZEDin3.RData")
-# save(ResultsTable_3plus3_UpdateZEDalways, file = "scrap/ResultsTable_3plus3_UpdateZEDalways.RData")
-# save(ResultsTable_3plus3_UpdateZEDalways_zeroNan, file = "scrap/ResultsTable_3plus3_UpdateZEDalways_zeroNan.RData")
-# save(ResultsTable_3plus3_UpdateZEDalways_BreakNan, file = "scrap/ResultsTable_3plus3_UpdateZEDalways_BreakNan.RData")
-
-ResultsTable_10iters$FinalIter - ResultsTable_3iters$FinalIter
-ResultsTable_10iters$FinalMaxError - ResultsTable_3iters$FinalMaxError
-ResultsTable_3plus3$FinalIter - ResultsTable_3iters$FinalIter
-ResultsTable_3plus3_UpdateZEDin3$FinalIter - ResultsTable_3iters$FinalIter
-ResultsTable_3plus3_UpdateZEDalways$FinalIter - ResultsTable_3iters$FinalIter
-ResultsTable_3plus3_UpdateZEDalways_BreakNan$FinalIter - ResultsTable_3plus3_UpdateZEDalways$FinalIter
-ResultsTable_3plus3_UpdateZEDalways_BreakNan$FinalMaxError - ResultsTable_3plus3_UpdateZEDalways$FinalMaxError
-ResultsTable_3plus3_UpdateZEDalways_zeroNan$FinalIter - ResultsTable_3plus3_UpdateZEDalways$FinalIter
-ResultsTable_3plus3_UpdateZEDalways_zeroNan$FinalMaxError - ResultsTable_3plus3_UpdateZEDalways$FinalMaxError
-ResultsTable_3plus6_UpdateZEDalways_zeroNan$FinalIter - ResultsTable_3plus3_UpdateZEDalways_zeroNan$FinalIter
-ResultsTable_3plus6_UpdateZEDalways_zeroNan$FinalMaxError - ResultsTable_3plus3_UpdateZEDalways_zeroNan$FinalMaxError
+ResultsTable$Status = ifelse((ResultsTable$FinalMaxError > ConvergenceCriteria) |
+                               is.na(ResultsTable$FinalMaxError),
+                             "Not Converged", "Okay")
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
 # ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
-ResultsTable[, intersect(c("Obs","ID2","FinalToxIter","FinalIter","FinalMaxError"), colnames(ResultsTable))]
+ResultsTable[, intersect(c("Obs","ID2", "Status","FinalToxIter","FinalIter","FinalMaxError"), colnames(ResultsTable))]
 ResultsTable$ObsNum[which(((ResultsTable$FinalIter >= MaxIter) | (ResultsTable$FinalToxIter >= MaxIter)) & (ResultsTable$FinalMaxError > ConvergenceCriteria))]
 # (iObs = which((ResultsTable$FinalIter < MaxIter) & !is.na(ResultsTable$FinalMaxError))[1])
 # ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]

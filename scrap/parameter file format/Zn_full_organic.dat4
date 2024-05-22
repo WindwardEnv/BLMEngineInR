@@ -8,7 +8,7 @@ Column model parameter file, Ver 4.00
 21, Species
 0,  Phases
 5,  Number of Special Definitions
-2,  Number of Critical Values     
+3,  Number of Critical Values     
 --------------------------------------------------------------------------------
 Mass Compartment List
 Compartment,   C to M,     Units label
@@ -78,9 +78,10 @@ BL-Metal,   BL1-ZnOH
 WHAM,       V
 --------------------------------------------------------------------------------
 Critical Accumulation Table
-#, CA,    Species,   Test Type, Duration, Lifestage, Endpoint,       Quantifier, References,                          Miscellaneous
-1, 5.388, HC5,       Acute,     NA,       NA,        5th percentile, NA,         "DeForest and Van Genderen, 2012",   
-2, 2.908, draft FAV, Acute,     NA,       NA,        FAV,            NA,         California Zn recaclulation 2023-24, value not final
+#, CA,         Species,    Test Type, Duration, Lifestage, Endpoint,       Quantifier, References,                          Miscellaneous
+1, 5.388,      HC5,        Acute,     NA,       NA,        5th percentile, NA,         "DeForest and Van Genderen, 2012",   
+2, 2.908,      draft FAV,  Acute,     NA,       NA,        FAV,            NA,         California Zn recaclulation 2023-24, value not final
+3, 3.88991213, recalc FAV, Acute,     NA,       NA,        FAV,            NA,         California Zn recalculation 2023-24, November 2023
 --------------------------------------------------------------------------------
 -------Notes--------
 Types: 
