@@ -45,9 +45,9 @@ void CalcResidAndError(int NComp,
   TotHSMoles(iHA) = 0.0;
   TotHSMoles(iFA) = 0.0;
   for (iComp = 0; iComp < NComp; iComp++) {
-    if (SpecActCorr(iComp) == "WHAMHA") {
+    if (SpecActCorr(iComp) == ACTYPE_WHAMHA) {
       TotHSMoles(iHA) += TotMoles(iComp);
-    } else if (SpecActCorr(iComp) == "WHAMFA") {
+    } else if (SpecActCorr(iComp) == ACTYPE_WHAMFA) {
       TotHSMoles(iFA) = TotMoles(iComp);
     }
   }*/
@@ -59,12 +59,12 @@ void CalcResidAndError(int NComp,
   CompError = abs(Resid / TotMoles);
   
   for (iComp = 0; iComp < NComp; iComp++) {
-    if ((CompType(iComp) == "FixedConc") || (CompType(iComp) == "FixedAct")) {
+    if ((CompType(iComp) == TYPE_FIXEDCONC) || (CompType(iComp) == TYPE_FIXEDACT)) {
       Resid(iComp) = 0.0;
       CompError(iComp) = 0.0;
-    //} else if (SpecActCorr(iComp) == "WHAMHA") {
+    //} else if (SpecActCorr(iComp) == ACTYPE_WHAMHA) {
     //  CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iHA]);
-    //} else if (SpecActCorr(iComp) == "WHAMFA") {
+    //} else if (SpecActCorr(iComp) == ACTYPE_WHAMFA) {
     //  CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iFA]);
     }
   }  

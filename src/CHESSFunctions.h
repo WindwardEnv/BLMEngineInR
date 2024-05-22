@@ -94,7 +94,7 @@ void SimpleAdjustComp(int iComp,
                       Rcpp::IntegerVector SpecCharge,
                       Rcpp::NumericVector WHAMSpecCharge);
 
-Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
+Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
                                  Rcpp::NumericVector SpecCtoM, 
                                  Rcpp::CharacterVector CompType,
 									               Rcpp::NumericVector SpecK,
@@ -385,5 +385,26 @@ double CHESSIter(
 
 const int iHA = 0; // humic acid = 0
 const int iFA = 1; // fulvic acid = 1
+
+const Rcpp::String FLAG_DEBUG = "Debug";
+const Rcpp::String FLAG_QUIET = "Quiet";
+
+const Rcpp::String TYPE_FIXEDCONC = "FixedConc";
+const Rcpp::String TYPE_FIXEDACT = "FixedAct";
+const Rcpp::String TYPE_DONNANHA = "DonnanHA";
+const Rcpp::String TYPE_DONNANFA = "DonnanFA";
+const Rcpp::String TYPE_MASSBAL = "MassBal";
+
+const Rcpp::String ACTYPE_NONE = "None";
+const Rcpp::String ACTYPE_DEBYE = "Debye";
+const Rcpp::String ACTYPE_DAVIES = "Davies";
+const Rcpp::String ACTYPE_DONNANHA = "DonnanHA";
+const Rcpp::String ACTYPE_DONNANFA = "DonnanFA";
+const Rcpp::String ACTYPE_WHAMHA = "WHAMHA";
+const Rcpp::String ACTYPE_WHAMFA = "WHAMFA";
+
+const int ERROR_MATRIX_INVERSION = 10;
+const int ERROR_SINGULAR_MATRIX = 11;
+const int ERROR_JACOBIAN_NAN = 20;
 
 #endif //__CHESSFUNCTIONS_H__

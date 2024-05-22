@@ -31,7 +31,7 @@
 //'
 //' @noRd
 //'
-Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
+Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
                                  Rcpp::NumericVector SpecCtoM,
                                  Rcpp::CharacterVector CompType,
 									               Rcpp::NumericVector SpecK,
@@ -87,7 +87,18 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
       }
     }*/
 
-	  /* Adjust component concentrations */
+	  if (DoTox) {
+      // Sum toxic BL-bound metal species
+      CalcCA = 0;
+      for (i = 0; i < NBLMetal; i++){
+        iSpec = BLMetalSpecs[i];
+        CalcCA += SpecConc[iSpec];
+      }
+      TotConc(MetalComp) = TotConc(MetalComp) * (CATarget / CalcCA);
+      TotMoles(MetalComp) = TotMoles(MetalComp) * (CATarget / CalcCA);
+    }
+
+    /* Adjust component concentrations */
     for (iComp = 0; iComp < NComp; iComp++) {
       if (DoTox && (iComp == MetalComp)) {
         // Sum toxic BL-bound metal species
@@ -97,11 +108,11 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector TotConc,
           CalcCA += SpecConc[iSpec];
         }
         CompConc(iComp) = CompConc(iComp) * (CATarget / CalcCA);
-      } else if (CompType(iComp) == "MassBal") {
+      } else if (CompType(iComp) == TYPE_MASSBAL) {
         //CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTotConc(iComp));
         CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp));
-      } else if ((iRound == 3) && ((CompType(iComp) == "DonnanHA") || 
-                                   (CompType(iComp) == "DonnanFA"))) {
+      } else if ((iRound == 1) && ((CompType(iComp) == TYPE_DONNANHA) ||
+                                   (CompType(iComp) == TYPE_DONNANFA))) {
         CompConc(iComp) = 10.0;//CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;//
       }
     }

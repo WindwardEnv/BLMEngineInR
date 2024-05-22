@@ -29,7 +29,7 @@
 //' @param NSpec integer, number of species reactions
 //' @param SpecName character vector (NSpec), the name of the chemical species
 //'   for which we have formation reactions
-//' @param SpecMC IntegerVector (NSpec), the mass compartment of the chemical
+//' @param SpecMCR IntegerVector (NSpec), the mass compartment of the chemical
 //'   species for which we have formation reactions
 //' @param SpecK numeric vector (NSpec), the equilibrium coefficient of the
 //'   formation reactions.
@@ -44,9 +44,9 @@
 //' @param SpecActCorr character vector (NSpec), the activity correction method
 //'   of the chemical species for which we have formation reactions
 //' @param DoWHAM boolean, true=there are WHAM species, false=no WHAM species
-//' @param AqueousMC integer, the (1-based) position of the water/aqueous mass
+//' @param AqueousMCR integer, the (1-based) position of the water/aqueous mass
 //'   compartment. (transformed to 0-based at the beginning of the function)
-//' @param WHAMDonnanMC the mass compartments corresponding to the
+//' @param WHAMDonnanMCR the mass compartments corresponding to the
 //'   humic acid (0) and fulvic acid (1) Donnan layers. (transformed to 0-based
 //'   at the beginning of the function)
 //' @param HumicSubstGramsPerLiter NumericVector, length of 2, grams per liter 
@@ -63,12 +63,12 @@
 //' @param DoTox logical, TRUE for toxicity mode where the MetalName component
 //'   concentration is adjusted to try to match the CATarget with BLMetalSpecs
 //' @param MetalName character string, the name of the toxic metal
-//' @param MetalComp integer, the position of the metal in the component arrays
+//' @param MetalCompR integer, the position of the metal in the component arrays
 //'   (i.e., which is the toxic metal component) Note: this is base-1 indexed on
 //'   input then converted.
 //' @param NBLMetal integer, the number of biotic ligand-bound metal species 
 //'   that are associated with toxic effects.
-//' @param BLMetalSpecs integer vector, the positions of the species in the
+//' @param BLMetalSpecsR integer vector, the positions of the species in the
 //'   arrays which contribute to toxicity (i.e., which species are the toxic
 //'   metal bound to the relevant biotic ligand) Note: these are base-1 indexed
 //'   on input then converted.
@@ -236,7 +236,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   SpecCtoM = MassAmtAdj[SpecMC];
   SpecCtoMAdj = clone(SpecCtoM);
   CompCtoM = SpecCtoM[CompPosInSpec];
-  TotMoles = TotConc * CompCtoM;
 
   // Do the temperature adjustments on the binding constants
   SpecKTempAdj = TempCorrection(SysTempKelvin, NSpec, SpecK, SpecTempKelvin, 
@@ -248,6 +247,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                           SpecStoich, SpecName, NComp, NSpec, 
                           DoTox, NBLMetal, BLMetalSpecs, MetalComp, CATarget);
   SpecConc[CompPosInSpec] = clone(CompConc);
+  TotMoles = TotConc * CompCtoM;
 
   // Run through CHESS calculations with initial values
   MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, CompType,
@@ -265,7 +265,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   bool UpdateZED = true;
   while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter)) {
 
-    /*if (QuietFlag == "Debug") {
+    /*if (QuietFlag == FLAG_DEBUG) {
       Rcpp::Rcout << "Iter=" << Iter 
         << ", WhichMax=" << CompName(WhichMax) 
         << ", MaxError=" << MaxError 
@@ -284,35 +284,47 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     Iter++;
     UpdateZED = true;//!UpdateZED;
     
-    // Calculate the Jacobian Matrix
-    JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
-                              SpecMC, SpecCtoMAdj, SpecActCorr, SpecCharge, 
-                              SpecKISTempAdj, IonicStrength, DoWHAM, 
-                              HumicSubstGramsPerLiter, WHAMSpecCharge, 
-                              wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
-                              AqueousMC, WHAMDonnanMC,  MetalComp, NBLMetal, BLMetalSpecs, 
-                              DoTox);
-    /*NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
-                       CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
-                       SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
-                       WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
-                       wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
-                       MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
-                       TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
-                       SpecActivityCoef, WHAMSpecCharge,
-                       IonicStrength, Resid);*/
+    if (Iter <= 6) {
+      CompConcStepFull = CalcStepBrute(NComp, CompName, CompType, CompConc, 
+                                         TotMoles, CalcTotMoles);
+    } else {
+      try {
+        // Calculate the Jacobian Matrix
+        JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
+                                  SpecMC, SpecCtoMAdj, SpecActCorr, SpecCharge, 
+                                  SpecKISTempAdj, IonicStrength, DoWHAM, 
+                                  HumicSubstGramsPerLiter, WHAMSpecCharge, 
+                                  wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
+                                  AqueousMC, WHAMDonnanMC,  MetalComp, NBLMetal, BLMetalSpecs, 
+                                  DoTox);
+        /*NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
+                          CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
+                          SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
+                          WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
+                          wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
+                          MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
+                          TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
+                          SpecActivityCoef, WHAMSpecCharge,
+                          IonicStrength, Resid);*/
 
-    CompConcStepFull = CalcStep(JacobianMatrix, Resid, 
-                                  CompConc, TotMoles, CalcTotMoles, 
-                                  NComp, CompType, CompName);
-    //CompConcStepFull = CalcStepBrute(NComp, CompName, CompType, CompConc, 
-    //                                 TotMoles, CalcTotMoles);
+        CompConcStepFull = CalcStep(JacobianMatrix, Resid, 
+                                      CompConc, TotMoles, CalcTotMoles, 
+                                      NComp, CompType, CompName);
+        //CompConcStepFull = CalcStepBrute(NComp, CompName, CompType, CompConc, 
+        //                                 TotMoles, CalcTotMoles);
+      }
+      catch (int e) {
+        if (e == ERROR_JACOBIAN_NAN) {
+          break;
+        }
+      }
+    }
     
-    if (QuietFlag == "Debug") {
+    if (QuietFlag == FLAG_DEBUG) {
       Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
       Rcpp::Rcout << "NumericalJacobianMatrix = [" <<std::endl << NumericalJacobianMatrix << "]" << std::endl;
       Rcpp::Rcout << "iComp\tSpecName\tSpecConc\tResid\tError\tStep" << std::endl;
-      for (iComp = 0; iComp < NComp; iComp++) {
+      for (int iComp = 0; iComp < NComp; iComp++) {
         Rcpp::Rcout << iComp << "\t" 
                     << SpecName[iComp] << "\t" 
                     << SpecConc[iComp] << "   " 
@@ -354,12 +366,12 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
         // Do a half-step
         StepSizeAlt = std::pow(0.5, 0.5);//this just ensures it starts at 0.5
         DoPartialSteps = true;
-        if (QuietFlag == "Debug") { Rcpp::Rcout << "Little Step." << std::endl; }
+        if (QuietFlag == FLAG_DEBUG) { Rcpp::Rcout << "Little Step." << std::endl; }
       } else if (MaxErrorFull > (MaxError * 0.9)) {
         // Do a double-step
         StepSizeAlt = std::pow(1.5, 0.5);
         DoPartialSteps = true;
-        if (QuietFlag == "Debug") { Rcpp::Rcout << "Big Step." << std::endl; }
+        if (QuietFlag == FLAG_DEBUG) { Rcpp::Rcout << "Big Step." << std::endl; }
       }
     }
     
@@ -368,7 +380,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     MaxErrorAlt = MaxError + 999;
 
     if (DoPartialSteps) {      
-      if (QuietFlag == "Debug") {
+      if (QuietFlag == FLAG_DEBUG) {
         Rcpp::Rcout << 
         "Counter StepSizeAlt MaxErrorAlt"
         << std::endl;
@@ -397,7 +409,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                             SpecCtoMAdjAlt, SpecConcAlt, SpecActivityCoefAlt, 
                             CalcTotMolesAlt, WHAMSpecChargeAlt, WhichMaxAlt, 
                             IonicStrengthAlt, ResidAlt, CompErrorAlt);
-        if (QuietFlag == "Debug") {
+        if (QuietFlag == FLAG_DEBUG) {
           Rcpp::Rcout << 
           Counter << " " << 
           StepSizeAlt << " " << 
@@ -498,7 +510,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   SpecMoles = SpecConc * SpecCtoMAdj;
   SpecAct = SpecConc * SpecActivityCoef;
 
-  if (QuietFlag == "Debug") {
+  if (QuietFlag == FLAG_DEBUG) {
       Rcpp::Rcout << "Iter=" << Iter 
         << ", WhichMax=" << CompName(WhichMax) 
         << ", MaxError=" << MaxError 

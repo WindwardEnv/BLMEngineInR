@@ -21,9 +21,9 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
     SpecKISAdj(iSpec) = SpecK(iSpec);
     if (SpecCharge(iSpec) != 0) {
-      if (SpecActCorr(iSpec) == "WHAMHA") {
+      if (SpecActCorr(iSpec) == ACTYPE_WHAMHA) {
         SpecKISAdj(iSpec) = SpecK(iSpec) * exp(WZ2(iHA) * SpecCharge(iSpec));
-      } else if (SpecActCorr(iSpec) == "WHAMFA") {
+      } else if (SpecActCorr(iSpec) == ACTYPE_WHAMFA) {
         SpecKISAdj(iSpec) = SpecK(iSpec) * exp(WZ2(iFA) * SpecCharge(iSpec));
       }
     }    

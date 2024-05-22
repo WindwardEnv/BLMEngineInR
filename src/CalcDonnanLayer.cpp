@@ -129,7 +129,7 @@ Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
   }
   /* QUESTION:
       Should we be checking that this is an inorganic species with 
-      ((SpecActCorr(iSpec) != "WHAMHA") && (SpecActCorr(iSpec) != "WHAMFA"))?
+      ((SpecActCorr(iSpec) != ACTYPE_WHAMHA) && (SpecActCorr(iSpec) != ACTYPE_WHAMFA))?
 
       (KEC, 2024-03-07):
       I looked into the Tipping code, and it seems that VolSol is only used when
