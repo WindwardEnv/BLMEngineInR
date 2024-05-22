@@ -9,7 +9,6 @@ ConvergenceCriteria = 0.001
 MaxIter = 50L
 DoPartialStepsAlways = FALSE
 
-
 # # ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
 # ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
 # InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
@@ -31,6 +30,22 @@ oldBLMOutFile = if (DoTox){
 } else {
   "scrap/old BLM/full_organic_SPEC.det.xlsx"
 }
+
+# ParamFile = "scrap/parameter file format/Zn_full_organic.dat4"
+# InputFile = "scrap/parameter file format/Zn_full_organic.blm4"
+# # oldBLMOutFile = if (DoTox){
+# #   "scrap/old BLM/Zn_full_organic_TOX.det.xlsx"
+# # } else {
+# #   "scrap/old BLM/Zn_full_organic_SPEC.det.xlsx"
+# # }
+
+# ParamFile = "scrap/parameter file format/Ni_full_organic.dat4"
+# InputFile = "scrap/parameter file format/Ni_full_organic.blm4"
+# # oldBLMOutFile = if (DoTox){
+# #   "scrap/old BLM/Ni_full_organic_TOX.det.xlsx"
+# # } else {
+# #   "scrap/old BLM/Ni_full_organic_SPEC.det.xlsx"
+# # }
 
 # ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
 # InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
@@ -57,10 +72,15 @@ ResultsTable <- BLM(
 )
 # , file = "scrap/debug.txt")
 
+ResultsTable$Status = ifelse((ResultsTable$FinalMaxError > ConvergenceCriteria) |
+                               is.na(ResultsTable$FinalMaxError),
+                             "Not Converged", "Okay")
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
-ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
+ResultsTable[, c("Obs","ID2","Status","FinalIter","FinalMaxError")]
 # iObs = which((ResultsTable$FinalIter < 30) & !is.na(ResultsTable$FinalMaxError))[1]
+save(ResultsTable, file = paste0(InputFile, "_SPEC.RData"))
+
 # ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]
 # ResultsTable[, c("ID2","T.Cu (mol/L)","T.Cu (mol)","Water (L)", "Water_DonnanHA (L)","Water_DonnanFA (L)")]
 

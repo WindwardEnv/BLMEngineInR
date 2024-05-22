@@ -1,0 +1,4 @@
+2.49, build 2022-03-30
+CuOH5%le_10-11-07.DAT
+11_Cu_Cali_WQC.prn
+/S CU_CALI_WQC.SCR, /W /Q /L
