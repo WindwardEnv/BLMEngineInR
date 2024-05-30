@@ -18,6 +18,7 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     methods,
+    openxlsx,
     Rcpp (>= 1.0.10),
     utils
 LinkingTo: 
