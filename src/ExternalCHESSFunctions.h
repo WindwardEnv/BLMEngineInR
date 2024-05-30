@@ -1,6 +1,7 @@
-j.#ifndef __EXTERNALCHESSFUNCTIONS_H__
+#ifndef __EXTERNALCHESSFUNCTIONS_H__
 #define __EXTERNALCHESSFUNCTIONS_H__
 
+#ifndef Rcpp__Rcpp__h
   #include <Rcpp.h>
 #endif
 
