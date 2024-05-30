@@ -76,9 +76,7 @@ beepr::beep()
 
 save(ResultsTable, file = paste0(InputFile, "_SPEC.RData"))
 
-ResultsTable$Status = ifelse((ResultsTable$FinalMaxError > ConvergenceCriteria) |
-                               is.na(ResultsTable$FinalMaxError),
-                             "Not Converged", "Okay")
+WriteDetailedFile(ResultsTable, FileName = paste0(InputFile,"_NoES.xlsx"))
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
 # ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]

@@ -72,6 +72,7 @@ BLM = function(ParamFile = character(),
   }
 
   # Save some common variables for initializing arrays
+  NObs = AllInput$NObs
   MassName = ThisProblem$MassName
   NComp = ThisProblem$NComp
   CompName = ThisProblem$CompName
@@ -107,38 +108,81 @@ BLM = function(ParamFile = character(),
   ObsFunctionInputNames = formalArgs("CHESS")[
     formalArgs("CHESS") %in% names(FunctionInputs) == FALSE]
 
-  # Initialize the output array
+  # Initialize the output list
+  OutputLabels = cbind(
+    data.frame(Obs = 1:NObs),
+    AllInput$InLabObs
+  )
+  # InputCols = c("Obs", ThisProblem$InLabName, ThisProblem$InVarName,
+  #               paste0("Input.",ThisProblem$InCompName))
   MiscOutputCols = c("FinalIter", "FinalToxIter", "FinalMaxError", "IonicStrength")
-  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMCR],")")
-  SpecMolesCols = paste0(SpecName," (mol)")
-  SpecActCols = paste0("Act.", SpecName)
-  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMCR],")")
-  TotMolesCols = paste0("T.", CompName, " (mol)")
   ZCols = paste0("Z_", c("HA","FA"))
   MassAmtCols = paste0(MassName, " (",ThisProblem$MassUnit,")")
-  Out = data.frame(Obs = 1:AllInput$NObs)
-  Out = cbind(Out, AllInput$InLabObs)
-  Out = cbind(Out, AllInput$InVarObs)
-  Out = cbind(Out, AllInput$InCompObs)
-  InputCols = c("Obs", ThisProblem$InLabName, ThisProblem$InVarName,
-                paste0("Input.",ThisProblem$InCompName))
-  colnames(Out) = InputCols
-  Out[, MiscOutputCols] = NA
-  Out[, SpecConcCols] = NA
-  Out[, SpecActCols] = NA
-  Out[, SpecMolesCols] = NA
-  Out[, TotConcCols] = NA
-  Out[, TotMolesCols] = NA
-  Out[, ZCols] = NA
-  Out[, MassAmtCols] = NA
-  # Out = array(
-  #   NA,
-  #   dim = c(AllInput$NObs, NSpec + NComp + length(MiscOutputCols)),
-  #   dimnames = list(1:AllInput$NObs, c(MiscOutputCols, SpecName, TotConcCols))
-  # )
+  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMCR],")")
+  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMCR],")")
+  SpecMolesCols = paste0(SpecName," (mol)")
+  TotMolesCols = paste0("T.", CompName, " (mol)")
+  SpecActCols = paste0("Act.", SpecName)
+  OutList = list(
+    Inputs = cbind(
+      OutputLabels,
+      AllInput$InVarObs,
+      AllInput$InCompObs
+    ),
+    Miscellaneous = cbind(
+      OutputLabels,
+      matrix(NA, nrow = NObs, ncol = length(MiscOutputCols) + length(ZCols) + length(MassAmtCols),
+             dimnames = list(NULL, c(MiscOutputCols, ZCols, MassAmtCols)))
+    ),
+    Concentrations = cbind(
+      OutputLabels,
+      matrix(NA, nrow = NObs, ncol = NSpec + NComp,
+             dimnames = list(NULL, c(SpecConcCols, TotConcCols)))
+    ),
+    Moles = cbind(
+      OutputLabels,
+      matrix(NA, nrow = NObs, ncol = NSpec + NComp,
+             dimnames = list(NULL, c(SpecMolesCols, TotMolesCols)))
+    ),
+    Activities = cbind(
+      OutputLabels,
+      matrix(NA, nrow = NObs, ncol = NSpec,
+             dimnames = list(NULL, c(SpecActCols)))
+    )
+  )
+
+  # # Initialize the output array
+  # MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength")
+  # SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMCR],")")
+  # SpecMolesCols = paste0(SpecName," (mol)")
+  # SpecActCols = paste0("Act.", SpecName)
+  # TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMCR],")")
+  # TotMolesCols = paste0("T.", CompName, " (mol)")
+  # ZCols = paste0("Z_", c("HA","FA"))
+  # MassAmtCols = paste0(MassName, " (",ThisProblem$MassUnit,")")
+  # Out = data.frame(Obs = 1:NObs)
+  # Out = cbind(Out, AllInput$InLabObs)
+  # Out = cbind(Out, AllInput$InVarObs)
+  # Out = cbind(Out, AllInput$InCompObs)
+  # InputCols = c("Obs", ThisProblem$InLabName, ThisProblem$InVarName,
+  #               paste0("Input.",ThisProblem$InCompName))
+  # colnames(Out) = InputCols
+  # Out[, MiscOutputCols] = NA
+  # Out[, SpecConcCols] = NA
+  # Out[, SpecActCols] = NA
+  # Out[, SpecMolesCols] = NA
+  # Out[, TotConcCols] = NA
+  # Out[, TotMolesCols] = NA
+  # Out[, ZCols] = NA
+  # Out[, MassAmtCols] = NA
+  # # Out = array(
+  # #   NA,
+  # #   dim = c(NObs, NSpec + NComp + length(MiscOutputCols)),
+  # #   dimnames = list(1:NObs, c(MiscOutputCols, SpecName, TotConcCols))
+  # # )
 
   # Loop through each observation
-  for (iObs in 1:AllInput$NObs) {
+  for (iObs in 1:NObs) {
 
     if (QuietFlag != "Very Quiet") {
       print(paste0("Obs=", iObs))
@@ -159,14 +203,22 @@ BLM = function(ParamFile = character(),
     FunctionInputs[ObsFunctionInputNames] = ThisInput[ObsFunctionInputNames]
 
     Tmp = do.call("CHESS", args = FunctionInputs)
-    Out[iObs, MiscOutputCols] = unlist(Tmp[MiscOutputCols])
-    Out[iObs, SpecConcCols] = Tmp$SpecConc
-    Out[iObs, SpecActCols] = Tmp$SpecAct
-    Out[iObs, SpecMolesCols] = Tmp$SpecMoles
-    Out[iObs, TotConcCols] = Tmp$CalcTotConc
-    Out[iObs, TotMolesCols] = Tmp$CalcTotMoles
-    Out[iObs, ZCols] = Tmp$WHAMSpecCharge
-    Out[iObs, MassAmtCols] = Tmp$MassAmt
+    # Out[iObs, MiscOutputCols] = unlist(Tmp[MiscOutputCols])
+    # Out[iObs, SpecConcCols] = Tmp$SpecConc
+    # Out[iObs, SpecActCols] = Tmp$SpecAct
+    # Out[iObs, SpecMolesCols] = Tmp$SpecMoles
+    # Out[iObs, TotConcCols] = Tmp$CalcTotConc
+    # Out[iObs, TotMolesCols] = Tmp$CalcTotMoles
+    # Out[iObs, ZCols] = Tmp$WHAMSpecCharge
+    # Out[iObs, MassAmtCols] = Tmp$MassAmt
+    OutList$Miscellaneous[iObs, MiscOutputCols] = unlist(Tmp[MiscOutputCols])
+    OutList$Miscellaneous[iObs, ZCols] = Tmp$WHAMSpecCharge
+    OutList$Miscellaneous[iObs, MassAmtCols] = Tmp$MassAmt
+    OutList$Concentrations[iObs, SpecConcCols] = Tmp$SpecConc
+    OutList$Concentrations[iObs, TotConcCols] = Tmp$CalcTotConc
+    OutList$Moles[iObs, SpecMolesCols] = Tmp$SpecMoles
+    OutList$Moles[iObs, TotMolesCols] = Tmp$CalcTotMoles
+    OutList$Activities[iObs, SpecActCols] = Tmp$SpecAct
 
   }
 
@@ -180,14 +232,20 @@ BLM = function(ParamFile = character(),
       #   grepl(iComp, colnames(Out)) & grepl("[(]mol[)]", colnames(Out)) &
       #     (grepl("DOC", colnames(Out)) | grepl("Donnan", colnames(Out)))
       # ]
-      Out[,paste0("TOrg.",iComp," (mol/L)")] = rowSums(Out[, OrgCols])
+      # Out[,paste0("TOrg.",iComp," (mol/L)")] = rowSums(Out[, OrgCols])
+      OutList$Concentrations[,paste0("TOrg.",iComp," (mol/L)")] =
+        rowSums(OutList$Moles[, OrgCols])
     }
   }
 
   if (!DoTox) {Out$FinalToxIter = NULL}
+  OutList$Miscellaneous$Status =
+    ifelse((OutList$Miscellaneous$FinalMaxError > ConvergenceCriteria) |
+           is.na(OutList$Miscellaneous$FinalMaxError),
+         "Not Converged", "Okay")
 
   print(Sys.time() - StartTime)
 
-  return(Out)
+  return(OutList)
 
 }
