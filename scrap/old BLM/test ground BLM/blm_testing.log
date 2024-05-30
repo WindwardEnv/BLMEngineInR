@@ -3,14 +3,14 @@ Copyright (c) 1998-2011 PowerBasic Inc.
 Englewood, Florida USA
 All Rights Reserved
 
-Primary source:  C:\Users\kellyc\Documents\BLM Development\engine\BLMEngineInR\scrap\old BLM\test ground BLM\blm_testing.bas   {18665 total lines}
+Primary source:  C:\Users\kellyc\Documents\BLM Development\engine\BLMEngineInR\scrap\old BLM\test ground BLM\blm_testing.bas   {18776 total lines}
 Target compilation:  blm_testing.EXE
-Compile time:  0.1 seconds, at 22398000 lines/minute
+Compile time:  0.1 seconds, at 22531200 lines/minute
 
-265968 bytes compiled code, 37336 bytes RTLibrary,
-19664 bytes string literals, and 41984 bytes dgroup.
+233312 bytes compiled code, 37200 bytes RTLibrary,
+19692 bytes string literals, and 42012 bytes dgroup.
 Executable stack size:  1048576 bytes.
-Disk image: 346624 bytes   Memory image: 98984 bytes.
+Disk image: 315904 bytes   Memory image: 98904 bytes.
 
 Component Files:
 ----------------
