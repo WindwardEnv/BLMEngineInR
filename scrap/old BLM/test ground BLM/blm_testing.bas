@@ -4814,6 +4814,64 @@ IF (iObs& = 1) THEN
              PRINT #iHand&, FormatStr$(L$, LabelMask$);
           END IF
        NEXT s%
+       FOR HS% = 1 TO 2
+           IF HS% = 1 THEN
+               sTmp1$ = "HA"
+           ELSE
+               sTmp1$ = "FA"
+           END IF
+           FOR s% = 1 TO NSpecies
+               IF (V(s%) > 0) AND (ActCorr(s%) <> acWHAM) AND (SType(s%) = stAqueous) THEN
+                   L$ = "Donnan" + sTmp1$ + "-" + Label$(s%) + " (mol)"
+                   PRINT #iHand&, FormatStr$(L$, LabelMask$);
+               END IF
+           NEXT s%
+           FOR j% = 1 TO 20
+               iCol = iCol + 1
+               IF (j% <= 8) THEN
+                   sTmp_site1$ = TRIM$(STR$(j%))
+               ELSEIF (j <= 12) THEN
+                   sTmp_site1$ = "1"
+               ELSEIF (j <= 15) THEN
+                   sTmp_site1$ = "2"
+               ELSEIF (j <= 18) THEN
+                   sTmp_site1$ = "3"
+               ELSE
+                   sTmp_site1$ = "4"
+               END IF
+               IF (j% <= 8) THEN
+                   sTmp_site2$ = ""
+               ELSEIF (j = 9) THEN
+                   sTmp_site2$ = "2"
+               ELSEIF (j = 10) OR (j = 16) THEN
+                   sTmp_site2$ = "4"
+               ELSEIF (j = 11) OR (j = 17) THEN
+                   sTmp_site2$ = "6"
+               ELSEIF (j = 12) OR (j = 18) THEN
+                   sTmp_site2$ = "8"
+               ELSEIF (j = 13) THEN
+                   sTmp_site2$ = "3"
+               ELSEIF (j = 14) OR (j = 19) THEN
+                   sTmp_site2$ = "5"
+               ELSEIF (j = 15) OR (j = 20) THEN
+                   sTmp_site2$ = "7"
+               END IF
+               L$ = "DOC-" + sTmp1$ + "_" + sTmp_site1$ + sTmp_site2$ + " (mol / L)"
+               PRINT #iHand&, FormatStr$(L$, LabelMask$);
+               IF (j% > 8) THEN
+                   L$ = "DOC-" + sTmp1$ + "_" + sTmp_site2$ + "-" + sTmp_site1$ + "H" + " (mol / L)"
+                   PRINT #iHand&, FormatStr$(L$, LabelMask$);
+                   L$ = "DOC-" + sTmp1$ + "_" + sTmp_site1$ + "-" + sTmp_site2$ + "H" + " (mol / L)"
+                   PRINT #iHand&, FormatStr$(L$, LabelMask$);
+               END IF
+               FOR s% = 1 TO NSpecies
+                   IF (ActCorr(s%) <> acWHAM) AND (SType(s%) = stAqueous) AND ((s% = 1) OR (s% = 2) OR (s% = 4) OR (s% = 5) OR (s% = 109)) THEN
+                       L$ = "DOC-" + sTmp1$ + "_" + sTmp_site1$ + sTmp_site2$ + "-" + Label$(s%) + " (mol / L)"
+                       PRINT #iHand&, FormatStr$(L$, LabelMask$);
+                   END IF
+               NEXT s%
+           NEXT j%
+       NEXT HS%
    END IF
 
    FOR p% = 1 TO NPhase
@@ -4950,6 +5008,58 @@ END IF
               END IF
           END IF
        NEXT s%
+       FOR HS% = 1 TO 2
+           FOR s% = 1 TO NSpecies
+               IF (V(s%) > 0) AND (ActCorr(s%) <> acWHAM) AND (SType(s%) = stAqueous) THEN
+                   IF iComplete AND NOT ErrorNotConverged THEN
+                       Tmp# = WHAMDiffuseBoundConc(HS%, s%)
+                       PRINT #iHand&, USING$(OutputMask$, Tmp#);
+                   ELSE
+                       Tmp# = -999.#
+                       PRINT #iHand&, FormatStr$("NA", LabelMask$);
+                   END IF
+                END IF
+           NEXT s%
+           FOR j% = 1 TO 20
+               IF iComplete AND NOT ErrorNotConverged THEN
+                   Tmp# = WHAMFreeConc(HS%, j%)
+                   PRINT #iHand&, USING$(OutputMask$, Tmp#);
+               ELSE
+                   Tmp# = -999.#
+                   PRINT #iHand&, FormatStr$("NA", LabelMask$);
+               END IF
+               IF (j% > 8) THEN
+                   iCol = iCol + 1
+                   IF iComplete AND NOT ErrorNotConverged THEN
+                       Tmp# = WHAMBidentDeprotConc(HS%, 1, j%)
+                       PRINT #iHand&, USING$(OutputMask$, Tmp#);
+                   ELSE
+                       Tmp# = -999.#
+                       PRINT #iHand&, FormatStr$("NA", LabelMask$);
+                   END IF
+                   iCol = iCol + 1
+                   IF iComplete AND NOT ErrorNotConverged THEN
+                       Tmp# = WHAMBidentDeprotConc(HS%, 2, j%)
+                       PRINT #iHand&, USING$(OutputMask$, Tmp#);
+                   ELSE
+                       Tmp# = -999.#
+                       PRINT #iHand&, FormatStr$("NA", LabelMask$);
+                   END IF
+               END IF
+               FOR s% = 1 TO NSpecies
+                   IF (ActCorr(s%) <> acWHAM) AND (SType(s%) = stAqueous) AND ((s% = 1) OR (s% = 2) OR (s% = 4) OR (s% = 5) OR (s% = 109)) THEN
+                       iCol = iCol + 1
+                       IF iComplete AND NOT ErrorNotConverged THEN
+                           Tmp# = WHAMSpecificBoundConc(HS%, j%, s%)
+                           PRINT #iHand&, USING$(OutputMask$, Tmp#);
+                       ELSE
+                           Tmp# = -999.#
+                           PRINT #iHand&, FormatStr$("NA", LabelMask$);
+                       END IF
+                   END IF
+               NEXT s%
+           NEXT j%
+       NEXT HS%
    END IF
 
 
@@ -5394,6 +5504,21 @@ IF (iObs& = 1) THEN
    stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
 
    IF (iWHAM = TRUE) THEN
+       FOR s% = 1 TO NComp
+          IF (V(s%)>0) THEN
+             IF (SepNOM = TRUE) THEN
+                iCol = iCol + 1
+                sTmp1$ = "FA." + Label$(s%)
+                stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+                iCol = iCol + 1
+                sTmp1$ = "HA." + Label$(s%)
+                stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+             END IF
+             iCol = iCol + 1
+             sTmp1$ = "TOrg." + Label$(s%)
+             stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+          END IF
+       NEXT s%
        FOR HS% = 1 TO 2
            IF HS% = 1 THEN
                sTmp1$ = "HA"
@@ -5451,21 +5576,6 @@ IF (iObs& = 1) THEN
                NEXT s%
            NEXT j%
        NEXT HS%
-       'FOR s% = 1 TO NComp
-       '   IF (V(s%)>0) THEN
-       '      IF (SepNOM = TRUE) THEN
-       '         iCol = iCol + 1
-       '         sTmp1$ = "FA." + Label$(s%)
-       '         stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '         iCol = iCol + 1
-       '         sTmp1$ = "HA." + Label$(s%)
-       '         stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '      END IF
-       '      iCol = iCol + 1
-       '      sTmp1$ = "TOrg." + Label$(s%)
-       '      stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '   END IF
-       'NEXT s%
    END IF
 
    FOR p% = 1 TO NPhase
@@ -5561,6 +5671,21 @@ IF (iObs& = 1) THEN
    stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
 
    IF (iWHAM = TRUE) THEN
+       FOR s% = 1 TO NComp
+          IF (V(s%)>0) THEN
+             IF (SepNOM = TRUE) THEN
+                iCol = iCol + 1
+                sTmp1$ = "mol / " + MassUnitLabel(SType(S) + 1)
+                stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+                iCol = iCol + 1
+                sTmp1$ = "mol / " + MassUnitLabel(SType(S) + 1)
+                stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+             END IF
+             iCol = iCol + 1
+             sTmp1$ = "mol / " + MassUnitLabel(SType(S) + 1)
+             stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+          END IF
+       NEXT s%
        FOR HS% = 1 TO 2
            FOR s% = 1 TO NSpecies
               IF (V(s%) > 0) AND (ActCorr(s%) <> acWHAM) AND (SType(s%) = stAqueous) THEN
@@ -5585,21 +5710,7 @@ IF (iObs& = 1) THEN
                NEXT s%
            NEXT j%
        NEXT HS%
-       'FOR s% = 1 TO NComp
-       '   IF (V(s%)>0) THEN
-       '      IF (SepNOM = TRUE) THEN
-       '         iCol = iCol + 1
-       '         sTmp1$ = "mol / " + MassUnitLabel(SType(S) + 1)
-       '         stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '         iCol = iCol + 1
-       '         sTmp1$ = "mol / " + MassUnitLabel(SType(S) + 1)
-       '         stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '      END IF
-       '      iCol = iCol + 1
-       '      sTmp1$ = "mol / " + MassUnitLabel(SType(S) + 1)
-       '      stat& = xlsWriteText(sTmp1$, iRow, iCol, %xlsFont1, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '   END IF
-       'NEXT s%
+
    END IF
 
    FOR p% = 1 TO NPhase
@@ -5714,6 +5825,45 @@ END IF
    END IF
 
    IF (iWHAM = TRUE) THEN
+       FOR s% = 1 TO NComp
+          IF (V(s%)>0) THEN
+              IF (SepNOM = TRUE) THEN
+                IF iComplete AND NOT ErrorNotConverged THEN
+                    ' FA Fraction
+                    iCol = iCol + 1
+                    value# = 0!
+                    FOR j = 1 TO NSpecies
+                      value# = value# + FABound(j) * SCb(j, s%)
+                    NEXT j
+                    stat& = xlsWriteNumber(value#, iRow, iCol, %xlsFont0,  %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+                    ' HA Fraction
+                    iCol = iCol + 1
+                    value# = 0!
+                    FOR j = 1 TO NSpecies
+                      value# = value# + HABound(j) * SCb(j, s%)
+                    NEXT j
+                    stat& = xlsWriteNumber(value#, iRow, iCol, %xlsFont0,  %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+                ELSE  ' if not complete
+                    iCol = iCol + 1
+                    stat& = xlsWriteText("NA", iRow, iCol, %xlsFont0, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+                    iCol = iCol + 1
+                    stat& = xlsWriteText("NA", iRow, iCol, %xlsFont0, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+                END IF
+              END IF
+              IF iComplete AND NOT ErrorNotConverged THEN
+                  ' Combined FA and HA as Total Organic
+                  iCol = iCol + 1
+                  value# = 0!
+                  FOR j = 1 TO NSpecies
+                    value# = value# + wOrgBound!(j) * SCb(j, s%)
+                  NEXT j
+                  stat& = xlsWriteNumber(value#, iRow, iCol, %xlsFont0,  %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+              ELSE  ' if not complete
+                  iCol = iCol + 1
+                  stat& = xlsWriteText("NA", iRow, iCol, %xlsFont0, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
+              END IF
+          END IF
+       NEXT s%
        FOR HS% = 1 TO 2
            FOR s% = 1 TO NSpecies
                IF (V(s%) > 0) AND (ActCorr(s%) <> acWHAM) AND (SType(s%) = stAqueous) THEN
@@ -5763,45 +5913,6 @@ END IF
                NEXT s%
            NEXT j%
        NEXT HS%
-       'FOR s% = 1 TO NComp
-       '   IF (V(s%)>0) THEN
-       '       IF (SepNOM = TRUE) THEN
-       '         IF iComplete AND NOT ErrorNotConverged THEN
-       '             ' FA Fraction
-       '             iCol = iCol + 1
-       '             value# = 0!
-       '             FOR j = 1 TO NSpecies
-       '               value# = value# + FABound(j) * SCb(j, s%)
-       '             NEXT j
-       '             stat& = xlsWriteNumber(value#, iRow, iCol, %xlsFont0,  %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '             ' HA Fraction
-       '             iCol = iCol + 1
-       '             value# = 0!
-       '             FOR j = 1 TO NSpecies
-       '               value# = value# + HABound(j) * SCb(j, s%)
-       '             NEXT j
-       '             stat& = xlsWriteNumber(value#, iRow, iCol, %xlsFont0,  %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '         ELSE  ' if not complete
-       '             iCol = iCol + 1
-       '             stat& = xlsWriteText("NA", iRow, iCol, %xlsFont0, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '             iCol = iCol + 1
-       '             stat& = xlsWriteText("NA", iRow, iCol, %xlsFont0, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '         END IF
-       '       END IF
-       '       IF iComplete AND NOT ErrorNotConverged THEN
-       '           ' Combined FA and HA as Total Organic
-       '           iCol = iCol + 1
-       '           value# = 0!
-       '           FOR j = 1 TO NSpecies
-       '             value# = value# + wOrgBound!(j) * SCb(j, s%)
-       '           NEXT j
-       '           stat& = xlsWriteNumber(value#, iRow, iCol, %xlsFont0,  %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '       ELSE  ' if not complete
-       '           iCol = iCol + 1
-       '           stat& = xlsWriteText("NA", iRow, iCol, %xlsFont0, %xlsLeftAlign, %xlsCellNormal, 0, iHand&)
-       '       END IF
-       '   END IF
-       'NEXT s%
    END IF
 
    FOR p% = 1 TO NPhase
