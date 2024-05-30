@@ -1,0 +1,19 @@
+SD-simple.dat
+simple.BLM
+/W /o3 /a1 /q /M /G01 
+/N
+
+SD-est_DOC-soup_2014-07-25.dat
+EC4_CuOptim.BLM
+/W /o2 /a1 /q /M 
+
+EC4_manmade_DOC-soup_2014-07-22.dat
+EC4_CuOptim.BLM
+/W /o3 /a1 /q /M
+
+
+
+DOC-soup_2014-07-07.dat
+CuOptim.BLM
+/W /o3 /a1 /q /M
+
