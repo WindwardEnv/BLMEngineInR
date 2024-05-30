@@ -36,6 +36,8 @@
 #' ## End(Not run)
 BLM = function(ParamFile = character(),
                InputFile = character(),
+               ThisProblem = NULL,
+               AllInput = NULL,
                DoTox = logical(),
                iCA = 1L,
                QuietFlag = c("Quiet", "Very Quiet", "Debug"),
@@ -48,22 +50,26 @@ BLM = function(ParamFile = character(),
   StartTime = Sys.time()
 
   # error catching
-  stopifnot(file.exists(ParamFile))
-  stopifnot(file.exists(InputFile))
+  stopifnot(file.exists(ParamFile) || !is.null(ThisProblem))
+  stopifnot(file.exists(InputFile) || !is.null(AllInput))
   QuietFlag = match.arg(QuietFlag)
 
   # 1. parse out parameter file in DefineProblem
   #   --> parameter file name
   #   <-- R variable that defines the problem for immediate use in CHESS
-  ThisProblem = DefineProblem(ParamFile)
+  if (is.null(ThisProblem)) {
+    ThisProblem = DefineProblem(ParamFile)
+  }
 
   # 2. Read InputFile
   #   --> input file name, component info from ParamFile
   #   <-- R variable with component concentrations (total/free dep on ParamFile)
-  FunctionInputs = ThisProblem[
-    which(names(ThisProblem) %in% formalArgs("GetData"))]
-  FunctionInputs$InputFile = InputFile
-  AllInput = do.call("GetData", args = FunctionInputs)
+  if (is.null(AllInput)) {
+    FunctionInputs = ThisProblem[
+      which(names(ThisProblem) %in% formalArgs("GetData"))]
+    FunctionInputs$InputFile = InputFile
+    AllInput = do.call("GetData", args = FunctionInputs)
+  }
 
   # Save some common variables for initializing arrays
   MassName = ThisProblem$MassName

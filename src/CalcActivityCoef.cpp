@@ -160,12 +160,12 @@ Rcpp::NumericVector CalcActivityCoef(int NSpec,
   ActivityCoefDavies = Davies(IonicStrength, MaxCharge);
   
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if (SpecActCorr(iSpec) == "Debye") {
+    if (SpecActCorr(iSpec) == ACTYPE_DEBYE) {
       SpecActivityCoef(iSpec) = ActivityCoefDebye(abs(SpecCharge(iSpec)));
-    } else if (SpecActCorr(iSpec) == "Davies") {
+    } else if (SpecActCorr(iSpec) == ACTYPE_DAVIES) {
       SpecActivityCoef(iSpec) = ActivityCoefDavies(abs(SpecCharge(iSpec)));
-    } else if ((SpecActCorr(iSpec) == "DonnanHA") || 
-               (SpecActCorr(iSpec) == "DonnanFA")) {
+    } else if ((SpecActCorr(iSpec) == ACTYPE_DONNANHA) || 
+               (SpecActCorr(iSpec) == ACTYPE_DONNANFA)) {
                 
       //Rcpp::Rcout << "SpecName(iSpec)=" << SpecName(iSpec) << std::endl;
       iSpec2 = 0;
@@ -183,7 +183,7 @@ Rcpp::NumericVector CalcActivityCoef(int NSpec,
       } else {
         SpecActivityCoef(iSpec) = SpecActivityCoef(iSpec2);
       }
-    } else {//if (SpecActCorr(iSpec) == "None") {
+    } else {//if (SpecActCorr(iSpec) == ACTYPE_NONE) {
       SpecActivityCoef(iSpec) = 1.0;
     }
   }

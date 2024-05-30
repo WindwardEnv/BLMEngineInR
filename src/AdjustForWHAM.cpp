@@ -124,10 +124,10 @@ void AdjustForWHAM(
 
   // Set -Z_HS to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
-    if (CompType(iComp) == "DonnanHA") {
+    if (CompType(iComp) == TYPE_DONNANHA) {
       TotMoles(iComp) = abs(WHAMSpecCharge(iHA)) * HumicSubstGramsPerLiter(iHA);
       TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
-    } else if (CompType(iComp) == "DonnanFA") {
+    } else if (CompType(iComp) == TYPE_DONNANFA) {
       TotMoles(iComp) = abs(WHAMSpecCharge(iFA)) * HumicSubstGramsPerLiter(iFA);
       TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
     }
@@ -137,11 +137,11 @@ void AdjustForWHAM(
      positive, and anion species concentrations should be canceled out if Z_HS
      is negative */
   for (iSpec = NComp; iSpec < NSpec; iSpec++) {
-    if ((SpecActCorr(iSpec) == "DonnanHA") && 
+    if ((SpecActCorr(iSpec) == ACTYPE_DONNANHA) && 
         (((WHAMSpecCharge(iHA) < 0) && (SpecCharge(iSpec) < 0)) || 
          ((WHAMSpecCharge(iHA) > 0) && (SpecCharge(iSpec) > 0)))) {
       SpecConc(iSpec) = 0;
-    } else if ((SpecActCorr(iSpec) == "DonnanFA") &&
+    } else if ((SpecActCorr(iSpec) == ACTYPE_DONNANFA) &&
                (((WHAMSpecCharge(iFA) < 0) && (SpecCharge(iSpec) < 0)) || 
                 ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
       SpecConc(iSpec) = 0;
@@ -241,7 +241,7 @@ void AdjustForWHAMBeforeCalcSpecies(
                                      HumicSubstGramsPerLiter);
   //SpecCtoMAdj = MassAmtAdj[SpecMC];
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if ((SpecActCorr[iSpec] == "WHAMHA") || (SpecActCorr[iSpec] == "WHAMFA")) {
+    if ((SpecActCorr(iSpec) == ACTYPE_WHAMHA) || (SpecActCorr(iSpec) == ACTYPE_WHAMFA)) {
       SpecCtoMAdj[iSpec] = MassAmt[AqueousMC];
     } else {
       SpecCtoMAdj[iSpec] = MassAmtAdj[SpecMC[iSpec]];
@@ -327,7 +327,7 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
   
   // Update the WHAM component concentrations
   for (iComp = 0; iComp < NComp; iComp++) {
-    if ((SpecActCorr(iComp) == "WHAMHA") || (SpecActCorr(iComp) == "WHAMFA")) {
+    if ((SpecActCorr(iComp) == ACTYPE_WHAMHA) || (SpecActCorr(iComp) == ACTYPE_WHAMFA)) {
 
       SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
                        NComp, CompConc,
@@ -349,10 +349,10 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
 
   // Set -Z_HS*Th to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
-    if (CompType(iComp) == "DonnanHA") {
+    if (CompType(iComp) == TYPE_DONNANHA) {
       TotMoles[iComp] = abs(WHAMSpecCharge[iHA]) * HumicSubstGramsPerLiter[iHA];
       TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
-    } else if (CompType(iComp) == "DonnanFA") {
+    } else if (CompType(iComp) == TYPE_DONNANFA) {
       TotMoles[iComp] = abs(WHAMSpecCharge[iFA]) * HumicSubstGramsPerLiter[iFA];
       TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
     }
@@ -360,7 +360,7 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
 
   // Update the Donnan layers the way WHAM does it
   for (iComp = 0; iComp < NComp; iComp++) {
-    if ((CompType(iComp) == "DonnanHA") || (CompType(iComp) == "DonnanFA")) {
+    if ((CompType(iComp) == TYPE_DONNANHA) || (CompType(iComp) == TYPE_DONNANFA)) {
 
       SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
                        NComp, CompConc,

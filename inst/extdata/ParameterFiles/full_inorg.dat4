@@ -77,7 +77,7 @@ BL-Metal,   BL1-CuOH
 --------------------------------------------------------------------------------
 Critical Accumulation Table
 #, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
-1, 0.016407677, Ceriodaphnia dubia, Acute,     48h,      Neonate (<24 hr), Mortality, EC50; LC50, WER Reference water, SMEA calculated by median
+1, 0.05541,     Ceriodaphnia dubia, Acute,     48h,      Neonate (<24 hr), Mortality, EC50; LC50, WER Reference water, SMEA calculated by median
 --------------------------------------------------------------------------------
 -------Notes--------
 Types: 

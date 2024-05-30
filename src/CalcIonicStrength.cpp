@@ -36,8 +36,8 @@ double CalcIonicStrength(int NSpec,
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
     IncludeSpec = (SpecMC(iSpec) == AqueousMC);
     if (ExcludeOrgMatter) {
-      IncludeSpec &= (SpecActCorr(iSpec) != "WHAMHA");
-      IncludeSpec &= (SpecActCorr(iSpec) != "WHAMFA");
+      IncludeSpec &= (SpecActCorr(iSpec) != ACTYPE_WHAMHA);
+      IncludeSpec &= (SpecActCorr(iSpec) != ACTYPE_WHAMFA);
     }
     if (IncludeSpec){ 
       IonicStrength += pow(SpecCharge(iSpec), 2) * SpecMoles(iSpec);

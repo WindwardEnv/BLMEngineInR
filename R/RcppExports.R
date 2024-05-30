@@ -29,7 +29,7 @@
 #' @param NSpec integer, number of species reactions
 #' @param SpecName character vector (NSpec), the name of the chemical species
 #'   for which we have formation reactions
-#' @param SpecMC IntegerVector (NSpec), the mass compartment of the chemical
+#' @param SpecMCR IntegerVector (NSpec), the mass compartment of the chemical
 #'   species for which we have formation reactions
 #' @param SpecK numeric vector (NSpec), the equilibrium coefficient of the
 #'   formation reactions.
@@ -44,9 +44,9 @@
 #' @param SpecActCorr character vector (NSpec), the activity correction method
 #'   of the chemical species for which we have formation reactions
 #' @param DoWHAM boolean, true=there are WHAM species, false=no WHAM species
-#' @param AqueousMC integer, the (1-based) position of the water/aqueous mass
+#' @param AqueousMCR integer, the (1-based) position of the water/aqueous mass
 #'   compartment. (transformed to 0-based at the beginning of the function)
-#' @param WHAMDonnanMC the mass compartments corresponding to the
+#' @param WHAMDonnanMCR the mass compartments corresponding to the
 #'   humic acid (0) and fulvic acid (1) Donnan layers. (transformed to 0-based
 #'   at the beginning of the function)
 #' @param HumicSubstGramsPerLiter NumericVector, length of 2, grams per liter 
@@ -63,12 +63,12 @@
 #' @param DoTox logical, TRUE for toxicity mode where the MetalName component
 #'   concentration is adjusted to try to match the CATarget with BLMetalSpecs
 #' @param MetalName character string, the name of the toxic metal
-#' @param MetalComp integer, the position of the metal in the component arrays
+#' @param MetalCompR integer, the position of the metal in the component arrays
 #'   (i.e., which is the toxic metal component) Note: this is base-1 indexed on
 #'   input then converted.
 #' @param NBLMetal integer, the number of biotic ligand-bound metal species 
 #'   that are associated with toxic effects.
-#' @param BLMetalSpecs integer vector, the positions of the species in the
+#' @param BLMetalSpecsR integer vector, the positions of the species in the
 #'   arrays which contribute to toxicity (i.e., which species are the toxic
 #'   metal bound to the relevant biotic ligand) Note: these are base-1 indexed
 #'   on input then converted.

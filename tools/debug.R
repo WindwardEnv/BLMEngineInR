@@ -2,31 +2,214 @@ rm(list = ls())
 # devtools::clean_dll()
 devtools::load_all()
 
-
-# ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
-ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
-InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
-
-# ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
-# # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
-# InputFile = "scrap/parameter file format/abbrev_organic.blm4"
-
-# ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
-# # ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
-# InputFile = "scrap/parameter file format/full_organic.blm4"
-
-# ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
-# InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
-
-DoTox = TRUE
+DoTox = FALSE
 iCA = 1L
 QuietFlag ="Quiet"
 ConvergenceCriteria = 0.0001
 MaxIter = 100L
 DoPartialStepsAlways = FALSE
 
+# # ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
+# ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
+# InputFile = "inst/extdata/InputFiles/full_inorg.blm4"
+# oldBLMOutFile = if (DoTox){
+#   "scrap/old BLM/full_inorg_TOX.det.xlsx"
+# } else {
+#   "scrap/old BLM/full_inorg_SPEC.det.xlsx"
+# }
+
+# ParamFile = "scrap/parameter file format/abbrev_organic.dat4"
+# # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
+# InputFile = "scrap/parameter file format/abbrev_organic.blm4"
+
+ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+# ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
+InputFile = "scrap/parameter file format/full_organic.blm4"
+oldBLMOutFile = if (DoTox){
+  "scrap/old BLM/full_organic_TOX.det.xlsx"
+} else {
+  # "scrap/old BLM/full_organic_SPEC.det.xlsx"
+  "scrap/old BLM/full_organic_SPEC_NOES.det.xlsx"
+}
+
+# ParamFile = "scrap/parameter file format/Zn_full_organic.dat4"
+# InputFile = "scrap/parameter file format/Zn_full_organic.blm4"
+# # oldBLMOutFile = if (DoTox){
+# #   "scrap/old BLM/Zn_full_organic_TOX.det.xlsx"
+# # } else {
+# #   "scrap/old BLM/Zn_full_organic_SPEC.det.xlsx"
+# # }
+
+# ParamFile = "scrap/parameter file format/Ni_full_organic.dat4"
+# InputFile = "scrap/parameter file format/Ni_full_organic.blm4"
+# # oldBLMOutFile = if (DoTox){
+# #   "scrap/old BLM/Ni_full_organic_TOX.det.xlsx"
+# # } else {
+# #   "scrap/old BLM/Ni_full_organic_SPEC.det.xlsx"
+# # }
+
+# ParamFile = "scrap/parameter file format/full_organic_WATER23dH_FixedConcComps.dat4"
+# InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
+
 
 ThisProblem = DefineProblem(ParamFile, WriteLog = TRUE)
+
+# Remove Donnan species (no non-specific binding)
+if (TRUE) {
+  DonnanMass = ThisProblem$WHAMDonnanMCR
+  ThisProblem$WHAMDonnanMCR = array(-1, dim=2, dimnames = list(c("HA","FA")))
+  ThisProblem$MassName = ThisProblem$MassName[-DonnanMass]
+  ThisProblem$MassAmt = ThisProblem$MassAmt[-DonnanMass]
+  ThisProblem$MassUnit = ThisProblem$MassUnit[-DonnanMass]
+  ThisProblem$NMass = ThisProblem$NMass - 2
+
+  DonnanComps = grep("Donnan", ThisProblem$CompName)
+  ThisProblem$CompName = ThisProblem$CompName[-DonnanComps]
+  ThisProblem$CompCharge = ThisProblem$CompCharge[-DonnanComps]
+  ThisProblem$CompMCR = ThisProblem$CompMCR[-DonnanComps]
+  ThisProblem$CompType = ThisProblem$CompType[-DonnanComps]
+  ThisProblem$CompActCorr = ThisProblem$CompActCorr[-DonnanComps]
+  ThisProblem$CompSiteDens = ThisProblem$CompSiteDens[-DonnanComps]
+  ThisProblem$NComp = ThisProblem$NComp - length(DonnanComps)
+
+  DonnanSpecs = grep("Donnan", ThisProblem$SpecName)
+  ThisProblem$SpecName = ThisProblem$SpecName[-DonnanSpecs]
+  ThisProblem$SpecMCR = ThisProblem$SpecMCR[-DonnanSpecs]
+  ThisProblem$SpecActCorr = ThisProblem$SpecActCorr[-DonnanSpecs]
+  ThisProblem$SpecNC = ThisProblem$SpecNC[-DonnanSpecs]
+  ThisProblem$SpecLogK = ThisProblem$SpecLogK[-DonnanSpecs]
+  ThisProblem$SpecDeltaH = ThisProblem$SpecDeltaH[-DonnanSpecs]
+  ThisProblem$SpecTempKelvin = ThisProblem$SpecTempKelvin[-DonnanSpecs]
+  ThisProblem$SpecCharge = ThisProblem$SpecCharge[-DonnanSpecs]
+  ThisProblem$SpecK = ThisProblem$SpecK[-DonnanSpecs]
+  ThisProblem$SpecCompList = ThisProblem$SpecCompList[-DonnanSpecs, ]
+  ThisProblem$SpecStoich = ThisProblem$SpecStoich[-DonnanSpecs, -DonnanComps]
+  ThisProblem$NSpec = ThisProblem$NSpec - length(DonnanSpecs)
+
+  DonnanDefComps = grep("Donnan", ThisProblem$DefCompName)
+  ThisProblem$DefCompName = ThisProblem$DefCompName[-DonnanDefComps]
+  ThisProblem$DefCompFromNum = ThisProblem$DefCompFromNum[-DonnanDefComps]
+  ThisProblem$DefCompFromVar = ThisProblem$DefCompFromVar[-DonnanDefComps]
+  ThisProblem$DefCompCharge = ThisProblem$DefCompCharge[-DonnanDefComps]
+  ThisProblem$DefCompMCR = ThisProblem$DefCompMCR[-DonnanDefComps]
+  ThisProblem$DefCompType = ThisProblem$DefCompType[-DonnanDefComps]
+  ThisProblem$DefCompActCorr = ThisProblem$DefCompActCorr[-DonnanDefComps]
+  ThisProblem$DefCompSiteDens = ThisProblem$DefCompSiteDens[-DonnanDefComps]
+  ThisProblem$NDefComp = ThisProblem$NDefComp - length(DonnanDefComps)
+  }
+
+# Make the DOC components the deprotonated species instead of the protonated species
+if (FALSE) {
+
+  iH = which(ThisProblem$CompName == "H")
+  for (iHS in c("HA","FA")){
+    for (iSite1 in 1:8) {
+
+      # Monodentate sites
+      mono_prot_name = paste0("DOC-", iHS, "_", iSite1, "H")
+      mono_deprot_name = paste0("DOC-", iHS, "_", iSite1)
+      mono_Me_names = intersect(paste0("DOC-", iHS, "_", iSite1, "-", ThisProblem$SpecName), ThisProblem$SpecName)
+
+      iComp = which(ThisProblem$CompName == mono_prot_name)
+      iSpec_deprot = which(ThisProblem$SpecName == mono_deprot_name)
+      iSpecs_Me = which(ThisProblem$SpecName %in% mono_Me_names)
+      iDefComp = which(ThisProblem$DefCompName == mono_prot_name)
+
+      ThisProblem$CompName[iComp] = mono_deprot_name
+      ThisProblem$CompCharge[iComp] = -1L
+      ThisProblem$SpecName[iComp] = mono_deprot_name
+      ThisProblem$SpecCharge[iComp] = -1L
+
+      ThisProblem$SpecName[iSpec_deprot] = mono_prot_name
+      ThisProblem$SpecK[iSpec_deprot] = 1 / ThisProblem$SpecK[iSpec_deprot]
+      ThisProblem$SpecLogK[iSpec_deprot] = - ThisProblem$SpecLogK[iSpec_deprot]
+      ThisProblem$SpecCharge[iSpec_deprot] = 0L
+      ThisProblem$SpecStoich[iSpec_deprot, iH] = - ThisProblem$SpecStoich[iSpec_deprot, iH]
+
+      ThisProblem$SpecK[iSpecs_Me] = ThisProblem$SpecK[iSpecs_Me] * ThisProblem$SpecK[iSpec_deprot]
+      ThisProblem$SpecLogK[iSpecs_Me] = ThisProblem$SpecLogK[iSpecs_Me] + ThisProblem$SpecLogK[iSpec_deprot]
+      ThisProblem$SpecStoich[iSpecs_Me, iH] = ThisProblem$SpecStoich[iSpecs_Me, iH] + 1L
+
+      ThisProblem$DefCompName[iDefComp] = mono_deprot_name
+      ThisProblem$DefCompCharge[iDefComp] = -1L
+
+      # Bidentate sites
+      for (iSite2 in 1:8) {
+        bi_full_prot_name = paste0("DOC-", iHS, "_", iSite1, iSite2, "H")
+        bi_site1_prot_name = paste0("DOC-", iHS, "_", iSite2, "-", iSite1, "H")
+        bi_site2_prot_name = paste0("DOC-", iHS, "_", iSite1, "-", iSite2, "H")
+        bi_full_deprot_name = paste0("DOC-", iHS, "_", iSite1, iSite2)
+        bi_Me_names = intersect(paste0(bi_full_deprot_name, "-", ThisProblem$SpecName), ThisProblem$SpecName)
+        if (bi_full_prot_name %in% ThisProblem$CompName) {
+
+          iComp = which(ThisProblem$CompName == bi_full_prot_name)
+          iSpec_deprot = which(ThisProblem$SpecName == bi_full_deprot_name)
+          iSpec_site1_prot = which(ThisProblem$SpecName == bi_site1_prot_name)
+          iSpec_site2_prot = which(ThisProblem$SpecName == bi_site2_prot_name)
+          iSpecs_Me = which(ThisProblem$SpecName %in% bi_Me_names)
+          iDefComp = which(ThisProblem$DefCompName == bi_full_prot_name)
+
+          ThisProblem$CompName[iComp] = bi_full_deprot_name
+          ThisProblem$CompCharge[iComp] = -2L
+          ThisProblem$SpecName[iComp] = bi_full_deprot_name
+          ThisProblem$SpecCharge[iComp] = -2L
+
+          ThisProblem$SpecName[iSpec_deprot] = bi_full_prot_name
+          ThisProblem$SpecK[iSpec_deprot] = 1 / ThisProblem$SpecK[iSpec_deprot]
+          ThisProblem$SpecLogK[iSpec_deprot] = - ThisProblem$SpecLogK[iSpec_deprot]
+          ThisProblem$SpecCharge[iSpec_deprot] = 0L
+          ThisProblem$SpecStoich[iSpec_deprot, iH] = - ThisProblem$SpecStoich[iSpec_deprot, iH]
+
+          ThisProblem$SpecName[iSpec_site1_prot]
+          ThisProblem$SpecK[iSpec_site1_prot] = ThisProblem$SpecK[iSpec_site1_prot] * ThisProblem$SpecK[iSpec_deprot]
+          ThisProblem$SpecLogK[iSpec_site1_prot] = ThisProblem$SpecLogK[iSpec_site1_prot] + ThisProblem$SpecLogK[iSpec_deprot]
+          # ThisProblem$SpecCharge[iSpec_site1_prot]
+          ThisProblem$SpecStoich[iSpec_site1_prot, iH] = 1L
+
+          ThisProblem$SpecName[iSpec_site2_prot]
+          ThisProblem$SpecK[iSpec_site2_prot] = ThisProblem$SpecK[iSpec_site2_prot] * ThisProblem$SpecK[iSpec_deprot]
+          ThisProblem$SpecLogK[iSpec_site2_prot] = ThisProblem$SpecLogK[iSpec_site2_prot] + ThisProblem$SpecLogK[iSpec_deprot]
+          # ThisProblem$SpecCharge[iSpec_site2_prot]
+          ThisProblem$SpecStoich[iSpec_site2_prot, iH] = 1L
+
+          ThisProblem$SpecK[iSpecs_Me] = ThisProblem$SpecK[iSpecs_Me] * ThisProblem$SpecK[iSpec_deprot]
+          ThisProblem$SpecLogK[iSpecs_Me] = ThisProblem$SpecLogK[iSpecs_Me] + ThisProblem$SpecLogK[iSpec_deprot]
+          ThisProblem$SpecStoich[iSpecs_Me, iH] = ThisProblem$SpecStoich[iSpecs_Me, iH] + 2L
+
+          ThisProblem$DefCompName[iDefComp] = bi_full_deprot_name
+          ThisProblem$DefCompCharge[iDefComp] = -2L
+        }
+      }
+
+    }
+  }
+  names(ThisProblem$CompCharge) = ThisProblem$CompName
+  names(ThisProblem$CompMCR) = ThisProblem$CompName
+  names(ThisProblem$CompType) = ThisProblem$CompName
+  names(ThisProblem$CompActCorr) = ThisProblem$CompName
+  names(ThisProblem$CompSiteDens) = ThisProblem$CompName
+  colnames(ThisProblem$SpecStoich) = ThisProblem$CompName
+
+  names(ThisProblem$SpecMCR) = ThisProblem$SpecName
+  names(ThisProblem$SpecActCorr) = ThisProblem$SpecName
+  names(ThisProblem$SpecNC) = ThisProblem$SpecName
+  names(ThisProblem$SpecLogK) = ThisProblem$SpecName
+  names(ThisProblem$SpecDeltaH) = ThisProblem$SpecName
+  names(ThisProblem$SpecTempKelvin) = ThisProblem$SpecName
+  names(ThisProblem$SpecCharge) = ThisProblem$SpecName
+  names(ThisProblem$SpecK) = ThisProblem$SpecName
+  rownames(ThisProblem$SpecCompList) = ThisProblem$SpecName
+  rownames(ThisProblem$SpecStoich) = ThisProblem$SpecName
+
+  names(ThisProblem$DefCompFromNum) = ThisProblem$DefCompName
+  names(ThisProblem$DefCompFromVar) = ThisProblem$DefCompName
+  names(ThisProblem$DefCompCharge) = ThisProblem$DefCompName
+  names(ThisProblem$DefCompMCR) = ThisProblem$DefCompName
+  names(ThisProblem$DefCompType) = ThisProblem$DefCompName
+  names(ThisProblem$DefCompActCorr) = ThisProblem$DefCompName
+  names(ThisProblem$DefCompSiteDens) = ThisProblem$DefCompName
+
+}
 
 FunctionInputs = ThisProblem[
   which(names(ThisProblem) %in% formalArgs("GetData"))]
@@ -36,8 +219,10 @@ AllInput = do.call("GetData", args = FunctionInputs)
 # test stuff
 # capture.output(
 ResultsTable <- BLM(
-  ParamFile = ParamFile,
-  InputFile = InputFile,
+  # ParamFile = ParamFile,
+  # InputFile = InputFile,
+  ThisProblem = ThisProblem,
+  AllInput = AllInput,
   DoTox = DoTox,
   iCA = iCA,
   QuietFlag = QuietFlag,
@@ -47,32 +232,89 @@ ResultsTable <- BLM(
 )
 # , file = "scrap/debug.txt")
 
+ResultsTable$Status = ifelse((ResultsTable$FinalMaxError > ConvergenceCriteria) |
+                               is.na(ResultsTable$FinalMaxError),
+                             "Not Converged", "Okay")
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
-ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
+ResultsTable[, c("Obs","ID2","Status","FinalIter","FinalMaxError")]
 # iObs = which((ResultsTable$FinalIter < 30) & !is.na(ResultsTable$FinalMaxError))[1]
+save(ResultsTable, file = paste0(InputFile, "_SPEC.RData"))
+
 # ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]
 # ResultsTable[, c("ID2","T.Cu (mol/L)","T.Cu (mol)","Water (L)", "Water_DonnanHA (L)","Water_DonnanFA (L)")]
 
 
 # ResultsTable[,c("Cu (mol)","BL1-Cu (mol)","BL1-CuOH (mol)", "CuOH (mol)", "Cu(OH)2 (mol)","CuSO4 (mol)","CuCO3 (mol)", "Cu(CO3)2 (mol)","CuCl (mol)","CuHCO3 (mol)")] / ResultsTable$`T.Cu (mol)` * 100
-ResultsTable[,paste0(ThisProblem$SpecName[grepl("Cu",ThisProblem$SpecName)]," (mol)")] / ResultsTable$`T.Cu (mol)` * 100
+# ResultsTable[,paste0(ThisProblem$SpecName[grepl("Cu",ThisProblem$SpecName)]," (mol)")] / ResultsTable$`T.Cu (mol)` * 100
+
+
+ResultsTable$`TOrg.H (mol/L)` = 2 * rowSums(
+  ResultsTable[, colnames(ResultsTable)[grepl("DOC",colnames(ResultsTable)) &
+                                          grepl("mol/L", colnames(ResultsTable)) &
+                                          !grepl("^T", colnames(ResultsTable)) &
+                                          grepl("[[:digit:]][[:digit:]]H [(]mol", colnames(ResultsTable)) &
+                                          !grepl("CuOH", colnames(ResultsTable))]]) +
+  rowSums(
+    ResultsTable[, colnames(ResultsTable)[grepl("DOC",colnames(ResultsTable)) &
+                                            grepl("mol/L", colnames(ResultsTable)) &
+                                            !grepl("^T", colnames(ResultsTable)) &
+                                            grepl("[-_][[:digit:]]H [(]mol", colnames(ResultsTable)) &
+                                            !grepl("CuOH", colnames(ResultsTable))]])
+
+ResultsTable$`TOrg.Free (mol/L)` = rowSums(
+  ResultsTable[, colnames(ResultsTable)[grepl("DOC",colnames(ResultsTable)) &
+                                          grepl("mol/L", colnames(ResultsTable)) &
+                                          !grepl("^T", colnames(ResultsTable)) &
+                                          !(grepl("Cu", colnames(ResultsTable)) |
+                                              grepl("Ca", colnames(ResultsTable)) |
+                                             grepl("Mg", colnames(ResultsTable)) |
+                                             grepl("Na", colnames(ResultsTable)) |
+                                             grepl("K", colnames(ResultsTable)) |
+                                             grepl("SO4", colnames(ResultsTable)) |
+                                             grepl("Cl", colnames(ResultsTable)) |
+                                             grepl("H [(]mol", colnames(ResultsTable)))]]
+)
+
+
+ResultsTable$`T.DOC (mol)` = rowSums(ResultsTable[, colnames(ResultsTable)[
+  grepl("DOC-",colnames(ResultsTable)) &
+    grepl("[(]mol[)]", colnames(ResultsTable)) &
+    grepl("^T", colnames(ResultsTable))]])
 
 ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
 
-# OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_inorg_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:26))
-OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_inorg_TOX.det.xlsx", sheet = 1, rows = c(5, 7:26))
-# OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = "scrap/old BLM/full_organic_SPEC.det.xlsx", sheet = 1, rows = c(5, 7:(6+65)))
+OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, startRow = 7, colNames = FALSE)
+OldBLMheader = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, rows = 5:6, colNames = FALSE)
+OldBLMheader[1, ] = gsub("BL","BL1",OldBLMheader[1, ])
+colnames(OldBLMResultsTable) =
+  apply(OldBLMheader, MARGIN = 2,
+        FUN = function(X){
+          if (is.na(X[2])) {return(X[1])}
+          if (X[1] == X[2]) {return(X[1])}
+          paste0(X[1], " (", gsub(" / ","/", X[2]), ")")
+        })
+# colnames(OldBLMResultsTable)[grepl("_[[:digit:]]?[[:digit:]]-H", colnames(OldBLMResultsTable))]
+# tmp = cbind(colnames(OldBLMResultsTable),
+#       gsub("(_[[:digit:]]?[[:digit:]])-H", "\\1H", colnames(OldBLMResultsTable)))
+# tmp[tmp[,1] != tmp[,2],]
+colnames(OldBLMResultsTable) = gsub("(_[[:digit:]]?[[:digit:]])-H", "\\1H", colnames(OldBLMResultsTable))
 OldBLMResultsTable$Obs = 1:nrow(OldBLMResultsTable)
-OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$Site.Label))
-OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$Sample.Label))
-colnames(OldBLMResultsTable)[paste0(colnames(OldBLMResultsTable), " (mol/L)") %in% colnames(ResultsTable)] =
-  paste0(colnames(OldBLMResultsTable)[paste0(colnames(OldBLMResultsTable), " (mol/L)") %in% colnames(ResultsTable)], " (mol/L)")
+OldBLMResultsTable$ID = trimws(gsub("\"","", OldBLMResultsTable$`Site Label`))
+OldBLMResultsTable$ID2 = trimws(gsub("\"","", OldBLMResultsTable$`Sample Label`))
 OldBLMResultsTable$`DonnanHA (mol/L)` = OldBLMResultsTable$Ratio_HS
 OldBLMResultsTable$`DonnanFA (mol/L)` = OldBLMResultsTable$Ratio_FS
 OldBLMResultsTable$Z_HA = OldBLMResultsTable$Z_HS
 OldBLMResultsTable$Z_FA = OldBLMResultsTable$Z_FS
+OldBLMResultsTable$`T.DOC (g/L)` = OldBLMResultsTable$`T.DOC (mol)`
+# OldBLMResultsTable$`T.DOC (g/L)` * ThisProblem$DefCompSiteDens
+OldBLMResultsTable$`T.DOC (mol)` = OldBLMResultsTable$`T.DOC (g/L)` * (0.1 * 3.29e-3 * (1.5*0.5+12/16*0.5) + 0.9*4.73e-3*(1.5*0.6+12/16*0.4))
+OldBLMResultsTable$`TOrg.Free (mol/L)` = OldBLMResultsTable$`T.DOC (mol)` - (OldBLMResultsTable$`TOrg.H (mol/L)` + OldBLMResultsTable$`TOrg.Cu (mol/L)` + OldBLMResultsTable$`TOrg.Ca (mol/L)` + OldBLMResultsTable$`TOrg.Mg (mol/L)` + OldBLMResultsTable$`TOrg.Na (mol/L)` + OldBLMResultsTable$`TOrg.K (mol/L)`)
 
+# intersect(colnames(OldBLMResultsTable), colnames(ResultsTable))
+
+# ResultsTable[, c("ID","ID2","T.Cu (mol)","Cu (mol/L)", "BL1-Cu (mol/kg wet)", "BL1-CuOH (mol/kg wet)")]
+# OldBLMResultsTable[, c("ID","ID2","T.Cu (mol)","Cu (mol/L)","BL1-Cu (mol/kg wet)","BL1-CuOH (mol/kg wet)")]
 
 
 # ResultsTable[iObs, c("IonicStrength", "Water_DonnanHA (L)","Water_DonnanFA (L)",
@@ -141,6 +383,8 @@ leg.dat = data.frame(
 )
 ResultsTable$col = leg.dat$col[match(ResultsTable$Ser, leg.dat$Ser)]
 
+ResultsTable.sub = ResultsTable[ResultsTable$Status == "Okay", ]
+OldBLMResultsTable.sub = OldBLMResultsTable[ResultsTable$Status == "Okay", ]
 
 layout(matrix(c(2,3,4,1,5,6,7,1,8,9,10,1), byrow = T, nrow = 3, ncol = 4),
        widths = c(1,1,1,lcm(4)))
@@ -169,12 +413,12 @@ for (i.col in intersect(colnames(ResultsTable),
 
     # layout(matrix(1:2, ncol = 2), widths = c(1, lcm(3)))
     par(mar = c(5,5,2,1))
-    plot(x = OldBLMResultsTable[,i.col],
-         y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable[,i.col])),
-         col = ResultsTable$col,
-         pch = ifelse(ResultsTable[, i.col] < ax.lim[1], 6,
-                      ifelse(ResultsTable[, i.col] > ax.lim[2], 2,
-                             ifelse(ResultsTable$FinalIter >= MaxIter, 1, 16))),
+    plot(x = OldBLMResultsTable.sub[,i.col],
+         y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable.sub[,i.col])),
+         col = ResultsTable.sub$col,
+         pch = ifelse(ResultsTable.sub[, i.col] < ax.lim[1], 6,
+                      ifelse(ResultsTable.sub[, i.col] > ax.lim[2], 2,
+                             ifelse(ResultsTable.sub$FinalIter >= MaxIter, 1, 16))),
          main = i.col,
          xlab = "BLM Version 3.41.2.45",
          ylab = "BLM in R",
@@ -183,10 +427,10 @@ for (i.col in intersect(colnames(ResultsTable),
          ylim = ax.lim,
          las = 2)
     grid(nx = 5, ny = 5)
-    text(x = OldBLMResultsTable[, i.col],
-         y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable[, i.col])),
-         labels = ResultsTable$SerLab,
-         col = ResultsTable$col,
+    text(x = OldBLMResultsTable.sub[, i.col],
+         y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable.sub[, i.col])),
+         labels = ResultsTable.sub$SerLab,
+         col = ResultsTable.sub$col,
          pos = 3,
          cex = 0.5)
     abline(a = 0, b = 1)
@@ -196,6 +440,128 @@ for (i.col in intersect(colnames(ResultsTable),
 
   }
 }
+
+
+
+layout(matrix(c(2,3,4,5,1,1), byrow = T, nrow = 3, ncol = 2),
+       heights = c(1, 1, lcm(3)))
+i.plot = 1
+for (i.col in c("Cu","Ca","Mg","Na", "K","SO4","Cl","CO3")) {
+
+  if (i.plot == 1) {
+    par(mar = c(0,0,2,0))
+    plot.new()
+    legend("top", legend = leg.dat$Ser, pch = 16, col = leg.dat$col, ncol = 2)
+  }
+
+  free.col = paste0(i.col, " (mol/L)")
+  input.col = paste0("Input.", i.col)
+
+  y_resid = (ResultsTable.sub[, free.col] - OldBLMResultsTable.sub[, free.col]) /
+    OldBLMResultsTable.sub[, free.col]
+  par(mar = c(5,5,2,1))
+  plot(
+    x = ResultsTable.sub[, input.col],
+    y = y_resid,
+    col = ResultsTable.sub$col,
+    pch = 16,
+    las = 2,
+    xlab = input.col,
+    ylim = c(-1, 1),
+    log = "x",
+    ylab = "(Free Conc from R - Free Conc from BLM) / Free Conc from BLM"
+  )
+  abline(h = 0)
+  text(x = ResultsTable.sub[, input.col],
+       y = y_resid,
+       labels = ResultsTable.sub$SerLab,
+       col = ResultsTable.sub$col,
+       pos = 3,
+       cex = 0.5)
+
+
+  grid(nx = 5, ny = 5)
+
+  i.plot = i.plot + 1
+  if (i.plot > 4){i.plot = 1}
+
+}
+
+layout(matrix(c(2,3,4,5,1,1), byrow = T, nrow = 3, ncol = 2),
+       heights = c(1, 1, lcm(3)))
+i.plot = 1
+for (free.col in c("DOC-HA_1 (mol/L)", "DOC-HA_1H (mol/L)", "DOC-HA_1-Cu (mol/L)",
+                   "DOC-HA_1-Ca (mol/L)", "DOC-HA_1-CuOH (mol/L)",
+                   "DOC-HA_4 (mol/L)", "DOC-HA_4H (mol/L)", "DOC-HA_4-Cu (mol/L)",
+                   "DOC-HA_4-Ca (mol/L)", "DOC-HA_4-CuOH (mol/L)",
+                   "DOC-HA_5 (mol/L)", "DOC-HA_5H (mol/L)", "DOC-HA_5-Cu (mol/L)",
+                   "DOC-HA_5-Ca (mol/L)", "DOC-HA_5-CuOH (mol/L)",
+                   "DOC-HA_8 (mol/L)", "DOC-HA_8H (mol/L)", "DOC-HA_8-Cu (mol/L)",
+                   "DOC-HA_8-Ca (mol/L)", "DOC-HA_8-CuOH (mol/L)",
+                   "DOC-HA_12 (mol/L)", "DOC-HA_2-1H (mol/L)", "DOC-HA_1-2H (mol/L)", "DOC-HA_12H (mol/L)",
+                   "DOC-HA_12-Cu (mol/L)", "DOC-HA_12-Ca (mol/L)", "DOC-HA_12-CuOH (mol/L)")){#paste0(c("Cu","Ca","Mg","Na","K","SO4","Cl","CO3","TOrg.Free"), " (mol/L)")) {
+  for(input.col in c("Hard", "DOC", "pH", "Temp", "Input.Cu")){
+
+    if (i.plot == 1) {
+      par(omi = c(0,0,0.5,1))
+      layout(matrix(c(2,3,4,5,6,7,1,1,1), byrow = T, nrow = 3, ncol = 3),
+             heights = c(1, 1, lcm(3)))
+      par(mar = c(0,0,2,0))
+      plot.new()
+      legend("top", legend = leg.dat$Ser, pch = 16, col = leg.dat$col, ncol = 2)
+      mtext(free.col, side = 3, outer = TRUE)
+    }
+
+    # free.col = paste0(i.col, " (mol/L)")
+    # input.col = paste0("Input.", i.col)
+
+    y_resid = (ResultsTable.sub[, free.col] - OldBLMResultsTable.sub[, free.col]) / OldBLMResultsTable.sub[, free.col]
+    stopifnot((min(y_resid) > -1) & (max(y_resid) < 1))
+    par(mar = c(5,5,2,1))
+    plot(
+      x = ResultsTable.sub[, input.col],
+      y = y_resid,
+      col = ResultsTable.sub$col,
+      pch = 16,
+      las = 2,
+      xlab = input.col,
+      ylim = c(-1, 1),
+      log = ifelse(input.col %in% c("pH", "Temp"), "", "x"),
+      ylab = "(Free Conc from R - Free Conc from BLM) / Free Conc from BLM"
+    )
+    abline(h = 0)
+    text(x = ResultsTable.sub[, input.col],
+         y = y_resid,
+         labels = ResultsTable.sub$SerLab,
+         col = ResultsTable.sub$col,
+         pos = 3,
+         cex = 0.5)
+
+
+    grid(nx = 5, ny = 5)
+
+    i.plot = i.plot + 1
+    if (i.plot > 5){i.plot = 1}
+  }
+}
+
+par(mfcol = c(2, 4), mar = c(5,5,2,0))
+for (i.col in paste0("TOrg.", c("Free","H","Cu","Ca","Mg","Na","K"), " (mol/L)")){
+  plot(
+    x = OldBLMResultsTable.sub[, i.col],
+    y = ResultsTable.sub[, i.col],
+    col = ResultsTable.sub$col,
+    pch = 16,
+    las = 2,
+    xlab = "Old BLM",
+    ylab = "BLM In R",
+    main = i.col
+  )
+  abline(a = 0 , b = 1)
+}
+par(mar = c(0,0,0,0))
+plot.new()
+legend("center", legend = leg.dat$Ser, pch = 16, col = leg.dat$col)
 
 
 if (FALSE) {

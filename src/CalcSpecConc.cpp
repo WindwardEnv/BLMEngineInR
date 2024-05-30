@@ -56,12 +56,12 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
     SpecActivity(iSpec) = SpecK(iSpec);
     for (iComp = 0; iComp < NComp; iComp++) {
       if (SpecStoich(iSpec, iComp) != 0) {
-          /*if ((SpecActCorr(iSpec) == "DonnanHA") || 
-            (SpecActCorr(iSpec) == "DonnanFA")) {
+          /*if ((SpecActCorr(iSpec) == ACTYPE_DONNANHA) || 
+            (SpecActCorr(iSpec) == ACTYPE_DONNANFA)) {
               Rcpp::Rcout << SpecActCorr(iSpec) << std::endl;
           }*/
-          /*if ((SpecActCorr(iComp) == "DonnanHA") || 
-              (SpecActCorr(iComp) == "DonnanFA")) {
+          /*if ((SpecActCorr(iComp) == ACTYPE_DONNANHA) || 
+              (SpecActCorr(iComp) == ACTYPE_DONNANFA)) {
             SpecActivity(iSpec) *= std::pow(CompConc(iComp), 
                                             SpecStoich(iSpec, iComp));
           } else {
@@ -79,11 +79,11 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
 
   if (DoWHAM) {
     for (iSpec = NComp; iSpec < NSpec; iSpec++) {
-      if ((SpecActCorr(iSpec) == "DonnanHA") && 
+      if ((SpecActCorr(iSpec) == ACTYPE_DONNANHA) && 
           (((WHAMSpecCharge(iHA) < 0) && (SpecCharge(iSpec) < 0)) || 
           ((WHAMSpecCharge(iHA) > 0) && (SpecCharge(iSpec) > 0)))) {
         SpecActivity[iSpec] = 0.0;
-      } else if ((SpecActCorr(iSpec) == "DonnanFA") &&
+      } else if ((SpecActCorr(iSpec) == ACTYPE_DONNANFA) &&
                 (((WHAMSpecCharge(iFA) < 0) && (SpecCharge(iSpec) < 0)) || 
                   ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
         SpecActivity[iSpec] = 0.0;

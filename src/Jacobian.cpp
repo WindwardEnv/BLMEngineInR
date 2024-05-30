@@ -65,7 +65,8 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
 
   /* variables: */
   double Sum, Sum2;
-  int iComp1, iComp2, iSpec, i, iHS;
+  int iComp1, iComp2, iSpec, iHS;
+  int i;
   double Sik, Sij, Ci, Cj, Vi, Th, Hi;
   std::string Name1, Name2, NameS;
   Rcpp::String HSName;   
@@ -83,8 +84,8 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
   Rcpp::NumericMatrix dKidC(NSpec, NComp);
   Rcpp::NumericMatrix dVidC(NSpec, NComp);
   Rcpp::CharacterVector SpecActCorrWHAM(2);
-    SpecActCorrWHAM[iHA] = "WHAMHA";
-    SpecActCorrWHAM[iFA] = "WHAMFA";
+    SpecActCorrWHAM[iHA] = ACTYPE_WHAMHA;
+    SpecActCorrWHAM[iFA] = ACTYPE_WHAMFA;
 
   if (DoWHAM) {
 
@@ -133,12 +134,12 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
         if (iSpec < NComp) {
           // components have a Ki of 1, so dKi/dCj is 0
           dKidC(iSpec, iComp2) = 0.0;
-        } else if ((SpecActCorr[iSpec] == "WHAMHA") || 
-                   (SpecActCorr[iSpec] == "WHAMFA")) {
+        } else if ((SpecActCorr[iSpec] == ACTYPE_WHAMHA) || 
+                   (SpecActCorr[iSpec] == ACTYPE_WHAMFA)) {
           // WHAM species have Ki = Kint * exp(-2*w*Hi*Zh), so 
           // dKi/dCj = Ki * (-2) * w * Hi * dZh/dCj
-          if (SpecActCorr[iSpec] == "WHAMHA") { iHS = iHA; }
-          if (SpecActCorr[iSpec] == "WHAMFA") { iHS = iFA; }
+           if (SpecActCorr[iSpec] == ACTYPE_WHAMHA) { iHS = iHA; }
+          if (SpecActCorr[iSpec] == ACTYPE_WHAMFA) { iHS = iFA; }
           Hi = SpecCharge[iSpec];
           dKidC(iSpec, iComp2) = SpecK[iSpec] * (-2) * W[iHS] * Hi * dZhdC(iHS, iComp2);
         } else {
@@ -193,14 +194,14 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
         } else {
           JacobianMatrix(iComp1, iComp2) = Sum / (SpecConc[iComp2]);// * SpecCtoM(iComp2));
         }
-      } else if ((SpecActCorr[iComp1] == "WHAMHA") || 
-                 (SpecActCorr[iComp1] == "WHAMFA")) {
+      } else if ((SpecActCorr[iComp1] == ACTYPE_WHAMHA) || 
+                 (SpecActCorr[iComp1] == ACTYPE_WHAMFA)) {
         /* WHAM species shouldn't have their CToM adjusted, but just to be sure, 
            let's take it out of the calculation. */
-        if (SpecActCorr[iComp1] == "WHAMHA") { 
+        if (SpecActCorr[iComp1] == ACTYPE_WHAMHA) { 
           iHS = iHA;
         }
-        if (SpecActCorr[iComp1] == "WHAMFA") { 
+        if (SpecActCorr[iComp1] == ACTYPE_WHAMFA) { 
           iHS = iFA;
         }
         for (iSpec = 0; iSpec < NSpec; iSpec++) {
@@ -218,16 +219,16 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
           }*/
         };//NEXT iSpec
         JacobianMatrix(iComp1, iComp2) = Sum;
-      } else if ((SpecActCorr[iComp1] == "DonnanFA") || 
-                 (SpecActCorr[iComp1] == "DonnanHA")) {
+       } else if ((SpecActCorr[iComp1] == ACTYPE_DONNANFA) || 
+                 (SpecActCorr[iComp1] == ACTYPE_DONNANHA)) {
         /* diffuse double layer residual is a function of the humic charge, 
            which is itself a function of component concentrations */
-        if (SpecActCorr[iComp1] == "DonnanHA") { 
-          HSName = "WHAMHA"; 
+         if (SpecActCorr[iComp1] == ACTYPE_DONNANHA) { 
+          HSName = ACTYPE_WHAMHA; 
           iHS = iHA;
         }
-        if (SpecActCorr[iComp1] == "DonnanFA") { 
-          HSName = "WHAMFA"; 
+        if (SpecActCorr[iComp1] == ACTYPE_DONNANFA) { 
+          HSName = ACTYPE_WHAMFA; 
           iHS = iFA;
         }
         for (iSpec = 0; iSpec < NSpec; iSpec++) {
@@ -271,7 +272,12 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
         Sum2 = 0;//TotConc[iComp1] * dVidC(iComp1, iComp2);
         JacobianMatrix(iComp1, iComp2) = Sum - Sum2;
       }
-      
+      if (!std::isfinite(JacobianMatrix(iComp1, iComp2))) {
+        Rcpp::Rcout << "d.Residual(" << CompName[iComp1] << 
+          ") / d.Conc(" << CompName[iComp2] << ") is nan/Inf." << std::endl;
+        JacobianMatrix(iComp1, iComp2) = 0.0;  
+        //throw ERROR_JACOBIAN_NAN;
+      }
     };//NEXT iComp2
   };//NEXT iComp1
 
