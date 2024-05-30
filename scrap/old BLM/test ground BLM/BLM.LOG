@@ -1,0 +1,430 @@
+H
+Cu
+DOC
+Ca
+Mg
+Na
+K
+SO4
+Cl
+CO3
+S
+BL
+HA1H
+HA2H
+HA3H
+HA4H
+HB1H
+HB2H
+HB3H
+HB4H
+FA1H
+FA2H
+FA3H
+FA4H
+FB1H
+FB2H
+FB3H
+FB4H
+BL-Cu
+BL-CuOH
+BL-Ca
+BL-Mg
+BL-H
+BL-Na
+HA1
+HA2
+HA3
+HA4
+HB1
+HB2
+HB3
+HB4
+FA1
+FA2
+FA3
+FA4
+FB1
+FB2
+FB3
+FB4
+HA1-Mg
+HA2-Mg
+HA3-Mg
+HA4-Mg
+HB1-Mg
+HB2-Mg
+HB3-Mg
+HB4-Mg
+FA1-Mg
+FA2-Mg
+FA3-Mg
+FA4-Mg
+FB1-Mg
+FB2-Mg
+FB3-Mg
+FB4-Mg
+HA1-Ca
+HA2-Ca
+HA3-Ca
+HA4-Ca
+HB1-Ca
+HB2-Ca
+HB3-Ca
+HB4-Ca
+FA1-Ca
+FA2-Ca
+FA3-Ca
+FA4-Ca
+FB1-Ca
+FB2-Ca
+FB3-Ca
+FB4-Ca
+HA1-Cu
+HA2-Cu
+HA3-Cu
+HA4-Cu
+HB1-Cu
+HB2-Cu
+HB3-Cu
+HB4-Cu
+FA1-Cu
+FA2-Cu
+FA3-Cu
+FA4-Cu
+FB1-Cu
+FB2-Cu
+FB3-Cu
+FB4-Cu
+HCO3
+H2CO3
+HS
+H2S
+MgHCO3
+MgCO3
+MgSO4
+CaHCO3
+CaCO3
+CaSO4
+CuOH
+HA1-CuOH
+HA2-CuOH
+HA3-CuOH
+HA4-CuOH
+HB1-CuOH
+HB2-CuOH
+HB3-CuOH
+HB4-CuOH
+FA1-CuOH
+FA2-CuOH
+FA3-CuOH
+FA4-CuOH
+FB1-CuOH
+FB2-CuOH
+FB3-CuOH
+FB4-CuOH
+Cu(OH)2
+CuSO4
+CuCO3
+Cu(CO3)2
+CuCl
+CuHCO3
+    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1
+    0    1    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    1    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    1    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    1    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    1    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0
+   -1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1
+   -1    0    0    0    1    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0
+   -1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1
+   -1    0    0    1    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0
+   -1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1
+   -1    1    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1
+    1    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    2    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    1    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    2    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    1    0    0    0    1    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    1    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    1    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    1    0    0    1    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    1    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    1    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1    0
+   -1    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1
+    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    1    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    1    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    1    0    0    0    0    0    0    0    2    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    1    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    1    1    0    0    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+CHESS ver 3.00 Log for Batch simulation described in Cu_freshwater_acute_and_chronic_2017-01-17.dat
+--------------------------------------------------------------------------------
+Component     Species Type   Activity       Site Density
+H             Aqueous        Davies          1
+Cu            Aqueous        Davies          1
+DOC           Aqueous        None            .0006
+Ca            Aqueous        Davies          1
+Mg            Aqueous        Davies          1
+Na            Aqueous        Davies          1
+K             Aqueous        Davies          1
+SO4           Aqueous        Davies          1
+Cl            Aqueous        Davies          1
+CO3           Aqueous        Davies          1
+S             Aqueous        Davies          1
+BL            Surface        None            .00003
+HA1H          Aqueous        Donnan          1
+HA2H          Aqueous        Donnan          1
+HA3H          Aqueous        Donnan          1
+HA4H          Aqueous        Donnan          1
+HB1H          Aqueous        Donnan          1
+HB2H          Aqueous        Donnan          1
+HB3H          Aqueous        Donnan          1
+HB4H          Aqueous        Donnan          1
+FA1H          Aqueous        Donnan          1
+FA2H          Aqueous        Donnan          1
+FA3H          Aqueous        Donnan          1
+FA4H          Aqueous        Donnan          1
+FB1H          Aqueous        Donnan          1
+FB2H          Aqueous        Donnan          1
+FB3H          Aqueous        Donnan          1
+FB4H          Aqueous        Donnan          1
+
+Species Formation Reactions                                     Log K
+--------------------------------------------------------------------------------
+BL-Cu =  + BL + Cu                                               7.4
+BL-CuOH =  + BL - H + Cu                                        -1.3
+BL-Ca =  + BL + Ca                                               3.6
+BL-Mg =  + BL + Mg                                               3.6
+BL-H =  + BL + H                                                 5.4
+BL-Na =  + BL + Na                                               3
+HA1 =  + HA1H - H                                               -4.91
+HA2 =  + HA2H - H                                               -4.316667
+HA3 =  + HA3H - H                                               -3.723333
+HA4 =  + HA4H - H                                               -3.13
+HB1 =  + HB1H - H                                               -10.265
+HB2 =  + HB2H - H                                               -9.121667
+HB3 =  + HB3H - H                                               -7.978333
+HB4 =  + HB4H - H                                               -6.835
+FA1 =  + FA1H - H                                               -4.93
+FA2 =  + FA2H - H                                               -3.816667
+FA3 =  + FA3H - H                                               -2.703333
+FA4 =  + FA4H - H                                               -1.59
+FB1 =  + FB1H - H                                               -12.4
+FB2 =  + FB2H - H                                               -10.56
+FB3 =  + FB3H - H                                               -8.72
+FB4 =  + FB4H - H                                               -6.88
+HA1-Mg =  + HA1H - H + Mg                                       -3.3
+HA2-Mg =  + HA2H - H + Mg                                       -3.3
+HA3-Mg =  + HA3H - H + Mg                                       -3.3
+HA4-Mg =  + HA4H - H + Mg                                       -3.3
+HB1-Mg =  + HB1H - H + Mg                                       -3.3
+HB2-Mg =  + HB2H - H + Mg                                       -3.3
+HB3-Mg =  + HB3H - H + Mg                                       -3.3
+HB4-Mg =  + HB4H - H + Mg                                       -3.3
+FA1-Mg =  + FA1H - H + Mg                                       -2.2
+FA2-Mg =  + FA2H - H + Mg                                       -2.2
+FA3-Mg =  + FA3H - H + Mg                                       -2.2
+FA4-Mg =  + FA4H - H + Mg                                       -2.2
+FB1-Mg =  + FB1H - H + Mg                                       -2.2
+FB2-Mg =  + FB2H - H + Mg                                       -2.2
+FB3-Mg =  + FB3H - H + Mg                                       -2.2
+FB4-Mg =  + FB4H - H + Mg                                       -2.2
+HA1-Ca =  + HA1H - H + Ca                                       -3.2
+HA2-Ca =  + HA2H - H + Ca                                       -3.2
+HA3-Ca =  + HA3H - H + Ca                                       -3.2
+HA4-Ca =  + HA4H - H + Ca                                       -3.2
+HB1-Ca =  + HB1H - H + Ca                                       -3.2
+HB2-Ca =  + HB2H - H + Ca                                       -3.2
+HB3-Ca =  + HB3H - H + Ca                                       -3.2
+HB4-Ca =  + HB4H - H + Ca                                       -3.2
+FA1-Ca =  + FA1H - H + Ca                                       -2.2
+FA2-Ca =  + FA2H - H + Ca                                       -2.2
+FA3-Ca =  + FA3H - H + Ca                                       -2.2
+FA4-Ca =  + FA4H - H + Ca                                       -2.2
+FB1-Ca =  + FB1H - H + Ca                                       -2.2
+FB2-Ca =  + FB2H - H + Ca                                       -2.2
+FB3-Ca =  + FB3H - H + Ca                                       -2.2
+FB4-Ca =  + FB4H - H + Ca                                       -2.2
+HA1-Cu =  + HA1H - H + Cu                                       -1.5
+HA2-Cu =  + HA2H - H + Cu                                       -1.5
+HA3-Cu =  + HA3H - H + Cu                                       -1.5
+HA4-Cu =  + HA4H - H + Cu                                       -1.5
+HB1-Cu =  + HB1H - H + Cu                                       -1.5
+HB2-Cu =  + HB2H - H + Cu                                       -1.5
+HB3-Cu =  + HB3H - H + Cu                                       -1.5
+HB4-Cu =  + HB4H - H + Cu                                       -1.5
+FA1-Cu =  + FA1H - H + Cu                                       -.8
+FA2-Cu =  + FA2H - H + Cu                                       -.8
+FA3-Cu =  + FA3H - H + Cu                                       -.8
+FA4-Cu =  + FA4H - H + Cu                                       -.8
+FB1-Cu =  + FB1H - H + Cu                                       -.8
+FB2-Cu =  + FB2H - H + Cu                                       -.8
+FB3-Cu =  + FB3H - H + Cu                                       -.8
+FB4-Cu =  + FB4H - H + Cu                                       -.8
+HCO3 =  + H + CO3                                                10.329
+H2CO3 =  +  2*H + CO3                                            16.681
+HS =  + H + S                                                    13.9
+H2S =  +  2*H + S                                                20.9
+MgHCO3 =  + H + Mg + CO3                                         11.4
+MgCO3 =  + Mg + CO3                                              2.98
+MgSO4 =  + Mg + SO4                                              2.37
+CaHCO3 =  + H + Ca + CO3                                         11.44
+CaCO3 =  + Ca + CO3                                              3.22
+CaSO4 =  + Ca + SO4                                              2.3
+CuOH =  + Cu                                                     6.48
+HA1-CuOH =  + HA1H - H + Cu                                     -1.5
+HA2-CuOH =  + HA2H - H + Cu                                     -1.5
+HA3-CuOH =  + HA3H - H + Cu                                     -1.5
+HA4-CuOH =  + HA4H - H + Cu                                     -1.5
+HB1-CuOH =  + HB1H - H + Cu                                     -1.5
+HB2-CuOH =  + HB2H - H + Cu                                     -1.5
+HB3-CuOH =  + HB3H - H + Cu                                     -1.5
+HB4-CuOH =  + HB4H - H + Cu                                     -1.5
+FA1-CuOH =  + FA1H - H + Cu                                     -.8
+FA2-CuOH =  + FA2H - H + Cu                                     -.8
+FA3-CuOH =  + FA3H - H + Cu                                     -.8
+FA4-CuOH =  + FA4H - H + Cu                                     -.8
+FB1-CuOH =  + FB1H - H + Cu                                     -.8
+FB2-CuOH =  + FB2H - H + Cu                                     -.8
+FB3-CuOH =  + FB3H - H + Cu                                     -.8
+FB4-CuOH =  + FB4H - H + Cu                                     -.8
+Cu(OH)2 =  + Cu                                                  11.78
+CuSO4 =  + Cu + SO4                                              2.36
+CuCO3 =  + Cu + CO3                                              6.75
+Cu(CO3)2 =  + Cu +  2*CO3                                        9.92
+CuCl =  + Cu + Cl                                                .4
+CuHCO3 =  + H + Cu + CO3                                         14.62
+
+Component Mole Balance
+--------------------------------------------------------------------------------
+T.BL = + BL + BL-Cu + BL-CuOH + BL-Ca + BL-Mg + BL-H + BL-Na
+T.HA1H = + HA1H + HA1 + HA1-Mg + HA1-Ca + HA1-Cu + HA1-CuOH
+T.HA2H = + HA2H + HA2 + HA2-Mg + HA2-Ca + HA2-Cu + HA2-CuOH
+T.HA3H = + HA3H + HA3 + HA3-Mg + HA3-Ca + HA3-Cu + HA3-CuOH
+T.HA4H = + HA4H + HA4 + HA4-Mg + HA4-Ca + HA4-Cu + HA4-CuOH
+T.HB1H = + HB1H + HB1 + HB1-Mg + HB1-Ca + HB1-Cu + HB1-CuOH
+T.HB2H = + HB2H + HB2 + HB2-Mg + HB2-Ca + HB2-Cu + HB2-CuOH
+T.HB3H = + HB3H + HB3 + HB3-Mg + HB3-Ca + HB3-Cu + HB3-CuOH
+T.HB4H = + HB4H + HB4 + HB4-Mg + HB4-Ca + HB4-Cu + HB4-CuOH
+T.FA1H = + FA1H + FA1 + FA1-Mg + FA1-Ca + FA1-Cu + FA1-CuOH
+T.FA2H = + FA2H + FA2 + FA2-Mg + FA2-Ca + FA2-Cu + FA2-CuOH
+T.FA3H = + FA3H + FA3 + FA3-Mg + FA3-Ca + FA3-Cu + FA3-CuOH
+T.FA4H = + FA4H + FA4 + FA4-Mg + FA4-Ca + FA4-Cu + FA4-CuOH
+T.FB1H = + FB1H + FB1 + FB1-Mg + FB1-Ca + FB1-Cu + FB1-CuOH
+T.FB2H = + FB2H + FB2 + FB2-Mg + FB2-Ca + FB2-Cu + FB2-CuOH
+T.FB3H = + FB3H + FB3 + FB3-Mg + FB3-Ca + FB3-Cu + FB3-CuOH
+T.FB4H = + FB4H + FB4 + FB4-Mg + FB4-Ca + FB4-Cu + FB4-CuOH
+T.H = + H - BL-CuOH + BL-H - HA1 - HA2 - HA3 - HA4 - HB1 - HB2 - HB3 - HB4 - FA1 - FA2 - FA3 - FA4 - FB1 - FB2 - FB3 - FB4 - HA1-Mg - HA2-Mg - HA3-Mg - HA4-Mg - HB1-Mg - HB2-Mg - HB3-Mg - HB4-Mg - FA1-Mg - FA2-Mg - FA3-Mg - FA4-Mg - FB1-Mg - FB2-Mg - FB3-Mg - FB4-Mg - HA1-Ca - HA2-Ca - HA3-Ca - HA4-Ca - HB1-Ca - HB2-Ca - HB3-Ca - HB4-Ca - FA1-Ca - FA2-Ca - FA3-Ca - FA4-Ca - FB1-Ca - FB2-Ca - FB3-Ca - FB4-Ca - HA1-Cu - HA2-Cu - HA3-Cu - HA4-Cu - HB1-Cu - HB2-Cu - HB3-Cu - HB4-Cu - FA1-Cu - FA2-Cu - FA3-Cu - FA4-Cu - FB1-Cu - FB2-Cu - FB3-Cu - FB4-Cu + HCO3 + 2H2CO3 + HS + 2H2S + MgHCO3 + CaHCO3 - HA1-CuOH - HA2-CuOH - HA3-CuOH - HA4-CuOH - HB1-CuOH - HB2-CuOH - HB3-CuOH - HB4-CuOH - FA1-CuOH - FA2-CuOH - FA3-CuOH - FA4-CuOH - FB1-CuOH - FB2-CuOH - FB3-CuOH - FB4-CuOH + CuHCO3
+T.Cu = + Cu + BL-Cu + BL-CuOH + HA1-Cu + HA2-Cu + HA3-Cu + HA4-Cu + HB1-Cu + HB2-Cu + HB3-Cu + HB4-Cu + FA1-Cu + FA2-Cu + FA3-Cu + FA4-Cu + FB1-Cu + FB2-Cu + FB3-Cu + FB4-Cu + CuOH + HA1-CuOH + HA2-CuOH + HA3-CuOH + HA4-CuOH + HB1-CuOH + HB2-CuOH + HB3-CuOH + HB4-CuOH + FA1-CuOH + FA2-CuOH + FA3-CuOH + FA4-CuOH + FB1-CuOH + FB2-CuOH + FB3-CuOH + FB4-CuOH + Cu(OH)2 + CuSO4 + CuCO3 + Cu(CO3)2 + CuCl + CuHCO3
+T.DOC = + DOC
+T.Ca = + Ca + BL-Ca + HA1-Ca + HA2-Ca + HA3-Ca + HA4-Ca + HB1-Ca + HB2-Ca + HB3-Ca + HB4-Ca + FA1-Ca + FA2-Ca + FA3-Ca + FA4-Ca + FB1-Ca + FB2-Ca + FB3-Ca + FB4-Ca + CaHCO3 + CaCO3 + CaSO4
+T.Mg = + Mg + BL-Mg + HA1-Mg + HA2-Mg + HA3-Mg + HA4-Mg + HB1-Mg + HB2-Mg + HB3-Mg + HB4-Mg + FA1-Mg + FA2-Mg + FA3-Mg + FA4-Mg + FB1-Mg + FB2-Mg + FB3-Mg + FB4-Mg + MgHCO3 + MgCO3 + MgSO4
+T.Na = + Na + BL-Na
+T.K = + K
+T.SO4 = + SO4 + MgSO4 + CaSO4 + CuSO4
+T.Cl = + Cl + CuCl
+T.CO3 = + CO3 + HCO3 + H2CO3 + MgHCO3 + MgCO3 + CaHCO3 + CaCO3 + CuCO3 + 2Cu(CO3)2 + CuHCO3
+T.S = + S + HS + H2S
