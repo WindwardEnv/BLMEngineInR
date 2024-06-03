@@ -158,37 +158,17 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   CompActCorr = as.character(trimws(Tmp[, 5]))
   CompSiteDens = array(1.0, dim = NInComp)
 
-  # Add pH to the component list, if needed
-  for (iMass in 1:NMass){#Must have either pH or H in non-BL compartments
-    if (grepl("Water", MassName[iMass], ignore.case = TRUE)) {
-      stopifnot(xor(("H" %in% CompName[CompMCR == iMass]),
-                    ("pH" %in% InVarType[InVarMCR == iMass])))
-      if ("pH" %in% InVarType[InVarMCR == iMass]) {
-        NComp = NComp + 1L
-        CompName = c(CompName, "H")
-        CompCharge = c(CompCharge, 1L)
-        CompMCR = c(CompMCR, iMass)
-        # CompMCName = c(CompMCName, MassName[iMass])
-        CompType = c(CompType, "FixedAct")
-        CompActCorr = c(CompActCorr, "Debye")
-        CompSiteDens = c(CompSiteDens, 1.0)
-      }
-    } else {
-      if (("H" %in% CompName[CompMCR == iMass]) ||
-            ("pH" %in% InVarType[InVarMCR == iMass])) {
-        stop("pH/[H+] specified for non-water mass compartment.")
-      }
-    }
-  }
-
   # read defined component list and properties
   SkipRows = SkipRows + NInComp + 3
   if (NDefComp > 0) {
     Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                    nrows = NDefComp, strip.white = TRUE)
     DefCompName = as.character(trimws(Tmp[, 1]))
-    DefCompFromNum = as.numeric(Tmp[, 2])
-    DefCompFromVar = as.character(trimws(Tmp[, 2]))
+    NumericDefComp = grepl("^[[:digit:].]+[eE]?[+-]?[[:digit:]]?", Tmp[, 2])
+    DefCompFromNum = as.numeric(array(NA, dim = NDefComp))
+    DefCompFromNum[NumericDefComp] = as.numeric(Tmp[NumericDefComp, 2])
+    DefCompFromVar = as.character(array(NA, dim = NDefComp))
+    DefCompFromVar[!NumericDefComp] = trimws(Tmp[!NumericDefComp, 2])
     DefCompFromVar[!is.na(DefCompFromNum)] = NA
     DefCompFromNum[!is.na(DefCompFromVar)] = NA
     DefCompCharge = as.integer(Tmp[, 3])
@@ -209,6 +189,34 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompSiteDens = numeric()
   }
 
+  # Add pH to the component list, if needed
+  for (iMass in 1:NMass){#Must have either pH or H in non-BL compartments
+    if (grepl("Water", MassName[iMass], ignore.case = TRUE)) {
+      if (!xor(("H" %in% CompName[CompMCR == iMass]),
+                    ("pH" %in% InVarType[InVarMCR == iMass]) &
+                      ("H" %in% DefCompName[DefCompMCR == iMass]))) {
+        stop("Must specify either H as an input component, or pH with a
+             corresponding H defined component.")
+      }
+      # if ("pH" %in% InVarType[InVarMCR == iMass]) {
+      #   NComp = NComp + 1L
+      #   CompName = c(CompName, "H")
+      #   CompCharge = c(CompCharge, 1L)
+      #   CompMCR = c(CompMCR, iMass)
+      #   # CompMCName = c(CompMCName, MassName[iMass])
+      #   CompType = c(CompType, "FixedAct")
+      #   CompActCorr = c(CompActCorr, "Debye")
+      #   CompSiteDens = c(CompSiteDens, 1.0)
+      # }
+    } else {
+      if (("H" %in% CompName[CompMCR == iMass]) ||
+          ("pH" %in% InVarType[InVarMCR == iMass])) {
+        stop("pH/[H+] specified for non-water mass compartment.")
+      }
+    }
+  }
+
+
   # concatenate DefComp and Comp
   NComp = NComp + NDefComp
   CompName = c(CompName, DefCompName)
@@ -218,6 +226,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   CompType = c(CompType, DefCompType)
   CompActCorr = c(CompActCorr, DefCompActCorr)
   CompSiteDens = c(CompSiteDens, DefCompSiteDens)
+
 
   # Create variables for species information
   SpecName = character(NSpec)
