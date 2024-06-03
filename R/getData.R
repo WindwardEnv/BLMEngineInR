@@ -154,8 +154,6 @@ MatchInputsToProblem = function(
   # -get pH - from InVarObs or InCompObs
   if (any(InVarType == "pH")) {
     pH = as.numeric(InVarObs[, InVarName[InVarType == "pH"]]) # nolint: object_name_linter, line_length_linter.
-    # convert to H
-    TotConcObs[, "H"] = 10^-(pH)
   } else {
     pH = -log10(InCompObs[, "H"]) # nolint: object_name_linter, line_length_linter.
   }
@@ -232,19 +230,22 @@ MatchInputsToProblem = function(
   VarDefComps = which(DefCompFromVar %in% c("DOC-HA_", "DOC-FA_", NA) == FALSE)
   if (length(VarDefComps) > 0) {
     VarDefCompName = DefCompName[VarDefComps]
-    i = which(DefCompName %in% VarDefCompName) #nolint: object_name_linter.
-    if (DefCompName[i] %in% CompName) {
-      TotConcObs[, DefCompName[i]] =
-        TotConcObs[, DefCompFromVar[i], drop = FALSE] *
-        matrix(DefCompSiteDens[i], byrow = TRUE, nrow = NObs, ncol = length(i),
-               dimnames = list(1:NObs, DefCompName[i]))
-    } else if (DefCompName[i] %in% InVarName) {
-      TotConcObs[, DefCompName[i]] =
-        InVarObs[, DefCompFromVar[i], drop = FALSE] *
-        matrix(DefCompSiteDens[i], byrow = TRUE, nrow = NObs, ncol = length(i),
-               dimnames = list(1:NObs, DefCompName[i]))
-    } else {
-      stop("Unknown component or variable given in Defined Components 'From' column.") # nolint: line_length_linter.
+    for (i in which(DefCompName %in% VarDefCompName)){
+      if (DefCompFromVar[i] == "pH") {
+        TotConcObs[, DefCompName[i]] = 10^-pH
+      } else if (DefCompFromVar[i] %in% CompName) {
+        TotConcObs[, DefCompName[i]] =
+          TotConcObs[, DefCompFromVar[i], drop = FALSE] *
+          matrix(DefCompSiteDens[i], byrow = TRUE, nrow = NObs, ncol = 1,
+                 dimnames = list(1:NObs, DefCompName[i]))
+      } else if (DefCompFromVar[i] %in% InVarName) {
+        TotConcObs[, DefCompName[i]] =
+          InVarObs[, DefCompFromVar[i], drop = FALSE] *
+          matrix(DefCompSiteDens[i], byrow = TRUE, nrow = NObs, ncol = 1,
+                 dimnames = list(1:NObs, DefCompName[i]))
+      } else {
+        stop("Unknown component or variable given in Defined Components 'From' column.") # nolint: line_length_linter.
+      }
     }
   }
 
