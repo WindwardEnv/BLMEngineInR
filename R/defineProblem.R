@@ -127,8 +127,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                  nrows = NInVar, strip.white = TRUE)
   InVarName = as.character(trimws(Tmp[, 1]))
-  InVarMCR = as.character(trimws(Tmp[, 2]))
-  InVarMCR = match(trimws(Tmp[, 2]), MassName)
+  InVarMCName = as.character(trimws(Tmp[, 2]))
+  InVarMCR = match(InVarMCName, MassName)
   InVarType = as.character(trimws(Tmp[, 3]))
   stopifnot(!any(duplicated(InVarName)))
   stopifnot(all(!is.na(InVarMCR)))
@@ -152,8 +152,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   NComp = NInComp
   InCompName = CompName = as.character(trimws(Tmp[, 1]))
   CompCharge = as.integer(Tmp[, 2])
-  # CompMCName = as.character(trimws(Tmp[, 3]))
-  CompMCR = match(trimws(Tmp[, 3]), MassName)
+  CompMCName = as.character(trimws(Tmp[, 3]))
+  CompMCR = match(CompMCName, MassName)
   CompType = as.character(trimws(Tmp[, 4]))
   CompActCorr = as.character(trimws(Tmp[, 5]))
   CompSiteDens = array(1.0, dim = NInComp)
@@ -172,8 +172,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompFromVar[!is.na(DefCompFromNum)] = NA
     DefCompFromNum[!is.na(DefCompFromVar)] = NA
     DefCompCharge = as.integer(Tmp[, 3])
-    # DefCompMCName = as.character(trimws(Tmp[, 4]))
-    DefCompMCR = match(trimws(Tmp[, 4]), MassName)
+    DefCompMCName = as.character(trimws(Tmp[, 4]))
+    DefCompMCR = match(DefCompMCName, MassName)
     DefCompType = as.character(trimws(Tmp[, 5]))
     DefCompActCorr = as.character(trimws(Tmp[, 6]))
     DefCompSiteDens = as.numeric(Tmp[, 7])
@@ -182,7 +182,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompFromNum = numeric()
     DefCompFromVar = character()
     DefCompCharge = integer()
-    # DefCompMCName = character()
+    DefCompMCName = character()
     DefCompMCR = integer()
     DefCompType = character()
     DefCompActCorr = character()
@@ -203,7 +203,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
       #   CompName = c(CompName, "H")
       #   CompCharge = c(CompCharge, 1L)
       #   CompMCR = c(CompMCR, iMass)
-      #   # CompMCName = c(CompMCName, MassName[iMass])
+      #   CompMCName = c(CompMCName, MassName[iMass])
       #   CompType = c(CompType, "FixedAct")
       #   CompActCorr = c(CompActCorr, "Debye")
       #   CompSiteDens = c(CompSiteDens, 1.0)
@@ -222,7 +222,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   CompName = c(CompName, DefCompName)
   CompCharge = c(CompCharge, DefCompCharge)
   CompMCR = c(CompMCR, DefCompMCR)
-  # CompMCName = c(CompMCName, DefCompMCName)
+  CompMCName = c(CompMCName, DefCompMCName)
   CompType = c(CompType, DefCompType)
   CompActCorr = c(CompActCorr, DefCompActCorr)
   CompSiteDens = c(CompSiteDens, DefCompSiteDens)
@@ -231,7 +231,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   # Create variables for species information
   SpecName = character(NSpec)
   SpecMCR = integer(NSpec)
-  # SpecMCName = character(NSpec)
+  SpecMCName = character(NSpec)
   SpecActCorr = integer(NSpec)
   SpecNC = integer(NSpec)
   SpecCompList = matrix(data = 0, nrow = NSpec, ncol = NComp)
@@ -247,8 +247,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   TmpSplit = strsplit(Tmp, ",")
   for (i in 1:NSpec) {
     SpecName[i] = as.character(trimws(TmpSplit[[i]][1]))
-    SpecMCR[i] = as.integer(match(trimws(TmpSplit[[i]][2]), MassName))
-    # SpecMCName[i] = as.character(trimws(TmpSplit[[i]][2]))
+    SpecMCName[i] = as.character(trimws(TmpSplit[[i]][2]))
+    SpecMCR[i] = as.integer(match(SpecMCName[i], MassName))
     SpecActCorr[i] = as.character(trimws(TmpSplit[[i]][3]))
     SpecNC[i] = as.integer(trimws(TmpSplit[[i]][4]))
     for (j in 1:SpecNC[i]) {
@@ -359,8 +359,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   # Add components to the species list
   NSpec = NComp + NSpec
   SpecName = c(CompName, SpecName)
+  SpecMCName = c(CompMCName, SpecMCName)
   SpecMCR = c(CompMCR, SpecMCR)
-  # SpecMCName = c(CompMCName, SpecMCName)
   SpecActCorr = c(CompActCorr, SpecActCorr)
   SpecNC = c(array(1L, NComp), SpecNC)
   Tmp = matrix(0, nrow = NComp, ncol = NComp)
@@ -417,6 +417,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
     # Input Variables
     InVarName = InVarName,
+    InVarMCName = InVarMCName,
     InVarMCR = InVarMCR,
     InVarType = InVarType,
 
@@ -424,8 +425,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     InCompName = InCompName,
     CompName = CompName,
     CompCharge = CompCharge,
+    CompMCName = CompMCName,
     CompMCR = CompMCR,
-    # CompMCName = CompMCName,
     CompType = CompType,
     CompActCorr = CompActCorr,
     CompSiteDens = CompSiteDens,
@@ -435,16 +436,16 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompFromNum = DefCompFromNum,
     DefCompFromVar = DefCompFromVar,
     DefCompCharge = DefCompCharge,
+    DefCompMCName = DefCompMCName,
     DefCompMCR = DefCompMCR,
-    # DefCompMCName = DefCompMCName,
     DefCompType = DefCompType,
     DefCompActCorr = DefCompActCorr,
     DefCompSiteDens = DefCompSiteDens,
 
     # Formation Reactions
     SpecName = SpecName,
+    SpecMCName = SpecMCName,
     SpecMCR = SpecMCR,
-    # SpecMCName = SpecMCName,
     SpecActCorr = SpecActCorr,
     SpecNC = SpecNC,
     SpecCompList = SpecCompList,

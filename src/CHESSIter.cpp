@@ -127,10 +127,12 @@ double CHESSIter(
   //ChargeBalance = CalcChargeBalance(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
   //                                  SpecMC, AqueousMC);
   IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC, SpecActCorr, false);
+                                    SpecMC, AqueousMC, SpecActCorr, true);
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
-  
+  UpdateFixedComps(NComp, CompType, TotConc, SpecActivityCoef, 
+                  SpecConc, CompConc);
+
   if (DoWHAM) {
     WHAMIonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
                                     SpecMC, AqueousMC, SpecActCorr, true);
