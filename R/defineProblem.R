@@ -34,7 +34,7 @@
 #'
 #'
 #'  \item{\code{NMass, NInLab, NInVar, NInComp, NDefComp, NComp, NSpec, NPhase,
-#'    NSpecialDef, NBL, NMetal, NBLMetal, NCAT}}{The counts of the mass
+#'    NBL, NMetal, NBLMetal, NCAT}}{The counts of the mass
 #'    compartments, input label fields, input variables, input components,
 #'    defined components, total simulation components, species reactions,
 #'    phases, special definitions, biotic ligand components associated with
@@ -329,9 +329,9 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     WHAMString = Tmp[Tmp[, 1] == "WHAM", 2]
     if (WHAMString %in% c("V", "VI", "VII")) {
       WHAMVer = WHAMString
-      WdatFile = NULL
+      WdatFile = NA
     } else {
-      WHAMVer = NULL
+      WHAMVer = NA
       WdatFile = WHAMString
     }
   } else {
@@ -399,7 +399,6 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     NComp = NComp,
     NSpec = NSpec,
     NPhase = NPhase,
-    NSpecialDef = NSpecialDef,
     NBL = NBL,
     NMetal = NMetal,
     NBLMetal = NBLMetal,
@@ -472,6 +471,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     BLMetalName = BLMetalName,
     # BLMetalSpecsR = BLMetalSpecs,#this needs to be figured out after ExpandWHAM
     DoWHAM = DoWHAM,
+    WHAMVer = WHAMVer,
+    WdatFile = WdatFile,
 
     # Critical Accumulation Table
     CATab = CATab
@@ -496,10 +497,9 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   stopifnot(!any(duplicated(c(InLabName, InVarName, SpecName))))
 
   # Make SpecCtoM, SpecCharge, SpecK
-  SpecCharge = Out$SpecStoich %*% Out$CompCharge
-  Out$SpecCharge = as.integer(SpecCharge)
-  Out$SpecK = array(10 ^ Out$SpecLogK, dim = Out$NSpec,
-                    dimnames = list(Out$SpecName))
+  SpecCharge = drop(Out$SpecStoich %*% Out$CompCharge)
+  Out$SpecCharge = SpecCharge
+  Out$SpecK = 10 ^ Out$SpecLogK
 
   # Final positions of special definition parameters
   BLMetalSpecs = which(Out$SpecName %in% BLMetalName)
