@@ -10,7 +10,7 @@ MatchInputsToProblem(
   InCompObs,
   NInVar,
   InVarName,
-  InVarMC,
+  InVarMCR,
   InVarType,
   NInComp,
   InCompName,
@@ -37,7 +37,7 @@ component concentrations for each observation}
 \item{InVarName}{character vector of length `NInVar`; Names of input
 variables}
 
-\item{InVarMC}{integer vector of length `NInVar`;  Mass compartments of input
+\item{InVarMCR}{integer vector of length `NInVar`;  Mass compartments of input
 variables}
 
 \item{InVarType}{character vector of length `NInVar`; Types of input

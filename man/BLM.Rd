@@ -7,6 +7,8 @@
 BLM(
   ParamFile = character(),
   InputFile = character(),
+  ThisProblem = NULL,
+  AllInput = NULL,
   DoTox = logical(),
   iCA = 1L,
   QuietFlag = c("Quiet", "Very Quiet", "Debug"),
@@ -19,6 +21,12 @@ BLM(
 \item{ParamFile}{The path and file name of the parameter file}
 
 \item{InputFile}{The path and file name of the chemistry input file}
+
+\item{ThisProblem}{(optional) A problem list object, such as returned by
+`DefineProblem`.}
+
+\item{AllInput}{(optional) An input chemistry list object, such as returned
+by `GetData`.}
 
 \item{DoTox}{Should this be a speciation (TRUE) or toxicity (FALSE) run? In a
 speciation run, the total metal is input and the free metal and metal bound
