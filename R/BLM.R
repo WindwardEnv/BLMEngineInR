@@ -5,6 +5,10 @@
 #'
 #' @param ParamFile The path and file name of the parameter file
 #' @param InputFile The path and file name of the chemistry input file
+#' @param ThisProblem (optional) A problem list object, such as returned by
+#'   `DefineProblem`.
+#' @param AllInput (optional) An input chemistry list object, such as returned
+#'   by `GetData`.
 #' @param DoTox Should this be a speciation (TRUE) or toxicity (FALSE) run? In a
 #'   speciation run, the total metal is input and the free metal and metal bound
 #'   to the biotic ligand is calculated. In a toxicity run, the critical

@@ -1,7 +1,7 @@
 Package: BLMEngineInR
 Type: Package
-Version: 0.1.1
-Date: 2023-10-02
+Version: 0.1.3
+Date: 2024-06-17
 Title: BLM Engine In R
 Authors@R: c(person(given = "Robert", family = "Santore", 
                     email = "roberts@windwardenv.com",
@@ -27,6 +27,6 @@ LinkingTo:
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Depends: 
     R (>= 2.10)

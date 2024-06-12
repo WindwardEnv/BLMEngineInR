@@ -1,3 +1,16 @@
+#' @title Write a VERY Detailed Output File
+#'
+#' @description
+#' This will write an output XLSX file with everything that is returned by the
+#' `BLM` function. This includes inputs, concentrations, activities, etc.
+#'
+#' @param OutList The list object returned by the BLM function.
+#' @param FileName The name of the file you'd like to write.
+#' @param AdditionalInfo This vector will be included in the "Additional Info".
+#'   By default, it will give the date/time the file was saved.
+#'
+#' @return Returns TRUE if successful.
+#' @export
 WriteDetailedFile = function(
     OutList,
     FileName,

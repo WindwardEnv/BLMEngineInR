@@ -1,3 +1,9 @@
+#' Make a blank input problem list object
+#'
+#' @return A list object where each element in the list is an input for BLM
+#'   functions.
+#' @export
+#'
 BlankProblem = function() {
 
   # assemble Output
@@ -112,6 +118,18 @@ BlankProblem = function() {
 
 }
 
+#' Remove a Mass Compartment from a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param MCToRemove A character vector with names or indices of the mass
+#'   compartment(s) to remove from `ThisProblem`.
+#'
+#' @return `ThisProblem`, minus the mass compartment(s) indicated by
+#'   `MCToRemove`, also with any components, input variables, etc. associated
+#'   with those mass compartments removed.
+#' @export
+#'
 RemoveMassCompartments = function(ThisProblem, MCToRemove) {
 
   NewProblem = ThisProblem
@@ -185,6 +203,17 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove) {
 
 }
 
+#' Remove an input label from a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param InLabToRemove A character vector with names or indices of the input
+#'   label(s) to remove from `ThisProblem`.
+#'
+#' @return `ThisProblem`, minus the input label(s) indicated by
+#'   `InLabToRemove`.
+#' @export
+#'
 RemoveInLab = function(ThisProblem, InLabToRemove) {
 
   NewProblem = ThisProblem
@@ -211,6 +240,18 @@ RemoveInLab = function(ThisProblem, InLabToRemove) {
 
 }
 
+#' Remove an input variable from a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param InVarToRemove A character vector with names or indices of the input
+#'   variable(s) to remove from `ThisProblem`.
+#'
+#' @return `ThisProblem`, minus the input variable(s) indicated by
+#'   `InVarToRemove`, also with any components, etc. associated with those
+#'   variables.
+#' @export
+#'
 RemoveInVar = function(ThisProblem, InVarToRemove) {
 
   NewProblem = ThisProblem
@@ -253,6 +294,18 @@ RemoveInVar = function(ThisProblem, InVarToRemove) {
 
 }
 
+#' Remove a component from a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param ComponentToRemove A character vector with names or indices of the
+#'   component(s) to remove from `ThisProblem`.
+#'
+#' @return `ThisProblem`, minus the component(s) indicated by
+#'   `ComponentToRemove`, also with any species, etc associates with those
+#'   components removed and with any other ripple effects updated.
+#' @export
+#'
 RemoveComponents = function(ThisProblem, ComponentToRemove) {
 
     NewProblem = ThisProblem
@@ -357,6 +410,17 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
     return(NewProblem)
 }
 
+#' Remove a species reaction from a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param SpeciesToRemove A character vector with names or indices of the
+#'   species(s) to remove from `ThisProblem`.
+#'
+#' @return `ThisProblem`, minus the species indicated by
+#'   `SpeciesToRemove`, also with any other ripple effects updated.
+#' @export
+#'
 RemoveSpecies = function(ThisProblem, SpeciesToRemove) {
 
   NewProblem = ThisProblem
@@ -402,6 +466,17 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove) {
 
 }
 
+#' Remove a defined component from a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param DefCompToRemove A character vector with names or indices of the
+#'   defined component(s) to remove from `ThisProblem`.
+#'
+#' @return `ThisProblem`, minus the defined component(s) indicated by
+#'   `DefCompToRemove`, also with any other ripple effects updated.
+#' @export
+#'
 RemoveDefComps = function(ThisProblem, DefCompToRemove) {
 
   NewProblem = ThisProblem
@@ -442,6 +517,19 @@ RemoveDefComps = function(ThisProblem, DefCompToRemove) {
 
 }
 
+#' Add a mass compartment to a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param MassName A character vector with the name(s) of the new mass
+#'   compartment(s).
+#' @param MassAmt A numeric vector with the mass compartment amount(s).
+#' @param MassUnit A character vector with the units for the amount(s) of the
+#'   mass compartment(s).
+#'
+#' @return `ThisProblem`, with the added mass compartments.
+#' @export
+#'
 AddMassCompartments = function(ThisProblem, MassName, MassAmt, MassUnit) {
 
   NewProblem = ThisProblem
@@ -474,6 +562,16 @@ AddMassCompartments = function(ThisProblem, MassName, MassAmt, MassUnit) {
 
 }
 
+#' Add an input label to a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param InLabName A character vector with the name(s) of the new input
+#'   label(s).
+#'
+#' @return `ThisProblem`, with the added input labels.
+#' @export
+#'
 AddInLabs = function(ThisProblem, InLabName) {
 
   NewProblem = ThisProblem
@@ -498,6 +596,26 @@ AddInLabs = function(ThisProblem, InLabName) {
 
 }
 
+#' Add an input variable to a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param InVarName A character vector with the name(s) of the input input
+#'   variable(s).
+#' @param InVarMCName A character vector with the name(s) of the mass
+#'   compartments the new input variables are associated with. Does not need to
+#'   be specified if `InVarMCR` is specified instead.
+#' @param InVarType A character vector with the types of the new input
+#'   variables. Must be one of "Temp", "pH", "WHAM-HA", "WHAM-FA", "WHAM-HAFA",
+#'   "PercHA", and "PercAFA".
+#' @param InVarMCR (optional) A character vector with the indices of the mass
+#'   compartments the new input variables are associated with. Only needs to be
+#'   specified if `InVarMCName` is not specified.
+#'
+#' @return `ThisProblem`, with the added input variable. If the input variable
+#'   is pH, an "H" component will also be added as a fixed activity component.
+#' @export
+#'
 AddInVar = function(ThisProblem, InVarName, InVarMCName = NULL,
                     InVarType,
                     InVarMCR = match(InVarMCName, ThisProblem$MassName)) {
@@ -562,6 +680,36 @@ AddInVar = function(ThisProblem, InVarName, InVarMCName = NULL,
 
 }
 
+#' Add a component to a problem list object (internal)
+#'
+#' An component should be added either as an input component or a defined
+#' component. Both of those functions will call this function, but components
+#' should generally not be added without specifying how to obtain numbers for
+#' them from inputs.
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param CompName A character vector with the name(s) of the components to be
+#'   added.
+#' @param CompCharge An integer vector with the charge(s) of the components to
+#'   be added.
+#' @param CompMCName A character vector with the name(s) of the mass
+#'   compartments the new components are associated with. Does not need to be
+#'   specified if `CompMCR` is specified instead.
+#' @param CompType A character vector with the types of the new input variables.
+#'   Must be one of "MassBal", "FixedAct", "FixedConc", "DonnanHA", or
+#'   "DonnanFA".
+#' @param CompActCorr A character vector with the activity correction method(s)
+#'   of the new components. Must be one of "None", "Debye", "Davies",
+#'   "DonnanHA", "DonnanFA", "WHAMHA", or "WHAMFA".
+#' @param CompSiteDens A numeric vector with the binding site densities of the
+#'   new components.
+#' @param CompMCR (optional) A character vector with the indices of the mass
+#'   compartments the new components are associated with. Only needs to be
+#'   specified if `CompMCName` is not specified.
+#'
+#' @return `ThisProblem`, with the added component.
+#'
 AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
                          CompType, CompActCorr, CompSiteDens,
                          CompMCR = match(CompMCName, ThisProblem$MassName)) {
@@ -715,6 +863,30 @@ AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
 
 }
 
+#' Add an input component to a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param InCompName A character vector with the name(s) of the components to be
+#'   added.
+#' @param InCompCharge An integer vector with the charge(s) of the components to
+#'   be added.
+#' @param InCompMCName A character vector with the name(s) of the mass
+#'   compartments the new components are associated with. Does not need to be
+#'   specified if `InCompMCR` is specified instead.
+#' @param InCompType A character vector with the types of the new input
+#'   variables. Must be one of "MassBal", "FixedAct", "FixedConc", "DonnanHA",
+#'   or "DonnanFA".
+#' @param InCompActCorr A character vector with the activity correction
+#'   method(s) of the new components. Must be one of "None", "Debye", "Davies",
+#'   "DonnanHA", "DonnanFA", "WHAMHA", or "WHAMFA".
+#' @param InCompMCR (optional) A character vector with the indices of the mass
+#'   compartments the new components are associated with. Only needs to be
+#'   specified if `InCompMCName` is not specified.
+#'
+#' @return `ThisProblem`, with the added input component.
+#' @export
+#'
 AddInComp = function(ThisProblem, InCompName, InCompCharge, InCompMCName = NULL,
                      InCompType, InCompActCorr,
                      InCompMCR = match(InCompMCName, ThisProblem$MassName)) {
@@ -770,6 +942,38 @@ AddInComp = function(ThisProblem, InCompName, InCompCharge, InCompMCName = NULL,
 
 }
 
+#' Add a defined component to a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param DefCompName A character vector with the name(s) of the components to
+#'   be added.
+#' @param DefCompFromNum A numeric vector with the numeric values used to derive
+#'   the component. Specify `NA` if the defined component uses a variable to
+#'   define it.
+#' @param DefCompFromVar A character vector with the variable names used to
+#'   derive the component. Specify `NA` if the defined component uses a number
+#'   to define it.
+#' @param DefCompCharge An integer vector with the charge(s) of the components
+#'   to be added.
+#' @param DefCompMCName A character vector with the name(s) of the mass
+#'   compartments the new components are associated with. Does not need to be
+#'   specified if `DefCompMCR` is specified instead.
+#' @param DefCompType A character vector with the types of the new defined
+#'   variables. Must be one of "MassBal", "FixedAct", "FixedConc", "DonnanHA",
+#'   or "DonnanFA".
+#' @param DefCompActCorr A character vector with the activity correction
+#'   method(s) of the new components. Must be one of "None", "Debye", "Davies",
+#'   "DonnanHA", "DonnanFA", "WHAMHA", or "WHAMFA".
+#' @param DefCompSiteDens A numeric vector with the binding site densities of
+#'   the new components.
+#' @param DefCompMCR (optional) A character vector with the indices of the mass
+#'   compartments the new components are associated with. Only needs to be
+#'   specified if `DefCompMCName` is not specified.
+#'
+#' @return `ThisProblem`, with the added defined component.
+#' @export
+#'
 AddDefComp = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
                       DefCompFromVar = NULL, DefCompCharge, DefCompMCName = NULL,
                       DefCompType, DefCompActCorr, DefCompSiteDens,
@@ -849,6 +1053,75 @@ AddDefComp = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
 
 }
 
+#' Add a species reaction to a problem list object
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#' @param SpecName A character vector with the name(s) of the species to add
+#'   formation reactions for.
+#' @param SpecMCName A character vector with the name(s) of the mass
+#'   compartments the new species are associated with. Does not need to be
+#'   specified if `SpecMCR` is specified instead.
+#' @param SpecActCorr A character vector with the activity correction method(s)
+#'   of the new species. Must be one of "None", "Debye", "Davies", "DonnanHA",
+#'   "DonnanFA", "WHAMHA", or "WHAMFA".
+#' @param SpecCompNames A list where each element is a character vector of the
+#'   component names used to form each species.
+#' @param SpecCompStoichs A list where each element is an integer vector of the
+#'   stoichiometric coefficients of each component used to form each species.
+#' @param SpecLogK A numeric vector with the log10-transformed equilibrium
+#'   coefficients of the species formation reactions.
+#' @param SpecDeltaH A numeric vector with the change in enthalpy of the species
+#'   formation reactions.
+#' @param SpecTempKelvin A numeric vector with the temperatures (in Kelvin)
+#'   corresponding to `SpecDeltaH` values of the species formation reactions.
+#' @param SpecMCR (optional) A character vector with the indices of the mass
+#'   compartments the new species are associated with. Only needs to be
+#'   specified if `SpecMCName` is not specified.
+#'
+#' @return `ThisProblem`, with the added species reaction(s).
+#' @export
+#'
+#' @examples
+#'
+#' # Make a blank problem:
+#' ThisProblem = BlankProblem()
+#'
+#' # Add Water as a mass compartment
+#' ThisProblem = AddMassCompartments(ThisProblem, "Water", 1, "L")
+#'
+#' # Add temperature and pH variables:
+#' ThisProblem = AddInVar(ThisProblem,
+#'                        InVarName = c("Temperature", "pH"),
+#'                        InVarMCName = rep("Water", 2),
+#'                        InVarType = c("Temp", "pH"))
+#'
+#' # Add CO3 as a component (H already added with pH):
+#' ThisProblem = AddInComp(
+#'   ThisProblem,
+#'   InCompName = "CO3",
+#'   InCompCharge = -2,
+#'   InCompMCName = "Water",
+#'   InCompType = "MassBal",
+#'   InCompActCorr = "Debye"
+#' )
+#'
+#' # Add reactions:
+#' # OH = -H            logK = -14
+#' # HCO3 = H + CO3     logK = 10.329
+#' # H2CO3 = 2*H + CO3  logK = 10.329 + 6.352 = 16.681
+#' ThisProblem = AddSpecies(
+#'   ThisProblem,
+#'   SpecName = c("OH", "HCO3", "H2CO3"),
+#'   SpecMCName = rep("Water", 3),
+#'   SpecActCorr = rep("Debye", 3),
+#'   SpecCompNames = list(c("H"), c("H", "CO3"), c("H", "CO3")),
+#'   SpecCompStoichs = list(c(-1), c(1, 1), c(1, 2)),
+#'   SpecLogK = c(-14, 10.329, 16.681),
+#'   SpecDeltaH = c(56186.73738, -14997.55155, -24166.23162),
+#'   SpecTempKelvin = rep(298.1514609, 3)
+#' )
+#'
 AddSpecies = function(ThisProblem, SpecName, SpecMCName = NULL, SpecActCorr,
                       SpecCompNames = list(), SpecCompStoichs = list(),
                       SpecLogK, SpecDeltaH, SpecTempKelvin,
