@@ -242,7 +242,7 @@ BLM = function(ParamFile = character(),
     }
   }
 
-  if (!DoTox) {Out$FinalToxIter = NULL}
+  if (!DoTox) {OutList$Miscellaneous$FinalToxIter = NULL}
   OutList$Miscellaneous$Status =
     ifelse((OutList$Miscellaneous$FinalMaxError > ConvergenceCriteria) |
            is.na(OutList$Miscellaneous$FinalMaxError),

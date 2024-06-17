@@ -2,12 +2,15 @@ rm(list = ls())
 # devtools::clean_dll()
 devtools::load_all()
 
-DoTox = FALSE
+DoTox = TRUE
 iCA = 1L
 QuietFlag ="Quiet"
 ConvergenceCriteria = 0.0001
-MaxIter = 100L
+MaxIter = 500L
 DoPartialStepsAlways = FALSE
+
+ParamFile = "scrap/parameter file format/Zn_full_organic.dat4"
+InputFile = "scrap/input files/Zn demo chem.blm4"
 
 # # ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
 # ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
@@ -23,17 +26,18 @@ DoPartialStepsAlways = FALSE
 # ParamFile = "scrap/parameter file format/abbrev_organic(3).dat4"
 # InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 
-ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
-# ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
-InputFile = "scrap/parameter file format/full_organic.blm4"
-oldBLMOutFile = if (DoTox){
-  "scrap/old BLM/full_organic_TOX.det.xlsx"
-} else {
-  "scrap/old BLM/full_organic_SPEC.det.xlsx"
-}
+# ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
+# # ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
+# InputFile = "scrap/parameter file format/full_organic.blm4"
+# oldBLMOutFile = if (DoTox){
+#   "scrap/old BLM/full_organic_TOX.det.xlsx"
+# } else {
+#   "scrap/old BLM/full_organic_SPEC.det.xlsx"
+# }
 
 # ParamFile = "scrap/parameter file format/Zn_full_organic.dat4"
-# InputFile = "scrap/parameter file format/Zn_full_organic.blm4"
+# # InputFile = "scrap/parameter file format/Zn_full_organic.blm4"
+# InputFile = "scrap/input files/Zn_Cali_WQC.blm4"
 # # oldBLMOutFile = if (DoTox){
 # #   "scrap/old BLM/Zn_full_organic_TOX.det.xlsx"
 # # } else {
@@ -74,14 +78,16 @@ ResultsTable <- BLM(
 # , file = "scrap/debug.txt")
 beepr::beep()
 
-save(ResultsTable, file = paste0(InputFile, "_SPEC.RData"))
+ResultsTable$Inputs$Hard = (ResultsTable$Inputs$Ca + ResultsTable$Inputs$Mg) * 100086
 
-WriteDetailedFile(ResultsTable, FileName = paste0(InputFile,"_NoES.xlsx"))
+save(ResultsTable, file = paste0(InputFile, "_",ifelse(DoTox,"TOX","SPEC"),".RData"))
 
-# ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
+WriteDetailedFile(ResultsTable, FileName = paste0(InputFile,"_",ifelse(DoTox,"TOX","SPEC"),".xlsx"))
+
+ResultsTable$Inputs[, c("Obs","ID2","Temp","Hard","pH","DOC")]
 # ResultsTable[, c("Obs","ID2","FinalIter","FinalMaxError")]
-ResultsTable[, intersect(c("Obs","ID2", "Status","FinalToxIter","FinalIter","FinalMaxError"), colnames(ResultsTable))]
-ResultsTable$ObsNum[which(((ResultsTable$FinalIter >= MaxIter) | (ResultsTable$FinalToxIter >= MaxIter)) & (ResultsTable$FinalMaxError > ConvergenceCriteria))]
+ResultsTable$Miscellaneous[, intersect(c("Obs","ID2", "Status","FinalToxIter","FinalIter","FinalMaxError"), colnames(ResultsTable$Miscellaneous))]
+# ResultsTable$ObsNum[which(((ResultsTable$FinalIter >= MaxIter) | (ResultsTable$FinalToxIter >= MaxIter)) & (ResultsTable$FinalMaxError > ConvergenceCriteria))]
 # (iObs = which((ResultsTable$FinalIter < MaxIter) & !is.na(ResultsTable$FinalMaxError))[1])
 # ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]
 # ResultsTable[, c("ID2","T.Cu (mol/L)","T.Cu (mol)","Water (L)", "Water_DonnanHA (L)","Water_DonnanFA (L)")]
@@ -90,7 +96,6 @@ ResultsTable$ObsNum[which(((ResultsTable$FinalIter >= MaxIter) | (ResultsTable$F
 # ResultsTable[,c("Cu (mol)","BL1-Cu (mol)","BL1-CuOH (mol)", "CuOH (mol)", "Cu(OH)2 (mol)","CuSO4 (mol)","CuCO3 (mol)", "Cu(CO3)2 (mol)","CuCl (mol)","CuHCO3 (mol)")] / ResultsTable$`T.Cu (mol)` * 100
 ResultsTable[,paste0(ThisProblem$SpecName[grepl("Cu",ThisProblem$SpecName)]," (mol)")] / ResultsTable$`T.Cu (mol)` * 100
 
-ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
 
 OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, startRow = 7, colNames = FALSE)
 OldBLMheader = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, rows = 5:6, colNames = FALSE)
