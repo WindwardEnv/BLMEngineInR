@@ -56,7 +56,7 @@ void CalcResidAndError(int NComp,
   Resid = CalcTotMoles - TotMoles;
   
   // Calculate the error fraction for each component
-  CompError = abs(Resid / TotMoles);
+  CompError = abs(Resid / CalcTotMoles);
   
   for (iComp = 0; iComp < NComp; iComp++) {
     if ((CompType(iComp) == TYPE_FIXEDCONC) || (CompType(iComp) == TYPE_FIXEDACT)) {

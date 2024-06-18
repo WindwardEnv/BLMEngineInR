@@ -319,7 +319,7 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
 
   /* variables */
   const double ConvCrit = 0.000001;
-  const int MaxIter = 10;
+  const int MaxIter = 100;
   int iComp;
   Rcpp::NumericVector NewWHAMSpecCharge(2);
   Rcpp::NumericVector CompConc(NComp);
@@ -335,6 +335,9 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                        SpecActCorr, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
                        WHAMSpecCharge);
 
+      //Rcpp::NumericVector FP(NSpec);
+      //FP[72] = 1 / (1 + (SpecKISTempAdj[72] * std::exp(2 * W * WHAMSpecCharge[iHA]) / (SpecConc[8] * SpecActivityCoef[8])));
+      
     }
   }
 
