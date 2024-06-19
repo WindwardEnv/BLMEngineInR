@@ -2,7 +2,7 @@
 #include "CHESSFunctions.h"
 
 Rcpp::NumericVector CalcWHAMSpecCharge(int NSpec, 
-                                       Rcpp::CharacterVector SpecActCorr,
+                                       Rcpp::CharacterVector SpecType,
                                        Rcpp::NumericVector SpecConc,
                                        Rcpp::IntegerVector SpecCharge,
                                        Rcpp::IntegerVector SpecMC,
@@ -18,9 +18,9 @@ Rcpp::NumericVector CalcWHAMSpecCharge(int NSpec,
   WHAMSpecCharge(iHA) = 0;
   WHAMSpecCharge(iFA) = 0;
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if (SpecActCorr(iSpec) == ACTYPE_WHAMHA) {
+    if (SpecType(iSpec) == STYPE_WHAMHA) {
       WHAMSpecCharge(iHA) += SpecConc(iSpec) / HumicSubstGramsPerLiter[iHA] * SpecCharge(iSpec);
-    } else if (SpecActCorr(iSpec) == ACTYPE_WHAMFA) {
+    } else if (SpecType(iSpec) == STYPE_WHAMFA) {
       WHAMSpecCharge(iFA) += SpecConc(iSpec) / HumicSubstGramsPerLiter[iFA] * SpecCharge(iSpec);
     }
   }

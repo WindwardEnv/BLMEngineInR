@@ -110,6 +110,7 @@ ExpandWHAM = function(NMass,
                       DefCompSiteDens,
                       NSpec,
                       SpecName,
+                      SpecType,
                       SpecMCName,
                       SpecMCR,
                       SpecActCorr,
@@ -347,6 +348,7 @@ ExpandWHAM = function(NMass,
 
   NSpec_orig = NSpec
   SpecName_orig = SpecName
+  SpecType_orig = SpecType
   SpecMCName_orig = SpecMCName
   SpecMCR_orig = SpecMCR
   SpecActCorr_orig = SpecActCorr
@@ -481,10 +483,10 @@ ExpandWHAM = function(NMass,
                        dimnames = list(DonnanCompName)),
                  array("MassBal", NWHAMComp, dimnames = list(WHAMCompName)))
     CompActCorr = c(CompActCorr_orig,
-                    array("None", NDonnanComp, dimnames = list(DonnanCompName)),
-                    array(rep(paste0("WHAM", WHAMFracAdd),
-                              each = NWHAMComp / NWHAMFracAdd),
-                          dim = NWHAMComp, dimnames = list(WHAMCompName)))
+                    array("None", dim = NDonnanComp,
+                          dimnames = list(DonnanCompName)),
+                    array("None", dim = NWHAMComp,
+                          dimnames = list(WHAMCompName)))
     CompSiteDens = c(CompSiteDens_orig,
                      array(1, NDonnanComp, dimnames = list(DonnanCompName)),
                      array(NA, NWHAMComp, dimnames = list(WHAMCompName)))
@@ -526,9 +528,8 @@ ExpandWHAM = function(NMass,
     DefCompActCorr = c(DefCompActCorr_orig,
                        array("None", dim = NDonnanComp,
                              dimnames = list(DonnanCompName)),
-                       array(rep(paste0("WHAM", WHAMFracAdd),
-                                 each = NWHAMComp / NWHAMFracAdd),
-                             dim = NWHAMComp, dimnames = list(WHAMCompName)))
+                       array("None", dim = NWHAMComp,
+                             dimnames = list(WHAMCompName)))
     DefCompSiteDens = c(DefCompSiteDens_orig,
                         array(1.0E-4, dim = NDonnanComp,
                               dimnames = list(DonnanCompName)),
@@ -561,14 +562,21 @@ ExpandWHAM = function(NMass,
                # this should always be water
                # array(BulkMCR, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
                array(iMass, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
+    SpecType = c(SpecType_orig,
+                 array(c(DonnanCompName,
+                         rep(DonnanCompName, each = NChargedSpec)),
+                       dim = NDonnanSpec,
+                       dimnames = list(DonnanSpecName)),
+                 array(rep(paste0("WHAM", WHAMFracAdd),
+                           each = NWHAMSpec / NWHAMFracAdd),
+                       dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
     SpecActCorr = c(SpecActCorr_orig,
-                    array(c(DonnanCompName,
-                            rep(DonnanCompName, each = NChargedSpec)),
+                    array(c(rep("None", each = NWHAMFracAdd),
+                            rep(SpecActCorr_orig[match(ChargedSpecName, SpecName_orig)],
+                                times = NWHAMFracAdd)),
                           dim = NDonnanSpec,
                           dimnames = list(DonnanSpecName)),
-                    array(rep(paste0("WHAM", WHAMFracAdd),
-                              each = NWHAMSpec / NWHAMFracAdd),
-                          dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
+                    array("None", dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
 
     SpecStoich = rbind(
       cbind(
@@ -858,8 +866,11 @@ ExpandWHAM = function(NMass,
   names(MassAmt) = MassName
   names(MassUnit) = MassName
   names(CompSiteDens) = CompName
+  names(CompType) = CompName
+  names(CompActCorr) = CompName
   names(DefCompSiteDens) = DefCompName
   names(SpecMCName) = SpecName
+  names(SpecType) = SpecName
   names(SpecMCR) = SpecName
   names(SpecActCorr) = SpecName
   rownames(SpecStoich) = SpecName
@@ -944,6 +955,7 @@ ExpandWHAM = function(NMass,
     # Formation Reactions
     NSpec = NSpec,
     SpecName = SpecName,
+    SpecType = SpecType,
     SpecMCName = SpecMCName,
     SpecMCR = SpecMCR,
     SpecActCorr = SpecActCorr,

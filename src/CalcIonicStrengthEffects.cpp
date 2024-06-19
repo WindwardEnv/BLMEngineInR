@@ -6,7 +6,7 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
                                              int NSpec,
                                              Rcpp::IntegerVector SpecCharge,
                                              Rcpp::NumericVector SpecK,
-                                             Rcpp::CharacterVector SpecActCorr,
+                                             Rcpp::CharacterVector SpecType,
                                              Rcpp::NumericVector wP) {
   /* output */
   Rcpp::NumericVector SpecKISAdj(NSpec);
@@ -21,9 +21,9 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
     SpecKISAdj(iSpec) = SpecK(iSpec);
     if (SpecCharge(iSpec) != 0) {
-      if (SpecActCorr(iSpec) == ACTYPE_WHAMHA) {
+      if (SpecType(iSpec) == STYPE_WHAMHA) {
         SpecKISAdj(iSpec) = SpecK(iSpec) * exp(WZ2(iHA) * SpecCharge(iSpec));
-      } else if (SpecActCorr(iSpec) == ACTYPE_WHAMFA) {
+      } else if (SpecType(iSpec) == STYPE_WHAMFA) {
         SpecKISAdj(iSpec) = SpecK(iSpec) * exp(WZ2(iFA) * SpecCharge(iSpec));
       }
     }    

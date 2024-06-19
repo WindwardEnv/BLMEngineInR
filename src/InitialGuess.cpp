@@ -108,11 +108,11 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
           CalcCA += SpecConc[iSpec];
         }
         CompConc(iComp) = CompConc(iComp) * (CATarget / CalcCA);
-      } else if (CompType(iComp) == TYPE_MASSBAL) {
+      } else if (CompType(iComp) == CTYPE_MASSBAL) {
         //CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTotConc(iComp));
         CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp));
-      } else if ((iRound == 1) && ((CompType(iComp) == TYPE_DONNANHA) ||
-                                   (CompType(iComp) == TYPE_DONNANFA))) {
+      } else if ((iRound == 1) && ((CompType(iComp) == CTYPE_DONNANHA) ||
+                                   (CompType(iComp) == CTYPE_DONNANFA))) {
         CompConc(iComp) = 10.0;//CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;//
       }
     }

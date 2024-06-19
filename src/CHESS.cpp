@@ -103,6 +103,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::NumericVector TotConc,
                  int NSpec,
                  Rcpp::CharacterVector SpecName,
+                 Rcpp::CharacterVector SpecType,
                  Rcpp::IntegerVector SpecMCR,
                  Rcpp::NumericVector SpecK,
                  Rcpp::NumericVector SpecTempKelvin,
@@ -237,6 +238,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   SpecCtoMAdj = clone(SpecCtoM);
   CompCtoM = SpecCtoM[CompPosInSpec];
 
+  bool DebugpH4NoES = false;
+  if (DebugpH4NoES) { SysTempKelvin = 288; }
   // Do the temperature adjustments on the binding constants
   SpecKTempAdj = TempCorrection(SysTempKelvin, NSpec, SpecK, SpecTempKelvin, 
                                 SpecDeltaH);
@@ -246,12 +249,66 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   CompConc = InitialGuess(TotConc, SpecCtoMAdj, CompType, SpecKISTempAdj, 
                           SpecStoich, SpecName, NComp, NSpec, 
                           DoTox, NBLMetal, BLMetalSpecs, MetalComp, CATarget);
+
+  if (DebugpH4NoES) {
+    CompConc[0] = 3.66501E-07;//Cu
+    CompConc[1] = 0.000106764;//Ca
+    CompConc[2] = 0.000464575;//Mg
+    CompConc[3] = 0.001100495;//Na
+    CompConc[4] = 5.3711E-05;//K
+    CompConc[5] = 0.000739553;//SO4
+    CompConc[6] = 5.35923E-05;//Cl
+    CompConc[7] = 2.07453E-12;//CO3
+    CompConc[8] = 0.000106764;//H
+    CompConc[9] = 1.46187E-11;//BL1
+    CompConc[10] = 3.09809E-10;//DOC-HA_1H
+    CompConc[11] = 5.7392E-10;//DOC-HA_2H
+    CompConc[12] = 7.33397E-10;//DOC-HA_3H
+    CompConc[13] = 7.89345E-10;//DOC-HA_4H
+    CompConc[14] = 4.10947E-10;//DOC-HA_5H
+    CompConc[15] = 4.11071E-10;//DOC-HA_6H
+    CompConc[16] = 4.11079E-10;//DOC-HA_7H
+    CompConc[17] = 4.1108E-10;//DOC-HA_8H
+    CompConc[18] = 5.42425E-11;//DOC-HA_12H
+    CompConc[19] = 7.4549E-11;//DOC-HA_14H
+    CompConc[20] = 7.70492E-11;//DOC-HA_16H
+    CompConc[21] = 7.70509E-11;//DOC-HA_18H
+    CompConc[22] = 1.27243E-10;//DOC-HA_23H
+    CompConc[23] = 1.42064E-10;//DOC-HA_25H
+    CompConc[24] = 1.42109E-10;//DOC-HA_27H
+    CompConc[25] = 1.73795E-10;//DOC-HA_34H
+    CompConc[26] = 1.81112E-10;//DOC-HA_36H
+    CompConc[27] = 1.81116E-10;//DOC-HA_38H
+    CompConc[28] = 1.94691E-10;//DOC-HA_45H
+    CompConc[29] = 1.94752E-10;//DOC-HA_47H
+    CompConc[30] = 1.60564E-10;//DOC-FA_1H
+    CompConc[31] = 1.78323E-09;//DOC-FA_2H
+    CompConc[32] = 8.04991E-09;//DOC-FA_3H
+    CompConc[33] = 1.10379E-08;//DOC-FA_4H
+    CompConc[34] = 6.38289E-09;//DOC-FA_5H
+    CompConc[35] = 6.38542E-09;//DOC-FA_6H
+    CompConc[36] = 6.38546E-09;//DOC-FA_7H
+    CompConc[37] = 6.38546E-09;//DOC-FA_8H
+    CompConc[38] = 3.78627E-12;//DOC-FA_12H
+    CompConc[39] = 2.51457E-08;//DOC-FA_14H
+    CompConc[40] = 2.68672E-08;//DOC-FA_16H
+    CompConc[41] = 2.68673E-08;//DOC-FA_18H
+    CompConc[42] = 1.65269E-07;//DOC-FA_23H
+    CompConc[43] = 3.02793E-07;//DOC-FA_25H
+    CompConc[44] = 3.02914E-07;//DOC-FA_27H
+    CompConc[45] = 5.17989E-07;//DOC-FA_34H
+    CompConc[46] = 1.45249E-06;//DOC-FA_36H
+    CompConc[47] = 1.4525E-06;//DOC-FA_38H
+    CompConc[48] = 2.05172E-06;//DOC-FA_45H
+    CompConc[49] = 2.05254E-06;//DOC-FA_47H
+  }
+
   SpecConc[CompPosInSpec] = clone(CompConc);
   TotMoles = TotConc * CompCtoM;
 
   // Run through CHESS calculations with initial values
   MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, CompType,
-                       CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
+                       CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, SpecActCorr,
                        SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC, 
                        WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius, 
                        wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
@@ -291,14 +348,14 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
       try {
         // Calculate the Jacobian Matrix
         JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
-                                  SpecMC, SpecCtoMAdj, SpecActCorr, SpecCharge, 
+                                  SpecMC, SpecCtoMAdj, SpecType, SpecCharge, 
                                   SpecKISTempAdj, IonicStrength, DoWHAM, 
                                   HumicSubstGramsPerLiter, WHAMSpecCharge, 
                                   wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
                                   AqueousMC, WHAMDonnanMC,  MetalComp, NBLMetal, BLMetalSpecs, 
                                   DoTox);
         /*NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
-                          CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
+                          CompPosInSpec, NSpec, SpecName, SpecMC, SpecType,
                           SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
                           WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
                           wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
@@ -321,8 +378,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     }
     
     if (QuietFlag == FLAG_DEBUG) {
-      Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
-      Rcpp::Rcout << "NumericalJacobianMatrix = [" <<std::endl << NumericalJacobianMatrix << "]" << std::endl;
+      //Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
+      //Rcpp::Rcout << "NumericalJacobianMatrix = [" <<std::endl << NumericalJacobianMatrix << "]" << std::endl;
       Rcpp::Rcout << "iComp\tSpecName\tSpecConc\tResid\tError\tStep" << std::endl;
       for (int iComp = 0; iComp < NComp; iComp++) {
         Rcpp::Rcout << iComp << "\t" 
@@ -349,7 +406,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     WHAMSpecChargeFull = clone(WHAMSpecCharge);
     MassAmtAdjFull = clone(MassAmtAdj);
     MaxErrorFull = CHESSIter(CompConcStepFull, NMass, MassAmt, NComp, CompName, 
-                        CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                        CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, 
                         SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
                         DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
                         wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
@@ -400,7 +457,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
         MassAmtAdjAlt = clone(MassAmtAdj);
         CompConcStepAlt = CompConcStepFull * StepSizeAlt;
         MaxErrorAlt = CHESSIter(CompConcStepAlt, NMass, MassAmt, NComp, CompName, 
-                            CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                            CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, 
                             SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
                             DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
                             wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
@@ -432,7 +489,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
         MassAmtAdjInterp = clone(MassAmtAdj);
         CompConcStepInterp = CompConcStepFull * StepSizeInterp;
         MaxErrorInterp = CHESSIter(CompConcStepInterp, NMass, MassAmt, NComp, CompName, 
-                            CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                            CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, 
                             SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
                             DoWHAM, WHAMSpecChargeInterp, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
                             wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 

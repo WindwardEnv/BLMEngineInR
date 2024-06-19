@@ -29,7 +29,7 @@ void CalcResidAndError(int NComp,
                        Rcpp::NumericVector CalcTotMoles,
                        Rcpp::NumericVector TotMoles,
                        Rcpp::CharacterVector CompType,
-                       Rcpp::CharacterVector SpecActCorr,
+                       Rcpp::CharacterVector SpecType,
                        Rcpp::NumericVector &Resid,
                        Rcpp::NumericVector &CompError);
 
@@ -50,7 +50,7 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
                                  Rcpp::NumericVector SpecK,
                                  Rcpp::IntegerMatrix SpecStoich,
                                  Rcpp::CharacterVector SpecName,
-                                 Rcpp::CharacterVector SpecActCorr,
+                                 Rcpp::CharacterVector SpecType,
                                  Rcpp::NumericVector SpecActivityCoef,
                                  bool DoWHAM,
                                  Rcpp::IntegerVector SpecCharge,
@@ -88,7 +88,7 @@ void SimpleAdjustComp(int iComp,
                       Rcpp::NumericVector SpecKISTempAdj,
                       Rcpp::IntegerMatrix SpecStoich,
                       Rcpp::CharacterVector SpecName,
-                      Rcpp::CharacterVector SpecActCorr,
+                      Rcpp::CharacterVector SpecType,
                       Rcpp::NumericVector SpecActivityCoef,
                       Rcpp::NumericVector SpecCtoMAdj,
                       Rcpp::IntegerVector SpecCharge,
@@ -116,7 +116,7 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
                               Rcpp::NumericVector SpecConc, //species concentrations
                               Rcpp::IntegerVector SpecMC,
                               Rcpp::NumericVector SpecCtoM, //concentration to mass conversion for each species
-                              Rcpp::CharacterVector SpecActCorr,
+                              Rcpp::CharacterVector SpecType,
                               Rcpp::IntegerVector SpecCharge,
                               Rcpp::NumericVector SpecK,
                               double IonicStrength,
@@ -145,6 +145,7 @@ Rcpp::NumericMatrix NumericalJacobian(
   Rcpp::IntegerVector CompPosInSpec,
   int NSpec,
   Rcpp::CharacterVector SpecName,
+  Rcpp::CharacterVector SpecType,
   Rcpp::IntegerVector SpecMC,
   Rcpp::CharacterVector SpecActCorr,
   Rcpp::IntegerMatrix SpecStoich,
@@ -208,7 +209,7 @@ double CalcIonicStrength(int NSpec,
                          Rcpp::IntegerVector SpecCharge,
                          Rcpp::IntegerVector SpecMC,
                          int AqueousMC, 
-                         Rcpp::CharacterVector SpecActCorr,
+                         Rcpp::CharacterVector SpecType,
                          bool ExcludeOrgMatter);
 
 double CalcChargeBalance(int NSpec,
@@ -225,7 +226,7 @@ Rcpp::NumericVector CalcActivityCoef(int NSpec,
                                      double SysTempKelvin);
 
 Rcpp::NumericVector CalcWHAMSpecCharge(int NSpec, 
-                                       Rcpp::CharacterVector SpecActCorr,
+                                       Rcpp::CharacterVector SpecType,
                                        Rcpp::NumericVector SpecConc,
                                        Rcpp::IntegerVector SpecCharge,
                                        Rcpp::IntegerVector SpecMC,
@@ -262,7 +263,7 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
                                              int NSpec,
                                              Rcpp::IntegerVector SpecCharge,
                                              Rcpp::NumericVector SpecK,
-                                             Rcpp::CharacterVector SpecActCorr,
+                                             Rcpp::CharacterVector SpecType,
                                              Rcpp::NumericVector wP);
 
 void AdjustForWHAM(
@@ -274,9 +275,9 @@ void AdjustForWHAM(
   Rcpp::NumericVector &TotConc,
   Rcpp::NumericVector &TotMoles,
   int NSpec,
+  Rcpp::CharacterVector SpecType,
   Rcpp::NumericVector &SpecConc,
   Rcpp::IntegerVector SpecMC,
-  Rcpp::CharacterVector SpecActCorr,
   Rcpp::IntegerVector SpecCharge,
   Rcpp::NumericVector SpecKTempAdj,
   Rcpp::NumericVector &SpecKISTempAdj,
@@ -298,8 +299,8 @@ void AdjustForWHAMBeforeCalcSpecies(
   Rcpp::NumericVector MassAmt,
   Rcpp::NumericVector &MassAmtAdj,
   int NSpec,
+  Rcpp::CharacterVector SpecType,
   Rcpp::IntegerVector SpecMC,
-  Rcpp::CharacterVector SpecActCorr,
   Rcpp::IntegerVector SpecCharge,
   Rcpp::NumericVector SpecKTempAdj,
   Rcpp::NumericVector &SpecKISTempAdj,
@@ -321,13 +322,13 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                                    Rcpp::NumericVector &TotConc,
                                    Rcpp::NumericVector &TotMoles,
                                    int NSpec,
+                                   Rcpp::CharacterVector SpecType,
                                    Rcpp::CharacterVector SpecName,
                                    Rcpp::NumericVector &SpecConc,
                                    Rcpp::NumericVector SpecKISTempAdj,
                                    Rcpp::IntegerMatrix SpecStoich,
                                    Rcpp::NumericVector SpecActivityCoef,
                                    Rcpp::IntegerVector SpecMC,
-                                   Rcpp::CharacterVector SpecActCorr,
                                    Rcpp::IntegerVector SpecCharge,
                                    Rcpp::NumericVector SpecCtoMAdj,  
                                    Rcpp::NumericVector &WHAMSpecCharge,
@@ -345,6 +346,7 @@ double CHESSIter(
   Rcpp::IntegerVector CompPosInSpec,
   int NSpec,
   Rcpp::CharacterVector SpecName,
+  Rcpp::CharacterVector SpecType,
   Rcpp::IntegerVector SpecMC,
   Rcpp::CharacterVector SpecActCorr,
   Rcpp::IntegerMatrix SpecStoich,
@@ -382,27 +384,34 @@ double CHESSIter(
   Rcpp::NumericVector &CompError
 );
 
-
+// humic substance position indices
 const int iHA = 0; // humic acid = 0
 const int iFA = 1; // fulvic acid = 1
 
+// console feedback flags
 const Rcpp::String FLAG_DEBUG = "Debug";
 const Rcpp::String FLAG_QUIET = "Quiet";
 
-const Rcpp::String TYPE_FIXEDCONC = "FixedConc";
-const Rcpp::String TYPE_FIXEDACT = "FixedAct";
-const Rcpp::String TYPE_DONNANHA = "DonnanHA";
-const Rcpp::String TYPE_DONNANFA = "DonnanFA";
-const Rcpp::String TYPE_MASSBAL = "MassBal";
+//Component Types
+const Rcpp::String CTYPE_FIXEDCONC = "FixedConc";
+const Rcpp::String CTYPE_FIXEDACT = "FixedAct";
+const Rcpp::String CTYPE_DONNANHA = "DonnanHA";
+const Rcpp::String CTYPE_DONNANFA = "DonnanFA";
+const Rcpp::String CTYPE_MASSBAL = "MassBal";
 
+//Species types
+const Rcpp::String STYPE_NORMAL = "Normal";
+const Rcpp::String STYPE_DONNANHA = "DonnanHA";
+const Rcpp::String STYPE_DONNANFA = "DonnanFA";
+const Rcpp::String STYPE_WHAMHA = "WHAMHA";
+const Rcpp::String STYPE_WHAMFA = "WHAMFA";
+
+//Activity correction methods
 const Rcpp::String ACTYPE_NONE = "None";
 const Rcpp::String ACTYPE_DEBYE = "Debye";
 const Rcpp::String ACTYPE_DAVIES = "Davies";
-const Rcpp::String ACTYPE_DONNANHA = "DonnanHA";
-const Rcpp::String ACTYPE_DONNANFA = "DonnanFA";
-const Rcpp::String ACTYPE_WHAMHA = "WHAMHA";
-const Rcpp::String ACTYPE_WHAMFA = "WHAMFA";
 
+// error type constants
 const int ERROR_MATRIX_INVERSION = 10;
 const int ERROR_SINGULAR_MATRIX = 11;
 const int ERROR_JACOBIAN_NAN = 20;

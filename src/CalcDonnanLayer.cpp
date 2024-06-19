@@ -67,7 +67,6 @@ void CalcDonnanLayerParams(int NSpec,
 //' @param NSpec integer, number of species
 //' @param IonicStrength double, {text}
 //' @param SpecCtoM numeric vector, {text}
-//' @param SpecActCorr character vector, {text}
 //' @param SpecMC integer vector, {text}
 //' @param AqueousMC integer, {text}
 //' @param wMolWt numeric vector, {text}
@@ -129,7 +128,7 @@ Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
   }
   /* QUESTION:
       Should we be checking that this is an inorganic species with 
-      ((SpecActCorr(iSpec) != ACTYPE_WHAMHA) && (SpecActCorr(iSpec) != ACTYPE_WHAMFA))?
+      ((SpecType(iSpec) != STYPE_WHAMHA) && (SpecType(iSpec) != STYPE_WHAMFA))?
 
       (KEC, 2024-03-07):
       I looked into the Tipping code, and it seems that VolSol is only used when

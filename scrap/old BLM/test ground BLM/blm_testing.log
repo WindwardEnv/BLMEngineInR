@@ -5,12 +5,12 @@ All Rights Reserved
 
 Primary source:  C:\Users\kellyc\Documents\BLM Development\engine\BLMEngineInR\scrap\old BLM\test ground BLM\blm_testing.bas   {18776 total lines}
 Target compilation:  blm_testing.EXE
-Compile time:  0.1 seconds, at 22531200 lines/minute
+Compile time:  0.3 seconds, at 3755200 lines/minute
 
-233312 bytes compiled code, 37200 bytes RTLibrary,
+272384 bytes compiled code, 37336 bytes RTLibrary,
 19692 bytes string literals, and 42012 bytes dgroup.
 Executable stack size:  1048576 bytes.
-Disk image: 315904 bytes   Memory image: 98904 bytes.
+Disk image: 353280 bytes   Memory image: 99040 bytes.
 
 Component Files:
 ----------------

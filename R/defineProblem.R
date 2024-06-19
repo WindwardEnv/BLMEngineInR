@@ -371,6 +371,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   SpecLogK = c(rep(0, NComp), SpecLogK)
   SpecDeltaH = c(rep(0, NComp), SpecDeltaH)
   SpecTempKelvin = c(rep(0, NComp), SpecTempKelvin)
+  SpecType = array("Normal", dim = NSpec, dimnames = list(SpecName))
 
   # Trim down CompList
   SpecCompList = SpecCompList[, 1:max(which(colSums(SpecCompList) > 0))]
@@ -382,9 +383,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   # error catching
   stopifnot(
     all(!is.na(c(CompMCR, SpecMCR))),
-    all(CompType %in% c("MassBal", "FixedAct", "FixedConc", "Substituted", "ChargeBal",
-                        "SurfPot", "DonnanChargeBal")),
-    all(c(CompActCorr, SpecActCorr) %in% c("None", "Debye", "Davies", "WHAM"))
+    all(CompType %in% c("MassBal", "FixedAct", "FixedConc")),
+    all(c(CompActCorr, SpecActCorr) %in% c("None", "Debye", "Davies"))
   )
 
   # assemble Output
@@ -444,6 +444,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
     # Formation Reactions
     SpecName = SpecName,
+    SpecType = SpecType,
     SpecMCName = SpecMCName,
     SpecMCR = SpecMCR,
     SpecActCorr = SpecActCorr,

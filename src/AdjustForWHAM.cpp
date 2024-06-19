@@ -81,9 +81,9 @@ void AdjustForWHAM(
   Rcpp::NumericVector &TotConc,
   Rcpp::NumericVector &TotMoles,
   int NSpec,
+  Rcpp::CharacterVector SpecType,
   Rcpp::NumericVector &SpecConc,
   Rcpp::IntegerVector SpecMC,
-  Rcpp::CharacterVector SpecActCorr,
   Rcpp::IntegerVector SpecCharge,
   Rcpp::NumericVector SpecKTempAdj,
   Rcpp::NumericVector &SpecKISTempAdj,
@@ -105,7 +105,7 @@ void AdjustForWHAM(
   int iSpec;
 
   //Calculate the charge on the organic matter
-  WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
+  WHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecType, SpecConc, 
                                       SpecCharge, SpecMC, AqueousMC, 
                                       HumicSubstGramsPerLiter);
   WHAMSpecCharge = WHAMSpecCharge / HumicSubstGramsPerLiter;
@@ -113,7 +113,7 @@ void AdjustForWHAM(
   //Adjust organic matter specific binding based on ionic strength
   SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
                                             NSpec, SpecCharge, SpecKTempAdj, 
-                                            SpecActCorr, wP);
+                                            SpecType, wP);
 
   //Calculate the portion of the solution that's in the diffuse layer
   MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, IonicStrength, MassAmt, 
@@ -124,10 +124,10 @@ void AdjustForWHAM(
 
   // Set -Z_HS to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
-    if (CompType(iComp) == TYPE_DONNANHA) {
+    if (CompType(iComp) == CTYPE_DONNANHA) {
       TotMoles(iComp) = abs(WHAMSpecCharge(iHA)) * HumicSubstGramsPerLiter(iHA);
       TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
-    } else if (CompType(iComp) == TYPE_DONNANFA) {
+    } else if (CompType(iComp) == CTYPE_DONNANFA) {
       TotMoles(iComp) = abs(WHAMSpecCharge(iFA)) * HumicSubstGramsPerLiter(iFA);
       TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
     }
@@ -137,11 +137,11 @@ void AdjustForWHAM(
      positive, and anion species concentrations should be canceled out if Z_HS
      is negative */
   for (iSpec = NComp; iSpec < NSpec; iSpec++) {
-    if ((SpecActCorr(iSpec) == ACTYPE_DONNANHA) && 
+    if ((SpecType(iSpec) == STYPE_DONNANHA) && 
         (((WHAMSpecCharge(iHA) < 0) && (SpecCharge(iSpec) < 0)) || 
          ((WHAMSpecCharge(iHA) > 0) && (SpecCharge(iSpec) > 0)))) {
       SpecConc(iSpec) = 0;
-    } else if ((SpecActCorr(iSpec) == ACTYPE_DONNANFA) &&
+    } else if ((SpecType(iSpec) == STYPE_DONNANFA) &&
                (((WHAMSpecCharge(iFA) < 0) && (SpecCharge(iSpec) < 0)) || 
                 ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
       SpecConc(iSpec) = 0;
@@ -209,8 +209,8 @@ void AdjustForWHAMBeforeCalcSpecies(
   Rcpp::NumericVector MassAmt,
   Rcpp::NumericVector &MassAmtAdj,
   int NSpec,
+  Rcpp::CharacterVector SpecType,
   Rcpp::IntegerVector SpecMC,
-  Rcpp::CharacterVector SpecActCorr,
   Rcpp::IntegerVector SpecCharge,
   Rcpp::NumericVector SpecKTempAdj,
   Rcpp::NumericVector &SpecKISTempAdj,
@@ -232,7 +232,7 @@ void AdjustForWHAMBeforeCalcSpecies(
   //Adjust organic matter specific binding based on ionic strength
   SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
                                             NSpec, SpecCharge, SpecKTempAdj, 
-                                            SpecActCorr, wP);
+                                            SpecType, wP);
 
   //Calculate the portion of the solution that's in the diffuse layer
   MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, IonicStrength, MassAmt, 
@@ -241,7 +241,7 @@ void AdjustForWHAMBeforeCalcSpecies(
                                      HumicSubstGramsPerLiter);
   //SpecCtoMAdj = MassAmtAdj[SpecMC];
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if ((SpecActCorr(iSpec) == ACTYPE_WHAMHA) || (SpecActCorr(iSpec) == ACTYPE_WHAMFA)) {
+    if ((SpecType(iSpec) == STYPE_WHAMHA) || (SpecType(iSpec) == STYPE_WHAMFA)) {
       SpecCtoMAdj[iSpec] = MassAmt[AqueousMC];
     } else {
       SpecCtoMAdj[iSpec] = MassAmtAdj[SpecMC[iSpec]];
@@ -303,13 +303,13 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                                    Rcpp::NumericVector &TotConc,
                                    Rcpp::NumericVector &TotMoles,
                                    int NSpec,
+                                   Rcpp::CharacterVector SpecType,
                                    Rcpp::CharacterVector SpecName,
                                    Rcpp::NumericVector &SpecConc,
                                    Rcpp::NumericVector SpecKISTempAdj,
                                    Rcpp::IntegerMatrix SpecStoich,
                                    Rcpp::NumericVector SpecActivityCoef,
                                    Rcpp::IntegerVector SpecMC,
-                                   Rcpp::CharacterVector SpecActCorr,
                                    Rcpp::IntegerVector SpecCharge,
                                    Rcpp::NumericVector SpecCtoMAdj,  
                                    Rcpp::NumericVector &WHAMSpecCharge,
@@ -327,12 +327,12 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
   
   // Update the WHAM component concentrations
   for (iComp = 0; iComp < NComp; iComp++) {
-    if ((SpecActCorr(iComp) == ACTYPE_WHAMHA) || (SpecActCorr(iComp) == ACTYPE_WHAMFA)) {
+    if ((SpecType(iComp) == STYPE_WHAMHA) || (SpecType(iComp) == STYPE_WHAMFA)) {
 
       SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
                        NComp, CompConc,
                        NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
-                       SpecActCorr, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
+                       SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
                        WHAMSpecCharge);
 
       //Rcpp::NumericVector FP(NSpec);
@@ -343,7 +343,7 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
 
   //Calculate the charge on the organic matter
   if (UpdateZED) {
-    NewWHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecActCorr, SpecConc, 
+    NewWHAMSpecCharge = CalcWHAMSpecCharge(NSpec, SpecType, SpecConc, 
                                            SpecCharge, SpecMC, AqueousMC, 
                                            HumicSubstGramsPerLiter);
     WHAMSpecCharge(iHA) = WHAMSpecCharge(iHA) + ((NewWHAMSpecCharge(iHA) - WHAMSpecCharge(iHA)) / 5);
@@ -352,10 +352,10 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
 
   // Set -Z_HS*Th to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
-    if (CompType(iComp) == TYPE_DONNANHA) {
+    if (CompType(iComp) == CTYPE_DONNANHA) {
       TotMoles[iComp] = abs(WHAMSpecCharge[iHA]) * HumicSubstGramsPerLiter[iHA];
       TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
-    } else if (CompType(iComp) == TYPE_DONNANFA) {
+    } else if (CompType(iComp) == CTYPE_DONNANFA) {
       TotMoles[iComp] = abs(WHAMSpecCharge[iFA]) * HumicSubstGramsPerLiter[iFA];
       TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
     }
@@ -363,12 +363,12 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
 
   // Update the Donnan layers the way WHAM does it
   for (iComp = 0; iComp < NComp; iComp++) {
-    if ((CompType(iComp) == TYPE_DONNANHA) || (CompType(iComp) == TYPE_DONNANFA)) {
+    if ((CompType(iComp) == CTYPE_DONNANHA) || (CompType(iComp) == CTYPE_DONNANFA)) {
 
       SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
                        NComp, CompConc,
                        NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
-                       SpecActCorr, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
+                       SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
                        WHAMSpecCharge);
     }
   }

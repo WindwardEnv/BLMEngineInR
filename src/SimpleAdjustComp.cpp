@@ -12,7 +12,7 @@ void SimpleAdjustComp(int iComp,
                       Rcpp::NumericVector SpecKISTempAdj,
                       Rcpp::IntegerMatrix SpecStoich,
                       Rcpp::CharacterVector SpecName,
-                      Rcpp::CharacterVector SpecActCorr,
+                      Rcpp::CharacterVector SpecType,
                       Rcpp::NumericVector SpecActivityCoef,
                       Rcpp::NumericVector SpecCtoMAdj,
                       Rcpp::IntegerVector SpecCharge,
@@ -44,7 +44,7 @@ void SimpleAdjustComp(int iComp,
 
     // calculate new species concentrations
     SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                            SpecName, SpecActCorr, SpecActivityCoef, true, 
+                            SpecName, SpecType, SpecActivityCoef, true, 
                             SpecCharge, WHAMSpecCharge);
 
     // calculate the total moles for just this component

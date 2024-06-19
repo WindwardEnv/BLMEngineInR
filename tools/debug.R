@@ -5,8 +5,8 @@ devtools::load_all()
 DoTox = FALSE
 iCA = 1L
 QuietFlag ="Quiet"
-ConvergenceCriteria = 0.0001
-MaxIter = 100L
+ConvergenceCriteria = 1E-6
+MaxIter = 500L
 DoPartialStepsAlways = FALSE
 
 # # ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
@@ -22,14 +22,22 @@ DoPartialStepsAlways = FALSE
 # # ParamFile = "scrap/parameter file format/abbrev_organic (2).dat4"
 # InputFile = "scrap/parameter file format/abbrev_organic.blm4"
 
+# ParamFile = "inst/extdata/ParameterFiles/full_inorg.dat4"
+# InputFile = "scrap/parameter file format/full_inorganic.blm4"
+# oldBLMOutFile = "scrap/old BLM/test ground BLM/full_inorganic.det.csv"
+#
+# ParamFile = "scrap/parameter file format/full_inorg_BlankDOC.dat4"
+# InputFile = "scrap/parameter file format/full_inorg_BlankDOC.blm4"
+# oldBLMOutFile = "scrap/old BLM/test ground BLM/full_inorg_BlankDOC.det.csv"
+
 ParamFile = "scrap/parameter file format/full_organic_WATER23dH.dat4"
 # ParamFile = "scrap/parameter file format/full_organic_noBL.dat4"
 InputFile = "scrap/parameter file format/full_organic.blm4"
 oldBLMOutFile = if (DoTox){
   "scrap/old BLM/full_organic_TOX.det.xlsx"
 } else {
-  # "scrap/old BLM/full_organic_SPEC.det.xlsx"
-  "scrap/old BLM/full_organic_SPEC_NOES.det.xlsx"
+  "scrap/old BLM/test ground BLM/full_organic.det.csv"
+  # "scrap/old BLM/full_organic_SPEC_NOES.det.xlsx"
 }
 
 # ParamFile = "scrap/parameter file format/Zn_full_organic.dat4"
@@ -55,7 +63,7 @@ oldBLMOutFile = if (DoTox){
 ThisProblem = DefineProblem(ParamFile, WriteLog = TRUE)
 
 # Remove Donnan species (no non-specific binding)
-if (TRUE) {
+if (FALSE) {
   DonnanMass = ThisProblem$WHAMDonnanMCR
   ThisProblem$WHAMDonnanMCR = array(-1, dim=2, dimnames = list(c("HA","FA")))
   ThisProblem$MassName = ThisProblem$MassName[-DonnanMass]
@@ -232,12 +240,12 @@ ResultsTable <- BLM(
 )
 # , file = "scrap/debug.txt")
 
-WriteDetailedFile(ResultsTable, FileName = paste0(InputFile,"_NoES.xlsx"))
+WriteDetailedFile(ResultsTable, FileName = paste0(InputFile,".xlsx"))
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
-ResultsTable[, c("Obs","ID2","Status","FinalIter","FinalMaxError")]
+ResultsTable$Miscellaneous[, c("Obs","ID","ID2","Status","FinalIter","FinalMaxError")]
 # iObs = which((ResultsTable$FinalIter < 30) & !is.na(ResultsTable$FinalMaxError))[1]
-save(ResultsTable, file = paste0(InputFile, "_SPEC.RData"))
+save(ResultsTable, file = paste0(InputFile, "_",ifelse(DoTox,"TOX","SPEC"),".RData"))
 
 # ResultsTable[, c("ID","ID2","T.Cu (mol/L)","Cu (mol/L)")]
 # ResultsTable[, c("ID2","T.Cu (mol/L)","T.Cu (mol)","Water (L)", "Water_DonnanHA (L)","Water_DonnanFA (L)")]
@@ -247,51 +255,58 @@ save(ResultsTable, file = paste0(InputFile, "_SPEC.RData"))
 # ResultsTable[,paste0(ThisProblem$SpecName[grepl("Cu",ThisProblem$SpecName)]," (mol)")] / ResultsTable$`T.Cu (mol)` * 100
 
 
-ResultsTable$`TOrg.H (mol/L)` = 2 * rowSums(
-  ResultsTable[, colnames(ResultsTable)[grepl("DOC",colnames(ResultsTable)) &
-                                          grepl("mol/L", colnames(ResultsTable)) &
-                                          !grepl("^T", colnames(ResultsTable)) &
-                                          grepl("[[:digit:]][[:digit:]]H [(]mol", colnames(ResultsTable)) &
-                                          !grepl("CuOH", colnames(ResultsTable))]]) +
+ResultsTable$Concentrations$`TOrg.H (mol/L)` = 2 * rowSums(
+  ResultsTable$Concentrations[, colnames(ResultsTable$Concentrations)[grepl("DOC",colnames(ResultsTable$Concentrations)) &
+                                          !grepl("^T", colnames(ResultsTable$Concentrations)) &
+                                          grepl("[[:digit:]][[:digit:]]H [(]mol", colnames(ResultsTable$Concentrations)) &
+                                          !grepl("CuOH", colnames(ResultsTable$Concentrations))]]) +
   rowSums(
-    ResultsTable[, colnames(ResultsTable)[grepl("DOC",colnames(ResultsTable)) &
-                                            grepl("mol/L", colnames(ResultsTable)) &
-                                            !grepl("^T", colnames(ResultsTable)) &
-                                            grepl("[-_][[:digit:]]H [(]mol", colnames(ResultsTable)) &
-                                            !grepl("CuOH", colnames(ResultsTable))]])
+    ResultsTable$Concentrations[, colnames(ResultsTable$Concentrations)[grepl("DOC",colnames(ResultsTable$Concentrations)) &
+                                            !grepl("^T", colnames(ResultsTable$Concentrations)) &
+                                            grepl("[-_][[:digit:]]H [(]mol", colnames(ResultsTable$Concentrations)) &
+                                            !grepl("CuOH", colnames(ResultsTable$Concentrations))]])
 
-ResultsTable$`TOrg.Free (mol/L)` = rowSums(
-  ResultsTable[, colnames(ResultsTable)[grepl("DOC",colnames(ResultsTable)) &
-                                          grepl("mol/L", colnames(ResultsTable)) &
-                                          !grepl("^T", colnames(ResultsTable)) &
-                                          !(grepl("Cu", colnames(ResultsTable)) |
-                                              grepl("Ca", colnames(ResultsTable)) |
-                                             grepl("Mg", colnames(ResultsTable)) |
-                                             grepl("Na", colnames(ResultsTable)) |
-                                             grepl("K", colnames(ResultsTable)) |
-                                             grepl("SO4", colnames(ResultsTable)) |
-                                             grepl("Cl", colnames(ResultsTable)) |
-                                             grepl("H [(]mol", colnames(ResultsTable)))]]
+ResultsTable$Concentrations$`TOrg.Free (mol/L)` = rowSums(
+  ResultsTable$Concentrations[, colnames(ResultsTable$Concentrations)[grepl("DOC",colnames(ResultsTable$Concentrations)) &
+                                          grepl("mol/L", colnames(ResultsTable$Concentrations)) &
+                                          !grepl("^T", colnames(ResultsTable$Concentrations)) &
+                                          !(grepl("Cu", colnames(ResultsTable$Concentrations)) |
+                                              grepl("Ca", colnames(ResultsTable$Concentrations)) |
+                                             grepl("Mg", colnames(ResultsTable$Concentrations)) |
+                                             grepl("Na", colnames(ResultsTable$Concentrations)) |
+                                             grepl("K", colnames(ResultsTable$Concentrations)) |
+                                             grepl("SO4", colnames(ResultsTable$Concentrations)) |
+                                             grepl("Cl", colnames(ResultsTable$Concentrations)) |
+                                             grepl("H [(]mol", colnames(ResultsTable$Concentrations)))]]
 )
 
 
-ResultsTable$`T.DOC (mol)` = rowSums(ResultsTable[, colnames(ResultsTable)[
-  grepl("DOC-",colnames(ResultsTable)) &
-    grepl("[(]mol[)]", colnames(ResultsTable)) &
-    grepl("^T", colnames(ResultsTable))]])
+ResultsTable$Concentrations$`T.DOC (mol)` = rowSums(ResultsTable$Concentrations[, colnames(ResultsTable$Concentrations)[
+  grepl("DOC-",colnames(ResultsTable$Concentrations)) &
+    grepl("[(]mol[)]", colnames(ResultsTable$Concentrations)) &
+    grepl("^T", colnames(ResultsTable$Concentrations))]])
 
-ResultsTable$Hard = (ResultsTable$Input.Ca + ResultsTable$Input.Mg) * 100086
+ResultsTable$Inputs$Hard = (ResultsTable$Inputs$Ca + ResultsTable$Inputs$Mg) * 100086
 
-OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, startRow = 7, colNames = FALSE)
-OldBLMheader = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, rows = 5:6, colNames = FALSE)
-OldBLMheader[1, ] = gsub("BL","BL1",OldBLMheader[1, ])
-colnames(OldBLMResultsTable) =
-  apply(OldBLMheader, MARGIN = 2,
-        FUN = function(X){
-          if (is.na(X[2])) {return(X[1])}
-          if (X[1] == X[2]) {return(X[1])}
-          paste0(X[1], " (", gsub(" / ","/", X[2]), ")")
-        })
+if (grepl(".xlsx$", oldBLMOutFile)) {
+  OldBLMResultsTable = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, startRow = 7, colNames = FALSE)
+  OldBLMheader = openxlsx::read.xlsx(xlsxFile = oldBLMOutFile, sheet = 1, rows = 5:6, colNames = FALSE)
+  OldBLMheader[1, ] = gsub("BL","BL1",OldBLMheader[1, ])
+  colnames(OldBLMResultsTable) =
+    apply(OldBLMheader, MARGIN = 2,
+          FUN = function(X){
+            if (is.na(X[1])) {return(X[2])}
+            if (is.na(X[2])) {return(X[1])}
+            if (X[1] == X[2]) {return(X[1])}
+            paste0(X[1], " (", gsub(" / ","/", X[2]), ")")
+          })
+} else if (grepl(".csv$", oldBLMOutFile)) {
+  OldBLMResultsTable = read.csv(file = oldBLMOutFile, header = TRUE, skip = 4, check.names = FALSE)
+  colnames(OldBLMResultsTable)[colnames(OldBLMResultsTable) %in% ThisProblem$SpecName] =
+    paste0(colnames(OldBLMResultsTable)[colnames(OldBLMResultsTable) %in% ThisProblem$SpecName],
+           " (mol/L)")
+  colnames(OldBLMResultsTable) = gsub("[(]mol / L[)]", "(mol/L)", colnames(OldBLMResultsTable))
+}
 # colnames(OldBLMResultsTable)[grepl("_[[:digit:]]?[[:digit:]]-H", colnames(OldBLMResultsTable))]
 # tmp = cbind(colnames(OldBLMResultsTable),
 #       gsub("(_[[:digit:]]?[[:digit:]])-H", "\\1H", colnames(OldBLMResultsTable)))
@@ -306,8 +321,8 @@ OldBLMResultsTable$Z_HA = OldBLMResultsTable$Z_HS
 OldBLMResultsTable$Z_FA = OldBLMResultsTable$Z_FS
 OldBLMResultsTable$`T.DOC (g/L)` = OldBLMResultsTable$`T.DOC (mol)`
 # OldBLMResultsTable$`T.DOC (g/L)` * ThisProblem$DefCompSiteDens
-OldBLMResultsTable$`T.DOC (mol)` = OldBLMResultsTable$`T.DOC (g/L)` * (0.1 * 3.29e-3 * (1.5*0.5+12/16*0.5) + 0.9*4.73e-3*(1.5*0.6+12/16*0.4))
-OldBLMResultsTable$`TOrg.Free (mol/L)` = OldBLMResultsTable$`T.DOC (mol)` - (OldBLMResultsTable$`TOrg.H (mol/L)` + OldBLMResultsTable$`TOrg.Cu (mol/L)` + OldBLMResultsTable$`TOrg.Ca (mol/L)` + OldBLMResultsTable$`TOrg.Mg (mol/L)` + OldBLMResultsTable$`TOrg.Na (mol/L)` + OldBLMResultsTable$`TOrg.K (mol/L)`)
+# OldBLMResultsTable$`T.DOC (mol)` = OldBLMResultsTable$`T.DOC (g/L)` * (0.1 * 3.29e-3 * (1.5*0.5+12/16*0.5) + 0.9*4.73e-3*(1.5*0.6+12/16*0.4))
+# OldBLMResultsTable$`TOrg.Free (mol/L)` = OldBLMResultsTable$`T.DOC (mol)` - (OldBLMResultsTable$`TOrg.H (mol/L)` + OldBLMResultsTable$`TOrg.Cu (mol/L)` + OldBLMResultsTable$`TOrg.Ca (mol/L)` + OldBLMResultsTable$`TOrg.Mg (mol/L)` + OldBLMResultsTable$`TOrg.Na (mol/L)` + OldBLMResultsTable$`TOrg.K (mol/L)`)
 
 # intersect(colnames(OldBLMResultsTable), colnames(ResultsTable))
 
@@ -370,135 +385,143 @@ OldBLMResultsTable$`TOrg.Free (mol/L)` = OldBLMResultsTable$`T.DOC (mol)` - (Old
 # OldBLMResultsTable$Act.OH = OldBLMResultsTable$OH
 
 
-ResultsTable$SerLab = gsub(".+ ([0-9.]+)$", "\\1", ResultsTable$ID2)
-ResultsTable$Ser = gsub("ser .+","ser", ResultsTable$ID2)
-palette("Paired")
+ResultsTable$Miscellaneous$SerLab = gsub(".+ ([0-9.]+)$", "\\1", ResultsTable$Inputs$ID2)
+ResultsTable$Miscellaneous$Ser = gsub("ser .+","ser", ResultsTable$Inputs$ID2)
+ResultsTable$Miscellaneous$Graph = ResultsTable$Inputs$ID
+palette("Tableau10")
 leg.dat = data.frame(
-  Ser = c("Hard ser", "DOC ser", "pH ser", "Temp ser", "Cu ser",
-          "hi DOC Hard ser", "hi DOC pH ser", "hi DOC Temp ser", "hi DOC Cu ser"),
-  col = c(1, 10, 3, 5, 7,
-          2, 4, 6, 8)
+  Ser = c("Hard ser", "DOC ser", "pH ser", "Temp ser", "Cu ser"),
+  col = 1:5
 )
-ResultsTable$col = leg.dat$col[match(ResultsTable$Ser, leg.dat$Ser)]
+ResultsTable$Miscellaneous$col = leg.dat$col[match(ResultsTable$Miscellaneous$Ser, leg.dat$Ser)]
 
-ResultsTable.sub = ResultsTable[ResultsTable$Status == "Okay", ]
-OldBLMResultsTable.sub = OldBLMResultsTable[ResultsTable$Status == "Okay", ]
+ResultsTable.sub = lapply(ResultsTable,
+                          FUN = function(X){X[ResultsTable$Miscellaneous$Status == "Okay", ]})
+OldBLMResultsTable.sub = OldBLMResultsTable[ResultsTable$Miscellaneous$Status == "Okay", ]
 
-layout(matrix(c(2,3,4,1,5,6,7,1,8,9,10,1), byrow = T, nrow = 3, ncol = 4),
-       widths = c(1,1,1,lcm(4)))
-i.plot = 1
-for (i.col in intersect(colnames(ResultsTable),
-                        colnames(OldBLMResultsTable))) {
-  if (all(!is.na(is.numeric(ResultsTable[,i.col]))) &&
-      # !grepl("T[.]", i.col) &&
-      (i.col %in% c("Obs","ID","ID2","#.Iter.", "DDL.Na") == FALSE)) {
+for (i.graph in sort(unique(ResultsTable$Miscellaneous$Graph))) {
+  ResultsTable.i = lapply(ResultsTable.sub, FUN = function(X){X[ResultsTable.sub$Miscellaneous$Graph == i.graph, ]})
+  OldBLMResultsTable.i = OldBLMResultsTable.sub[ResultsTable.sub$Miscellaneous$Graph == i.graph, ]
+  layout(matrix(c(2,3,4,1,5,6,7,1,8,9,10,1), byrow = T, nrow = 3, ncol = 4),
+         widths = c(1,1,1,lcm(4)))
+  i.plot = 1
+  for (i.col in intersect(colnames(ResultsTable$Concentrations),
+                          colnames(OldBLMResultsTable))) {
+    if (all(!is.na(is.numeric(ResultsTable$Concentrations[,i.col]))) &&
+        # !grepl("T[.]", i.col) &&
+        (i.col %in% c("Obs","ID","ID2","#.Iter.", "DDL.Na") == FALSE)) {
+
+      if (i.plot == 1) {
+        par(mar = c(0,0,2,0))
+        plot.new()
+        legend("topleft", legend = leg.dat$Ser, pch = 16, col = leg.dat$col)
+        mtext(i.graph, side = 4, adj = c(0.5, 0.5), cex = 2, outer = TRUE, line = -3)
+      }
+
+      ResultsTable$Concentrations[is.infinite(ResultsTable$Concentrations[, i.col]), i.col] = NA
+      ax.lim = range(OldBLMResultsTable[, i.col], na.rm = T)
+      if (all(ax.lim > 0)) {
+        ax.lim[1] = 10^(floor(log10(ax.lim[1])))
+        ax.lim[2] = 10^(ceiling(log10(ax.lim[2])))
+      } else {
+        ax.lim = c(min(pretty(ax.lim)),
+                   max(pretty(ax.lim)))
+      }
+
+      # layout(matrix(1:2, ncol = 2), widths = c(1, lcm(3)))
+      par(mar = c(5,5,2,1))
+      plot(x = OldBLMResultsTable.i[,i.col],
+           y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable.i$Concentrations[,i.col])),
+           col = ResultsTable.i$Miscellaneous$col,
+           pch = ifelse(ResultsTable.i$Concentrations[, i.col] < ax.lim[1], 6,
+                        ifelse(ResultsTable.i$Concentrations[, i.col] > ax.lim[2], 2, 16)),
+           main = i.col,
+           xlab = "BLM Version 3.41.2.45",
+           ylab = "BLM in R",
+           log = ifelse(any(ax.lim<=0), "","xy"),
+           xlim = ax.lim,
+           ylim = ax.lim,
+           las = 2)
+      grid(nx = 5, ny = 5)
+      text(x = OldBLMResultsTable.i[, i.col],
+           y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable.i$Concentrations[, i.col])),
+           labels = ResultsTable.i$Miscellaneous$SerLab,
+           col = ResultsTable.i$Miscellaneous$col,
+           pos = 3,
+           cex = 0.5)
+      abline(a = 0, b = 1)
+
+      i.plot = i.plot + 1
+      if (i.plot > 9){i.plot = 1}
+    }
+  }
+}
+
+
+for (i.graph in sort(unique(ResultsTable$Miscellaneous$Graph))) {
+  ResultsTable.i = lapply(ResultsTable.sub, FUN = function(X){X[ResultsTable.sub$Miscellaneous$Graph == i.graph, ]})
+  OldBLMResultsTable.i = OldBLMResultsTable.sub[ResultsTable.sub$Miscellaneous$Graph == i.graph, ]
+  layout(matrix(c(2,3,4,5,1,1), byrow = T, nrow = 3, ncol = 2),
+         heights = c(1, 1, lcm(3)))
+  i.plot = 1
+  for (i.col in c("Cu","Ca","Mg","Na", "K","SO4","Cl","CO3")) {
 
     if (i.plot == 1) {
       par(mar = c(0,0,2,0))
       plot.new()
-      legend("topleft", legend = leg.dat$Ser, pch = 16, col = leg.dat$col)
+      legend("top", legend = leg.dat$Ser, pch = 16, col = leg.dat$col, ncol = 2)
+      mtext(i.graph, side = 1, adj = 0.25, cex = 2, outer = TRUE, line = -3)
     }
 
-    ResultsTable[is.infinite(ResultsTable[, i.col]), i.col] = NA
-    ax.lim = range(OldBLMResultsTable[, i.col], na.rm = T)
-    if (all(ax.lim > 0)) {
-      ax.lim[1] = 10^(floor(log10(ax.lim[1])))
-      ax.lim[2] = 10^(ceiling(log10(ax.lim[2])))
-    } else {
-      ax.lim = c(min(pretty(ax.lim)),
-                 max(pretty(ax.lim)))
-    }
+    free.col = paste0(i.col, " (mol/L)")
+    input.col = i.col
 
-    # layout(matrix(1:2, ncol = 2), widths = c(1, lcm(3)))
+    y_resid = (ResultsTable.i$Concentrations[, free.col] - OldBLMResultsTable.i[, free.col]) /
+      OldBLMResultsTable.i[, free.col]
     par(mar = c(5,5,2,1))
-    plot(x = OldBLMResultsTable.sub[,i.col],
-         y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable.sub[,i.col])),
-         col = ResultsTable.sub$col,
-         pch = ifelse(ResultsTable.sub[, i.col] < ax.lim[1], 6,
-                      ifelse(ResultsTable.sub[, i.col] > ax.lim[2], 2,
-                             ifelse(ResultsTable.sub$FinalIter >= MaxIter, 1, 16))),
-         main = i.col,
-         xlab = "BLM Version 3.41.2.45",
-         ylab = "BLM in R",
-         log = ifelse(any(ax.lim<=0), "","xy"),
-         xlim = ax.lim,
-         ylim = ax.lim,
-         las = 2)
-    grid(nx = 5, ny = 5)
-    text(x = OldBLMResultsTable.sub[, i.col],
-         y = pmin(ax.lim[2], pmax(ax.lim[1], ResultsTable.sub[, i.col])),
-         labels = ResultsTable.sub$SerLab,
-         col = ResultsTable.sub$col,
+    plot(
+      x = ResultsTable.i$Inputs[, input.col],
+      y = y_resid,
+      col = ResultsTable.i$Miscellaneous$col,
+      pch = 16,
+      las = 2,
+      xlab = input.col,
+      ylim = c(-0.5, 0.5),
+      log = "x",
+      ylab = "(Free Conc from R - Free Conc from BLM) / Free Conc from BLM"
+    )
+    abline(h = 0)
+    text(x = ResultsTable.i$Inputs[, input.col],
+         y = y_resid,
+         labels = ResultsTable.i$Miscellaneous$SerLab,
+         col = ResultsTable.i$Miscellaneous$col,
          pos = 3,
          cex = 0.5)
-    abline(a = 0, b = 1)
+
+
+    grid(nx = 5, ny = 5)
 
     i.plot = i.plot + 1
-    if (i.plot > 9){i.plot = 1}
+    if (i.plot > 4){i.plot = 1}
 
   }
-}
-
-
-
-layout(matrix(c(2,3,4,5,1,1), byrow = T, nrow = 3, ncol = 2),
-       heights = c(1, 1, lcm(3)))
-i.plot = 1
-for (i.col in c("Cu","Ca","Mg","Na", "K","SO4","Cl","CO3")) {
-
-  if (i.plot == 1) {
-    par(mar = c(0,0,2,0))
-    plot.new()
-    legend("top", legend = leg.dat$Ser, pch = 16, col = leg.dat$col, ncol = 2)
-  }
-
-  free.col = paste0(i.col, " (mol/L)")
-  input.col = paste0("Input.", i.col)
-
-  y_resid = (ResultsTable.sub[, free.col] - OldBLMResultsTable.sub[, free.col]) /
-    OldBLMResultsTable.sub[, free.col]
-  par(mar = c(5,5,2,1))
-  plot(
-    x = ResultsTable.sub[, input.col],
-    y = y_resid,
-    col = ResultsTable.sub$col,
-    pch = 16,
-    las = 2,
-    xlab = input.col,
-    ylim = c(-1, 1),
-    log = "x",
-    ylab = "(Free Conc from R - Free Conc from BLM) / Free Conc from BLM"
-  )
-  abline(h = 0)
-  text(x = ResultsTable.sub[, input.col],
-       y = y_resid,
-       labels = ResultsTable.sub$SerLab,
-       col = ResultsTable.sub$col,
-       pos = 3,
-       cex = 0.5)
-
-
-  grid(nx = 5, ny = 5)
-
-  i.plot = i.plot + 1
-  if (i.plot > 4){i.plot = 1}
-
 }
 
 layout(matrix(c(2,3,4,5,1,1), byrow = T, nrow = 3, ncol = 2),
        heights = c(1, 1, lcm(3)))
 i.plot = 1
-for (free.col in c("DOC-HA_1 (mol/L)", "DOC-HA_1H (mol/L)", "DOC-HA_1-Cu (mol/L)",
-                   "DOC-HA_1-Ca (mol/L)", "DOC-HA_1-CuOH (mol/L)",
-                   "DOC-HA_4 (mol/L)", "DOC-HA_4H (mol/L)", "DOC-HA_4-Cu (mol/L)",
-                   "DOC-HA_4-Ca (mol/L)", "DOC-HA_4-CuOH (mol/L)",
-                   "DOC-HA_5 (mol/L)", "DOC-HA_5H (mol/L)", "DOC-HA_5-Cu (mol/L)",
-                   "DOC-HA_5-Ca (mol/L)", "DOC-HA_5-CuOH (mol/L)",
-                   "DOC-HA_8 (mol/L)", "DOC-HA_8H (mol/L)", "DOC-HA_8-Cu (mol/L)",
-                   "DOC-HA_8-Ca (mol/L)", "DOC-HA_8-CuOH (mol/L)",
-                   "DOC-HA_12 (mol/L)", "DOC-HA_2-1H (mol/L)", "DOC-HA_1-2H (mol/L)", "DOC-HA_12H (mol/L)",
-                   "DOC-HA_12-Cu (mol/L)", "DOC-HA_12-Ca (mol/L)", "DOC-HA_12-CuOH (mol/L)")){#paste0(c("Cu","Ca","Mg","Na","K","SO4","Cl","CO3","TOrg.Free"), " (mol/L)")) {
-  for(input.col in c("Hard", "DOC", "pH", "Temp", "Input.Cu")){
+for (free.col in paste0(c("H","Cu","Ca","Mg","Na","K","SO4","Cl","CO3","HCO3","OH"), " (mol/L)")){#paste0(c("Cu","Ca","Mg","Na","K","SO4","Cl","CO3","TOrg.Free"), " (mol/L)")) {
+  # "DOC-HA_1 (mol/L)", "DOC-HA_1H (mol/L)", "DOC-HA_1-Cu (mol/L)",
+  # "DOC-HA_1-Ca (mol/L)", "DOC-HA_1-CuOH (mol/L)",
+  # "DOC-HA_4 (mol/L)", "DOC-HA_4H (mol/L)", "DOC-HA_4-Cu (mol/L)",
+  # "DOC-HA_4-Ca (mol/L)", "DOC-HA_4-CuOH (mol/L)",
+  # "DOC-HA_5 (mol/L)", "DOC-HA_5H (mol/L)", "DOC-HA_5-Cu (mol/L)",
+  # "DOC-HA_5-Ca (mol/L)", "DOC-HA_5-CuOH (mol/L)",
+  # "DOC-HA_8 (mol/L)", "DOC-HA_8H (mol/L)", "DOC-HA_8-Cu (mol/L)",
+  # "DOC-HA_8-Ca (mol/L)", "DOC-HA_8-CuOH (mol/L)",
+  # "DOC-HA_12 (mol/L)", "DOC-HA_2-1H (mol/L)", "DOC-HA_1-2H (mol/L)", "DOC-HA_12H (mol/L)",
+  # "DOC-HA_12-Cu (mol/L)", "DOC-HA_12-Ca (mol/L)", "DOC-HA_12-CuOH (mol/L)"
+  for(input.col in c("Hard", "DOC", "pH", "Temp", "Cu")){
 
     if (i.plot == 1) {
       par(omi = c(0,0,0.5,1))
@@ -513,25 +536,25 @@ for (free.col in c("DOC-HA_1 (mol/L)", "DOC-HA_1H (mol/L)", "DOC-HA_1-Cu (mol/L)
     # free.col = paste0(i.col, " (mol/L)")
     # input.col = paste0("Input.", i.col)
 
-    y_resid = (ResultsTable.sub[, free.col] - OldBLMResultsTable.sub[, free.col]) / OldBLMResultsTable.sub[, free.col]
+    y_resid = (ResultsTable.sub$Concentrations[, free.col] - OldBLMResultsTable.sub[, free.col]) / OldBLMResultsTable.sub[, free.col]
     stopifnot((min(y_resid) > -1) & (max(y_resid) < 1))
     par(mar = c(5,5,2,1))
     plot(
-      x = ResultsTable.sub[, input.col],
+      x = ResultsTable.sub$Inputs[, input.col],
       y = y_resid,
-      col = ResultsTable.sub$col,
+      col = ResultsTable.sub$Miscellaneous$col,
       pch = 16,
       las = 2,
       xlab = input.col,
-      ylim = c(-1, 1),
+      ylim = c(-0.5, 0.5),
       log = ifelse(input.col %in% c("pH", "Temp"), "", "x"),
       ylab = "(Free Conc from R - Free Conc from BLM) / Free Conc from BLM"
     )
     abline(h = 0)
-    text(x = ResultsTable.sub[, input.col],
+    text(x = ResultsTable.sub$Inputs[, input.col],
          y = y_resid,
-         labels = ResultsTable.sub$SerLab,
-         col = ResultsTable.sub$col,
+         labels = ResultsTable.sub$Miscellaneous$SerLab,
+         col = ResultsTable.sub$Miscellaneous$col,
          pos = 3,
          cex = 0.5)
 

@@ -33,7 +33,7 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
                                  Rcpp::NumericVector SpecK,
                                  Rcpp::IntegerMatrix SpecStoich,
                                  Rcpp::CharacterVector SpecName,
-                                 Rcpp::CharacterVector SpecActCorr,
+                                 Rcpp::CharacterVector SpecType,
                                  Rcpp::NumericVector SpecActivityCoef,
                                  bool DoWHAM,
                                  Rcpp::IntegerVector SpecCharge,
@@ -56,12 +56,12 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
     SpecActivity(iSpec) = SpecK(iSpec);
     for (iComp = 0; iComp < NComp; iComp++) {
       if (SpecStoich(iSpec, iComp) != 0) {
-          /*if ((SpecActCorr(iSpec) == ACTYPE_DONNANHA) || 
-            (SpecActCorr(iSpec) == ACTYPE_DONNANFA)) {
-              Rcpp::Rcout << SpecActCorr(iSpec) << std::endl;
+          /*if ((SpecType(iSpec) == STYPE_DONNANHA) || 
+            (SpecType(iSpec) == STYPE_DONNANFA)) {
+              Rcpp::Rcout << SpecType(iSpec) << std::endl;
           }*/
-          /*if ((SpecActCorr(iComp) == ACTYPE_DONNANHA) || 
-              (SpecActCorr(iComp) == ACTYPE_DONNANFA)) {
+          /*if ((SpecType(iComp) == STYPE_DONNANHA) || 
+              (SpecType(iComp) == STYPE_DONNANFA)) {
             SpecActivity(iSpec) *= std::pow(CompConc(iComp), 
                                             SpecStoich(iSpec, iComp));
           } else {
@@ -79,11 +79,11 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
 
   if (DoWHAM) {
     for (iSpec = NComp; iSpec < NSpec; iSpec++) {
-      if ((SpecActCorr(iSpec) == ACTYPE_DONNANHA) && 
+      if ((SpecType(iSpec) == STYPE_DONNANHA) && 
           (((WHAMSpecCharge(iHA) < 0) && (SpecCharge(iSpec) < 0)) || 
           ((WHAMSpecCharge(iHA) > 0) && (SpecCharge(iSpec) > 0)))) {
         SpecActivity[iSpec] = 0.0;
-      } else if ((SpecActCorr(iSpec) == ACTYPE_DONNANFA) &&
+      } else if ((SpecType(iSpec) == STYPE_DONNANFA) &&
                 (((WHAMSpecCharge(iFA) < 0) && (SpecCharge(iSpec) < 0)) || 
                   ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
         SpecActivity[iSpec] = 0.0;

@@ -34,7 +34,7 @@ void CalcResidAndError(int NComp,
                        Rcpp::NumericVector CalcTotMoles,
                        Rcpp::NumericVector TotMoles,
                        Rcpp::CharacterVector CompType,
-                       Rcpp::CharacterVector SpecActCorr,
+                       Rcpp::CharacterVector SpecType,
                        Rcpp::NumericVector &Resid,
                        Rcpp::NumericVector &CompError) {
 
@@ -45,9 +45,9 @@ void CalcResidAndError(int NComp,
   TotHSMoles(iHA) = 0.0;
   TotHSMoles(iFA) = 0.0;
   for (iComp = 0; iComp < NComp; iComp++) {
-    if (SpecActCorr(iComp) == ACTYPE_WHAMHA) {
+    if (SpecType(iComp) == STYPE_WHAMHA) {
       TotHSMoles(iHA) += TotMoles(iComp);
-    } else if (SpecActCorr(iComp) == ACTYPE_WHAMFA) {
+    } else if (SpecType(iComp) == STYPE_WHAMFA) {
       TotHSMoles(iFA) = TotMoles(iComp);
     }
   }*/
@@ -59,12 +59,12 @@ void CalcResidAndError(int NComp,
   CompError = abs(Resid / CalcTotMoles);
   
   for (iComp = 0; iComp < NComp; iComp++) {
-    if ((CompType(iComp) == TYPE_FIXEDCONC) || (CompType(iComp) == TYPE_FIXEDACT)) {
+    if ((CompType(iComp) == CTYPE_FIXEDCONC) || (CompType(iComp) == CTYPE_FIXEDACT)) {
       Resid(iComp) = 0.0;
       CompError(iComp) = 0.0;
-    //} else if (SpecActCorr(iComp) == ACTYPE_WHAMHA) {
+    //} else if (SpecType(iComp) == STYPE_WHAMHA) {
     //  CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iHA]);
-    //} else if (SpecActCorr(iComp) == ACTYPE_WHAMFA) {
+    //} else if (SpecType(iComp) == STYPE_WHAMFA) {
     //  CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iFA]);
     }
   }  

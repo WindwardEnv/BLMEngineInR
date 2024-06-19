@@ -47,8 +47,8 @@ void UpdateTotals(int NComp,
     int iComp, iSpec;
             
     for (iComp = 0; iComp < NComp; iComp++) {
-        if ((CompType(iComp) == TYPE_FIXEDCONC) || 
-            (CompType(iComp) == TYPE_FIXEDACT) || 
+        if ((CompType(iComp) == CTYPE_FIXEDCONC) || 
+            (CompType(iComp) == CTYPE_FIXEDACT) || 
           (DoTox & (CompName(iComp) == MetalName))) {
             TotConc(iComp) = 0;
             for (iSpec = 0; iSpec < NSpec; iSpec++) {

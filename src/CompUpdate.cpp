@@ -41,7 +41,7 @@ void CompUpdate(int NComp,
     } else {
       CompConc[iComp] = oldCompConc[iComp] - CompConcStep[iComp];
     }
-    //if (((CompType[iComp] == TYPE_DONNANHA) || (CompType[iComp] == TYPE_DONNANFA))) {
+    //if (((CompType[iComp] == CTYPE_DONNANHA) || (CompType[iComp] == CTYPE_DONNANFA))) {
     //  if (CompConc[iComp] < 1.0) { CompConc[iComp] = 1.0; }
     //}
   }//NEXT iComp
