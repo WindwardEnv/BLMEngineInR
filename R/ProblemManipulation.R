@@ -10,26 +10,26 @@ BlankProblem = function() {
   Out = list(
 
     # Counts
-    NMass = 0,
-    NInLab = 0,
-    NInVar = 0,
-    NInComp = 0,
-    NDefComp = 0,
-    NComp = 0,
-    NSpec = 0,
-    NPhase = 0,
-    NSpecialDef = 0,
-    NBL = 0,
-    NMetal = 0,
-    NBLMetal = 0,
-    NCAT = 0,
+    NMass = 0L,
+    NInLab = 0L,
+    NInVar = 0L,
+    NInComp = 0L,
+    NDefComp = 0L,
+    NComp = 0L,
+    NSpec = 0L,
+    NPhase = 0L,
+    NSpecialDef = 0L,
+    NBL = 0L,
+    NMetal = 0L,
+    NBLMetal = 0L,
+    NCAT = 0L,
 
     # Mass Compartment List
     MassName = character(),
     MassAmt = numeric(),
     MassUnit = character(),
-    AqueousMCR = NA,
-    BioticLigMCR = NA,
+    AqueousMCR = as.integer(NA),
+    BioticLigMCR = as.integer(NA),
 
     # Input Labels
     InLabName = character(),
@@ -65,7 +65,7 @@ BlankProblem = function() {
     SpecName = character(),
     SpecMCName = character(),
     SpecMCR = integer(),
-    SpecActCorr = integer(),
+    SpecActCorr = character(),
     SpecNC = integer(),
     SpecCompList = matrix(data = 0, nrow = 0, ncol = 0),
     SpecStoich = matrix(data = 0, nrow = 0, ncol = 0),
@@ -103,12 +103,12 @@ BlankProblem = function() {
                        Miscellaneous = character()),
 
     # WHAM parameters
-    WHAMDonnanMCR = array(NA, dim = 2, dimnames = list(c("HA","FA"))),
-    wDLF = NA,
-    wKZED = NA,
-    wP = array(NA, dim = 2, dimnames = list(c("HA","FA"))),
-    wRadius = array(NA, dim = 2, dimnames = list(c("HA","FA"))),
-    wMolWt = array(NA, dim = 2, dimnames = list(c("HA","FA")))
+    WHAMDonnanMCR = array(as.integer(NA), dim =2, dimnames = list(c("HA","FA"))),
+    wDLF = as.numeric(NA),
+    wKZED = as.numeric(NA),
+    wP = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
+    wRadius = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
+    wMolWt = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA")))
 
   )
 
