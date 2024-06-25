@@ -881,7 +881,7 @@ ExpandWHAM = function(NMass,
   SpecDeltaH = SpecDeltaH[Reorder]
   SpecTempKelvin = SpecTempKelvin[Reorder]
 
-  SpecNC = rowSums(SpecStoich != 0L)
+  SpecNC = as.integer(rowSums(SpecStoich != 0L))
   names(SpecNC) = SpecName
   SpecCompList = t(apply(
     SpecStoich,

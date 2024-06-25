@@ -94,15 +94,15 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   SkipRows = 2
   Tmp = read.csv(file = ParamFile, header = FALSE, skip = SkipRows,
                  nrows = 9, strip.white = TRUE)
-  NMass = as.numeric(Tmp[1, 1])
-  NInLab = as.numeric(Tmp[2, 1])
-  NInVar = as.numeric(Tmp[3, 1])
-  NInComp = as.numeric(Tmp[4, 1])
-  NDefComp = as.numeric(Tmp[5, 1])
-  NSpec = as.numeric(Tmp[6, 1])
-  NPhase = as.numeric(Tmp[7, 1])
-  NSpecialDef = as.numeric(Tmp[8, 1])
-  NCAT = as.numeric(Tmp[9, 1])
+  NMass = as.integer(Tmp[1, 1])
+  NInLab = as.integer(Tmp[2, 1])
+  NInVar = as.integer(Tmp[3, 1])
+  NInComp = as.integer(Tmp[4, 1])
+  NDefComp = as.integer(Tmp[5, 1])
+  NSpec = as.integer(Tmp[6, 1])
+  NPhase = as.integer(Tmp[7, 1])
+  NSpecialDef = as.integer(Tmp[8, 1])
+  NCAT = as.integer(Tmp[9, 1])
   stopifnot(NMass > 0, NInLab > 0, NInVar > 0, NInComp > 0, NSpec > 0)
 
   # read mass compartment list
@@ -497,7 +497,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
   # Make SpecCtoM, SpecCharge, SpecK
   SpecCharge = Out$SpecStoich %*% Out$CompCharge
-  Out$SpecCharge = SpecCharge
+  Out$SpecCharge = as.integer(SpecCharge)
   Out$SpecK = array(10 ^ Out$SpecLogK, dim = Out$NSpec,
                     dimnames = list(Out$SpecName))
 

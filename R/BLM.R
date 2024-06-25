@@ -40,15 +40,15 @@
 #' ## End(Not run)
 BLM = function(ParamFile = character(),
                InputFile = character(),
-               ThisProblem = NULL,
-               AllInput = NULL,
+               ThisProblem = list(),
+               AllInput = list(),
                DoTox = logical(),
                iCA = 1L,
                QuietFlag = c("Quiet", "Very Quiet", "Debug"),
                # writeOutputFile = F, outputFileName = NULL,
                # criticalSource = c("ParamFile","InputFile"),
-               ConvergenceCriteria = 0.001,
-               MaxIter = 30L,
+               ConvergenceCriteria = 0.0001,
+               MaxIter = 500L,
                DoPartialStepsAlways = FALSE) {
 
   StartTime = Sys.time()
@@ -61,19 +61,70 @@ BLM = function(ParamFile = character(),
   # 1. parse out parameter file in DefineProblem
   #   --> parameter file name
   #   <-- R variable that defines the problem for immediate use in CHESS
-  if (is.null(ThisProblem)) {
+  if (length(ThisProblem) == 0) {
     ThisProblem = DefineProblem(ParamFile)
   }
 
   # 2. Read InputFile
   #   --> input file name, component info from ParamFile
   #   <-- R variable with component concentrations (total/free dep on ParamFile)
-  if (is.null(AllInput)) {
+  if (length(AllInput) == 0) {
     FunctionInputs = ThisProblem[
       which(names(ThisProblem) %in% formalArgs("GetData"))]
     FunctionInputs$InputFile = InputFile
     AllInput = do.call("GetData", args = FunctionInputs)
   }
+
+  # Inputs Error catching
+  ReferenceProblemList = BlankProblem()
+  if (typeof(ThisProblem) != "list") {
+    stop("Invalid problem list - it's not a list.")
+  }
+  if(!all(names(ReferenceProblemList) %in% names(ThisProblem))) {
+    print(setdiff(names(ReferenceProblemList), names(ThisProblem)))
+    stop("Invalid problem list - missing elements.")
+  }
+  ThisProblem.types = sapply(ThisProblem, typeof)[match(names(ReferenceProblemList), names(ThisProblem))]
+  Reference.types = sapply(ReferenceProblemList, typeof)
+  if (!all(ThisProblem.types == Reference.types, na.rm = TRUE)) {
+    print(
+      data.frame(
+        element.name = names(ReferenceProblemList),
+        ThisProblem.type = ThisProblem.types,
+        Reference.type = Reference.types
+      )[ThisProblem.types != Reference.types, ]
+    )
+    stop("Invalid problem list - incorrect types.")
+  }
+  ReferenceInputList = list(NObs = 1L,
+                            InLabObs = array("", dim = c(1, ThisProblem$NInLab)),
+                            InVarObs = array(0.0, dim = c(1, ThisProblem$NInVar)),
+                            InCompObs = array(0.0, dim = c(1, ThisProblem$NInComp)),
+                            SysTempCelsiusObs = array(0.0, 1),
+                            SysTempKelvinObs = array(0.0, 1),
+                            pH = array(0.0, 1),
+                            TotConcObs = array(0.0, dim = c(1, ThisProblem$NComp)),
+                            HumicSubstGramsPerLiterObs = array(0.0, dim = c(1,2)))
+  if (typeof(AllInput) != "list") {
+    stop("Invalid inputs list - it's not a list.")
+  }
+  if(!all(names(ReferenceInputList) %in% names(AllInput))) {
+    print(setdiff(names(ReferenceInputList), names(AllInput)))
+    stop("Invalid inputs list - missing elements.")
+  }
+  AllInput.types = sapply(AllInput, typeof)[match(names(ReferenceInputList), names(AllInput))]
+  Reference.types = sapply(ReferenceInputList, typeof)
+  if (!all(AllInput.types == Reference.types, na.rm = TRUE)) {
+    print(
+      data.frame(
+        element.name = names(ReferenceInputList),
+        AllInput.type = AllInput.types,
+        Reference.type = Reference.types
+      )[AllInput.types != Reference.types, ]
+    )
+    stop("Invalid inputs list - incorrect types.")
+  }
+
 
   # Save some common variables for initializing arrays
   NObs = AllInput$NObs
@@ -135,8 +186,8 @@ BLM = function(ParamFile = character(),
     ),
     Miscellaneous = cbind(
       OutputLabels,
-      matrix(NA, nrow = NObs, ncol = length(MiscOutputCols) + length(ZCols) + length(MassAmtCols),
-             dimnames = list(NULL, c(MiscOutputCols, ZCols, MassAmtCols)))
+      matrix(NA, nrow = NObs, ncol = length(MiscOutputCols) + length(ZCols) + length(MassAmtCols) + 1,
+             dimnames = list(NULL, c(MiscOutputCols, ZCols, MassAmtCols, "Status")))
     ),
     Concentrations = cbind(
       OutputLabels,
@@ -155,35 +206,11 @@ BLM = function(ParamFile = character(),
     )
   )
 
-  # # Initialize the output array
-  # MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength")
-  # SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMCR],")")
-  # SpecMolesCols = paste0(SpecName," (mol)")
-  # SpecActCols = paste0("Act.", SpecName)
-  # TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMCR],")")
-  # TotMolesCols = paste0("T.", CompName, " (mol)")
-  # ZCols = paste0("Z_", c("HA","FA"))
-  # MassAmtCols = paste0(MassName, " (",ThisProblem$MassUnit,")")
-  # Out = data.frame(Obs = 1:NObs)
-  # Out = cbind(Out, AllInput$InLabObs)
-  # Out = cbind(Out, AllInput$InVarObs)
-  # Out = cbind(Out, AllInput$InCompObs)
-  # InputCols = c("Obs", ThisProblem$InLabName, ThisProblem$InVarName,
-  #               paste0("Input.",ThisProblem$InCompName))
-  # colnames(Out) = InputCols
-  # Out[, MiscOutputCols] = NA
-  # Out[, SpecConcCols] = NA
-  # Out[, SpecActCols] = NA
-  # Out[, SpecMolesCols] = NA
-  # Out[, TotConcCols] = NA
-  # Out[, TotMolesCols] = NA
-  # Out[, ZCols] = NA
-  # Out[, MassAmtCols] = NA
-  # # Out = array(
-  # #   NA,
-  # #   dim = c(NObs, NSpec + NComp + length(MiscOutputCols)),
-  # #   dimnames = list(1:NObs, c(MiscOutputCols, SpecName, TotConcCols))
-  # # )
+  # For tox mode, fill in missing values
+  if (DoTox) {
+    EmptyMetalObs = is.na(AllInput$TotConcObs[, ThisProblem$MetalName])
+    AllInput$TotConcObs[EmptyMetalObs, ThisProblem$MetalName] = 1.0E-7
+  }
 
   # Loop through each observation
   for (iObs in 1:NObs) {
@@ -206,24 +233,45 @@ BLM = function(ParamFile = character(),
     #   <-- R variable with speciation outputs
     FunctionInputs[ObsFunctionInputNames] = ThisInput[ObsFunctionInputNames]
 
-    Tmp = do.call("CHESS", args = FunctionInputs)
-    # Out[iObs, MiscOutputCols] = unlist(Tmp[MiscOutputCols])
-    # Out[iObs, SpecConcCols] = Tmp$SpecConc
-    # Out[iObs, SpecActCols] = Tmp$SpecAct
-    # Out[iObs, SpecMolesCols] = Tmp$SpecMoles
-    # Out[iObs, TotConcCols] = Tmp$CalcTotConc
-    # Out[iObs, TotMolesCols] = Tmp$CalcTotMoles
-    # Out[iObs, ZCols] = Tmp$WHAMSpecCharge
-    # Out[iObs, MassAmtCols] = Tmp$MassAmt
-    OutList$Miscellaneous[iObs, MiscOutputCols] = unlist(Tmp[MiscOutputCols])
-    OutList$Miscellaneous[iObs, ZCols] = Tmp$WHAMSpecCharge
-    OutList$Miscellaneous[iObs, MassAmtCols] = Tmp$MassAmt
-    OutList$Concentrations[iObs, SpecConcCols] = Tmp$SpecConc
-    OutList$Concentrations[iObs, TotConcCols] = Tmp$CalcTotConc
-    OutList$Moles[iObs, SpecMolesCols] = Tmp$SpecMoles
-    OutList$Moles[iObs, TotMolesCols] = Tmp$CalcTotMoles
-    OutList$Activities[iObs, SpecActCols] = Tmp$SpecAct
+    if (is.na(ThisInput$SysTempKelvin) |
+        any(is.na(ThisInput$TotConc)) |
+        (ThisProblem$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$WHAMDonnanMCR)])))) {
+      # Incomplete chemistry, so skip calling CHESS
+      OutList$Miscellaneous$Status[iObs] = "Incomplete Chemistry"
+    } else if ((ThisInput$SysTempKelvin <= 263) |
+               any(ThisInput$TotConc <= 0) |
+               (ThisInput$TotConc["H"] > 1) | (ThisInput$TotConc["H"] < 1.0E-14) |
+               (any(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$WHAMDonnanMCR)] <= 0))) {
+      # Invalid chemistry, so skip calling CHESS
+      OutList$Miscellaneous$Status[iObs] = "Invalid Chemistry"
+    } else {
+      # Complete and valid chemistry, so run CHESS
+      RunCompleted = FALSE
+      tryCatch({
+        Tmp = do.call("CHESS", args = FunctionInputs)
+        OutList$Miscellaneous[iObs, MiscOutputCols] = unlist(Tmp[MiscOutputCols])
+        OutList$Miscellaneous[iObs, ZCols] = Tmp$WHAMSpecCharge
+        OutList$Miscellaneous[iObs, MassAmtCols] = Tmp$MassAmt
+        OutList$Concentrations[iObs, SpecConcCols] = Tmp$SpecConc
+        OutList$Concentrations[iObs, TotConcCols] = Tmp$CalcTotConc
+        OutList$Moles[iObs, SpecMolesCols] = Tmp$SpecMoles
+        OutList$Moles[iObs, TotMolesCols] = Tmp$CalcTotMoles
+        OutList$Activities[iObs, SpecActCols] = Tmp$SpecAct
 
+        if (is.na(OutList$Miscellaneous$FinalMaxError[iObs]) |
+            (OutList$Miscellaneous$FinalMaxError[iObs] > ConvergenceCriteria)) {
+          OutList$Miscellaneous$Status[iObs] = "Not Converged"
+        } else {
+          OutList$Miscellaneous$Status[iObs] = "Okay"
+        }
+        RunCompleted = TRUE
+      }, finally = {
+        if (!RunCompleted) {
+          OutList$Miscellaneous$Status[iObs] = "Run Error"
+        }
+      })
+
+    }
   }
 
   # Make summary columns for organically-bound components
@@ -232,23 +280,16 @@ BLM = function(ParamFile = character(),
       OrgCols = SpecMolesCols[grepl(iComp, SpecMolesCols) &
                                 (grepl("DOC", SpecMolesCols) |
                                    grepl("Donnan", SpecMolesCols))]
-      # OrgCols = colnames(Out)[
-      #   grepl(iComp, colnames(Out)) & grepl("[(]mol[)]", colnames(Out)) &
-      #     (grepl("DOC", colnames(Out)) | grepl("Donnan", colnames(Out)))
-      # ]
-      # Out[,paste0("TOrg.",iComp," (mol/L)")] = rowSums(Out[, OrgCols])
-      OutList$Concentrations[,paste0("TOrg.",iComp," (mol/L)")] =
-        rowSums(OutList$Moles[, OrgCols])
+      OutList$Concentrations[, paste0("TOrg.",iComp," (mol/L)")] =
+        rowSums(OutList$Moles[, OrgCols, drop = FALSE])
+
     }
   }
 
-  if (!DoTox) {OutList$Miscellaneous$FinalToxIter = NULL}
-  OutList$Miscellaneous$Status =
-    ifelse((OutList$Miscellaneous$FinalMaxError > ConvergenceCriteria) |
-           is.na(OutList$Miscellaneous$FinalMaxError),
-         "Not Converged", "Okay")
+  if (!DoTox) { OutList$Miscellaneous$FinalToxIter = NULL }
 
   print(Sys.time() - StartTime)
+
 
   return(OutList)
 
