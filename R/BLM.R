@@ -36,7 +36,47 @@
 #'
 #' @examples
 #' ## Not run:
+#' ## running the BLM function with a parameter file and input file:
 #' # BLM(ParamFile = "path/mypfile.dat", InputFile = "path/myinputfile.blm")
+#' #
+#' ## running the BLM with parameter and input objects
+#' # ThisProblem = DefineProblem(ParamFile = "path/mypfile.dat")
+#' # AllInput = list(
+#' #   NObs = 5,
+#' #   InLabObs = as.matrix(data.frame(
+#' #     row.names = "Obs",
+#' #     Obs = 1:5,
+#' #     ObsNum = as.character(1:5),
+#' #     ID = "pH series",
+#' #     ID2 = paste0("pH=",5:9)
+#' #   )),
+#' #   InVarObs = as.matrix(data.frame(
+#' #     row.names = "Obs",
+#' #     Obs = 1:5,
+#' #     Temp = 15,
+#' #     pH = 5:9,
+#' #     DOC = 0.1,
+#' #     HA = 10
+#' #   )),
+#' #   InCompObs = as.matrix(data.frame(
+#' #     row.names = "Obs",
+#' #     Obs = 1:5,
+#' #     Zn = 1E-7,
+#' #     Ca = 0.000299416,
+#' #     Mg = 0.000501954,
+#' #     Na = 0.00110049,
+#' #     K = 5.37108e-05,
+#' #     SO4 = 0.000799487,
+#' #     Cl = 5.35921e-05,
+#' #     CO3 = 0.00109987
+#' #   ))
+#' # )
+#' # FunctionInputs = c(
+#' #   ThisProblem[which(names(ThisProblem) %in% formalArgs("MatchInputsToProblem"))],
+#' #   AllInput[which(names(AllInput) %in% formalArgs("MatchInputsToProblem"))])
+#' # AllInput = c(AllInput, do.call("MatchInputsToProblem", args = FunctionInputs))
+#' # ResultsTable_pH = BLM(ThisProblem = ThisProblem, AllInput = AllInput,
+#' #                       DoTox = TRUE, iCA = 1)
 #' ## End(Not run)
 BLM = function(ParamFile = character(),
                InputFile = character(),
