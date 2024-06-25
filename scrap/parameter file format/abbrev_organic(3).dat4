@@ -4,7 +4,7 @@ Column model parameter file, Ver 4.00
 3,  Input Labels
 3,  Input Variables
 3,  Input Components 
-1,  Defined Components
+2,  Defined Components
 6,  Species
 0,  Phases
 4,  Number of Special Definitions
@@ -35,6 +35,7 @@ Cl,        -1,     Water,       MassBal,  Debye
 Defined components                                    
 Component,  From,     Charge,   Compartment, Type,    Activity,   Site Den 
 BL1,        1.78E-05, -1,       BL,          MassBal, None,       3E-5
+H,          pH,       1,        Water,       FixedConc, Debye,      1
 --------------------------------------------------------------------------------      
 Formation Reactions
 Species, Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,  Delta H,   Temp

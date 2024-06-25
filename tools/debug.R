@@ -66,8 +66,8 @@ AllInput = do.call("GetData", args = FunctionInputs)
 # test stuff
 # capture.output(
 ResultsTable <- BLM(
-  ParamFile = ParamFile,
-  InputFile = InputFile,
+  ThisProblem = ThisProblem,
+  AllInput = AllInput,
   DoTox = DoTox,
   iCA = iCA,
   QuietFlag = QuietFlag,
@@ -77,6 +77,8 @@ ResultsTable <- BLM(
 )
 # , file = "scrap/debug.txt")
 beepr::beep()
+
+ResultsTable$Miscellaneous[,c("Obs","ID","ID2", "Status", "FinalMaxError", "FinalIter")]
 
 ResultsTable$Inputs$Hard = (ResultsTable$Inputs$Ca + ResultsTable$Inputs$Mg) * 100086
 
