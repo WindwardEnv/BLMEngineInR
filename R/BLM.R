@@ -248,8 +248,9 @@ BLM = function(ParamFile = character(),
 
   # For tox mode, fill in missing values
   if (DoTox) {
-    EmptyMetalObs = is.na(AllInput$TotConcObs[, ThisProblem$MetalName])
-    AllInput$TotConcObs[EmptyMetalObs, ThisProblem$MetalName] = 1.0E-7
+    EmptyOrInvalidMetalObs = is.na(AllInput$TotConcObs[, ThisProblem$MetalName]) |
+      (AllInput$TotConcObs[, ThisProblem$MetalName] <= 0)
+    AllInput$TotConcObs[EmptyOrInvalidMetalObs, ThisProblem$MetalName] = 1.0E-7
   }
 
   # Loop through each observation
