@@ -241,6 +241,9 @@ ResultsTable <- BLM(
 # , file = "scrap/debug.txt")
 
 WriteDetailedFile(ResultsTable, FileName = paste0(InputFile,".xlsx"))
+ResultsTable$Miscellaneous[,c("Obs","ID","ID2", "Status", "FinalMaxError", "FinalIter")]
+
+ResultsTable$Inputs$Hard = (ResultsTable$Inputs$Ca + ResultsTable$Inputs$Mg) * 100086
 
 # ResultsTable[, c("Obs","ID2","Hard","pH","DOC")]
 ResultsTable$Miscellaneous[, c("Obs","ID","ID2","Status","FinalIter","FinalMaxError")]
