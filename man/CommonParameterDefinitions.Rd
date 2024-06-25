@@ -332,6 +332,7 @@ These are parameters that are commonly used in the BLMEngineInR
 }
 \seealso{
 Other BLMEngine Functions: 
+\code{\link{GetData}()},
 \code{\link{MatchInputsToProblem}()},
 \code{\link{ReadInputsFromFile}()}
 }

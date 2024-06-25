@@ -274,7 +274,7 @@ MatchInputsToProblem = function(
 
 #' Get data from the input file
 #'
-#' `GetData` reads in the input file and prepares it for input to CHESS.
+#' `GetData` reads in the input file and prepares it for input to the BLM function.
 #'
 #' @param InputFile character(1); the path and file name to a BLM input file
 #' @param NInLab integer; number of input label columns
@@ -317,11 +317,10 @@ MatchInputsToProblem = function(
 #'     total concentrations of each component, including derived components}
 #' }
 #'
-#' @keywords internal
-#'
 #' @family BLMEngine Functions
 #'
-#' @noRd
+#' @export
+#'
 GetData = function(InputFile,
                    NInLab, InLabName,
                    NInVar, InVarName, InVarMCR, InVarType,

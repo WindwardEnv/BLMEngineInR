@@ -1,5 +1,15 @@
 CHESSLog = function(ThisProblem, ParamFile) {
 
+  # initialize
+  CompName = character()
+  SpecName = character()
+  SpecStoich = matrix()
+  SpecLogK = numeric()
+  SpecDeltaH = numeric()
+  CompType = character()
+  CompActCorr = character()
+  SpecCharge = integer()
+
   # unpack the input list
   for (i in names(ThisProblem)) {
     assign(i, ThisProblem[[i]])
