@@ -246,8 +246,55 @@ BLM = function(ParamFile = character(),
     )
   )
 
-  # For tox mode, fill in missing values
+  # For tox mode, fill in missing values and add WQC tab
+  DoStandards = FALSE
   if (DoTox) {
+    if (ThisProblem$CAT$Endpoint[iCA] %in% c("FAV","FCV","HC5","WQS","CMC","CCC")) {
+      DoStandards = TRUE
+
+      # throughout: if DIV is missing in Duration column, we'll assume it's 1
+      DIV = 1.0
+      ACR = NA
+      NStandardsCols = 1
+      StandardsCols = paste0(c(ThisProblem$CAT$Endpoint[iCA], ThisProblem$MetalName, "TU"), " (",
+                             c("\U00B5g/L", "\U00B5g/L", "unitless"), ")")
+      if (grepl("^DIV=[[:digit:]]+", ThisProblem$CAT$Duration[iCA])) {
+        NStandardsCols = NStandardsCols + 1
+        DIV = as.numeric(gsub("^DIV=","", ThisProblem$CAT$Duration[iCA]))
+        StandardsCols = c(
+          StandardsCols[1],
+          paste0(ThisProblem$CAT$Endpoint[iCA],"/DIV (\U00B5g/L)"),
+          StandardsCols[2:3]
+        )
+        if (ThisProblem$CAT$Endpoint[iCA] == "FAV") {
+          StandardsCols[2] = paste0("CMC=", StandardsCols[2])
+        } else if (ThisProblem$CAT$Endpoint[iCA] == "FCV") {
+          StandardsCols[2] = paste0("CCC=", StandardsCols[2])
+        }
+      }
+
+      if (grepl("^ACR=[[:digit:]]+", ThisProblem$CAT$Lifestage[iCA])) {
+        ACR = as.numeric(gsub("^ACR=","", ThisProblem$CAT$Lifestage[iCA]))
+
+        StandardsCols = c(
+          StandardsCols[1:NStandardsCols],
+          paste0(ThisProblem$CAT$Endpoint[iCA],"/ACR (\U00B5g/L)"),
+          StandardsCols[NStandardsCols + 1],
+          paste("Acute", utils::tail(StandardsCols, 1)),
+          "Chronic TU (unitless)"
+        )
+        NStandardsCols = NStandardsCols + 1
+        if (ThisProblem$CAT$Endpoint[iCA] == "FAV") {
+          StandardsCols[NStandardsCols] = paste0("CCC=",StandardsCols[NStandardsCols])
+        }
+      }
+
+      OutList$Standards = cbind(
+        OutputLabels,
+        matrix(NA, nrow = NObs, ncol = length(StandardsCols),
+               dimnames = list(NULL, StandardsCols))
+      )
+    }
     EmptyOrInvalidMetalObs = is.na(AllInput$TotConcObs[, ThisProblem$MetalName]) |
       (AllInput$TotConcObs[, ThisProblem$MetalName] <= 0)
     AllInput$TotConcObs[EmptyOrInvalidMetalObs, ThisProblem$MetalName] = 1.0E-7
@@ -324,6 +371,43 @@ BLM = function(ParamFile = character(),
       OutList$Concentrations[, paste0("TOrg.",iComp," (mol/L)")] =
         rowSums(OutList$Moles[, OrgCols, drop = FALSE])
 
+    }
+  }
+
+  if (DoStandards) {
+    OutList$Standards[, StandardsCols[1]] =
+      OutList$Concentrations[, paste0("T.", ThisProblem$MetalName, " (mol/",
+                                      ThisProblem$MassUnit[ThisProblem$CompMCR[ThisProblem$MetalCompR]],")")] *
+      BLMEngineInR::MW[[ThisProblem$MetalName]] * 10^6
+    OutList$Standards[, StandardsCols[NStandardsCols + 1]] =
+      OutList$Inputs[, ThisProblem$MetalName] * BLMEngineInR::MW[[ThisProblem$MetalName]] * 10^6
+    if (NStandardsCols == 1) {
+      # no DIV or ACR - just the predicted tox values
+      # HC5  Me  TU
+      OutList$Standards[, utils::tail(StandardsCols, 1)] =
+        OutList$Standards[, StandardsCols[NStandardsCols + 1]] /
+        OutList$Standards[, StandardsCols[1]]
+    } else {
+      if (is.na(ACR)) {
+        # no ACR - so the predicted tox value and a guideline value
+        # HC5  HC5/DIV  Me  TU
+        OutList$Standards[, StandardsCols[NStandardsCols]] =
+          OutList$Standards[, StandardsCols[1]] / DIV
+        OutList$Standards[, utils::tail(StandardsCols, 1)] =
+          OutList$Standards[, StandardsCols[NStandardsCols + 1]] /
+          OutList$Standards[, StandardsCols[NStandardsCols]]
+      } else {
+        # ACR with or without DIV
+        #      HC5      HC5/ACR  Me  AcuteTU  ChronicTU
+        # HC5  HC5/DIV  HC5/ACR  Me  AcuteTU  ChronicTU
+        OutList$Standards[, StandardsCols[NStandardsCols]] =
+          OutList$Standards[, StandardsCols[1]] / ACR
+        OutList$Standards[, StandardsCols[NStandardsCols - 1]] =
+          OutList$Standards[, StandardsCols[1]] / DIV
+        OutList$Standards[, utils::tail(StandardsCols, 2)] =
+          OutList$Standards[, StandardsCols[NStandardsCols + 1]] /
+          OutList$Standards[, StandardsCols[(NStandardsCols-1):NStandardsCols]]
+      }
     }
   }
 

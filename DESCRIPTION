@@ -1,7 +1,7 @@
 Package: BLMEngineInR
 Type: Package
-Version: 0.1.4
-Date: 2024-06-25
+Version: 0.1.5
+Date: 2024-06-26
 Title: BLM Engine In R
 Authors@R: c(person(given = "Robert", family = "Santore", 
                     email = "roberts@windwardenv.com",

@@ -190,3 +190,25 @@
 #' @format \code{Full_OrganicDataFreeConc} is an object of class \code{numeric}
 #'   of length 38 containing free concentrations.
 "Full_OrganicDataFreeConc"
+
+#' @title Molecular and atomic weights
+#'
+#' @description `MW` is a named list of molecular and atomic weights. The name
+#'   of the list element is the symbol or formula of the chemical element or
+#'   molecule (e.g. find hydrogen with "H", carbon dioxide as "CO2").
+#'
+#' @usage MW
+#'
+#' @source Prohaska, T., Irrgeher, J., Benefield, J., Böhlke, J., Chesson, L.,
+#'   Coplen, T., Ding, T., Dunn, P., Gröning, M., Holden, N., Meijer, H.,
+#'   Moossen, H., Possolo, A., Takahashi, Y., Vogl, J., Walczyk, T., Wang, J.,
+#'   Wieser, M., Yoneda, S., Zhu, X. & Meija, J. (2022). Standard atomic weights
+#'   of the elements 2021 (IUPAC Technical Report). Pure and Applied Chemistry,
+#'   94(5), 573-600. https://doi.org/10.1515/pac-2019-0603
+#'
+#' @examples
+#' # check that the molecular weight of CaCO3 is the same as Ca + C + O * 3
+#' MW[c("Ca", "C", "O")] * 3 #=100.086
+#' MW$CaCO3 #=100.086
+#'
+"MW"

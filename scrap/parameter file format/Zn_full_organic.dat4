@@ -80,7 +80,7 @@ WHAM,       V
 --------------------------------------------------------------------------------
 Critical Accumulation Table
 #,  CA,          Species,                      Test Type, Duration, Lifestage, Endpoint,       Quantifier, References,                          Miscellaneous
-1,  3.88991213,  recalc FAV,                   Acute,     NA,       NA,        FAV,            NA,         California Zn recalculation 2023-24, November 2023
+1,  3.88991213,  recalc FAV,                   Acute,     DIV=2.00, NA,        FAV,            NA,         California Zn recalculation 2023-24, November 2023
 2,  0.770758617, Centroptilum triangulifer,    Acute,     48 hours, NA,        Survival,       LC50,       California Zn recalculation 2023-24, November 2023
 3,  2.962514483, Hyalella azteca,              Acute,     48 hours, NA,        Survival,       LC50,       California Zn recalculation 2023-24, November 2023
 4,  3.636928196, Cottus bairdii,               Acute,     48 hours, NA,        Survival,       LC50,       California Zn recalculation 2023-24, November 2023
