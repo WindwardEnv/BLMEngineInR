@@ -79,8 +79,8 @@ BlankProblemDF = function() {
       TempKelvin = numeric(),
       NC = integer()
     ),
-    SpecCompList = matrix(data = 0, nrow = 0, ncol = 0),
-    SpecStoich = matrix(data = 0, nrow = 0, ncol = 0),
+    SpecCompList = matrix(data = 0L, nrow = 0, ncol = 0),
+    SpecStoich = matrix(data = 0L, nrow = 0, ncol = 0),
 
     # Phase List
     Phase = data.frame(
@@ -92,8 +92,8 @@ BlankProblemDF = function() {
       Temp = numeric(),
       Moles = numeric()
     ),
-    PhaseCompList = matrix(data = 0, nrow = 0, ncol = 0),
-    PhaseStoich = matrix(data = 0, nrow = 0, ncol = 0),
+    PhaseCompList = matrix(data = 0L, nrow = 0, ncol = 0),
+    PhaseStoich = matrix(data = 0L, nrow = 0, ncol = 0),
 
 
     # Special Definitions
@@ -131,15 +131,15 @@ BlankProblemDF = function() {
       WdatFile = NA,
       wDLF = as.numeric(NA),
       wKZED = as.numeric(NA),
-      wP = as.numeric(array(NA, dim = 2, dimnames = list(c("HA","FA")))),
-      wRadius = as.numeric(array(NA, dim = 2, dimnames = list(c("HA","FA")))),
-      wMolWt = as.numeric(array(NA, dim = 2, dimnames = list(c("HA","FA"))))
+      wP = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
+      wRadius = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
+      wMolWt = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA")))
     ),
 
     Index = list(
       AqueousMCR = as.integer(NA),
       BioticLigMCR = as.integer(NA),
-      WHAMDonnanMCR = as.integer(array(NA, dim = 2, dimnames = list(c("HA","FA"))))
+      WHAMDonnanMCR = array(as.integer(NA), dim = 2, dimnames = list(c("HA","FA")))
     )
 
   )
