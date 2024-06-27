@@ -252,12 +252,19 @@ BLM = function(ParamFile = character(),
     if (ThisProblem$CAT$Endpoint[iCA] %in% c("FAV","FCV","HC5","WQS","CMC","CCC")) {
       DoStandards = TRUE
 
-      # throughout: if DIV is missing in Duration column, we'll assume it's 1
-      DIV = 1.0
+      # If DIV is missing in Duration column, we'll assume the predicted metal
+      # concentration should be used as-is. If the ACR is missing, we will only
+      # report one toxic unit.
+      DIV = NA
       ACR = NA
       NStandardsCols = 1
-      StandardsCols = paste0(c(ThisProblem$CAT$Endpoint[iCA], ThisProblem$MetalName, "TU"), " (",
-                             c("\U00B5g/L", "\U00B5g/L", "unitless"), ")")
+      NTUCols = 1
+      StandardsCols = paste0(
+        c(ThisProblem$CAT$Endpoint[iCA], ThisProblem$MetalName, "TU"),
+        " (", c("\U00B5g/L", "\U00B5g/L", "unitless"), ")"
+      )
+      WQSCols = StandardsCols[1]
+      TUCols = StandardsCols[3]
       if (grepl("^DIV=[[:digit:]]+", ThisProblem$CAT$Duration[iCA])) {
         NStandardsCols = NStandardsCols + 1
         DIV = as.numeric(gsub("^DIV=","", ThisProblem$CAT$Duration[iCA]))
@@ -271,11 +278,11 @@ BLM = function(ParamFile = character(),
         } else if (ThisProblem$CAT$Endpoint[iCA] == "FCV") {
           StandardsCols[2] = paste0("CCC=", StandardsCols[2])
         }
+        WQSCols = StandardsCols[2]
       }
 
       if (grepl("^ACR=[[:digit:]]+", ThisProblem$CAT$Lifestage[iCA])) {
         ACR = as.numeric(gsub("^ACR=","", ThisProblem$CAT$Lifestage[iCA]))
-
         StandardsCols = c(
           StandardsCols[1:NStandardsCols],
           paste0(ThisProblem$CAT$Endpoint[iCA],"/ACR (\U00B5g/L)"),
@@ -283,10 +290,13 @@ BLM = function(ParamFile = character(),
           paste("Acute", utils::tail(StandardsCols, 1)),
           "Chronic TU (unitless)"
         )
+        NTUCols = NTUCols + 1
         NStandardsCols = NStandardsCols + 1
         if (ThisProblem$CAT$Endpoint[iCA] == "FAV") {
-          StandardsCols[NStandardsCols] = paste0("CCC=",StandardsCols[NStandardsCols])
+          StandardsCols[NStandardsCols] = paste0("CCC=", StandardsCols[NStandardsCols])
         }
+        WQSCols = c(WQSCols, StandardsCols[NStandardsCols])
+        TUCols = utils::tail(StandardsCols, 2)
       }
 
       OutList$Standards = cbind(
@@ -376,40 +386,40 @@ BLM = function(ParamFile = character(),
 
   if (!DoTox) { OutList$Miscellaneous$FinalToxIter = NULL }
   if (DoStandards) {
-    OutList$Standards[, StandardsCols[1]] =
-      OutList$Concentrations[, paste0("T.", ThisProblem$MetalName, " (mol/",
-                                      ThisProblem$MassUnit[ThisProblem$CompMCR[ThisProblem$MetalCompR]],")")] *
-      BLMEngineInR::MW[[ThisProblem$MetalName]] * 10^6
+    PredMetalOutputCol = paste0(
+      "T.", ThisProblem$MetalName, " (mol/",
+      ThisProblem$MassUnit[ThisProblem$CompMCR[ThisProblem$MetalCompR]], ")"
+    )
+    MetalMW = BLMEngineInR::MW[[ThisProblem$MetalName]]
+
+    # Predicted Metal Column
+    OutList$Standards[, StandardsCols[1]] = signif(
+      x = OutList$Concentrations[, PredMetalOutputCol] * MetalMW * 10 ^ 6,
+      digits = 4
+    )
+
+    # Input Metal Column
     OutList$Standards[, StandardsCols[NStandardsCols + 1]] =
-      OutList$Inputs[, ThisProblem$MetalName] * BLMEngineInR::MW[[ThisProblem$MetalName]] * 10^6
-    if (NStandardsCols == 1) {
-      # no DIV or ACR - just the predicted tox values
-      # HC5  Me  TU
-      OutList$Standards[, utils::tail(StandardsCols, 1)] =
-        OutList$Standards[, StandardsCols[NStandardsCols + 1]] /
-        OutList$Standards[, StandardsCols[1]]
-    } else {
-      if (is.na(ACR)) {
-        # no ACR - so the predicted tox value and a guideline value
-        # HC5  HC5/DIV  Me  TU
-        OutList$Standards[, StandardsCols[NStandardsCols]] =
-          OutList$Standards[, StandardsCols[1]] / DIV
-        OutList$Standards[, utils::tail(StandardsCols, 1)] =
-          OutList$Standards[, StandardsCols[NStandardsCols + 1]] /
-          OutList$Standards[, StandardsCols[NStandardsCols]]
-      } else {
-        # ACR with or without DIV
-        #      HC5      HC5/ACR  Me  AcuteTU  ChronicTU
-        # HC5  HC5/DIV  HC5/ACR  Me  AcuteTU  ChronicTU
-        OutList$Standards[, StandardsCols[NStandardsCols]] =
-          OutList$Standards[, StandardsCols[1]] / ACR
-        OutList$Standards[, StandardsCols[NStandardsCols - 1]] =
-          OutList$Standards[, StandardsCols[1]] / DIV
-        OutList$Standards[, utils::tail(StandardsCols, 2)] =
-          OutList$Standards[, StandardsCols[NStandardsCols + 1]] /
-          OutList$Standards[, StandardsCols[(NStandardsCols-1):NStandardsCols]]
-      }
+      signif(OutList$Inputs[, ThisProblem$MetalName] * MetalMW * 10^6,
+             digits = 4)
+
+    # WQS column with DIV
+    if (!is.na(DIV)) {
+      OutList$Standards[, WQSCols[1]] =
+        signif(OutList$Standards[, StandardsCols[1]] / DIV, digits = 4)
     }
+
+    # Chronic WQS column by acute-to-chronic ratio
+    if (!is.na(ACR)) {
+      OutList$Standards[, WQSCols[2]] =
+        signif(OutList$Standards[, StandardsCols[1]] / ACR, digits = 4)
+    }
+
+    # Calculate Toxic Units
+    OutList$Standards[!EmptyOrInvalidMetalObs, TUCols] =
+      signif(OutList$Standards[, StandardsCols[NStandardsCols + 1]] /
+               OutList$Standards[, WQSCols],
+             digits = 4)[!EmptyOrInvalidMetalObs, ]
   }
 
   print(Sys.time() - StartTime)
