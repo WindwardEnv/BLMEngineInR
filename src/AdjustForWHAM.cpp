@@ -327,7 +327,7 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
   
   // Update the WHAM component concentrations
   for (iComp = 0; iComp < NComp; iComp++) {
-    if ((SpecActCorr(iComp) == ACTYPE_WHAMHA) || (SpecActCorr(iComp) == ACTYPE_WHAMFA)) {
+    if ((CompType(iComp) == CTYPE_WHAMHA) || (CompType(iComp) == CTYPE_WHAMFA)) {
 
       SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
                        NComp, CompConc,

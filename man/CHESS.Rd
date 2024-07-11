@@ -18,6 +18,7 @@ CHESS(
   TotConc,
   NSpec,
   SpecName,
+  SpecType,
   SpecMCR,
   SpecK,
   SpecTempKelvin,

@@ -397,11 +397,14 @@ const int iFA = 1; // fulvic acid = 1
 const Rcpp::String FLAG_DEBUG = "Debug";
 const Rcpp::String FLAG_QUIET = "Quiet";
 
-const Rcpp::String TYPE_FIXEDCONC = "FixedConc";
-const Rcpp::String TYPE_FIXEDACT = "FixedAct";
-const Rcpp::String TYPE_DONNANHA = "DonnanHA";
-const Rcpp::String TYPE_DONNANFA = "DonnanFA";
-const Rcpp::String TYPE_MASSBAL = "MassBal";
+//Component Types
+const Rcpp::String CTYPE_FIXEDCONC = "FixedConc";
+const Rcpp::String CTYPE_FIXEDACT = "FixedAct";
+const Rcpp::String CTYPE_MASSBAL = "MassBal";
+const Rcpp::String CTYPE_DONNANHA = "DonnanHA";
+const Rcpp::String CTYPE_DONNANFA = "DonnanFA";
+const Rcpp::String CTYPE_WHAMHA = "WHAMHA";
+const Rcpp::String CTYPE_WHAMFA = "WHAMFA";
 
 const Rcpp::String ACTYPE_NONE = "None";
 const Rcpp::String ACTYPE_DEBYE = "Debye";

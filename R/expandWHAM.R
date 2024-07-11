@@ -6,73 +6,7 @@
 #'     site/electrostatic model of ion-binding by humic substances. Computers &
 #'     Geosciences, vol. 20, iss. 6, pp. 973-1023.
 #'
-#' @param NMass integer; Number of mass compartments
-#' @param MassName character vector of length `NMass`; Names of the mass
-#'   compartments
-#' @param NInVar integer; Number of input variables
-#' @param InVarName character vector of length `NInVar`; Names of input
-#'   variables
-#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of input
-#'   variables
-#' @param InVarType character vector of length `NInVar`; Types of input
-#'   variables
-#' @param NComp integer; Number of components (modified and returned)
-#' @param CompName character vector of length `NComp`; component names (modified
-#'   and returned)
-#' @param CompCharge integer vector of length `NComp`; the charge of the
-#'   components as free ions (modified and returned)
-#' @param CompMCR integer vector of length `NComp`; Which mass compartment the
-#'   component belongs to (modified and returned)
-#' @param CompType character vector of length `NComp`; the type of component
-#'   (modified and returned)
-#' @param CompActCorr character vector of length `NComp`; the method to use for
-#'   activity corrections with this component (modified and returned)
-#' @param CompSiteDens numeric vector of length `NComp`; the binding site
-#'   density of each component (modified and returned)
-#' @param NDefComp integer; Number of defined components (modified and returned)
-#' @param DefCompName character vector of length `NDefComp`; defined component
-#'   names (modified and returned)
-#' @param DefCompFromNum numeric vector of length `NDefComp`; the number the
-#'   defined component is formed from (modified and returned)
-#' @param DefCompFromVar character vector of length `NDefComp`; the column used
-#'   to form the defined component (modified and returned)
-#' @param DefCompCharge integer vector of length `NDefComp`; the charge of the
-#'   defined components as free ions (modified and returned)
-#' @param DefCompMCR integer vector of length `NDefComp`; Which mass compartment
-#'   the defined component belongs to (modified and returned)
-#' @param DefCompType character vector of length `NDefComp`; the type of defined
-#'   component (modified and returned)
-#' @param DefCompActCorr character vector of length `NDefComp`; the method to
-#'   use for activity corrections with this defined component (modified and
-#'   returned)
-#' @param DefCompSiteDens numeric vector of length `NDefComp`; the binding site
-#'   density of each defined component (modified and returned)
-#' @param NSpec Number of species (modified and returned)
-#' @param SpecName character vector of length `NSpec`; species names (modified
-#'   and returned)
-#' @param SpecMCR integer vector of length `NSpec`; which mass compartment the
-#'   speces belongs to (modified and returned)
-#' @param SpecActCorr character vector of length `NSpec`; the method to use for
-#'   activity corrections with this species (modified and returned)
-#' @param SpecNC integer vector of length `NSpec`; the number of components used
-#'   to create a given species (modified and returned)
-#' @param SpecCompList integer matrix of `NSpec` rows and `max(SpecNC)+2`
-#'   columns; the list of components used to create a given species (modified
-#'   and returned)
-#' @param SpecStoich integer matrix of `NSpec` rows and `NComp` columns; the
-#'   stoichiometry matrix of the formation reactions (modified and returned)
-#' @param SpecLogK numeric vector of length `NSpec`; the log10-transformed
-#'   equilibrium coefficients (modified and returned)
-#' @param SpecDeltaH numeric vector of length `NSpec`; the enthalpy change for
-#'   each formation reaction/species (modified and returned)
-#' @param SpecTempKelvin numeric vector of length `NSpec`; Tmperature at which
-#'   the logK/deltaH were measured (modified and returned) in Kelvin
-#' @param NPhase integer; Number of phases
-#' @param PhaseCompList integer matrix of `NPhase` rows and `max(PhaseNC)+2`
-#'   columns; the list of components used to create a given phase (modified and
-#'   returned)
-#' @param PhaseStoich integer matrix of `NPhase` rows and `NComp` columns; the
-#'   stoichiometry matrix of the phase reactions (modified and returned)
+#' @param ThisProblem a list object following the template of BlankProblem
 #' @param WHAMVer a character string specifying the WHAM version to use, must be
 #'   one of `"V"` (default), `"VI"`, or `"VII"`. Ignored if `WdatFile` is not
 #'   `NULL`.
@@ -88,7 +22,7 @@ ExpandWHAM = function(ThisProblem,
 
   # error catching and input cleanup
   if (is.na(WdatFile)) {
-    WHAMVer = match.arg(WHAMVer)
+    WHAMVer = match.arg(WHAMVer, choices =  c("V", "VI", "VII"))
     if (WHAMVer == "V") {
       WdatFile = system.file("extdata/WHAM/WHAM_V.wdat",
                              package = "BLMEngineInR",
@@ -282,42 +216,6 @@ ExpandWHAM = function(ThisProblem,
 
   # Save original copies of arrays -------------------------
   NewProblem = ThisProblem
-  # NMass_orig = NMass
-  # MassName_orig = MassName
-  # MassAmt_orig = MassAmt
-  # MassUnit_orig = MassUnit
-  #
-  # NComp_orig = NComp
-  # CompName_orig = CompName
-  # CompCharge_orig = CompCharge
-  # CompMCName_orig = CompMCName
-  # CompMCR_orig = CompMCR
-  # CompType_orig = CompType
-  # CompActCorr_orig = CompActCorr
-  # CompSiteDens_orig = CompSiteDens
-  #
-  # NDefComp_orig = NDefComp
-  # DefCompName_orig = DefCompName
-  # DefCompFromNum_orig = DefCompFromNum
-  # DefCompFromVar_orig = DefCompFromVar
-  # DefCompCharge_orig = DefCompCharge
-  # DefCompMCName_orig = DefCompMCName
-  # DefCompMCR_orig = DefCompMCR
-  # DefCompType_orig = DefCompType
-  # DefCompActCorr_orig = DefCompActCorr
-  # DefCompSiteDens_orig = DefCompSiteDens
-  #
-  # NSpec_orig = NSpec
-  # SpecName_orig = SpecName
-  # SpecMCName_orig = SpecMCName
-  # SpecMCR_orig = SpecMCR
-  # SpecActCorr_orig = SpecActCorr
-  # SpecCharge_orig = SpecStoich %*% CompCharge
-  # SpecStoich_orig = SpecStoich
-  # SpecLogK_orig = SpecLogK
-  # SpecDeltaH_orig = SpecDeltaH
-  # SpecTempKelvin_orig = SpecTempKelvin
-
 
   # Do the expansion ---------------------------------------
 
@@ -354,7 +252,7 @@ ExpandWHAM = function(ThisProblem,
       }
     }
     if ((ThisProblem$InVar$Type[iInVar] %in% c("WHAM-FA", "WHAM-HA")) &&
-          any(ThisProblem$InVar$Type[ThisProblem$InVar$MCR == ThisProblem$InVar$MCR[iInVar]] %in% "PercHA")) {
+        any(ThisProblem$InVar$Type[ThisProblem$InVar$MCR == ThisProblem$InVar$MCR[iInVar]] %in% "PercHA")) {
       stop("PercHA input variable specified in mass compartment with WHAM-HA or WHAM-FA input variable.") # nolint: line_length_linter.
     }
     if ((ThisProblem$InVar$Type[iInVar] %in% c("WHAM-HA")) &&
@@ -364,7 +262,7 @@ ExpandWHAM = function(ThisProblem,
     NWHAMFracAdd = length(WHAMFracAdd)
 
     WHAMprefix = array(
-      paste0(InVarName[iInVar], "-", WHAMFracAdd, "_"),
+      paste0(ThisProblem$InVar$Name[iInVar], "-", WHAMFracAdd, "_"),
       dim = NWHAMFracAdd,
       dimnames = list(WHAMFracAdd)
     )
@@ -385,599 +283,379 @@ ExpandWHAM = function(ThisProblem,
     #      component: FA123H
     #      species: FA123H, FA1-23H, FA2-13H, FA3-12H, FA23-1H, FA13-2H,
     #               FA12-3H, FA123, FA123-Mg, FA123-Ca, ...
-    NDonnanComp = NWHAMFracAdd
-    DonnanCompName = paste0("Donnan", WHAMFracAdd)
-    DonnanMCName = paste(MassName_orig[iMass], DonnanCompName, sep = "_")
-    DonnanMCR = array(NMass_orig + (1:NDonnanComp), dim = NDonnanComp,
-                     dimnames = list(WHAMFracAdd))
 
+    DonnanCompName = paste0("Donnan", WHAMFracAdd)
+    DonnanMCName = paste(ThisProblem$Mass$Name[iMass], DonnanCompName, sep = "_")
     NewProblem = AddMassCompartments(ThisProblem = NewProblem,
                                      MassName = DonnanMCName,
                                      MassAmt = 1E-5,
-                                     MassUnit = ThisProblem$Mass$Unit[iMass])
-    NewProblem = AddComponents(ThisProblem = NewProblem,
-                               CompName = DonnanCompName,
-                               CompCharge = 0,
-                               CompMCName = DonnanMCName,
-                               CompType = DonnanCompName,
-                               CompActCorr = "None",
-                               CompSiteDens = 1)
+                                     MassUnit = ThisProblem$Mass$Unit[iMass],
+                                     InMass = FALSE)
+    NewProblem = AddDefComps(ThisProblem = NewProblem,
+                             DefCompName = DonnanCompName,
+                             DefCompFromVar = WHAMprefix,
+                             DefCompCharge = 0L,
+                             DefCompMCName = DonnanMCName,
+                             DefCompType = DonnanCompName,
+                             DefCompActCorr = "None",
+                             DefCompSiteDens = 1.0E-4,
+                             InDefComp = FALSE)
 
-    for (OMType in WHAMFracAdd) {
+    MonodentpKH = numeric(nMS)
+    MonodentAbundance = numeric(nMS)
+    BidentAbundance = numeric(nBP)
+    TridentAbundance = numeric(nTG)
+    for (OMType in 1:NWHAMFracAdd) {
+
+      ColspKM = paste0("pKM", c("A", "B"), WHAMFracAdd[OMType])
+      OMSpecType = paste0("WHAM", WHAMFracAdd[OMType])
+
+      # Donnan Species
       for (iSpec in match(ChargedSpecName, ThisProblem$Spec$Name)){
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
-          SpecName = paste0("Donnan",OMType,"-",ThisProblem$Spec$Name[iSpec]),
+          SpecName = paste0(DonnanCompName[OMType],"-",ThisProblem$Spec$Name[iSpec]),
           SpecMCName = DonnanMCName[OMType],
-          SpecActCorr = DonnanCompName[OMType],
+          SpecType = DonnanCompName[OMType],
+          SpecActCorr = ThisProblem$Spec$ActCorr[iSpec],
           SpecCompNames = list(c(DonnanCompName[OMType],
                                  ThisProblem$Comp$Name[ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
           SpecCompStoichs = list(c(abs(ThisProblem$Spec$Charge[iSpec]),
                                    ThisProblem$SpecStoich[iSpec, ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
           SpecLogK = SpecKsel[ThisProblem$Spec$Name[iSpec], OMType],
           SpecDeltaH = ThisProblem$Spec$DeltaH[iSpec],
-          SpecTempKelvin = ThisProblem$Spec$TempKelvin[iSpec]
+          SpecTempKelvin = ThisProblem$Spec$TempKelvin[iSpec],
+          InSpec = FALSE
         )
       }
-    }
-
-    AddSpecies(
-      ThisProblem = NewProblem,
-      SpecName = paste0(
-        rep(DonnanCompName, each = NChargedSpec),
-        "-",
-        rep(ChargedSpecName, times = NWHAMFracAdd)
-      ),
-      SpecMCName = rep(DonnanMCName, each = NChargedSpec),
-      SpecActCorr = rep(DonnanCompName, each = NChargedSpec),
-      SpecDeltaH = rep(ThisProblem$Spec$DeltaH[match(ChargedSpecName, ThisProblem$Spec$Name)],
-                       times = NWHAMFracAdd),
-      SpecTempKelvin = rep(ThisProblem$Spec$TempKelvin[match(ChargedSpecName, ThisProblem$Spec$Name)],
-                           times = NWHAMFracAdd),
-      SpecCompNames = apply(
-        cbind(
-          rep(DonnanCompName, each = NChargedSpec),
-          rep(ChargedSpecName, times = NWHAMFracAdd)
-        ),
-        MARGIN = 1,
-        FUN = function(X) {
-          c(X[1], ThisProblem$Comp$Name[ThisProblem$SpecCompList[match(X[2], ThisProblem$Spec$Name), ]])
-        }
-      ),
-      SpecCompStoichs = apply(
-        cbind(
-          rep(DonnanCompName, each = NChargedSpec),
-          rep(ChargedSpecName, times = NWHAMFracAdd)
-        ),
-        MARGIN = 1,
-        FUN = function(X) {
-          iSpec = match(X[2], ThisProblem$Spec$Name)
-          c(X[1], ThisProblem$SpecStoich[iSpec, ThisProblem$SpecCompList[iSpec]])
-        }
-      )
-    )
-
-
-    NWHAMComp = (nMS + nBP + nTG) * NWHAMFracAdd
-    StartComp = NComp_orig + 1L + NDonnanComp
-    NComp = NComp_orig + NWHAMComp + NDonnanComp
-    WHAMCompName = paste0(rep(WHAMprefix, each = NWHAMComp / NWHAMFracAdd),
-                       rep(
-                         c(
-                           MonodentTable$FullyProt,
-                           BidentTable$FullyProt,
-                           TridentTable$FullyProt
-                         ),
-                         times = NWHAMFracAdd
-                       ))
-
-    CompName = c(CompName_orig, DonnanCompName, WHAMCompName)
-    CompCharge = c(CompCharge_orig,
-                   array(0L, dim = NDonnanComp,
-                         dimnames = list(DonnanCompName)),
-                   array(0L, dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    CompMCName = c(CompMCName_orig,
-                   array(DonnanMCName,
-                         dim = NDonnanComp,
-                         dimnames = list(DonnanCompName)),
-                   array(MassName[iMass], dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    CompMCR = c(CompMCR_orig,
-               # array(NMass + match(WHAMFracAdd, c("HA", "FA")),
-               array(DonnanMCR,#iMass, #DonnanMCR[WHAMFracAdd],
-                     dim = NDonnanComp,
-                     dimnames = list(DonnanCompName)),
-               # array(BulkMCR, dim = NWHAMComp, dimnames = list(WHAMCompName)))
-               array(iMass, dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    CompType = c(CompType_orig,
-                 array(DonnanCompName, NDonnanComp,
-                       dimnames = list(DonnanCompName)),
-                 array("MassBal", NWHAMComp, dimnames = list(WHAMCompName)))
-    CompActCorr = c(CompActCorr_orig,
-                    array("None", NDonnanComp, dimnames = list(DonnanCompName)),
-                    array(rep(paste0("WHAM", WHAMFracAdd),
-                              each = NWHAMComp / NWHAMFracAdd),
-                          dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    CompSiteDens = c(CompSiteDens_orig,
-                     array(1, NDonnanComp, dimnames = list(DonnanCompName)),
-                     array(NA, NWHAMComp, dimnames = list(WHAMCompName)))
-
-    StartDefComp = NDefComp_orig + 1L + NDonnanComp
-    NDefComp = NDefComp_orig + NDonnanComp + NWHAMComp
-    DefCompName = c(DefCompName_orig, DonnanCompName, WHAMCompName)
-    DefCompFromNum = c(
-      DefCompFromNum_orig,
-      array(NA, dim = NDonnanComp, dimnames = list(DonnanCompName)),
-      array(NA, dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    DefCompFromVar = c(
-      DefCompFromVar_orig,
-      array(WHAMprefix, dim = NDonnanComp, dimnames = list(DonnanCompName)),
-      array(rep(WHAMprefix, each = NWHAMComp / NWHAMFracAdd),
-            dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    DefCompCharge = c(
-      DefCompCharge_orig,
-      array(0L, dim = NDonnanComp, dimnames = list(DonnanCompName)),
-      array(0L, dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    DefCompMCName = c(DefCompMCName_orig,
-                      array(DonnanMCName,
-                            dim = NDonnanComp,
-                            dimnames = list(DonnanCompName)),
-                      array(MassName[iMass], dim = NWHAMComp,
-                            dimnames = list(WHAMCompName)))
-    DefCompMCR = c(DefCompMCR_orig,
-                  # array(NMass + match(WHAMFracAdd, c("HA", "FA")),
-                  array(DonnanMCR, #iMass, #DonnanMCR[WHAMFracAdd],
-                        dim = NDonnanComp,
-                        dimnames = list(DonnanCompName)),
-                  # array(BulkMCR, dim = NWHAMComp, dimnames = list(WHAMCompName)))
-                  array(iMass, dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    DefCompType = c(DefCompType_orig,
-                    array(DonnanCompName, dim = NDonnanComp,
-                          dimnames = list(DonnanCompName)),
-                    array("MassBal", dim = NWHAMComp,
-                          dimnames = list(WHAMCompName)))
-    DefCompActCorr = c(DefCompActCorr_orig,
-                       array("None", dim = NDonnanComp,
-                             dimnames = list(DonnanCompName)),
-                       array(rep(paste0("WHAM", WHAMFracAdd),
-                                 each = NWHAMComp / NWHAMFracAdd),
-                             dim = NWHAMComp, dimnames = list(WHAMCompName)))
-    DefCompSiteDens = c(DefCompSiteDens_orig,
-                        array(1.0E-4, dim = NDonnanComp,
-                              dimnames = list(DonnanCompName)),
-                        array(NA, dim = NWHAMComp,
-                              dimnames = list(WHAMCompName)))
-
-    NWHAMSpec = (nMS * (2L + nMP) +
-                   nBP * (4L + nMP) +
-                   nTG * (8L + nMP)) * NWHAMFracAdd
-    WHAMSpecName = array(paste0("newOCSpecies", 1:NWHAMSpec), NWHAMSpec)
-    NDonnanSpec = (NChargedSpec + 1L) * NWHAMFracAdd
-    DonnanSpecName = c(DonnanCompName,
-                        paste0(rep(DonnanCompName, each = NChargedSpec), "-",
-                               rep(ChargedSpecName, times = NWHAMFracAdd)))
-
-    StartSpec = NSpec_orig + NDonnanSpec + 1L
-    NSpec = NSpec_orig + NWHAMSpec + NDonnanSpec
-    SpecName = c(SpecName_orig, DonnanSpecName, WHAMSpecName)
-    SpecMCName = c(SpecMCName_orig,
-                   array(c(DonnanMCName,
-                           rep(DonnanMCName, each = NChargedSpec)),
-                         dim = NDonnanSpec,
-                         dimnames = list(DonnanSpecName)),
-                   array(MassName[iMass], dim = NWHAMSpec,
-                         dimnames = list(WHAMSpecName)))
-    SpecMCR = c(SpecMCR_orig,
-               array(c(DonnanMCR,
-                       rep(DonnanMCR, each = NChargedSpec)), #iMass, #DonnanMCR[WHAMFracAdd],
-                     dim = NDonnanSpec,
-                     dimnames = list(DonnanSpecName)),
-               # this should always be water
-               # array(BulkMCR, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
-               array(iMass, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
-    SpecActCorr = c(SpecActCorr_orig,
-                    array(c(DonnanCompName,
-                            rep(DonnanCompName, each = NChargedSpec)),
-                          dim = NDonnanSpec,
-                          dimnames = list(DonnanSpecName)),
-                    array(rep(paste0("WHAM", WHAMFracAdd),
-                              each = NWHAMSpec / NWHAMFracAdd),
-                          dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
-
-    SpecStoich = rbind(
-      cbind(
-        SpecStoich_orig,
-        matrix(
-          0L,
-          nrow = NSpec_orig,
-          ncol = NWHAMFracAdd + NWHAMComp,
-          dimnames = list(SpecName[1:NSpec_orig],
-                          c(DonnanCompName, WHAMCompName))
-        )
-      ),
-      matrix(
-        0L,
-        nrow = NDonnanSpec,
-        ncol = NComp,
-        dimnames = list(DonnanSpecName, CompName)
-      ),
-      matrix(
-        0L,
-        nrow = NWHAMSpec,
-        ncol = NComp,
-        dimnames = list(WHAMSpecName, CompName)
-      )
-    )
-    SpecLogK = c(SpecLogK_orig,
-                 array(NA, dim = NDonnanSpec, dimnames = list(DonnanSpecName)),
-                 array(NA, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
-    SpecDeltaH = c(SpecDeltaH_orig,
-                   array(0.0, dim = NDonnanSpec,
-                         dimnames = list(DonnanSpecName)),
-                   array(0.0, dim = NWHAMSpec, dimnames = list(WHAMSpecName)))
-    SpecTempKelvin = c(SpecTempKelvin_orig,
-                       array(298.15, dim = NDonnanSpec,
-                             dimnames = list(DonnanSpecName)),
-                       array(298.15, dim = NWHAMSpec,
-                             dimnames = list(WHAMSpecName)))
-
-    MonodentpKH = numeric(nMS)
-    MonodentAbundance = numeric(nMS)
-    BidentAbundance = numeric(nBP)
-    TridentAbundance = numeric(nTG)
-    for (OMType in WHAMFracAdd) {
-
-      # Donnan diffuse binding
-      DonnanOMChargedSpecName = paste0("Donnan", OMType, "-", ChargedSpecName)
-      SpecLogK[paste0("Donnan", OMType)] = 0.0
-      SpecLogK[DonnanOMChargedSpecName] =
-        ChargedSpecDonnanLogK[ChargedSpecName, OMType]
-      SpecDeltaH[DonnanOMChargedSpecName] =
-        SpecDeltaH_orig[match(ChargedSpecName, SpecName_orig)]
-      SpecTempKelvin[DonnanOMChargedSpecName] =
-        SpecTempKelvin_orig[match(ChargedSpecName, SpecName_orig)]
-      SpecStoich[DonnanOMChargedSpecName, CompName_orig] =
-        SpecStoich_orig[match(ChargedSpecName, SpecName_orig), CompName_orig]
-      SpecStoich[DonnanOMChargedSpecName, paste0("Donnan", OMType)] =
-        abs(SpecCharge_orig[match(ChargedSpecName, SpecName_orig)])
-
-
-      ColspKM = paste0("pKM", c("A", "B"), OMType)
 
       # Monodentate sites
-      NewCompNum = StartComp:(StartComp + nMS - 1)
-      NewDefCompNum = StartDefComp:(StartDefComp + nMS - 1)
       MonodentpKH[1:nStrong] = pKHA[OMType] + dpKHA[OMType] *
         (2 * MonodentTable$S[1:nStrong] - 5) / 6
       MonodentpKH[(nStrong + 1):nMS] = pKHB[OMType] + dpKHB[OMType] *
         (2 * MonodentTable$S[(nStrong + 1):nMS] - 13) / 6
       MonodentAbundance = (1 - fprB[OMType] - fprT[OMType]) *
         nCOOH[OMType] / MonodentTable$AbundDenom
-      CompSiteDens[NewCompNum] = MonodentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
-      DefCompSiteDens[NewDefCompNum] = MonodentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
 
-      # - fully protonated (components)
-      NewSpecNum = StartSpec:(StartSpec + nMS - 1)
-      SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyProt)
-      # SpecCharge[NewSpecNum] = 0L
-      diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-      SpecLogK[NewSpecNum] = 0.0
+      # Components - fully protonated
+      NewProblem = AddDefComps(
+        ThisProblem = NewProblem,
+        DefCompName = paste0(WHAMprefix[OMType], MonodentTable$FullyProt),
+        DefCompFromVar = WHAMprefix[OMType],
+        DefCompCharge = 0L,
+        DefCompMCName = ThisProblem$Mass$Name[iMass],
+        DefCompType = OMSpecType,
+        DefCompActCorr = "None",
+        DefCompSiteDens = MonodentAbundance * 2E-3,
+        InDefComp = FALSE
+      )
 
-      # - fully deprot
-      NewSpecNum = NewSpecNum + nMS
-      SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot)
-      # SpecCharge[NewSpecNum] = -1L
-      diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-      SpecStoich[NewSpecNum, iH] = -1L
-      SpecLogK[NewSpecNum] = -1 * MonodentpKH
+      # - fully deprotonated
+      NewProblem = AddSpecies(
+        ThisProblem = NewProblem,
+        SpecName = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot),
+        SpecMCName = ThisProblem$Mass$Name[iMass],
+        SpecType = OMSpecType,
+        SpecActCorr = "None",
+        SpecCompNames = as.list(as.data.frame(rbind(
+          paste0(WHAMprefix[OMType], MonodentTable$FullyProt),
+          rep(ThisProblem$Comp$Name[iH], nMS)
+        ))),
+        SpecCompStoichs = as.list(as.data.frame(rbind(
+          rep(1, nMS),
+          rep(-1, nMS)
+        ))),
+        SpecLogK = -1 * MonodentpKH,
+        SpecDeltaH = 0,
+        SpecTempKelvin = 298.15,
+        InSpec = FALSE
+      )
 
       # bound to each metal
+      iDeprotSpec = which(NewProblem$Spec$Name %in% paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot))
       for (iMetal in 1:nMP) {
-        iMetalSpec = which(SpecName == MetalsTable$Metal[iMetal])#nolint: object_name_linter, line_length_linter.
-        NewSpecNum = NewSpecNum + nMS
-        # SpecCharge[NewSpecNum] = -1L + SpecCharge[iMetalSpec]
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType],
-                                      MonodentTable$FullyDeprot,
-                                      "-",
-                                      MetalsTable$Metal[iMetal])
-        SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec, ],
-                                                 nrow = nMS,
-                                                 ncol = NComp,
-                                                 byrow = TRUE)
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = SpecStoich[NewSpecNum, iH] - 1L
-        SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
-          as.numeric(MetalsTable[iMetal, ColspKM[MonodentTable$Strong1Weak2]])
-        SpecDeltaH[NewSpecNum] = SpecDeltaH[iMetalSpec]
-        SpecTempKelvin[NewSpecNum] = SpecTempKelvin[iMetalSpec]
+        iMetalSpec = which(ThisProblem$Spec$Name == MetalsTable$Metal[iMetal])
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], MonodentTable$FullyDeprot, "-",
+            ThisProblem$Spec$Equation[iMetalSpec],
+            " -1 * H + 1 * ", WHAMprefix[OMType], MonodentTable$FullyProt),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = ThisProblem$Spec$LogK[iMetalSpec] -
+            as.numeric(MetalsTable[iMetal, ColspKM[MonodentTable$Strong1Weak2]]),
+          SpecDeltaH = ThisProblem$Spec$DeltaH[iMetalSpec],
+          SpecTempKelvin = ThisProblem$Spec$TempKelvin[iMetalSpec],
+          InSpec = FALSE
+        )
       }
 
 
 
       # Bidentate sites
       if (nBP > 0) {
-        StartComp = max(NewCompNum) + 1
-        StartDefComp = max(NewDefCompNum) + 1
-        StartSpec = max(NewSpecNum) + 1
-        NewCompNum = StartComp:(StartComp + nBP - 1)
-        NewDefCompNum = StartDefComp:(StartDefComp + nBP - 1)
         BidentAbundance = fprB[OMType] * nCOOH[OMType] / BidentTable$AbundDenom
-        CompSiteDens[NewCompNum] = BidentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
-        DefCompSiteDens[NewDefCompNum] = BidentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
 
-        # - fully protonated
-        NewSpecNum = StartSpec:(StartSpec + nBP - 1)
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyProt)
-        # SpecCharge[NewSpecNum] = 0L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecLogK[NewSpecNum] = 0.0
+        # Components - fully protonated
+        NewProblem = AddDefComps(
+          ThisProblem = NewProblem,
+          DefCompName = paste0(WHAMprefix[OMType], BidentTable$FullyProt),
+          DefCompFromVar = WHAMprefix[OMType],
+          DefCompCharge = 0L,
+          DefCompMCName = ThisProblem$Mass$Name[iMass],
+          DefCompType = OMSpecType,
+          DefCompActCorr = "None",
+          DefCompSiteDens = BidentAbundance * 2E-3,
+          InDefComp = FALSE
+        )
 
         # - first site deprotonated
-        NewSpecNum = NewSpecNum + nBP
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$S1Deprot)
-        # SpecCharge[NewSpecNum] = -1L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * MonodentpKH[BidentTable$S1]
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], BidentTable$S1Deprot, " = ",
+            "1 * ", WHAMprefix[OMType], BidentTable$FullyProt, " -1 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * MonodentpKH[BidentTable$S1],
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # - second site deprotonated
-        NewSpecNum = NewSpecNum + nBP
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$S2Deprot)
-        # SpecCharge[NewSpecNum] = -1L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * MonodentpKH[BidentTable$S2]
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], BidentTable$S2Deprot, " = ",
+            "1 * ", WHAMprefix[OMType], BidentTable$FullyProt, " -1 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * MonodentpKH[BidentTable$S2],
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # - fully deprot
-        NewSpecNum = NewSpecNum + nBP
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], BidentTable$FullyDeprot)
-        # SpecCharge[NewSpecNum] = -2L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -2L
-        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[BidentTable$S1] + MonodentpKH[BidentTable$S2])
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], BidentTable$FullyDeprot, " = ",
+            "1 * ", WHAMprefix[OMType], BidentTable$FullyProt, " -2 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * (MonodentpKH[BidentTable$S1] + MonodentpKH[BidentTable$S2]),
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # bound to each metal
+        iDeprotSpec = which(NewProblem$Spec$Name %in%
+                              paste0(WHAMprefix[OMType], BidentTable$FullyDeprot))
         for (iMetal in 1:nMP) {
-          iMetalSpec = which(MetalsTable$Metal[iMetal] == SpecName)#nolint: object_name_linter, line_length_linter.
-          NewSpecNum = NewSpecNum + nBP
-          # SpecCharge[NewSpecNum] = -2L + SpecCharge[iMetalSpec]
-          SpecName[NewSpecNum] = paste0(WHAMprefix[OMType],
-                                        BidentTable$FullyDeprot,
-                                        "-",
-                                        MetalsTable$Metal[iMetal])
-          SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec, ],
-                                                   nrow = nBP,
-                                                   ncol = NComp,
-                                                   byrow = TRUE)
-          diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-          SpecStoich[NewSpecNum, iH] = SpecStoich[NewSpecNum, iH] - 2L
-          SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
-            as.numeric(MetalsTable[iMetal, ColspKM[BidentTable$S1Strong1Weak2]] +
-                         MetalsTable[iMetal, ColspKM[BidentTable$S2Strong1Weak2]])
-          SpecDeltaH[NewSpecNum] = SpecDeltaH[iMetalSpec]
-          SpecTempKelvin[NewSpecNum] = SpecTempKelvin[iMetalSpec]
-        }
+          iMetalSpec = which(ThisProblem$Spec$Name == MetalsTable$Metal[iMetal])
+          NewProblem = AddSpecies(
+            ThisProblem = NewProblem,
+            SpecEquation = paste0(
+              WHAMprefix[OMType], BidentTable$FullyDeprot, "-",
+              ThisProblem$Spec$Equation[iMetalSpec],
+              " -2 * H + 1 * ", WHAMprefix[OMType], BidentTable$FullyProt),
+            SpecMCName = ThisProblem$Mass$Name[iMass],
+            SpecType = OMSpecType,
+            SpecActCorr = "None",
+            SpecLogK = ThisProblem$Spec$LogK[iMetalSpec] -
+              as.numeric(MetalsTable[iMetal, ColspKM[BidentTable$S1Strong1Weak2]] +
+                           MetalsTable[iMetal, ColspKM[BidentTable$S2Strong1Weak2]]),
+            SpecDeltaH = ThisProblem$Spec$DeltaH[iMetalSpec],
+            SpecTempKelvin = ThisProblem$Spec$TempKelvin[iMetalSpec],
+            InSpec = FALSE
+          )
 
+        }
       }
 
       # Tridentate sites
       if (nTG > 0) {
-        StartComp = max(NewCompNum) + 1
-        StartDefComp = max(NewDefCompNum) + 1
-        StartSpec = max(NewSpecNum) + 1
-        NewCompNum = StartComp:(StartComp + nTG - 1)
-        NewDefCompNum = StartDefComp:(StartDefComp + nTG - 1)
-        TridentAbundance = fprT[OMType] * nCOOH[OMType] / TridentTable$AbundDenom
-        CompSiteDens[NewCompNum] = TridentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
-        DefCompSiteDens[NewDefCompNum] = TridentAbundance * 2E-3 # the input is in mg C/L, while nCOOH is mols/g HS
 
-        # - fully protonated
-        NewSpecNum = StartSpec:(StartSpec + nTG - 1)
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyProt)
-        # SpecCharge[NewSpecNum] = 0L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecLogK[NewSpecNum] = 0.0
+        TridentAbundance = fprT[OMType] * nCOOH[OMType] / TridentTable$AbundDenom
+
+        # Components - fully protonated
+        NewProblem = AddDefComps(
+          ThisProblem = NewProblem,
+          DefCompName = paste0(WHAMprefix[OMType], TridentTable$FullyProt),
+          DefCompFromVar = WHAMprefix[OMType],
+          DefCompCharge = 0L,
+          DefCompMCName = ThisProblem$Mass$Name[iMass],
+          DefCompType = OMSpecType,
+          DefCompActCorr = "None",
+          DefCompSiteDens = TridentAbundance * 2E-3,# the input is in mg C/L, while nCOOH is mols/g HS
+          InDefComp = FALSE
+        )
 
         # - first site deprotonated
-        NewSpecNum = NewSpecNum + nTG
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S1Deprot)
-        # SpecCharge[NewSpecNum] = -1L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * MonodentpKH[TridentTable$S1]
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], TridentTable$S1Deprot, " = ",
+            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -1 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * MonodentpKH[TridentTable$S1],
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # - second site deprotonated
-        NewSpecNum = NewSpecNum + nTG
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S2Deprot)
-        # SpecCharge[NewSpecNum] = -1L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * MonodentpKH[TridentTable$S2]
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], TridentTable$S2Deprot, " = ",
+            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -1 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * MonodentpKH[TridentTable$S2],
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # - third site deprotonated
-        NewSpecNum = NewSpecNum + nTG
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S3Deprot)
-        # SpecCharge[NewSpecNum] = -1L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -1L
-        SpecLogK[NewSpecNum] = -1 * MonodentpKH[TridentTable$S3]
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], TridentTable$S3Deprot, " = ",
+            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -1 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * MonodentpKH[TridentTable$S3],
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # - first & second sites deprotonated
-        NewSpecNum = NewSpecNum + nTG
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S12Deprot)
-        # SpecCharge[NewSpecNum] = -2L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -2L
-        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[TridentTable$S1] + MonodentpKH[TridentTable$S2])
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], TridentTable$S12Deprot, " = ",
+            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * (MonodentpKH[TridentTable$S1] + MonodentpKH[TridentTable$S2]),
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # - first & third sites deprotonated
-        NewSpecNum = NewSpecNum + nTG
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S13Deprot)
-        # SpecCharge[NewSpecNum] = -2L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -2L
-        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[TridentTable$S1] + MonodentpKH[TridentTable$S3])
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], TridentTable$S13Deprot, " = ",
+            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * (MonodentpKH[TridentTable$S1] + MonodentpKH[TridentTable$S3]),
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # - second & third sites deprotonated
-        NewSpecNum = NewSpecNum + nTG
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$S23Deprot)
-        # SpecCharge[NewSpecNum] = -2L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -2L
-        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[TridentTable$S2] + MonodentpKH[TridentTable$S3])
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], TridentTable$S22Deprot, " = ",
+            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * (MonodentpKH[TridentTable$S2] + MonodentpKH[TridentTable$S2]),
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # - fully deprot
-        NewSpecNum = NewSpecNum + nTG
-        SpecName[NewSpecNum] = paste0(WHAMprefix[OMType], TridentTable$FullyDeprot)
-        # SpecCharge[NewSpecNum] = -3L
-        diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-        SpecStoich[NewSpecNum, iH] = -3L
-        SpecLogK[NewSpecNum] = -1 * (MonodentpKH[TridentTable$S1] +
-                                       MonodentpKH[TridentTable$S2] +
-                                       MonodentpKH[TridentTable$S3])
+        NewProblem = AddSpecies(
+          ThisProblem = NewProblem,
+          SpecEquation = paste0(
+            WHAMprefix[OMType], TridentTable$FullyDeprot, " = ",
+            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -3 * H"
+          ),
+          SpecMCName = ThisProblem$Mass$Name[iMass],
+          SpecType = OMSpecType,
+          SpecActCorr = "None",
+          SpecLogK = -1 * (MonodentpKH[TridentTable$S1] +
+                             MonodentpKH[TridentTable$S2] +
+                             MonodentpKH[TridentTable$S3]),
+          SpecDeltaH = 0,
+          SpecTempKelvin = 298.15,
+          InSpec = FALSE
+        )
 
         # bound to each metal
+        iDeprotSpec = which(NewProblem$Spec$Name %in%
+                              paste0(WHAMprefix[OMType], TridentTable$FullyDeprot))
         for (iMetal in 1:nMP) {
-          iMetalSpec = which(MetalsTable$Metal[iMetal] == SpecName) #nolint: object_name_linter, line_length_linter.
-          NewSpecNum = NewSpecNum + nTG
-          # SpecCharge[NewSpecNum] = -3L + SpecCharge[iMetalSpec]
-          SpecName[NewSpecNum] = paste0(WHAMprefix[OMType],
-                                        TridentTable$FullyDeprot,
-                                        "-",
-                                        MetalsTable$Metal[iMetal])
-          SpecStoich[NewSpecNum, 1:NComp] = matrix(SpecStoich[iMetalSpec, ],
-                                                   nrow = nTG,
-                                                   ncol = NComp,
-                                                   byrow = TRUE)
-          diag(SpecStoich[NewSpecNum, NewCompNum]) = 1L
-          SpecStoich[NewSpecNum, iH] = SpecStoich[NewSpecNum, iH] - 3L
-          SpecLogK[NewSpecNum] = SpecLogK[iMetalSpec] -
-            as.numeric(MetalsTable[iMetal, ColspKM[TridentTable$S1Strong1Weak2]] +
-                         MetalsTable[iMetal, ColspKM[TridentTable$S2Strong1Weak2]] +
-                         MetalsTable[iMetal, ColspKM[TridentTable$S3Strong1Weak2]])
-          SpecDeltaH[NewSpecNum] = SpecDeltaH[iMetalSpec]
-          SpecTempKelvin[NewSpecNum] = SpecTempKelvin[iMetalSpec]
-        }
+          iMetalSpec = which(ThisProblem$Spec$Name == MetalsTable$Metal[iMetal])
+          NewProblem = AddSpecies(
+            ThisProblem = NewProblem,
+            SpecEquation = paste0(
+              WHAMprefix[OMType], TridentTable$FullyDeprot, "-",
+              ThisProblem$Spec$Equation[iMetalSpec],
+              " -3 * H + 1 * ", WHAMprefix[OMType], TridentTable$FullyProt),
+            SpecMCName = ThisProblem$Mass$Name[iMass],
+            SpecType = OMSpecType,
+            SpecActCorr = "None",
+            SpecLogK = ThisProblem$Spec$LogK[iMetalSpec] -
+              as.numeric(MetalsTable[iMetal, ColspKM[TridentTable$S1Strong1Weak2]] +
+                           MetalsTable[iMetal, ColspKM[TridentTable$S2Strong1Weak2]] +
+                           MetalsTable[iMetal, ColspKM[TridentTable$S3Strong1Weak2]]),
+            SpecDeltaH = ThisProblem$Spec$DeltaH[iMetalSpec],
+            SpecTempKelvin = ThisProblem$Spec$TempKelvin[iMetalSpec],
+            InSpec = FALSE
+          )
 
+        }
       }
 
-      StartComp = max(NewCompNum) + 1
-      StartDefComp = max(NewDefCompNum) + 1
-      StartSpec = max(NewSpecNum) + 1
-
     }
+
   }
 
-  # Cleanup
-  names(MassAmt) = MassName
-  names(MassUnit) = MassName
-  names(CompSiteDens) = CompName
-  names(DefCompSiteDens) = DefCompName
-  names(SpecMCName) = SpecName
-  names(SpecMCR) = SpecName
-  names(SpecActCorr) = SpecName
-  rownames(SpecStoich) = SpecName
-  names(SpecLogK) = SpecName
-  names(SpecDeltaH) = SpecName
-  names(SpecTempKelvin) = SpecName
-  WHAMDonnanMCR = array(DonnanMCR[c("HA","FA")], dim = 2,
-                       dimnames = list(c("HA","FA")))
+  # WHAM parameters - to be used later
+  NewProblem$WHAM$DoWHAM = TRUE
+  NewProblem$WHAM$WHAMVer = WHAMVer
+  NewProblem$WHAM$WdatFile = WdatFile
+  NewProblem$WHAM$wDLF = wDLF
+  NewProblem$WHAM$wKZED = wKZED
+  NewProblem$WHAM$wP = wP
+  NewProblem$WHAM$wRadius = wRadius
+  NewProblem$WHAM$wMolWt = wMolWt
 
-  # Re-ordering species so components are in front
-  Reorder = match(c(CompName, SpecName[SpecName %in% CompName == FALSE]),
-                  SpecName)
-  SpecName = SpecName[Reorder]
-  SpecMCName = SpecMCName[Reorder]
-  SpecMCR = SpecMCR[Reorder]
-  SpecActCorr = SpecActCorr[Reorder]
-  SpecStoich = SpecStoich[Reorder, ]
-  SpecLogK = SpecLogK[Reorder]
-  SpecDeltaH = SpecDeltaH[Reorder]
-  SpecTempKelvin = SpecTempKelvin[Reorder]
-
-  SpecNC = as.integer(rowSums(SpecStoich != 0L))
-  names(SpecNC) = SpecName
-  SpecCompList = t(apply(
-    SpecStoich,
-    MARGIN = 1,
-    FUN = function(X) {
-      Tmp = sort(which(X != 0L))
-      if (length(Tmp) < max(SpecNC)) {
-        Tmp = c(Tmp, rep(0, max(SpecNC) - length(Tmp)))
-      }
-      return(Tmp)
-    }
-  ))
-  rownames(SpecCompList) = SpecName
-  # CompNS = colSums(Stoich != 0L)
-  # names(CompNS) = CompName
-  # SpecList = t(apply(
-  #   Stoich,
-  #   MARGIN = 2,
-  #   FUN = function(X) {
-  #     Tmp = sort(which(X != 0L))
-  #     if (length(Tmp) < max(CompNS)){
-  #       Tmp = c(Tmp, rep(0,max(CompNS)-length(Tmp)))
-  #     }
-  #     return(Tmp)
-  #   }))
-  # rownames(SpecList) = CompName
-
-  # Assemble output list
-  return(list(
-
-    # Mass Compartment List
-    NMass = NMass,
-    MassName = MassName,
-    MassAmt = MassAmt,
-    MassUnit = MassUnit,
-    WHAMDonnanMCR = WHAMDonnanMCR,
-
-    # Components
-    NComp = NComp,
-    CompName = CompName,
-    CompCharge = CompCharge,
-    CompMCName = CompMCName,
-    CompMCR = CompMCR,
-    CompType = CompType,
-    CompActCorr = CompActCorr,
-    CompSiteDens = CompSiteDens,
-
-    # Defined Components
-    NDefComp = NDefComp,
-    DefCompName = DefCompName,
-    DefCompCharge = DefCompCharge,
-    DefCompFromNum = DefCompFromNum,
-    DefCompFromVar = DefCompFromVar,
-    DefCompMCName = DefCompMCName,
-    DefCompMCR = DefCompMCR,
-    DefCompType = DefCompType,
-    DefCompActCorr = DefCompActCorr,
-    DefCompSiteDens = DefCompSiteDens,
-
-    # Formation Reactions
-    NSpec = NSpec,
-    SpecName = SpecName,
-    SpecMCName = SpecMCName,
-    SpecMCR = SpecMCR,
-    SpecActCorr = SpecActCorr,
-    SpecNC = SpecNC,
-    SpecCompList = SpecCompList,
-    SpecStoich = SpecStoich,
-    SpecLogK = SpecLogK,
-    SpecDeltaH = SpecDeltaH,
-    SpecTempKelvin = SpecTempKelvin,
-
-    # Phase List
-    PhaseCompList = PhaseCompList,
-    PhaseStoich = PhaseStoich,
-
-    # WHAM parameters - to be used later
-    wDLF = wDLF,
-    wKZED = wKZED,
-    wP = wP,
-    wRadius = wRadius,
-    wMolWt = wMolWt
-
-  ))
+  return(NewProblem)
 
 }

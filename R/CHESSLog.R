@@ -7,12 +7,12 @@ CHESSLog = function(ThisProblem, ParamFile) {
   SpecLogK = numeric()
   SpecDeltaH = numeric()
   CompType = character()
-  CompActCorr = character()
   SpecCharge = integer()
 
   # unpack the input list
-  for (i in names(ThisProblem)) {
-    assign(i, ThisProblem[[i]])
+  ThisProblemList = ConvertToList(ThisProblem)
+  for (i in names(ThisProblemList)) {
+    assign(i, ThisProblemList[[i]])
   }
 
   # initialize log file
@@ -83,11 +83,27 @@ CHESSLog = function(ThisProblem, ParamFile) {
   write("MassBal Totals:", file = LogFilename, append = TRUE)
   write(tmp, file = LogFilename, append = TRUE)
 
+  # WHAM Totals
+  tmp = paste0(
+    "T.", CompName[CompType %in% c("WHAMHA","WHAMFA")],
+    " = ",
+    apply(SpecStoich[, CompType %in% c("WHAMHA","WHAMFA"), drop = FALSE], MARGIN = 2, FUN = function(X){
+      X.nonzero = X[X != 0]
+      X.species = names(X.nonzero)
+      return(gsub(" [+] -", " - ",
+                  paste(paste(X.nonzero, X.species, sep = " * "),
+                        collapse = " + ")))
+    })
+  )
+  write(strrep("-", 80), file = LogFilename, append = TRUE)
+  write("WHAM Component Totals:", file = LogFilename, append = TRUE)
+  write(tmp, file = LogFilename, append = TRUE)
+
   # DonnanChargeBal Totals
   write(strrep("-", 80), file = LogFilename, append = TRUE)
-  write("DonnanChargeBal Totals:", file = LogFilename, append = TRUE)
+  write("Donnan Charge Balance Totals:", file = LogFilename, append = TRUE)
   for (iHS in c("HA", "FA")) {
-    if (any(CompActCorr == paste0("WHAM", iHS))) {
+    if (any(CompType == paste0("WHAM", iHS))) {
       DonnanComp = paste0("Donnan", iHS)
       tmp = paste0(
         "Z_Donnan", iHS,
@@ -102,7 +118,7 @@ CHESSLog = function(ThisProblem, ParamFile) {
       )
       write(tmp, file = LogFilename, append = TRUE)
 
-      HSSpecName = SpecName[apply(SpecStoich[, CompActCorr == paste0("WHAM", iHS), drop = FALSE], MARGIN = 1, FUN = function(X){any(X != 0)})]
+      HSSpecName = SpecName[apply(SpecStoich[, CompType == paste0("WHAM", iHS), drop = FALSE], MARGIN = 1, FUN = function(X){any(X != 0)})]
       HSSpecCharge = SpecCharge[SpecName %in% HSSpecName]
       Nonzero = HSSpecCharge != 0
       tmp = paste0("Z_", iHS, " = ",

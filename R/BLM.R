@@ -137,13 +137,13 @@ BLM = function(ParamFile = character(),
     stop("Invalid problem list - incorrect types.")
   }
   ReferenceInputList = list(NObs = 1L,
-                            InLabObs = array("", dim = c(1, ThisProblem$NInLab)),
-                            InVarObs = array(0.0, dim = c(1, ThisProblem$NInVar)),
-                            InCompObs = array(0.0, dim = c(1, ThisProblem$NInComp)),
+                            InLabObs = array("", dim = c(1, ThisProblem$N["InLab"])),
+                            InVarObs = array(0.0, dim = c(1, ThisProblem$N["InVar"])),
+                            InCompObs = array(0.0, dim = c(1, ThisProblem$N["InComp"])),
                             SysTempCelsiusObs = array(0.0, 1),
                             SysTempKelvinObs = array(0.0, 1),
                             pH = array(0.0, 1),
-                            TotConcObs = array(0.0, dim = c(1, ThisProblem$NComp)),
+                            TotConcObs = array(0.0, dim = c(1, ThisProblem$N["Comp"])),
                             HumicSubstGramsPerLiterObs = array(0.0, dim = c(1,2)))
   if (typeof(AllInput) != "list") {
     stop("Invalid inputs list - it's not a list.")
@@ -168,28 +168,29 @@ BLM = function(ParamFile = character(),
 
   # Save some common variables for initializing arrays
   NObs = AllInput$NObs
-  MassName = ThisProblem$MassName
-  NComp = ThisProblem$NComp
-  CompName = ThisProblem$CompName
-  NSpec = ThisProblem$NSpec
-  SpecName = ThisProblem$SpecName
-  BLComp = ThisProblem$BLComp
+  MassName = ThisProblem$Mass$Name
+  NComp = ThisProblem$N["Comp"]
+  CompName = ThisProblem$Comp$Name
+  NSpec = ThisProblem$N["Spec"]
+  SpecName = ThisProblem$Spec$Name
+  BLComp = ThisProblem$BL$CompR
   if (DoTox) {
     CATargetDefault = ThisProblem$CATab$CA[iCA] * (10^-6) /
-      ThisProblem$CompSiteDens[BLComp]
+      ThisProblem$Comp$SiteDens[BLComp]
   } else {
     CATargetDefault = NA
   }
 
   # Initialize ThisInput as ThisProblem, with one observation's worth of
   # concentrations
-  ThisInput = ThisProblem
-  ThisInput$InLab = array(character(ThisProblem$NInLab),
+  ThisInput = ConvertToList(ThisProblemDF = ThisProblem)
+  ThisInput$InLab = array(character(ThisProblem$N["InLab"]),
                           dimnames = list(ThisProblem$InLabName))
   ThisInput$TotConc = array(numeric(NComp), dimnames = list(CompName))
   ThisInput$CompConc = array(numeric(NComp), dimnames = list(CompName))
   ThisInput$SpecConc = array(numeric(NSpec), dimnames = list(SpecName))
-  ThisInput$HumicSubstGramsPerLiter = array(numeric(2), dimnames = list(c("HA", "FA")))
+  ThisInput$HumicSubstGramsPerLiter =
+    array(numeric(2), dimnames = list(c("HA", "FA")))
 
   FunctionInputs = list(
     QuietFlag = QuietFlag,
@@ -197,7 +198,6 @@ BLM = function(ParamFile = character(),
     MaxIter = MaxIter,
     DoPartialStepsAlways = DoPartialStepsAlways,
     DoTox = DoTox,
-    # MetalComp = ThisProblem$MetalComp,
     CATarget = NA
   )
   ObsFunctionInputNames = formalArgs("CHESS")[
@@ -208,13 +208,11 @@ BLM = function(ParamFile = character(),
     data.frame(Obs = 1:NObs),
     AllInput$InLabObs
   )
-  # InputCols = c("Obs", ThisProblem$InLabName, ThisProblem$InVarName,
-  #               paste0("Input.",ThisProblem$InCompName))
   MiscOutputCols = c("FinalIter", "FinalToxIter", "FinalMaxError", "IonicStrength")
   ZCols = paste0("Z_", c("HA","FA"))
-  MassAmtCols = paste0(MassName, " (",ThisProblem$MassUnit,")")
-  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMCR],")")
-  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMCR],")")
+  MassAmtCols = paste0(MassName, " (",ThisProblem$Mass$Unit,")")
+  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$Mass$Unit[ThisProblem$Spec$MCR],")")
+  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$Mass$Unit[ThisProblem$Comp$MCR],")")
   SpecMolesCols = paste0(SpecName," (mol)")
   TotMolesCols = paste0("T.", CompName, " (mol)")
   SpecActCols = paste0("Act.", SpecName)
@@ -260,7 +258,7 @@ BLM = function(ParamFile = character(),
       NStandardsCols = 1
       NTUCols = 1
       StandardsCols = paste0(
-        c(ThisProblem$CAT$Endpoint[iCA], ThisProblem$MetalName, "TU"),
+        c(ThisProblem$CAT$Endpoint[iCA], ThisProblem$Metal$Name, "TU"),
         " (", c("\U00B5g/L", "\U00B5g/L", "unitless"), ")"
       )
       WQSCols = StandardsCols[1]
@@ -305,9 +303,9 @@ BLM = function(ParamFile = character(),
                dimnames = list(NULL, StandardsCols))
       )
     }
-    EmptyOrInvalidMetalObs = is.na(AllInput$TotConcObs[, ThisProblem$MetalName]) |
-      (AllInput$TotConcObs[, ThisProblem$MetalName] <= 0)
-    AllInput$TotConcObs[EmptyOrInvalidMetalObs, ThisProblem$MetalName] = 1.0E-7
+    EmptyOrInvalidMetalObs = is.na(AllInput$TotConcObs[, ThisProblem$Metal$Name]) |
+      (AllInput$TotConcObs[, ThisProblem$Metal$Name] <= 0)
+    AllInput$TotConcObs[EmptyOrInvalidMetalObs, ThisProblem$Metal$Name] = 1.0E-7
   }
 
   # Loop through each observation
@@ -333,13 +331,13 @@ BLM = function(ParamFile = character(),
 
     if (is.na(ThisInput$SysTempKelvin) |
         any(is.na(ThisInput$TotConc)) |
-        (ThisProblem$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$WHAMDonnanMCR)])))) {
+        (ThisProblem$WHAM$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$Index$WHAMDonnanMCR)])))) {
       # Incomplete chemistry, so skip calling CHESS
       OutList$Miscellaneous$Status[iObs] = "Incomplete Chemistry"
     } else if ((ThisInput$SysTempKelvin <= 263) |
                any(ThisInput$TotConc <= 0) |
                (ThisInput$TotConc["H"] > 1) | (ThisInput$TotConc["H"] < 1.0E-14) |
-               (any(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$WHAMDonnanMCR)] <= 0))) {
+               (any(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$Index$WHAMDonnanMCR)] <= 0))) {
       # Invalid chemistry, so skip calling CHESS
       OutList$Miscellaneous$Status[iObs] = "Invalid Chemistry"
     } else {
@@ -373,7 +371,7 @@ BLM = function(ParamFile = character(),
   }
 
   # Make summary columns for organically-bound components
-  if (ThisProblem$DoWHAM) {
+  if (ThisProblem$WHAM$DoWHAM) {
     for (iComp in ThisProblem$InCompName){
       OrgCols = SpecMolesCols[grepl(iComp, SpecMolesCols) &
                                 (grepl("DOC", SpecMolesCols) |
@@ -387,10 +385,10 @@ BLM = function(ParamFile = character(),
   if (!DoTox) { OutList$Miscellaneous$FinalToxIter = NULL }
   if (DoStandards) {
     PredMetalOutputCol = paste0(
-      "T.", ThisProblem$MetalName, " (mol/",
-      ThisProblem$MassUnit[ThisProblem$CompMCR[ThisProblem$MetalCompR]], ")"
+      "T.", ThisProblem$Metal$Name, " (mol/",
+      ThisProblem$Mass$Unit[ThisProblem$Comp$MCR[ThisProblem$Metal$CompR]], ")"
     )
-    MetalMW = BLMEngineInR::MW[[ThisProblem$MetalName]]
+    MetalMW = BLMEngineInR::MW[[ThisProblem$Metal$Name]]
 
     # Predicted Metal Column
     OutList$Standards[, StandardsCols[1]] = signif(
@@ -400,7 +398,7 @@ BLM = function(ParamFile = character(),
 
     # Input Metal Column
     OutList$Standards[, StandardsCols[NStandardsCols + 1]] =
-      signif(OutList$Inputs[, ThisProblem$MetalName] * MetalMW * 10^6,
+      signif(OutList$Inputs[, ThisProblem$Metal$Name] * MetalMW * 10^6,
              digits = 4)
 
     # WQS column with DIV

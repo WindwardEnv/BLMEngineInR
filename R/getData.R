@@ -4,6 +4,7 @@
 #' problem as defined by the input arguments.
 #'
 #' @param InputFile character; the path and file name to a BLM input file
+#' @param ThisProblem a list object following the template of BlankProblem
 #' @param NInLab integer; number of input label columns
 #' @param InLabName character vector of length `NInLab`; names of input columns
 #' @param NInVar integer; Number of input variables
@@ -40,9 +41,13 @@
 #' ## End Not Run
 ReadInputsFromFile = function(
     InputFile,
-    NInLab, InLabName,
-    NInVar, InVarName,
-    NInComp, InCompName) {
+    ThisProblem = NULL,
+    NInLab = ThisProblem$N["InLab"],
+    InLabName = ThisProblem$InLabName,
+    NInVar = ThisProblem$N["InVar"],
+    InVarName = ThisProblem$InVar$Name,
+    NInComp = ThisProblem$N["InComp"],
+    InCompName = ThisProblem$InCompName) {
 
   stopifnot(file.exists(InputFile))
 
@@ -98,6 +103,7 @@ ReadInputsFromFile = function(
 #'   variables for each observation
 #' @param InCompObs matrix with `NObs` rows and `NInComp` columns; the input
 #'   component concentrations for each observation
+#' @param ThisProblem a list object following the template of BlankProblem
 #' @param NInVar integer; Number of input variables
 #' @param InVarName character vector of length `NInVar`; Names of input
 #'   variables
@@ -138,10 +144,20 @@ ReadInputsFromFile = function(
 MatchInputsToProblem = function(
     NObs, InVarObs, InCompObs, #inputs from file
     #information from DefineProblem:
-    NInVar, InVarName, InVarMCR, InVarType,
-    NInComp, InCompName,
-    NComp, CompName,
-    NDefComp, DefCompName, DefCompFromNum, DefCompFromVar, DefCompSiteDens) {
+    ThisProblem = NULL,
+    NInVar = ThisProblem$N["InVar"],
+    InVarName = ThisProblem$InVar$Name,
+    InVarMCR = ThisProblem$InVar$MCR,
+    InVarType = ThisProblem$InVar$Type,
+    NInComp = ThisProblem$N["InComp"],
+    InCompName = ThisProblem$InCompName,
+    NComp = ThisProblem$N["Comp"],
+    CompName = ThisProblem$Comp$Name,
+    NDefComp = ThisProblem$N["DefComp"],
+    DefCompName = ThisProblem$DefComp$Name,
+    DefCompFromNum = ThisProblem$DefComp$FromNum,
+    DefCompFromVar = ThisProblem$DefComp$FromVar,
+    DefCompSiteDens = ThisProblem$DefComp$SiteDens) {
 
   # -get table of input concentrations
   TotConcObs = matrix(numeric(), nrow = NObs, ncol = NComp,
@@ -277,6 +293,7 @@ MatchInputsToProblem = function(
 #' `GetData` reads in the input file and prepares it for input to the BLM function.
 #'
 #' @param InputFile character(1); the path and file name to a BLM input file
+#' @param ThisProblem a list object following the template of BlankProblem
 #' @param NInLab integer; number of input label columns
 #' @param InLabName character vector of length `NInLab`; names of input columns
 #' @param NInVar integer; Number of input variables
@@ -322,12 +339,22 @@ MatchInputsToProblem = function(
 #' @export
 #'
 GetData = function(InputFile,
-                   NInLab, InLabName,
-                   NInVar, InVarName, InVarMCR, InVarType,
-                   NInComp, InCompName,
-                   NComp, CompName,
-                   NDefComp, DefCompName, DefCompFromNum,
-                   DefCompFromVar, DefCompSiteDens) {
+                   ThisProblem = NULL,
+                   NInLab = ThisProblem$N["InLab"],
+                   InLabName = ThisProblem$InLabName,
+                   NInVar = ThisProblem$N["InVar"],
+                   InVarName = ThisProblem$InVar$Name,
+                   InVarMCR = ThisProblem$InVar$MCR,
+                   InVarType = ThisProblem$InVar$Type,
+                   NInComp = ThisProblem$N["InComp"],
+                   InCompName = ThisProblem$InCompName,
+                   NComp = ThisProblem$N["Comp"],
+                   CompName = ThisProblem$Comp$Name,
+                   NDefComp = ThisProblem$N["DefComp"],
+                   DefCompName = ThisProblem$DefComp$Name,
+                   DefCompFromNum = ThisProblem$DefComp$FromNum,
+                   DefCompFromVar = ThisProblem$DefComp$FromVar,
+                   DefCompSiteDens = ThisProblem$DefComp$SiteDens) {
 
   stopifnot(file.exists(InputFile))
 
