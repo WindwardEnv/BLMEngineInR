@@ -7,7 +7,7 @@
 #'
 #' @export
 #'
-#' @example examples/examples-BlankProblem.R
+#' @example tests/examples/examples-BlankProblem.R
 #'
 #' @family problem manipulation functions
 BlankProblem = function() {

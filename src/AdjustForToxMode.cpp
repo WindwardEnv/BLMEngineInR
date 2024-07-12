@@ -1,3 +1,4 @@
+#include <math.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -27,7 +28,7 @@
 //' @param Resid (return value) numeric vector (NComp), the residuals =
 //'   calculated totals - known totals, modified for toxicity mode upon return
 //' @param CompError (return value) numeric vector (NComp), the absolute error
-//'   fraction for each component in this iteration =abs(Resid / TotMoles),
+//'   fraction for each component in this iteration = abs(Resid / TotMoles),
 //'   modified for toxicity mode upon return
 //'
 //' @name AdjustForToxMode
@@ -56,7 +57,7 @@ void AdjustForToxMode(int NBLMetal,
 
   // Resid and CompError for the metal component are based on these species
   Resid[MetalComp] = CalcCA - CATarget;
-  CompError[MetalComp] = abs(Resid[MetalComp] / CATarget);
+  CompError[MetalComp] = std::fabs(Resid[MetalComp] / CATarget);
 
 }
 
@@ -78,5 +79,5 @@ void CalcToxError (int NBLMetal,
     CalcCA += SpecConc[iSpec];
   }
   ToxResid = CalcCA - CATarget;
-  ToxError = abs(ToxResid) / CATarget;
+  ToxError = std::fabs(ToxResid) / CATarget;
 }

@@ -12,7 +12,7 @@ Authors@R: c(person(given = "Robert", family = "Santore",
 Description: The Windward Environmental, LLC Biotic Ligand Model, now as an R 
     package. Originally programmed in PowerBasic by Robert Santore and others.
     WORK IN PROGRESS.
-License: file LICENSE
+License: MIT + file LICENSE
 URL: https://www.windwardenv.com/biotic-ligand-model/
 Encoding: UTF-8
 Language: en-US

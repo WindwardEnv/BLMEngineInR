@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include <cmath>
+#include <math.h>
 #include "CHESSFunctions.h"
 
 //' Set the initial guess for component concentrations

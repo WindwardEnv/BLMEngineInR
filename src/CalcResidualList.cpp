@@ -109,7 +109,7 @@
    }
 
    // Rcpp::Rcout << "Calculate CompError" << std::endl;
-   CompError = abs(Resid / TotMoles);
+   CompError = Rcpp::abs(Resid / TotMoles);
    if (DoTox) {
      // Rcpp::Rcout << "DoTox" << std::endl;
      // CalcCA = sum(SpecConc(BLMetalSpecs - 1));
@@ -120,7 +120,7 @@
      }
      Resid(MetalComp - 1) = CalcCA - CATarget;
      // sum( (mol/L or mol/kgww) ) - mol = sum(mol) - mol = mol
-     CompError(MetalComp - 1) = abs(Resid(MetalComp - 1) / CATarget);
+     CompError(MetalComp - 1) = std::fabs(Resid(MetalComp - 1) / CATarget);
    }
 
 

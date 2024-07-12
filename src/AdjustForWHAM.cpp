@@ -1,3 +1,4 @@
+#include <math.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -125,10 +126,10 @@ void AdjustForWHAM(
   // Set -Z_HS to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
     if (CompType(iComp) == CTYPE_DONNANHA) {
-      TotMoles(iComp) = abs(WHAMSpecCharge(iHA)) * HumicSubstGramsPerLiter(iHA);
+      TotMoles(iComp) = std::fabs(WHAMSpecCharge(iHA)) * HumicSubstGramsPerLiter(iHA);
       TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
     } else if (CompType(iComp) == CTYPE_DONNANFA) {
-      TotMoles(iComp) = abs(WHAMSpecCharge(iFA)) * HumicSubstGramsPerLiter(iFA);
+      TotMoles(iComp) = std::fabs(WHAMSpecCharge(iFA)) * HumicSubstGramsPerLiter(iFA);
       TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
     }
   }
@@ -350,10 +351,10 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
   // Set -Z_HS*Th to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
     if (CompType(iComp) == CTYPE_DONNANHA) {
-      TotMoles[iComp] = abs(WHAMSpecCharge[iHA]) * HumicSubstGramsPerLiter[iHA];
+      TotMoles[iComp] = std::fabs(WHAMSpecCharge[iHA]) * HumicSubstGramsPerLiter[iHA];
       TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
     } else if (CompType(iComp) == CTYPE_DONNANFA) {
-      TotMoles[iComp] = abs(WHAMSpecCharge[iFA]) * HumicSubstGramsPerLiter[iFA];
+      TotMoles[iComp] = std::fabs(WHAMSpecCharge[iFA]) * HumicSubstGramsPerLiter[iFA];
       TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
     }
   }

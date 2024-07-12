@@ -1,4 +1,5 @@
 #include <strings.h>
+#include <math.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -71,10 +72,10 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
   std::string Name1, Name2, NameS;
   Rcpp::String HSName;   
   Rcpp::NumericVector W = wP * log10(IonicStrength);
-  Rcpp::NumericVector HumicTerm = HumicSubstGramsPerLiter * WHAMSpecCharge / abs(WHAMSpecCharge);
+  Rcpp::NumericVector HumicTerm = HumicSubstGramsPerLiter * WHAMSpecCharge / Rcpp::abs(WHAMSpecCharge);
     if (WHAMSpecCharge[iHA] == 0) { HumicTerm[iHA] = 0.0; }
     if (WHAMSpecCharge[iFA] == 0) { HumicTerm[iFA] = 0.0; }
-  Rcpp::NumericVector absZhThCheck = abs(WHAMSpecCharge) * HumicSubstGramsPerLiter;
+  Rcpp::NumericVector absZhThCheck = Rcpp::abs(WHAMSpecCharge) * HumicSubstGramsPerLiter;
   Rcpp::NumericMatrix dZhdC(2, NComp);
   Rcpp::NumericMatrix dVDLmaxdC(2, NComp);
   Rcpp::NumericMatrix dVDLdC(2, NComp);
@@ -114,7 +115,7 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
           }
           dZhdC(iHS, iComp2) = Sum / (Th * Cj + 2 * W[iHS] * SpecConc[iComp2] * Sum2);
           dVDLmaxdC(iHS, iComp2) = (dZhdC(iHS, iComp2) * MaxVolDiffuse[iHS]) / 
-                  (WHAMSpecCharge[iHS] * (1 + wKZED * abs(WHAMSpecCharge[iHS])));
+                  (WHAMSpecCharge[iHS] * (1 + wKZED * std::fabs(WHAMSpecCharge[iHS])));
         }        
       }      
       // These two loops must be separate because dVDLmaxdC must be calculated for

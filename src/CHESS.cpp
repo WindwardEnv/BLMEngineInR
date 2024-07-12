@@ -1,5 +1,5 @@
-#include <Rcpp.h>
 #include <math.h>
+#include <Rcpp.h>
 #include "CHESSFunctions.h"
 
 //' @title CHemical Equilibria in Soils and Solutions
@@ -358,9 +358,9 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
         StepBrute = CompConcStepFullBrute(iComp);
         StepNR = CompConcStepFull(iComp);
         if (StepBrute == StepNR) { continue; }
-        if ((abs(StepNR) > CompConc(iComp)) ||
+        if ((std::fabs(StepNR) > CompConc(iComp)) ||
             (std::signbit(StepBrute) != std::signbit(StepNR)) ||
-            abs((StepBrute - StepNR) / (StepBrute + StepNR)) > 1.0) {
+            std::fabs((StepBrute - StepNR) / (StepBrute + StepNR)) > 1.0) {
           //CompConcStepFull(iComp) = StepBrute;
         }
       }*/

@@ -1,4 +1,4 @@
-#include <cmath>
+#include <math.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 

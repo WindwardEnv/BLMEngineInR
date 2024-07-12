@@ -36,7 +36,7 @@ Rcpp::NumericVector TempCorrection(double SysTempKelvin,
 	*/
 	T1 = 1 / SysTempKelvin;
 	for (iSpec = 0; iSpec < NSpec; iSpec++) {
-	  if ((SpecTempKelvin(iSpec) != 0) & (SpecDeltaH(iSpec) != 0)) {
+	  if ((SpecTempKelvin(iSpec) != 0) && (SpecDeltaH(iSpec) != 0)) {
 		  T0 = 1 / SpecTempKelvin(iSpec);
 			T2 = SpecDeltaH(iSpec) * (T0 - T1) / Rcon;
 			SpecKTempAdj(iSpec) = SpecK(iSpec) * std::exp(T2); 
