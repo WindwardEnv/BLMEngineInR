@@ -5,8 +5,8 @@
 #' @description A component should be added either as an input component (with
 #'   `AddInComps`) or a defined component (with `AddDefComps`). Both of those
 #'   functions will call the `AddComponents` function, but using either
-#'   `AddInComps` and `AddDefComps` ensures that it's very clear where the inputs
-#'   come from.
+#'   `AddInComps` and `AddDefComps` ensures that it's very clear where the
+#'   inputs come from.
 #'
 #' @param ThisProblem A list object with a structure like that returned by
 #'   `BlankProblem()`.
@@ -33,7 +33,8 @@
 #'   Generally, "DonnanHA", "DonnanFA", "WHAMHA", and "WHAMFA" will only be used
 #'   internally.
 #' @param CompSiteDens,DefCompSiteDens A numeric vector with the binding site
-#'   densities of the new components. `AddInComps` assumes a site density of 1.0.
+#'   densities of the new components. `AddInComps` assumes a site density of
+#'   1.0.
 #' @param CompMCR,InCompMCR,DefCompMCR (optional) A character vector with the
 #'   indices of the mass compartments the new components are associated with.
 #'   Only needs to be specified if `CompMCName`/`InCompMCName`/`DefCompMCName`
@@ -44,10 +45,13 @@
 #'   `AddInComps`. This should usually only be `FALSE` when another function is
 #'   calling this function, such as when a defined component is being added with
 #'   `AddDefComps`.
-#' @param ComponentToRemove,InCompToRemove,DefCompToRemove A character vector with names or
-#'   indices of the component(s) to remove from `ThisProblem`. It is safer to
-#'   use a name, since the index of the component may be different within
-#'   `ThisProblem$Comp$Name` versus `ThisProblem$InCompName` versus
+#' @param InDefComp A logical value indicating if this is a defined component
+#'   from the parameter file (`TRUE`) or was added from another process, such as
+#'   `ExpandWHAM` (`FALSE`).
+#' @param ComponentToRemove,InCompToRemove,DefCompToRemove A character vector
+#'   with names or indices of the component(s) to remove from `ThisProblem`. It
+#'   is safer to use a name, since the index of the component may be different
+#'   within `ThisProblem$Comp$Name` versus `ThisProblem$InCompName` versus
 #'   `ThisProblem$DefComp$Name`.
 #'
 #' @return `ThisProblem`, with the edits done to the component list, including

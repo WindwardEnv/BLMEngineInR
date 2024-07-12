@@ -80,6 +80,9 @@ component in the simulation (units of e.g., mol/L and mol/kg)}
 \item{SpecName}{character vector (NSpec), the name of the chemical species
 for which we have formation reactions}
 
+\item{SpecType}{character vector (NSpec), the type or category of the 
+chemical species for which we have formation reactions.}
+
 \item{SpecMCR}{IntegerVector (NSpec), the mass compartment of the chemical
 species for which we have formation reactions}
 

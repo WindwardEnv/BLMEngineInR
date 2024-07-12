@@ -231,7 +231,7 @@ ThisProblem = AddCriticalValues(
     Lifestage = c("Neonate (<24h)","ACR=3.22"),
     Endpoint = c("Mortality","FAV"),
     Quantifier = c("EC50; LC50", "NA"),
-    References = c("Gensemer et al. 2002; Hyne et al. 2005; Naddy et al. 2002; Naddy et al. 2003; Van Genderen et al. 2007",
+    References = c("Gensemer et al. 2002; Hyne et al. 2005; 2002; 2003; Van Genderen et al. 2007",
                    "US EPA 2007"),
     Miscellaneous = c("SMEA calculated by median", NA)
   )

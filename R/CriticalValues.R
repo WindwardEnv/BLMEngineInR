@@ -103,12 +103,6 @@ RemoveCriticalValues = function(ThisProblem, CAToRemove) {
   NewProblem = ThisProblem
 
   CAToRemove = unique(CAToRemove)
-  if (any(is.na(CAToRemove))) {
-    stop(paste0("CA(s) (",
-                paste(CAToRemoveOrig[is.na(CAToRemove)],
-                      collapse = ", "),
-                ") does not exist."))
-  }
   if (any(CAToRemove > ThisProblem$N["CAT"])) {
     stop(paste0("There are ", ThisProblem$N["CAT"], " CAs, ",
                 "trying to remove the #(",

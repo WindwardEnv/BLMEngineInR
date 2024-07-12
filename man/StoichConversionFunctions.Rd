@@ -16,7 +16,9 @@ StoichCompsToStoichMatrix(
   SpecCompStoichs = list(),
   CompName = unique(unlist(SpecCompNames)),
   SpecName = names(SpecCompNames),
-  SpecNC = as.integer(sapply(SpecCompNames, length))
+  SpecNC = as.integer(sapply(SpecCompNames, function(X) {
+     sum(X != "")
+ }))
 )
 
 StoichCompsToEquation(
@@ -24,7 +26,9 @@ StoichCompsToEquation(
   SpecCompStoichs = list(),
   CompName = unique(unlist(SpecCompNames)),
   SpecName = names(SpecCompNames),
-  SpecNC = as.integer(sapply(SpecCompNames, length))
+  SpecNC = as.integer(sapply(SpecCompNames, function(X) {
+     sum(X != "")
+ }))
 )
 
 StoichMatrixToEquation(
@@ -45,7 +49,7 @@ EquationToStoichComps(SpecEquation = character(), CompName)
 \item{SpecCompNames}{a list object where each element is a vector of
 component names in a formation reaction.}
 
-\item{SpecCompStoichs}{a list object where each element is a vecotr of the
+\item{SpecCompStoichs}{a list object where each element is a vector of the
 stoichiometric coefficients in the formation reaction corresponding to the
 components in `SpecCompNames`.}
 

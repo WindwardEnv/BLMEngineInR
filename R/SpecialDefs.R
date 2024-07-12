@@ -2,7 +2,7 @@
 #'
 #' @title Add or remove species definitions
 #'
-#' @description The special definitions in a paramter file include indicating
+#' @description The special definitions in a parameter file include indicating
 #'   the biotic ligand species relevant to toxicity ("BL"), the toxic metal
 #'   ("Metal"), the species responsible for the critical accumulation associated
 #'   with toxicity at the biotic ligand ("BL-Metal"), and the model version of
@@ -24,7 +24,6 @@
 #' @param SpecialDef A character vector indicating which special definition to
 #'   add a value for. Valid values are `"BL"`, `"Metal"`, `"BL-Metal"`,
 #'   `"BLMetal"` (same as `"BL-Metal"`), and `"WHAM"`.
-#'
 #' @param SpecialDefToRemove The name of the special definition to remove.
 #' @param Index If applicable (such as if there are two BL-Metal species), the
 #'   index of which to remove (i.e., the first one or second one).

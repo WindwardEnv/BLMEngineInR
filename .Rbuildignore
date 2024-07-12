@@ -5,3 +5,4 @@
 ^tools$
 ^.vscode$
 ^\.lintr$
+^cran-comments\.md$

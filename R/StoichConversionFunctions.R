@@ -14,7 +14,7 @@
 #'   These are the rows of the `SpecStoich` matrix.
 #' @param SpecCompNames a list object where each element is a vector of
 #'   component names in a formation reaction.
-#' @param SpecCompStoichs a list object where each element is a vecotr of the
+#' @param SpecCompStoichs a list object where each element is a vector of the
 #'   stoichiometric coefficients in the formation reaction corresponding to the
 #'   components in `SpecCompNames`.
 #' @param SpecNC an integer vector giving the number of reactants in each
@@ -211,7 +211,7 @@ EquationToStoichComps = function(SpecEquation = character(), CompName) {
 
   # aggregate CompNames and CompStoichs lists to eliminate duplicates
   for (i in 1:length(ReactantCompNames)) {
-    tmp = aggregate(x = ReactantCompStoichs[[i]],
+    tmp = stats::aggregate(x = ReactantCompStoichs[[i]],
                     by = list(Names = ReactantCompNames[[i]]),
                     FUN = sum)
     ReactantCompStoichs[[i]] = as.integer(tmp$x)

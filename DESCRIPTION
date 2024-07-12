@@ -2,7 +2,7 @@ Package: BLMEngineInR
 Type: Package
 Version: 0.1.6
 Date: 2024-07-12
-Title: BLM Engine In R
+Title: BLM Engine in R
 Authors@R: c(person(given = "Robert", family = "Santore", 
                     email = "roberts@windwardenv.com",
                     role = c("aut")),
@@ -15,6 +15,7 @@ Description: The Windward Environmental, LLC Biotic Ligand Model, now as an R
 License: file LICENSE
 URL: https://www.windwardenv.com/biotic-ligand-model/
 Encoding: UTF-8
+Language: en-US
 LazyData: true
 Imports: 
     methods,

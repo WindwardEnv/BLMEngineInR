@@ -78,7 +78,8 @@ Generally, "DonnanHA", "DonnanFA", "WHAMHA", and "WHAMFA" will only be used
 internally.}
 
 \item{CompSiteDens, DefCompSiteDens}{A numeric vector with the binding site
-densities of the new components. `AddInComps` assumes a site density of 1.0.}
+densities of the new components. `AddInComps` assumes a site density of
+1.0.}
 
 \item{CompMCR, InCompMCR, DefCompMCR}{(optional) A character vector with the
 indices of the mass compartments the new components are associated with.
@@ -92,10 +93,10 @@ default for `AddComponents` is `TRUE`, essentially acting the same as
 calling this function, such as when a defined component is being added with
 `AddDefComps`.}
 
-\item{ComponentToRemove, InCompToRemove, DefCompToRemove}{A character vector with names or
-indices of the component(s) to remove from `ThisProblem`. It is safer to
-use a name, since the index of the component may be different within
-`ThisProblem$Comp$Name` versus `ThisProblem$InCompName` versus
+\item{ComponentToRemove, InCompToRemove, DefCompToRemove}{A character vector
+with names or indices of the component(s) to remove from `ThisProblem`. It
+is safer to use a name, since the index of the component may be different
+within `ThisProblem$Comp$Name` versus `ThisProblem$InCompName` versus
 `ThisProblem$DefComp$Name`.}
 
 \item{DefCompFromNum}{A numeric vector with the numeric values used to derive
@@ -105,6 +106,10 @@ define it.}
 \item{DefCompFromVar}{A character vector with the variable names used to
 derive the component. Specify `NA` if the defined component uses a number
 to define it.}
+
+\item{InDefComp}{A logical value indicating if this is a defined component
+from the parameter file (`TRUE`) or was added from another process, such as
+`ExpandWHAM` (`FALSE`).}
 }
 \value{
 `ThisProblem`, with the edits done to the component list, including
@@ -115,8 +120,8 @@ to define it.}
 A component should be added either as an input component (with
   `AddInComps`) or a defined component (with `AddDefComps`). Both of those
   functions will call the `AddComponents` function, but using either
-  `AddInComps` and `AddDefComps` ensures that it's very clear where the inputs
-  come from.
+  `AddInComps` and `AddDefComps` ensures that it's very clear where the
+  inputs come from.
 }
 \examples{
 # Make a blank problem:
@@ -276,7 +281,7 @@ ThisProblem = AddCriticalValues(
     Lifestage = c("Neonate (<24h)","ACR=3.22"),
     Endpoint = c("Mortality","FAV"),
     Quantifier = c("EC50; LC50", "NA"),
-    References = c("Gensemer et al. 2002; Hyne et al. 2005; Naddy et al. 2002; Naddy et al. 2003; Van Genderen et al. 2007",
+    References = c("Gensemer et al. 2002; Hyne et al. 2005; 2002; 2003; Van Genderen et al. 2007",
                    "US EPA 2007"),
     Miscellaneous = c("SMEA calculated by median", NA)
   )

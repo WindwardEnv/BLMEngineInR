@@ -38,7 +38,7 @@ index of which to remove (i.e., the first one or second one).}
 `ThisProblem`, with the special definitions changed.
 }
 \description{
-The special definitions in a paramter file include indicating
+The special definitions in a parameter file include indicating
   the biotic ligand species relevant to toxicity ("BL"), the toxic metal
   ("Metal"), the species responsible for the critical accumulation associated
   with toxicity at the biotic ligand ("BL-Metal"), and the model version of
@@ -203,7 +203,7 @@ ThisProblem = AddCriticalValues(
     Lifestage = c("Neonate (<24h)","ACR=3.22"),
     Endpoint = c("Mortality","FAV"),
     Quantifier = c("EC50; LC50", "NA"),
-    References = c("Gensemer et al. 2002; Hyne et al. 2005; Naddy et al. 2002; Naddy et al. 2003; Van Genderen et al. 2007",
+    References = c("Gensemer et al. 2002; Hyne et al. 2005; 2002; 2003; Van Genderen et al. 2007",
                    "US EPA 2007"),
     Miscellaneous = c("SMEA calculated by median", NA)
   )

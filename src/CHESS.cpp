@@ -30,6 +30,8 @@
 //' @param NSpec integer, number of species reactions
 //' @param SpecName character vector (NSpec), the name of the chemical species
 //'   for which we have formation reactions
+//' @param SpecType character vector (NSpec), the type or category of the 
+//'   chemical species for which we have formation reactions.
 //' @param SpecMCR IntegerVector (NSpec), the mass compartment of the chemical
 //'   species for which we have formation reactions
 //' @param SpecK numeric vector (NSpec), the equilibrium coefficient of the

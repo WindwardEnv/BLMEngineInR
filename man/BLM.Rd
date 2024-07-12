@@ -38,7 +38,7 @@ would result in that amount bound to the biotic ligand is calculated.}
 parameter file critical accumulation table.}
 
 \item{QuietFlag}{Either "Quiet", "Very Quiet", or "Debug". With "Very Quiet",
-the simulation will run siliently. With "Quiet", the simulation will print
+the simulation will run silently. With "Quiet", the simulation will print
 "Obs=1", "Obs=2", etc... to the console. With "Debug", intermediate
 information from the CHESS function will print to the console.}
 
