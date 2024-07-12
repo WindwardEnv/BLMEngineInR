@@ -10,6 +10,7 @@ Rcpp::NumericMatrix NumericalJacobian(
     Rcpp::IntegerVector CompPosInSpec,
     int NSpec,
     Rcpp::CharacterVector SpecName,
+    Rcpp::CharacterVector SpecType,
     Rcpp::IntegerVector SpecMC,
     Rcpp::CharacterVector SpecActCorr,
     Rcpp::IntegerMatrix SpecStoich,
@@ -90,7 +91,7 @@ Rcpp::NumericMatrix NumericalJacobian(
     }
 
     CHESSIter(CompConcStepMod, NMass, MassAmt, NComp, CompName,
-              CompType, CompPosInSpec, NSpec, SpecName, SpecMC,
+              CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC,
               SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj,
               DoWHAM, true, AqueousMC, WHAMDonnanMC,
               HumicSubstGramsPerLiter, wMolWt,

@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // CHESS
-Rcpp::List CHESS(Rcpp::String QuietFlag, double ConvergenceCriteria, int MaxIter, bool DoPartialStepsAlways, int NMass, Rcpp::CharacterVector MassName, Rcpp::NumericVector MassAmt, int NComp, Rcpp::CharacterVector CompName, Rcpp::CharacterVector CompType, Rcpp::NumericVector TotConc, int NSpec, Rcpp::CharacterVector SpecName, Rcpp::IntegerVector SpecMCR, Rcpp::NumericVector SpecK, Rcpp::NumericVector SpecTempKelvin, Rcpp::NumericVector SpecDeltaH, Rcpp::IntegerMatrix SpecStoich, Rcpp::IntegerVector SpecCharge, Rcpp::CharacterVector SpecActCorr, bool DoWHAM, int AqueousMCR, Rcpp::IntegerVector WHAMDonnanMCR, Rcpp::NumericVector HumicSubstGramsPerLiter, Rcpp::NumericVector wMolWt, Rcpp::NumericVector wRadius, Rcpp::NumericVector wP, double wDLF, double wKZED, double SysTempKelvin, bool DoTox, Rcpp::String MetalName, int MetalCompR, int NBLMetal, Rcpp::IntegerVector BLMetalSpecsR, double CATarget);
-RcppExport SEXP _BLMEngineInR_CHESS(SEXP QuietFlagSEXP, SEXP ConvergenceCriteriaSEXP, SEXP MaxIterSEXP, SEXP DoPartialStepsAlwaysSEXP, SEXP NMassSEXP, SEXP MassNameSEXP, SEXP MassAmtSEXP, SEXP NCompSEXP, SEXP CompNameSEXP, SEXP CompTypeSEXP, SEXP TotConcSEXP, SEXP NSpecSEXP, SEXP SpecNameSEXP, SEXP SpecMCRSEXP, SEXP SpecKSEXP, SEXP SpecTempKelvinSEXP, SEXP SpecDeltaHSEXP, SEXP SpecStoichSEXP, SEXP SpecChargeSEXP, SEXP SpecActCorrSEXP, SEXP DoWHAMSEXP, SEXP AqueousMCRSEXP, SEXP WHAMDonnanMCRSEXP, SEXP HumicSubstGramsPerLiterSEXP, SEXP wMolWtSEXP, SEXP wRadiusSEXP, SEXP wPSEXP, SEXP wDLFSEXP, SEXP wKZEDSEXP, SEXP SysTempKelvinSEXP, SEXP DoToxSEXP, SEXP MetalNameSEXP, SEXP MetalCompRSEXP, SEXP NBLMetalSEXP, SEXP BLMetalSpecsRSEXP, SEXP CATargetSEXP) {
+Rcpp::List CHESS(Rcpp::String QuietFlag, double ConvergenceCriteria, int MaxIter, bool DoPartialStepsAlways, int NMass, Rcpp::CharacterVector MassName, Rcpp::NumericVector MassAmt, int NComp, Rcpp::CharacterVector CompName, Rcpp::CharacterVector CompType, Rcpp::NumericVector TotConc, int NSpec, Rcpp::CharacterVector SpecName, Rcpp::CharacterVector SpecType, Rcpp::IntegerVector SpecMCR, Rcpp::NumericVector SpecK, Rcpp::NumericVector SpecTempKelvin, Rcpp::NumericVector SpecDeltaH, Rcpp::IntegerMatrix SpecStoich, Rcpp::IntegerVector SpecCharge, Rcpp::CharacterVector SpecActCorr, bool DoWHAM, int AqueousMCR, Rcpp::IntegerVector WHAMDonnanMCR, Rcpp::NumericVector HumicSubstGramsPerLiter, Rcpp::NumericVector wMolWt, Rcpp::NumericVector wRadius, Rcpp::NumericVector wP, double wDLF, double wKZED, double SysTempKelvin, bool DoTox, Rcpp::String MetalName, int MetalCompR, int NBLMetal, Rcpp::IntegerVector BLMetalSpecsR, double CATarget);
+RcppExport SEXP _BLMEngineInR_CHESS(SEXP QuietFlagSEXP, SEXP ConvergenceCriteriaSEXP, SEXP MaxIterSEXP, SEXP DoPartialStepsAlwaysSEXP, SEXP NMassSEXP, SEXP MassNameSEXP, SEXP MassAmtSEXP, SEXP NCompSEXP, SEXP CompNameSEXP, SEXP CompTypeSEXP, SEXP TotConcSEXP, SEXP NSpecSEXP, SEXP SpecNameSEXP, SEXP SpecTypeSEXP, SEXP SpecMCRSEXP, SEXP SpecKSEXP, SEXP SpecTempKelvinSEXP, SEXP SpecDeltaHSEXP, SEXP SpecStoichSEXP, SEXP SpecChargeSEXP, SEXP SpecActCorrSEXP, SEXP DoWHAMSEXP, SEXP AqueousMCRSEXP, SEXP WHAMDonnanMCRSEXP, SEXP HumicSubstGramsPerLiterSEXP, SEXP wMolWtSEXP, SEXP wRadiusSEXP, SEXP wPSEXP, SEXP wDLFSEXP, SEXP wKZEDSEXP, SEXP SysTempKelvinSEXP, SEXP DoToxSEXP, SEXP MetalNameSEXP, SEXP MetalCompRSEXP, SEXP NBLMetalSEXP, SEXP BLMetalSpecsRSEXP, SEXP CATargetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -30,6 +30,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type TotConc(TotConcSEXP);
     Rcpp::traits::input_parameter< int >::type NSpec(NSpecSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type SpecName(SpecNameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type SpecType(SpecTypeSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type SpecMCR(SpecMCRSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecK(SpecKSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type SpecTempKelvin(SpecTempKelvinSEXP);
@@ -53,13 +54,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type NBLMetal(NBLMetalSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type BLMetalSpecsR(BLMetalSpecsRSEXP);
     Rcpp::traits::input_parameter< double >::type CATarget(CATargetSEXP);
-    rcpp_result_gen = Rcpp::wrap(CHESS(QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget));
+    rcpp_result_gen = Rcpp::wrap(CHESS(QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BLMEngineInR_CHESS", (DL_FUNC) &_BLMEngineInR_CHESS, 36},
+    {"_BLMEngineInR_CHESS", (DL_FUNC) &_BLMEngineInR_CHESS, 37},
     {NULL, NULL, 0}
 };
 

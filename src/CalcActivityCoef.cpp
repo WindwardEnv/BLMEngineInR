@@ -149,7 +149,7 @@ Rcpp::NumericVector CalcActivityCoef(int NSpec,
     SpecActivityCoef.names() = SpecName;
 
   /* variables */
-  int iSpec, iSpec2;
+  int iSpec;
   int MaxCharge = Rcpp::max(Rcpp::abs(SpecCharge));
   Rcpp::NumericVector ActivityCoefDebye;
   Rcpp::NumericVector ActivityCoefDavies;
@@ -164,25 +164,6 @@ Rcpp::NumericVector CalcActivityCoef(int NSpec,
       SpecActivityCoef(iSpec) = ActivityCoefDebye(abs(SpecCharge(iSpec)));
     } else if (SpecActCorr(iSpec) == ACTYPE_DAVIES) {
       SpecActivityCoef(iSpec) = ActivityCoefDavies(abs(SpecCharge(iSpec)));
-    } else if ((SpecActCorr(iSpec) == ACTYPE_DONNANHA) || 
-               (SpecActCorr(iSpec) == ACTYPE_DONNANFA)) {
-                
-      //Rcpp::Rcout << "SpecName(iSpec)=" << SpecName(iSpec) << std::endl;
-      iSpec2 = 0;
-      while (iSpec2 < iSpec) {        
-        tmp = SpecActCorr(iSpec);
-        tmp += "-" + SpecName(iSpec2);
-        //Rcpp::Rcout << "tmp=" << tmp.get_cstring() << std::endl;
-        if (tmp == SpecName(iSpec)) {
-          break;
-        }
-        iSpec2++;
-      }
-      if (iSpec == iSpec2) {
-        SpecActivityCoef(iSpec) = 1.0;
-      } else {
-        SpecActivityCoef(iSpec) = SpecActivityCoef(iSpec2);
-      }
     } else {//if (SpecActCorr(iSpec) == ACTYPE_NONE) {
       SpecActivityCoef(iSpec) = 1.0;
     }

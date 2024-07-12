@@ -61,7 +61,7 @@ ThisProblem = DefineProblem(ParamFile, WriteLog = TRUE)
 FunctionInputs = ThisProblem[
   which(names(ThisProblem) %in% formalArgs("GetData"))]
 FunctionInputs$InputFile = InputFile
-AllInput = do.call("GetData", args = FunctionInputs)
+AllInput = GetData(InputFile, ThisProblem)
 
 # test stuff
 # capture.output(

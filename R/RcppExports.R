@@ -89,7 +89,7 @@
 #' }
 #' @export
 #'
-CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget) {
-    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget)
+CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget) {
+    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget)
 }
 

@@ -416,7 +416,7 @@ BLM = function(ParamFile = character(),
     # Calculate Toxic Units
     OutList$Standards[!EmptyOrInvalidMetalObs, TUCols] =
       signif(OutList$Standards[, StandardsCols[NStandardsCols + 1]] /
-               OutList$Standards[, WQSCols],
+               OutList$Standards[, WQSCols, drop = FALSE],
              digits = 4)[!EmptyOrInvalidMetalObs, ]
   }
 

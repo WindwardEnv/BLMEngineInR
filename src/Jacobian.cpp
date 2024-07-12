@@ -38,7 +38,7 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
                               Rcpp::NumericVector SpecConc, //species concentrations
                               Rcpp::IntegerVector SpecMC,
                               Rcpp::NumericVector SpecCtoM, //concentration to mass conversion for each species
-                              Rcpp::CharacterVector SpecActCorr,
+                              Rcpp::CharacterVector SpecType,
                               Rcpp::IntegerVector SpecCharge,
                               Rcpp::NumericVector SpecK,
                               double IonicStrength,
@@ -83,9 +83,9 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
   Rcpp::NumericVector VolDiffuse(2);
   Rcpp::NumericMatrix dKidC(NSpec, NComp);
   Rcpp::NumericMatrix dVidC(NSpec, NComp);
-  Rcpp::CharacterVector SpecActCorrWHAM(2);
-    SpecActCorrWHAM[iHA] = ACTYPE_WHAMHA;
-    SpecActCorrWHAM[iFA] = ACTYPE_WHAMFA;
+  Rcpp::CharacterVector SpecTypeWHAM(2);
+    SpecTypeWHAM[iHA] = STYPE_WHAMHA;
+    SpecTypeWHAM[iFA] = STYPE_WHAMFA;
 
   if (DoWHAM) {
 
@@ -107,7 +107,7 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
             Sij = SpecStoich(iSpec, iComp2);
             Hi = SpecCharge[iSpec];
             Ci = SpecConc[iSpec];
-            if (SpecActCorr[iSpec] == SpecActCorrWHAM[iHS]) {
+            if (SpecType[iSpec] == SpecTypeWHAM[iHS]) {
               Sum += (Sij * Ci * Hi);
               Sum2 += (Ci * pow(Hi, 2));
             }
@@ -134,12 +134,12 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
         if (iSpec < NComp) {
           // components have a Ki of 1, so dKi/dCj is 0
           dKidC(iSpec, iComp2) = 0.0;
-        } else if ((SpecActCorr[iSpec] == ACTYPE_WHAMHA) || 
-                   (SpecActCorr[iSpec] == ACTYPE_WHAMFA)) {
+        } else if ((SpecType[iSpec] == STYPE_WHAMHA) || 
+                   (SpecType[iSpec] == STYPE_WHAMFA)) {
           // WHAM species have Ki = Kint * exp(-2*w*Hi*Zh), so 
           // dKi/dCj = Ki * (-2) * w * Hi * dZh/dCj
-          if (SpecActCorr[iSpec] == ACTYPE_WHAMHA) { iHS = iHA; }
-          if (SpecActCorr[iSpec] == ACTYPE_WHAMFA) { iHS = iFA; }
+          if (SpecType[iSpec] == STYPE_WHAMHA) { iHS = iHA; }
+          if (SpecType[iSpec] == STYPE_WHAMFA) { iHS = iFA; }
           Hi = SpecCharge[iSpec];
           dKidC(iSpec, iComp2) = SpecK[iSpec] * (-2) * W[iHS] * Hi * dZhdC(iHS, iComp2);
         } else {
@@ -194,14 +194,14 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
         } else {
           JacobianMatrix(iComp1, iComp2) = Sum / (SpecConc[iComp2]);// * SpecCtoM(iComp2));
         }
-      } else */if ((SpecActCorr[iComp1] == ACTYPE_WHAMHA) || 
-                 (SpecActCorr[iComp1] == ACTYPE_WHAMFA)) {
+      } else */if ((SpecType[iComp1] == STYPE_WHAMHA) || 
+                   (SpecType[iComp1] == STYPE_WHAMFA)) {
         /* WHAM species shouldn't have their CToM adjusted, but just to be sure, 
            let's take it out of the calculation. */
-        if (SpecActCorr[iComp1] == ACTYPE_WHAMHA) { 
+        if (SpecType[iComp1] == STYPE_WHAMHA) { 
           iHS = iHA;
         }
-        if (SpecActCorr[iComp1] == ACTYPE_WHAMFA) { 
+        if (SpecType[iComp1] == STYPE_WHAMFA) { 
           iHS = iFA;
         }
         for (iSpec = 0; iSpec < NSpec; iSpec++) {
@@ -219,16 +219,16 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
           }*/
         };//NEXT iSpec
         JacobianMatrix(iComp1, iComp2) = Sum;
-      } else if ((SpecActCorr[iComp1] == ACTYPE_DONNANFA) || 
-                 (SpecActCorr[iComp1] == ACTYPE_DONNANHA)) {
+      } else if ((SpecType[iComp1] == STYPE_DONNANFA) || 
+                 (SpecType[iComp1] == STYPE_DONNANHA)) {
         /* diffuse double layer residual is a function of the humic charge, 
            which is itself a function of component concentrations */
-        if (SpecActCorr[iComp1] == ACTYPE_DONNANHA) { 
-          HSName = ACTYPE_WHAMHA; 
+        if (SpecType[iComp1] == STYPE_DONNANHA) { 
+          HSName = STYPE_WHAMHA; 
           iHS = iHA;
         }
-        if (SpecActCorr[iComp1] == ACTYPE_DONNANFA) { 
-          HSName = ACTYPE_WHAMFA; 
+        if (SpecType[iComp1] == STYPE_DONNANFA) { 
+          HSName = STYPE_WHAMFA; 
           iHS = iFA;
         }
         for (iSpec = 0; iSpec < NSpec; iSpec++) {

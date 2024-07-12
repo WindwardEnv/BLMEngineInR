@@ -104,6 +104,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  Rcpp::NumericVector TotConc,
                  int NSpec,
                  Rcpp::CharacterVector SpecName,
+                 Rcpp::CharacterVector SpecType,
                  Rcpp::IntegerVector SpecMCR,
                  Rcpp::NumericVector SpecK,
                  Rcpp::NumericVector SpecTempKelvin,
@@ -278,7 +279,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
     // Run through CHESS calculations with initial values
     MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, CompType,
-                        CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
+                        CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, SpecActCorr,
                         SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC, 
                         WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius, 
                         wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
@@ -319,7 +320,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
         try {
           // Calculate the Jacobian Matrix
           JacobianMatrix = Jacobian(NComp, NSpec, CompName, TotConc, SpecStoich, SpecConc, 
-                                  SpecMC, SpecCtoMAdj, SpecActCorr, SpecCharge, 
+                                  SpecMC, SpecCtoMAdj, SpecType, SpecCharge, 
                                   SpecKISTempAdj, IonicStrength, DoWHAM, 
                                   HumicSubstGramsPerLiter, WHAMSpecCharge, 
                                   wP, wMolWt, wRadius, wDLF, wKZED, MassAmtAdj, 
@@ -327,7 +328,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                                   DoTox);
         
           /*NumericalJacobianMatrix = NumericalJacobian(NMass, MassAmt, NComp, CompName, CompType,
-                            CompPosInSpec, NSpec, SpecName, SpecMC, SpecActCorr,
+                            CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, SpecActCorr,
                             SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC,
                             WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius,
                             wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
@@ -391,7 +392,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
       WHAMSpecChargeFull = clone(WHAMSpecCharge);
       MassAmtAdjFull = clone(MassAmtAdj);
       MaxErrorFull = CHESSIter(CompConcStepFull, NMass, MassAmt, NComp, CompName, 
-                          CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                          CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, 
                           SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
                           DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
                           wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
@@ -442,7 +443,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
           MassAmtAdjAlt = clone(MassAmtAdj);
           CompConcStepAlt = CompConcStepFull * StepSizeAlt;
           MaxErrorAlt = CHESSIter(CompConcStepAlt, NMass, MassAmt, NComp, CompName, 
-                              CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                              CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, 
                               SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
                               DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
                               wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
@@ -474,7 +475,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
           MassAmtAdjInterp = clone(MassAmtAdj);
           CompConcStepInterp = CompConcStepFull * StepSizeInterp;
           MaxErrorInterp = CHESSIter(CompConcStepInterp, NMass, MassAmt, NComp, CompName, 
-                              CompType, CompPosInSpec, NSpec, SpecName, SpecMC, 
+                              CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, 
                               SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
                               DoWHAM, WHAMSpecChargeInterp, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
                               wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 

@@ -36,8 +36,8 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   Rcpp::LogicalVector CompSolve(NComp);
   NSolve = 0;
   for (iComp = 0; iComp < NComp; iComp++){
-    if ((CompType(iComp) != TYPE_FIXEDCONC) && (CompType(iComp) != TYPE_FIXEDACT)
-        //&& (CompType(iComp) != TYPE_DONNANHA) && (CompType(iComp) != TYPE_DONNANFA)
+    if ((CompType(iComp) != CTYPE_FIXEDCONC) && (CompType(iComp) != CTYPE_FIXEDACT)
+        //&& (CompType(iComp) != CTYPE_DONNANHA) && (CompType(iComp) != CTYPE_DONNANFA)
        ) { 
       CompSolve[iComp] = true;
       NSolve++; 
@@ -190,8 +190,8 @@ Rcpp::NumericVector CalcStepBrute(int NComp,
   int iComp;
 
   for (iComp = 0; iComp < NComp; iComp++){
-    if ((CompType(iComp) != TYPE_FIXEDCONC) && (CompType(iComp) != TYPE_FIXEDACT)
-        //&& (CompType(iComp) != TYPE_DONNANHA) && (CompType(iComp) != TYPE_DONNANFA)
+    if ((CompType(iComp) != CTYPE_FIXEDCONC) && (CompType(iComp) != CTYPE_FIXEDACT)
+        //&& (CompType(iComp) != CTYPE_DONNANHA) && (CompType(iComp) != CTYPE_DONNANFA)
        ) { 
       CompConcStep(iComp) = CompConc(iComp) * (1 - TotMoles(iComp) / CalcTotMoles(iComp));
     } else {

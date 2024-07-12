@@ -69,6 +69,7 @@ double CHESSIter(
   Rcpp::IntegerVector CompPosInSpec,
   int NSpec,
   Rcpp::CharacterVector SpecName,
+  Rcpp::CharacterVector SpecType,
   Rcpp::IntegerVector SpecMC,
   Rcpp::CharacterVector SpecActCorr,
   Rcpp::IntegerMatrix SpecStoich,
@@ -127,7 +128,7 @@ double CHESSIter(
   //ChargeBalance = CalcChargeBalance(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
   //                                  SpecMC, AqueousMC);
   IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC, SpecActCorr, true);
+                                    SpecMC, AqueousMC, SpecType, true);
   SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
                                       IonicStrength, SysTempKelvin);
   UpdateFixedComps(NComp, CompType, TotConc, SpecActivityCoef, 
@@ -135,9 +136,9 @@ double CHESSIter(
 
   if (DoWHAM) {
     WHAMIonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC, SpecActCorr, true);
-    AdjustForWHAMBeforeCalcSpecies(NMass, MassAmt, MassAmtAdj, NSpec, SpecMC,
-      SpecActCorr, SpecCharge, SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,
+                                    SpecMC, AqueousMC, SpecType, true);
+    AdjustForWHAMBeforeCalcSpecies(NMass, MassAmt, MassAmtAdj, NSpec, SpecType,
+      SpecMC, SpecCharge, SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,
       WHAMIonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC, 
       HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED);
     //CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
@@ -146,7 +147,7 @@ double CHESSIter(
 
   // Calculate the species concentrations
   SpecConc = CalcSpecConc(NComp, NSpec, CompConc, SpecKISTempAdj, SpecStoich, 
-                          SpecName, SpecActCorr, SpecActivityCoef, DoWHAM, 
+                          SpecName, SpecType, SpecActivityCoef, DoWHAM, 
                           SpecCharge, WHAMSpecCharge);
 
   UpdateFixedComps(NComp, CompType, TotConc, SpecActivityCoef, 
@@ -155,8 +156,8 @@ double CHESSIter(
   if (DoWHAM) {
     
     AdjustForWHAMAfterCalcSpecies(NComp, CompType, TotConc, TotMoles, NSpec, 
-      SpecName, SpecConc, SpecKISTempAdj, SpecStoich, SpecActivityCoef, SpecMC,
-      SpecActCorr, SpecCharge, SpecCtoMAdj, WHAMSpecCharge, AqueousMC, 
+      SpecName, SpecType, SpecConc, SpecKISTempAdj, SpecStoich, SpecActivityCoef, SpecMC,
+      SpecCharge, SpecCtoMAdj, WHAMSpecCharge, AqueousMC, 
       HumicSubstGramsPerLiter, UpdateZED);
 
   }       
@@ -169,8 +170,7 @@ double CHESSIter(
 
   // Calculate the residuals and error fraction for each component
   CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, 
-                    SpecActCorr,  
-                    Resid, CompError);
+                    SpecType, Resid, CompError);
 
   /*// Adjust Resid and CompError for toxicity mode
   if (DoTox) {
