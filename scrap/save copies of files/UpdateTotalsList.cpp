@@ -67,23 +67,3 @@ Rcpp::List UpdateTotalsList(int NComp,
   );
 }
 
-void UpdateFixedComps(int NComp, 
-                      Rcpp::CharacterVector CompType, 
-                      Rcpp::NumericVector InCompConc, 
-                      Rcpp::NumericVector SpecActivityCoef,
-                      Rcpp::NumericVector &SpecConc, 
-                      Rcpp::NumericVector &CompConc) {
-  /* variables */
-  int iComp;
-
-  for(iComp = 0; iComp < NComp; iComp++) {
-    if (CompType[iComp] == "FixedAct") {
-      SpecConc[iComp] = InCompConc[iComp] / SpecActivityCoef[iComp];
-      CompConc[iComp] = SpecConc[iComp];
-    } else if (CompType[iComp] == "FixedConc"){
-      SpecConc[iComp] = InCompConc[iComp];
-      CompConc[iComp] = SpecConc[iComp];
-    }
-  }
-  
-}

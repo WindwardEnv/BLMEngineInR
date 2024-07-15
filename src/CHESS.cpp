@@ -230,16 +230,19 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
   // variables for old-style tox mode
   int ToxIter;
-  double CalcCA;
-  int i, iSpec;
+  //double CalcCA;
+  //int i;
+  //int iSpec;
   double ToxError;
   double ToxResid;
-  double LoMeConc, HiMeConc;
-  double LoToxResid, HiToxResid;
-  bool ToxBracket;
+  double LoMeConc = 0.0;
+  double HiMeConc = 0.0;
+  double LoToxResid = 0.0; 
+  double HiToxResid = 0.0;
+  bool ToxBracket = false;
   double ToxStepLim;
   double ToxFPStep;
-  double ToxBiStep;
+  //double ToxBiStep;
   
   // Initialize some variables
   for (iComp = 0; iComp < NComp; iComp++) { CompPosInSpec(iComp) = iComp; }

@@ -4,7 +4,7 @@
 \name{BLMEngineInR-package}
 \alias{BLMEngineInR}
 \alias{BLMEngineInR-package}
-\title{BLMEngineInR: BLM Engine In R}
+\title{BLMEngineInR: BLM Engine in R}
 \description{
 The Windward Environmental, LLC Biotic Ligand Model, now as an R package. Originally programmed in PowerBasic by Robert Santore and others. WORK IN PROGRESS.
 }

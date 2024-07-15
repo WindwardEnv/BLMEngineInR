@@ -62,7 +62,7 @@ include for the corresponding `CA` value. Each `CA` value requires a single
 character string with no line breaks.}
 
 \item{Miscellaneous}{(optional) a character vector of the miscellaneous
-information (e.g., how the value was calcualted, test conditions not
+information (e.g., how the value was calculated, test conditions not
 covered by other columns, etc.) to include for the corresponding `CA`
 value.}
 

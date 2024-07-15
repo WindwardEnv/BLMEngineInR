@@ -1,5 +1,5 @@
 CHESS problem defined by 'scrap/parameter file format/Zn_full_organic.dat4' parameter file:
-(2024-07-12 15:02:50.306826)
+(2024-07-14 20:27:18.204694)
 --------------------------------------------------------------------------------
 Component List:
 Zn

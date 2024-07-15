@@ -224,6 +224,7 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
                  (SpecType[iComp1] == STYPE_DONNANHA)) {
         /* diffuse double layer residual is a function of the humic charge, 
            which is itself a function of component concentrations */
+        iHS = -1;
         if (SpecType[iComp1] == STYPE_DONNANHA) { 
           HSName = STYPE_WHAMHA; 
           iHS = iHA;
