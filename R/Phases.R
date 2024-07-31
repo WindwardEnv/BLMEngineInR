@@ -2,6 +2,11 @@
 #'
 #' @title Add or remove phase reactions in a problem
 #'
+#' @description PHASES ARE NOT CURRENTLY IMPLEMENTED. This function is here for
+#'   as a placeholder since it will require much of the same support
+#'   infrastructure once it is implemented, but no reactions are processed in
+#'   CHESS.
+#'
 #' @param ThisProblem A list object with a structure like that returned by
 #'   `BlankProblem()`.
 #' @param PhaseEquation A character vector giving the chemical equation for a
@@ -19,14 +24,14 @@
 #'   component names used to form each phase. See examples for clarification.
 #'   Can be omitted if `PhaseEquation` or `PhaseStoich` is supplied.
 #' @param PhaseCompStoichs A list where each element is an integer vector of the
-#'   stoichiometric coefficients of each component used to form each phase.
-#'   See examples for clarification. Can be omitted if `PhaseEquation` or
+#'   stoichiometric coefficients of each component used to form each phase. See
+#'   examples for clarification. Can be omitted if `PhaseEquation` or
 #'   `PhaseStoich` is supplied.
 #' @param PhaseStoich A matrix of stoichiometric coefficients, where each row
-#'   corresponds to a phase reaction and each column corresponds to a
-#'   component. The columns should match `ThisProblem$Comp$Name` exactly. Can be
-#'   omitted if either `PhaseEquation` or both `PhaseCompNames` and
-#'   `PhaseCompStoichs` are supplied.
+#'   corresponds to a phase reaction and each column corresponds to a component.
+#'   The columns should match `ThisProblem$Comp$Name` exactly. Can be omitted if
+#'   either `PhaseEquation` or both `PhaseCompNames` and `PhaseCompStoichs` are
+#'   supplied.
 #' @param PhaseLogK A numeric vector with the log10-transformed equilibrium
 #'   coefficients of the phase formation reactions.
 #' @param PhaseDeltaH A numeric vector with the change in enthalpy of the phase
@@ -39,9 +44,19 @@
 #'
 #' @return `ThisProblem`, with the phase reaction(s) changed.
 #'
-#' @inherit BlankProblem examples
-#'
 #' @family problem manipulation functions
+#'
+#' @examples
+#' print(carbonate_system_problem$Phase)
+#' my_new_problem = carbonate_system_problem
+#' my_new_problem = AddPhases(ThisProblem = my_new_problem,
+#'                            PhaseEquation = "CO2(g) = 1 * CO3 + 2 * H",
+#'                            PhaseLogK = -1.5,
+#'                            PhaseDeltaH = 0,
+#'                            PhaseTempKelvin = 0,
+#'                            PhaseMoles = 10^-3.5)
+#' print(my_new_problem$Phase)
+#'
 NULL
 
 
@@ -54,6 +69,7 @@ AddPhases = function(ThisProblem,
                      PhaseStoich = NULL,
                      PhaseLogK, PhaseDeltaH, PhaseTempKelvin, PhaseMoles) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   HasName = length(PhaseName) > 0
@@ -179,6 +195,7 @@ AddPhases = function(ThisProblem,
   )
   NewProblem$N["Phase"] = ThisProblem$N["Phase"] + NPhaseAdd
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
   return(NewProblem)
 
 }
@@ -187,6 +204,7 @@ AddPhases = function(ThisProblem,
 #' @export
 RemovePhases = function(ThisProblem, PhasesToRemove) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   PhasesToRemoveOrig = PhasesToRemove
@@ -210,6 +228,7 @@ RemovePhases = function(ThisProblem, PhasesToRemove) {
   NewProblem$PhaseStoich = ThisProblem$PhaseStoich[-PhasesToRemove, , drop = FALSE]
   NewProblem$N["Phase"] = ThisProblem$N["Phase"] - length(PhasesToRemove)
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
   return(NewProblem)
 
 }

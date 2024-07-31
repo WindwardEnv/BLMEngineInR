@@ -1,15 +1,14 @@
 ## Submission
 
--   addressed issues from rejected 2024-07-12 submission:
-    -   C++11 requirement has been removed
-    -   'examples' directory has been moved to a sub-directory of 'tests'
-    -   WORDLIST file now used for words we know are not misspelled
-    -   License has been changed from GPL v3 to Apache 2.0
-    -   'abs' function has been changed to 'std::fabs' or 'Rcpp::abs' where appropriate
+Changes made:
+
+-   Switched from MIT license to Apache 2.0. This was the intended license with the previous submission and was changed to MIT by mistake.
+-   Updated "description" field in the DESCRIPTION file to be more descriptive of what this package does. Also included the standard overview and relevant literature list we have on our website in the README file.
+-   Re-vamped the examples in documentation, and added tests to the testthat folder along the same vein.
 
 ## R CMD check environment
 
-Windows x86_64-w64-mingw32 (64-bit), R 4.4.0
+Windows x86_64-w64-mingw32 (64-bit), R 4.4.1
 
 ## R CMD check results
 

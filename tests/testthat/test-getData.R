@@ -1,11 +1,16 @@
 test_that("GetData works", {
+
   expect_error(GetData())
-  # NComp = as.integer(2)
-  # CompNames = c("H","CO3")
-  # TestResult = GetData("Test",NComp,CompNames)
-  # expect_type(TestResult, "list")
-  # expect_identical(names(TestResult),
-  #                  c("NObs","obsLabels","totConcObs"))
-  # expect_identical(dim(TestResult$obsLabels), c(TestResult$NObs,NComp))
-  # expect_identical(dim(TestResult$totConcObs), c(TestResult$NObs,NComp))
+
+  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+                        package = "BLMEngineInR",
+                        mustWork = TRUE)
+  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+                            package = "BLMEngineInR",
+                            mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
+  myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+  expect_equal(CheckBLMObject(myinputs, BlankInputList(myproblem), FALSE),
+               character())
+
 })

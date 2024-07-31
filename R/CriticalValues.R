@@ -44,9 +44,45 @@
 #'
 #' @return The edited version of `ThisProblem`.
 #'
-#' @inherit BlankProblem examples
-#'
 #' @family problem manipulation functions
+#'
+#' @examples
+#' my_new_problem = carbonate_system_problem
+#'
+#' my_new_problem = AddCriticalValues(
+#'   ThisProblem = my_new_problem,
+#'   CA = 12345,
+#'   Species = "A. species",
+#'   Test.Type = "Acute",
+#'   Duration = "24h",
+#'   Lifestage = "adult",
+#'   Endpoint = "survival",
+#'   Quantifier = "LC50",
+#'   References = "thin air",
+#'   Miscellaneous = "individual data point"
+#' )
+#'
+#' lots_of_data = data.frame(CA = runif(26),
+#'                           Species = paste0(LETTERS,". species"),
+#'                           Test.Type = "Acute",
+#'                           Duration = "24h",
+#'                           Lifestage = "adult",
+#'                           Endpoint = "survival",
+#'                           Quantifier = "LC50",
+#'                           References = "thin air")
+#' my_new_problem = AddCriticalValues(
+#'   ThisProblem = my_new_problem,
+#'   CATab = lots_of_data
+#' )
+#'
+#' my_new_problem = RemoveCriticalValues(
+#'   ThisProblem = my_new_problem,
+#'   CAToRemove = which((my_new_problem$CATab$Species == "A. species") &
+#'                        is.na(my_new_problem$CATab$Miscellaneous))
+#' )
+#'
+#' print(my_new_problem$CATab)
+#'
 NULL
 
 
@@ -63,6 +99,7 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
                              References = CATab$References,
                              Miscellaneous = CATab$Miscellaneous) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   if (is.null(Duration)) { Duration = NA }
@@ -91,6 +128,8 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
     NewCATab
   )
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+
   return(NewProblem)
 
 }
@@ -100,6 +139,7 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
 #' @export
 RemoveCriticalValues = function(ThisProblem, CAToRemove) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   CAToRemove = unique(CAToRemove)
@@ -116,6 +156,8 @@ RemoveCriticalValues = function(ThisProblem, CAToRemove) {
   if (NewProblem$N["CAT"] > 0) {
     NewProblem$CATab$Num = seq(1, NewProblem$N["CAT"])
   }
+
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
 
   return(NewProblem)
 

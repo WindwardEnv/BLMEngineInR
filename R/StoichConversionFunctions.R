@@ -105,33 +105,6 @@ StoichMatrixToEquation = function(SpecStoich = matrix(),
   )
 }
 
-
-#' @rdname StoichConversionFunctions
-#' @keywords internal
-EquationToStoich = function(SpecEquation = character(), CompName) {
-
-  Tmp = EquationToStoichComps(SpecEquation = SpecEquation,
-                              CompName = CompName)
-
-  FormedSpecName = Tmp$SpecName
-  ReactantCompNames = Tmp$SpecCompNames
-  ReactantCompStoichs = Tmp$SpecCompStoichs
-
-  ReactionStoich = StoichCompsToStoichMatrix(
-    SpecCompNames = ReactantCompNames,
-    SpecCompStoichs = ReactantCompStoichs,
-    CompName = CompName,
-    SpecName = FormedSpecName
-  )
-
-  return(list(SpecStoich = ReactionStoich,
-              SpecName = FormedSpecName,
-              SpecCompNames = ReactantCompNames,
-              SpecCompStoichs = ReactantCompStoichs))
-
-}
-
-
 #' @rdname StoichConversionFunctions
 #' @keywords internal
 EquationToStoichMatrix = function(SpecEquation = character(), CompName) {
@@ -146,8 +119,6 @@ EquationToStoichMatrix = function(SpecEquation = character(), CompName) {
 #' @keywords internal
 StoichMatrixToStoichComps = function(SpecStoich = matrix(), CompName) {
 
-
-
   SpecCompNames = apply(
     SpecStoich,
     MARGIN = 1,
@@ -156,15 +127,17 @@ StoichMatrixToStoichComps = function(SpecStoich = matrix(), CompName) {
     },
     simplify = FALSE
   )
+  names(SpecCompNames) = rownames(SpecStoich)
 
   SpecCompStoichs = apply(
     SpecStoich,
     MARGIN = 1,
     FUN = function(X) {
-      X[X != 0]
+      unname(X[X != 0])
     },
     simplify = FALSE
   )
+  names(SpecCompStoichs) = rownames(SpecStoich)
 
   return(list(SpecCompNames = SpecCompNames,
               SpecCompStoichs = SpecCompStoichs))
@@ -209,11 +182,16 @@ EquationToStoichComps = function(SpecEquation = character(), CompName) {
     ))
   }
 
+  names(ReactantCompNames) = FormedSpecName
+  names(ReactantCompStoichs) = FormedSpecName
+
   # aggregate CompNames and CompStoichs lists to eliminate duplicates
-  for (i in 1:length(ReactantCompNames)) {
+  for (i in FormedSpecName) {
     tmp = stats::aggregate(x = ReactantCompStoichs[[i]],
                     by = list(Names = ReactantCompNames[[i]]),
                     FUN = sum)
+    tmp = tmp[stats::na.omit(match(CompName, tmp$Names)), ]
+    tmp = tmp[tmp$x != 0, ]
     ReactantCompStoichs[[i]] = as.integer(tmp$x)
     ReactantCompNames[[i]] = tmp$Names
   }
@@ -225,3 +203,31 @@ EquationToStoichComps = function(SpecEquation = character(), CompName) {
   ))
 
 }
+
+
+#' @rdname StoichConversionFunctions
+#' @keywords internal
+EquationToStoich = function(SpecEquation = character(), CompName) {
+
+  Tmp = EquationToStoichComps(SpecEquation = SpecEquation,
+                              CompName = CompName)
+
+  FormedSpecName = Tmp$SpecName
+  ReactantCompNames = Tmp$SpecCompNames
+  ReactantCompStoichs = Tmp$SpecCompStoichs
+
+  ReactionStoich = StoichCompsToStoichMatrix(
+    SpecCompNames = ReactantCompNames,
+    SpecCompStoichs = ReactantCompStoichs,
+    CompName = CompName,
+    SpecName = FormedSpecName
+  )
+
+  return(list(SpecStoich = ReactionStoich,
+              SpecName = FormedSpecName,
+              SpecCompNames = ReactantCompNames,
+              SpecCompStoichs = ReactantCompStoichs))
+
+}
+
+

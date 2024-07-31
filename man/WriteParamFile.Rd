@@ -22,13 +22,8 @@ This function will take a BLM chemical problem list object and
   `DefineProblem`.
 }
 \examples{
-## Not run:
-
-# myfile_problem = BLMEngineInR::DefineProblem(ParamFile = "myfile.dat4")
-# BLMEngineInR::WriteParamFile(ThisProblem = myfile_problem, ParamFile = "myfile_copy.dat4")
-
-# myfile.dat4 and myfile_copy.dat4 should be nearly identical, except for white space
-
-## End (Not run )
+tf = tempfile()
+WriteParamFile(ThisProblem = carbonate_system_problem, ParamFile = tf)
+DefineProblem(tf)
 
 }

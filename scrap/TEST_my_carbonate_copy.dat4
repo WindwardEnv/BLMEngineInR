@@ -1,0 +1,43 @@
+Column model parameter file, Ver 4.00
+--------------------------------------------------------------------------------
+1, Number of Mass Compartments
+1, Number of Input Labels
+2, Number of Input Variables
+1, Number of Input Components
+0, Number of Defined Components
+3, Number of Species
+0, Number of Phases
+0, Number of Special Definitions
+0, Number of Critical Values
+--------------------------------------------------------------------------------
+Mass Compartment List
+Compartment, C to M, Unit Label
+Water,       1,      L
+--------------------------------------------------------------------------------
+Input Labels
+ID
+--------------------------------------------------------------------------------
+Input Variables
+Variable, Compartment, Type
+Temp,     Water,       Temperature
+pH,       Water,       pH
+--------------------------------------------------------------------------------
+Input Components
+Component, Charge, Compartment, Type,    Activity
+CO3,       -2,     Water,       MassBal, Debye
+--------------------------------------------------------------------------------
+Defined Components
+Component, From, Charge, Compartment, Type, Activity, Site Den
+--------------------------------------------------------------------------------
+Formation Reactions
+Species, Compartment, Activity, NC, C1,  S1, C2, S2, Log K,   Delta H, TempK
+OH,      Water,       Debye,    1,  H,   -1,         -13.997, -55810,  298.15
+HCO3,    Water,       Debye,    2,  CO3, 1,  H,  1,  10.329,  -14600,  298.15
+H2CO3,   Water,       Debye,    2,  CO3, 1,  H,  2,  16.681,  -23760,  298.15
+--------------------------------------------------------------------------------
+Phase List
+Phase List
+Phase, NC, C1, S1, C2, S2, C3, S3, Log K, Delta H, Temp, Moles
+--------------------------------------------------------------------------------
+Special Definitions
+, 

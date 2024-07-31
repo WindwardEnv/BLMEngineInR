@@ -44,22 +44,3 @@ Definition, Species
 Critical Accumulation Table
 #, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
 --------------------------------------------------------------------------------
--------Notes--------
-Component Types: 
-  PB  C++  R/PFile  
-  1   1     MassBal(Float previously)
-  2   2     FixedConc
-  3   -     Substituted (who knows what this is)
-  4   3     ChargeBal (not useful in BLM)
-  5   4     SurfPot (keep for now - double layer stuff)
-  6   5     WHAMV
-  -   6     WHAMVI
-  -   7     WHAMVII
-Activity Correction Methods: 
-  PB  C++   R/PFile  
-  1   1     None
-  2   2     Davies
-  3   3     Debye
-  4   4     MoleFraction
-  5   5     ChargeFraction
-  6   6     WHAM (usually internal use only)

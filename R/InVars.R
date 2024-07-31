@@ -22,9 +22,19 @@
 #'   variable being added is pH, an "H" component will also be added as a fixed
 #'   activity component.
 #'
-#' @inherit BlankProblem examples
-#'
 #' @family problem manipulation functions
+#'
+#' @examples
+#' print(carbonate_system_problem$InVar)
+#' my_new_problem = carbonate_system_problem
+#' my_new_problem = AddInVars(ThisProblem = my_new_problem,
+#'                            InVarName = c("Humics", "Fulvics"),
+#'                            InVarMCName = "Water",
+#'                            InVarType = c("WHAM-HA","WHAM-FA"))
+#' my_new_problem = RemoveInVars(ThisProblem = my_new_problem,
+#'                               InVarToRemove = "Humics")
+#' print(my_new_problem$InVar)
+#'
 NULL
 
 #' @rdname InVars
@@ -33,6 +43,7 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
                     InVarType,
                     InVarMCR = match(InVarMCName, ThisProblem$Mass$Name)) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   # error checking
@@ -91,6 +102,7 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
     }
   }
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
   return(NewProblem)
 
 }
@@ -100,6 +112,7 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
 #' @export
 RemoveInVars = function(ThisProblem, InVarToRemove) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   if (length(InVarToRemove) < 1) {
@@ -131,8 +144,10 @@ RemoveInVars = function(ThisProblem, InVarToRemove) {
 
   # Remove input variables
   NewProblem$InVar = ThisProblem$InVar[-InVarToRemove, , drop = FALSE]
+  rownames(NewProblem$InVar) = NULL
   NewProblem$N["InVar"] = ThisProblem$N["InVar"] - length(InVarToRemove)
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
   return(NewProblem)
 
 }

@@ -58,9 +58,30 @@
 #'
 #' @return `ThisProblem`, with the species reaction(s) changed.
 #'
-#' @inherit BlankProblem examples
-#'
 #' @family problem manipulation functions
+#'
+#' @examples
+#' print(carbonate_system_problem$Spec)
+#' my_new_problem = carbonate_system_problem
+#' my_new_problem = AddInComps(ThisProblem = my_new_problem,
+#'                             InCompName = "Ca",
+#'                             InCompCharge = 2,
+#'                             InCompMCName = "Water",
+#'                             InCompType = "MassBal",
+#'                             InCompActCorr = "Debye")
+#' my_new_problem = AddSpecies(ThisProblem = my_new_problem,
+#'                             SpecEquation = c("CaCO3 = 1 * Ca + 1 * CO3",
+#'                                              "CaHCO3 = 1 * Ca + 1 * H + 1 * CO3"),
+#'                             SpecMCName = "Water",
+#'                             SpecActCorr = "Debye",
+#'                             SpecLogK = c(3.22, 11.44),
+#'                             SpecDeltaH = c(14951, -3664),
+#'                             SpecTempKelvin = 298.15)
+#' print(my_new_problem$Spec)
+#' my_new_problem = RemoveSpecies(ThisProblem = my_new_problem,
+#'                                SpeciesToRemove = "CaCO3")
+#' print(my_new_problem$Spec)
+#'
 NULL
 
 #' @rdname Species
@@ -75,6 +96,7 @@ AddSpecies = function(ThisProblem,
                       SpecMCR = match(SpecMCName, ThisProblem$Mass$Name),
                       InSpec = TRUE) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   HasName = length(SpecName) > 0
@@ -174,7 +196,7 @@ AddSpecies = function(ThisProblem,
                           data.frame(
                             Name = trimws(as.character(SpecName)),
                             Equation = trimws(as.character(SpecEquation)),
-                            Charge = NA,
+                            Charge = as.integer(NA),
                             MCName = trimws(as.character(SpecMCName)),
                             MCR = as.integer(SpecMCR),
                             Type = trimws(as.character(SpecType)),
@@ -229,7 +251,7 @@ AddSpecies = function(ThisProblem,
   NewProblem$N["Spec"] = ThisProblem$N["Spec"] + NSpecAdd
 
   # These parts it's easier to just calculate again
-  NewProblem$Spec$Charge = drop(NewProblem$SpecStoich %*% NewProblem$Comp$Charge)
+  NewProblem$Spec$Charge = as.integer(drop(NewProblem$SpecStoich %*% NewProblem$Comp$Charge))
 
   # Put components at the beginning
   CompIndexes = match(NewProblem$Comp$Name, NewProblem$Spec$Name)
@@ -239,6 +261,7 @@ AddSpecies = function(ThisProblem,
                             NewProblem[[i]][SpecIndexes, , drop = FALSE])
   }
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
   return(NewProblem)
 
 }
@@ -248,6 +271,7 @@ AddSpecies = function(ThisProblem,
 #' @export
 RemoveSpecies = function(ThisProblem, SpeciesToRemove) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   SpeciesToRemoveOrig = SpeciesToRemove
@@ -267,6 +291,7 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove) {
 
   # Remove Species
   NewProblem$Spec = ThisProblem$Spec[-SpeciesToRemove, , drop = FALSE]
+  rownames(NewProblem$Spec) = NULL
   NewProblem$SpecCompList = ThisProblem$SpecCompList[-SpeciesToRemove, , drop = FALSE]
   NewProblem$SpecStoich = ThisProblem$SpecStoich[-SpeciesToRemove, , drop = FALSE]
   NewProblem$N["Spec"] = ThisProblem$N["Spec"] - length(SpeciesToRemove)
@@ -284,6 +309,7 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove) {
   NewProblem$BLMetal$SpecsR = match(NewProblem$BLMetal$Name, NewProblem$Spec$Name)
   NewProblem$N["BLMetal"] = length(NewProblem$BLMetal$Name)
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
   return(NewProblem)
 
 }

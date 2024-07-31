@@ -13,9 +13,10 @@
 #' @export
 #'
 #' @examples
-#' ## Not Run
-#' # thisProblem = DefineProblem("my_parameter_file.dat")
-#' ## End Not Run
+#' mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+#'                       package = "BLMEngineInR", mustWork = TRUE)
+#' thisProblem = DefineProblem(mypfile)
+#'
 DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
   # error catching

@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' Run the Biotic Ligand Model
 #'
 #' `BLM` will run the Windward Environmental Biotic Ligand Model (BLM) with the
@@ -34,57 +48,14 @@
 #'
 #' @export
 #'
-#' @examples
-#' ## Not run:
-#' ## running the BLM function with a parameter file and input file:
-#' # BLM(ParamFile = "path/mypfile.dat", InputFile = "path/myinputfile.blm")
-#' #
-#' ## running the BLM with parameter and input objects
-#' # ThisProblem = DefineProblem(ParamFile = "path/mypfile.dat")
-#' # AllInput = list(
-#' #   NObs = 5,
-#' #   InLabObs = as.matrix(data.frame(
-#' #     row.names = "Obs",
-#' #     Obs = 1:5,
-#' #     ObsNum = as.character(1:5),
-#' #     ID = "pH series",
-#' #     ID2 = paste0("pH=",5:9)
-#' #   )),
-#' #   InVarObs = as.matrix(data.frame(
-#' #     row.names = "Obs",
-#' #     Obs = 1:5,
-#' #     Temp = 15,
-#' #     pH = 5:9,
-#' #     DOC = 0.1,
-#' #     HA = 10
-#' #   )),
-#' #   InCompObs = as.matrix(data.frame(
-#' #     row.names = "Obs",
-#' #     Obs = 1:5,
-#' #     Zn = 1E-7,
-#' #     Ca = 0.000299416,
-#' #     Mg = 0.000501954,
-#' #     Na = 0.00110049,
-#' #     K = 5.37108e-05,
-#' #     SO4 = 0.000799487,
-#' #     Cl = 5.35921e-05,
-#' #     CO3 = 0.00109987
-#' #   ))
-#' # )
-#' # FunctionInputs = c(
-#' #   ThisProblem[which(names(ThisProblem) %in% formalArgs("MatchInputsToProblem"))],
-#' #   AllInput[which(names(AllInput) %in% formalArgs("MatchInputsToProblem"))])
-#' # AllInput = c(AllInput, do.call("MatchInputsToProblem", args = FunctionInputs))
-#' # ResultsTable_pH = BLM(ThisProblem = ThisProblem, AllInput = AllInput,
-#' #                       DoTox = TRUE, iCA = 1)
-#' ## End(Not run)
+#' @example tests/examples/examples-BLM.R
 BLM = function(ParamFile = character(),
                InputFile = character(),
                ThisProblem = list(),
                AllInput = list(),
                DoTox = logical(),
                iCA = 1L,
-               QuietFlag = c("Quiet", "Very Quiet", "Debug"),
+               QuietFlag = c("Very Quiet", "Quiet", "Debug"),
                # writeOutputFile = F, outputFileName = NULL,
                # criticalSource = c("ParamFile","InputFile"),
                ConvergenceCriteria = 0.0001,
@@ -96,74 +67,29 @@ BLM = function(ParamFile = character(),
   # error catching
   stopifnot(file.exists(ParamFile) || !is.null(ThisProblem))
   stopifnot(file.exists(InputFile) || !is.null(AllInput))
-  QuietFlag = match.arg(QuietFlag)
+  QuietFlag = match.arg(QuietFlag, c("Very Quiet", "Quiet", "Debug"))
 
   # 1. parse out parameter file in DefineProblem
   #   --> parameter file name
   #   <-- R variable that defines the problem for immediate use in CHESS
   if (length(ThisProblem) == 0) {
-    ThisProblem = DefineProblem(ParamFile)
+    ThisProblem = DefineProblem(ParamFile = ParamFile)
   }
 
   # 2. Read InputFile
   #   --> input file name, component info from ParamFile
   #   <-- R variable with component concentrations (total/free dep on ParamFile)
   if (length(AllInput) == 0) {
-    FunctionInputs = ThisProblem[
-      which(names(ThisProblem) %in% formalArgs("GetData"))]
-    FunctionInputs$InputFile = InputFile
-    AllInput = do.call("GetData", args = FunctionInputs)
+    AllInput = GetData(InputFile = InputFile, ThisProblem = ThisProblem)
   }
 
   # Inputs Error catching
-  ReferenceProblemList = BlankProblem()
-  if (typeof(ThisProblem) != "list") {
-    stop("Invalid problem list - it's not a list.")
-  }
-  if(!all(names(ReferenceProblemList) %in% names(ThisProblem))) {
-    print(setdiff(names(ReferenceProblemList), names(ThisProblem)))
-    stop("Invalid problem list - missing elements.")
-  }
-  ThisProblem.types = sapply(ThisProblem, typeof)[match(names(ReferenceProblemList), names(ThisProblem))]
-  Reference.types = sapply(ReferenceProblemList, typeof)
-  if (!all(ThisProblem.types == Reference.types, na.rm = TRUE)) {
-    print(
-      data.frame(
-        element.name = names(ReferenceProblemList),
-        ThisProblem.type = ThisProblem.types,
-        Reference.type = Reference.types
-      )[ThisProblem.types != Reference.types, ]
-    )
-    stop("Invalid problem list - incorrect types.")
-  }
-  ReferenceInputList = list(NObs = 1L,
-                            InLabObs = array("", dim = c(1, ThisProblem$N["InLab"])),
-                            InVarObs = array(0.0, dim = c(1, ThisProblem$N["InVar"])),
-                            InCompObs = array(0.0, dim = c(1, ThisProblem$N["InComp"])),
-                            SysTempCelsiusObs = array(0.0, 1),
-                            SysTempKelvinObs = array(0.0, 1),
-                            pH = array(0.0, 1),
-                            TotConcObs = array(0.0, dim = c(1, ThisProblem$N["Comp"])),
-                            HumicSubstGramsPerLiterObs = array(0.0, dim = c(1,2)))
-  if (typeof(AllInput) != "list") {
-    stop("Invalid inputs list - it's not a list.")
-  }
-  if(!all(names(ReferenceInputList) %in% names(AllInput))) {
-    print(setdiff(names(ReferenceInputList), names(AllInput)))
-    stop("Invalid inputs list - missing elements.")
-  }
-  AllInput.types = sapply(AllInput, typeof)[match(names(ReferenceInputList), names(AllInput))]
-  Reference.types = sapply(ReferenceInputList, typeof)
-  if (!all(AllInput.types == Reference.types, na.rm = TRUE)) {
-    print(
-      data.frame(
-        element.name = names(ReferenceInputList),
-        AllInput.type = AllInput.types,
-        Reference.type = Reference.types
-      )[AllInput.types != Reference.types, ]
-    )
-    stop("Invalid inputs list - incorrect types.")
-  }
+  CheckBLMObject(Object = ThisProblem,
+                 Reference = BlankProblem(),
+                 BreakOnError = TRUE)
+  CheckBLMObject(Object = AllInput,
+                 Reference = BlankInputList(ThisProblem),
+                 BreakOnError = TRUE)
 
 
   # Save some common variables for initializing arrays
@@ -331,13 +257,13 @@ BLM = function(ParamFile = character(),
 
     if (is.na(ThisInput$SysTempKelvin) |
         any(is.na(ThisInput$TotConc)) |
-        (ThisProblem$WHAM$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$Index$WHAMDonnanMCR)])))) {
+        (ThisProblem$WHAM$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[ThisProblem$Index$WHAMDonnanMCR > 0])))) {
       # Incomplete chemistry, so skip calling CHESS
       OutList$Miscellaneous$Status[iObs] = "Incomplete Chemistry"
     } else if ((ThisInput$SysTempKelvin <= 263) |
                any(ThisInput$TotConc <= 0) |
                (ThisInput$TotConc["H"] > 1) | (ThisInput$TotConc["H"] < 1.0E-14) |
-               (any(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$Index$WHAMDonnanMCR)] <= 0))) {
+               (any(ThisInput$HumicSubstGramsPerLiter[ThisProblem$Index$WHAMDonnanMCR > 0] <= 0))) {
       # Invalid chemistry, so skip calling CHESS
       OutList$Miscellaneous$Status[iObs] = "Invalid Chemistry"
     } else {
@@ -420,7 +346,10 @@ BLM = function(ParamFile = character(),
              digits = 4)[!EmptyOrInvalidMetalObs, ]
   }
 
-  print(Sys.time() - StartTime)
+  TimeElapsed = Sys.time() - StartTime
+  if (QuietFlag != "Very Quiet") {
+    print(TimeElapsed)
+  }
 
 
   return(OutList)

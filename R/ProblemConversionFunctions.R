@@ -20,24 +20,26 @@
 #' @keywords internal
 ConvertToList = function(ThisProblemDF) {
 
+  CheckBLMObject(ThisProblemDF, BlankProblem(), BreakOnError = TRUE)
   ThisProblemList = list()
 
   CompositeNames = c("N", "Mass", "InLab", "InVar", "InComp", "DefComp", "Comp",
                      "Spec", "Phase", "BL", "Metal", "BLMetal")
   OrganizedNames = c("Index", "WHAM")
   AsIsNames = setdiff(names(ThisProblemDF), c(CompositeNames, OrganizedNames))
+  NoZeroLengthNames = c("MetalName","MetalCompR")
 
   for (i in CompositeNames) {
     if (is.data.frame(ThisProblemDF[[i]])) {
       for (j in names(ThisProblemDF[[i]])) {
         ThisProblemList[[paste0(i, j)]] = ThisProblemDF[[i]][, j]
-        if (any(names(ThisProblemDF[[i]]) %in% "Name")) {
+        if (any(names(ThisProblemDF[[i]]) %in% "Name") & (j != "Name")) {
           names(ThisProblemList[[paste0(i, j)]]) = ThisProblemDF[[i]]$Name
         }
       }
     } else if (is.vector(ThisProblemDF[[i]]) || is.list(ThisProblemDF[[i]])) {
       for (j in names(ThisProblemDF[[i]])) {
-        ThisProblemList[[paste0(i, j)]] = ThisProblemDF[[i]][j]
+        ThisProblemList[[paste0(i, j)]] = unname(ThisProblemDF[[i]][j])
       }
     }
   }
@@ -50,6 +52,24 @@ ConvertToList = function(ThisProblemDF) {
     ThisProblemList[[i]] = ThisProblemDF[[i]]
   }
 
+  for (i in NoZeroLengthNames) {
+    if (typeof(ThisProblemList[[i]]) == "character"){
+      ThisProblemList[[i]] = ""
+    } else if (typeof(ThisProblemList[[i]]) == "integer") {
+      ThisProblemList[[i]] = -1L
+    } else {
+      ThisProblemList[[i]] = NA
+    }
+  }
+
+  # Re-organize list elements so they're grouped nicer
+  BlankProblemNames = names(BlankProblemList())
+  ThisProblemList = c(
+    ThisProblemList[BlankProblemNames],
+    ThisProblemList[setdiff(names(ThisProblemList), BlankProblemNames)]
+  )
+
+  CheckBLMObject(ThisProblemList, BlankProblemList(), BreakOnError = TRUE)
   return(ThisProblemList)
 
 }
@@ -59,6 +79,7 @@ ConvertToList = function(ThisProblemDF) {
 #' @keywords internal
 ConvertToDF = function(ThisProblemList) {
 
+  CheckBLMObject(ThisProblemList, BlankProblemList(), BreakOnError = TRUE)
   ThisProblemDF = list()
 
   ListNames = names(ThisProblemList)
@@ -69,6 +90,19 @@ ConvertToDF = function(ThisProblemList) {
     WHAM = c("DoWHAM", "WHAMVer", "WdatFile", "wDLF", "wKZED",
              "wP", "wRadius", "wMolWt")
   )
+  NoZeroLengthNames = c("MetalName","MetalCompR")
+
+  for (i in NoZeroLengthNames) {
+    if (typeof(ThisProblemList[[i]]) == "character"){
+      ThisProblemList[[i]] = character()
+    } else if (typeof(ThisProblemList[[i]]) == "integer") {
+      ThisProblemList[[i]] = integer()
+    } else if (typeof(ThisProblemList[[i]]) == "double") {
+      ThisProblemList[[i]] = double()
+    } else {
+      ThisProblemList[[i]] = NULL
+    }
+  }
 
   ConvertedNames = c()
 
@@ -93,10 +127,12 @@ ConvertToDF = function(ThisProblemList) {
     if (length(VectorNames) == 1) {
       ThisProblemDF[[VectorNames]] = ThisProblemList[[VectorNames]]
     } else {
-      if (all(sapply(ThisProblemList[VectorNames], FUN = length) == 1)) {
+      # if (all(sapply(ThisProblemList[VectorNames], FUN = length) == 1)) {
+      if (i %in% "N") {
         ThisProblemDF[[i]] = unlist(ThisProblemList[VectorNames])
       } else {
         ThisProblemDF[[i]] = as.data.frame(ThisProblemList[VectorNames])
+        rownames(ThisProblemDF[[i]]) = NULL
       }
       names(ThisProblemDF[[i]]) = gsub(paste0("^", i), "", VectorNames)
     }
@@ -126,6 +162,14 @@ ConvertToDF = function(ThisProblemList) {
     ThisProblemList$SpecName,
     ThisProblemList$CompName)
 
+  # Re-organize list elements so they're grouped nicer
+  BlankProblemNames = names(BlankProblem())
+  ThisProblemDF = c(
+    ThisProblemDF[BlankProblemNames],
+    ThisProblemDF[setdiff(names(ThisProblemDF), BlankProblemNames)]
+  )
+
+  CheckBLMObject(ThisProblemDF, BlankProblem(), BreakOnError = TRUE)
   return(ThisProblemDF)
 
 }

@@ -24,15 +24,15 @@ ExpandWHAM = function(ThisProblem,
   if (is.na(WdatFile)) {
     WHAMVer = match.arg(WHAMVer, choices =  c("V", "VI", "VII"))
     if (WHAMVer == "V") {
-      WdatFile = system.file("extdata/WHAM/WHAM_V.wdat",
+      WdatFile = system.file(file.path("extdata","WHAM","WHAM_V.wdat"),
                              package = "BLMEngineInR",
                              mustWork = TRUE)
     } else if (WHAMVer == "VI") {
-      WdatFile = system.file("extdata/WHAM/WHAM_VI.wdat",
+      WdatFile = system.file(file.path("extdata","WHAM","WHAM_VI.wdat"),
                              package = "BLMEngineInR",
                              mustWork = TRUE)
     } else if (WHAMVer  == "VII") {
-      WdatFile = system.file("extdata/WHAM/WHAM_VII.wdat",
+      WdatFile = system.file(file.path("extdata","WHAM","WHAM_VII.wdat"),
                              package = "BLMEngineInR",
                              mustWork = TRUE)
     }

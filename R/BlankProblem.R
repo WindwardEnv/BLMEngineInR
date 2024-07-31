@@ -91,7 +91,7 @@ BlankProblem = function() {
       MCName = character(),
       MCR = integer(),
       Type = character(),
-      ActCorr = integer(),
+      ActCorr = character(),
       LogK = numeric(),
       K = numeric(),
       DeltaH = numeric(),
@@ -146,8 +146,8 @@ BlankProblem = function() {
     # WHAM parameters
     WHAM = list(
       DoWHAM = FALSE,
-      WHAMVer = NA,
-      WdatFile = NA,
+      WHAMVer = as.character(NA),
+      WdatFile = as.character(NA),
       wDLF = as.numeric(NA),
       wKZED = as.numeric(NA),
       wP = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
@@ -158,7 +158,7 @@ BlankProblem = function() {
     Index = list(
       AqueousMCR = as.integer(NA),
       BioticLigMCR = as.integer(NA),
-      WHAMDonnanMCR = array(as.integer(NA), dim = 2, dimnames = list(c("HA","FA")))
+      WHAMDonnanMCR = array(-1L, dim = 2, dimnames = list(c("HA","FA")))
     )
 
   )
@@ -178,28 +178,37 @@ BlankProblem = function() {
 #' @keywords internal
 BlankProblemList = function() {
 
-  # assemble Output
+  named.integer.vector = integer()
+  named.numeric.vector = numeric()
+  named.character.vector = character()
+  names(named.integer.vector) =
+    names(named.numeric.vector) =
+    names(named.character.vector) = character()
+
   Out = list(
 
     # Counts
     NMass = 0L,
     NInLab = 0L,
     NInVar = 0L,
+    NInMass = 0L,
     NInComp = 0L,
+    NInDefComp = 0L,
+    NInSpec = 0L,
     NDefComp = 0L,
     NComp = 0L,
     NSpec = 0L,
     NPhase = 0L,
-    NSpecialDef = 0L,
     NBL = 0L,
     NMetal = 0L,
     NBLMetal = 0L,
     NCAT = 0L,
 
     # Mass Compartment List
+    InMassName = character(),
     MassName = character(),
-    MassAmt = numeric(),
-    MassUnit = character(),
+    MassAmt = named.numeric.vector,
+    MassUnit = named.character.vector,
     AqueousMCR = as.integer(NA),
     BioticLigMCR = as.integer(NA),
 
@@ -208,64 +217,67 @@ BlankProblemList = function() {
 
     # Input Variables
     InVarName = character(),
-    InVarMCName = character(),
-    InVarMCR = integer(),
-    InVarType = character(),
+    InVarMCName = named.character.vector,
+    InVarMCR = named.integer.vector,
+    InVarType = named.character.vector,
 
     # Input Components
     InCompName = character(),
     CompName = character(),
-    CompCharge = integer(),
-    CompMCName = character(),
-    CompMCR = integer(),
-    CompType = character(),
-    CompActCorr = character(),
-    CompSiteDens = numeric(),
+    CompCharge = named.integer.vector,
+    CompMCName = named.character.vector,
+    CompMCR = named.integer.vector,
+    CompType = named.character.vector,
+    CompActCorr = named.character.vector,
+    CompSiteDens = named.numeric.vector,
 
     # Defined Components
+    InDefCompName = character(),
     DefCompName = character(),
-    DefCompFromNum = numeric(),
-    DefCompFromVar = character(),
-    DefCompCharge = integer(),
-    DefCompMCName = character(),
-    DefCompMCR = integer(),
-    DefCompType = character(),
-    DefCompActCorr = character(),
-    DefCompSiteDens = numeric(),
+    DefCompFromNum = named.numeric.vector,
+    DefCompFromVar = named.character.vector,
+    DefCompCharge = named.integer.vector,
+    DefCompMCName = named.character.vector,
+    DefCompMCR = named.integer.vector,
+    DefCompType = named.character.vector,
+    DefCompActCorr = named.character.vector,
+    DefCompSiteDens = named.numeric.vector,
 
     # Formation Reactions
+    InSpecName = character(),
     SpecName = character(),
-    SpecMCName = character(),
-    SpecMCR = integer(),
-    SpecActCorr = character(),
-    SpecNC = integer(),
+    SpecEquation = named.character.vector,
+    SpecCharge = named.integer.vector,
+    SpecMCName = named.character.vector,
+    SpecMCR = named.integer.vector,
+    SpecType = named.character.vector,
+    SpecActCorr = named.character.vector,
+    SpecLogK = named.numeric.vector,
+    SpecK = named.numeric.vector,
+    SpecDeltaH = named.numeric.vector,
+    SpecTempKelvin = named.numeric.vector,
+    SpecNC = named.integer.vector,
     SpecCompList = matrix(data = 0L, nrow = 0, ncol = 0),
     SpecStoich = matrix(data = 0L, nrow = 0, ncol = 0),
-    SpecLogK = numeric(),
-    SpecDeltaH = numeric(),
-    SpecTempKelvin = numeric(),
-    SpecCharge = integer(),
-    SpecK = numeric(),
-
 
     # Phase List
     PhaseName = character(),
-    PhaseNC = integer(),
-    PhaseCompList = matrix(data = 0, nrow = 0, ncol = 0),
-    PhaseStoich = matrix(data = 0, nrow = 0, ncol = 0),
-    PhaseLogK = numeric(),
-    PhaseDeltaH = numeric(),
-    PhaseTemp = numeric(),
-    PhaseMoles = numeric(),
+    PhaseEquation = named.character.vector,
+    PhaseNC = named.integer.vector,
+    PhaseCompList = matrix(data = 0L, nrow = 0, ncol = 0),
+    PhaseStoich = matrix(data = 0L, nrow = 0, ncol = 0),
+    PhaseLogK = named.numeric.vector,
+    PhaseDeltaH = named.numeric.vector,
+    PhaseTemp = named.numeric.vector,
+    PhaseMoles = named.numeric.vector,
 
     # Special Definitions
     BLName = character(),
-    BLCompR = integer(),
-    MetalName = character(),
-    MetalCompR = integer(),
+    BLCompR = named.integer.vector,
+    MetalName = as.character(""),
+    MetalCompR = -1L,
     BLMetalName = character(),
-    BLMetalSpecsR = integer(),
-    DoWHAM = FALSE,
+    BLMetalSpecsR = named.integer.vector,
 
     # Critical Accumulation Table
     CATab = data.frame(Num = integer(), CA = numeric(), Species = character(),
@@ -275,7 +287,10 @@ BlankProblemList = function() {
                        Miscellaneous = character()),
 
     # WHAM parameters
-    WHAMDonnanMCR = array(as.integer(NA), dim =2, dimnames = list(c("HA","FA"))),
+    DoWHAM = FALSE,
+    WHAMVer = as.character(NA),
+    WdatFile = as.character(NA),
+    WHAMDonnanMCR = array(-1L, dim =2, dimnames = list(c("HA","FA"))),
     wDLF = as.numeric(NA),
     wKZED = as.numeric(NA),
     wP = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),

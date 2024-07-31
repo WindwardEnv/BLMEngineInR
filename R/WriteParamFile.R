@@ -12,17 +12,14 @@
 #' @return (invisibly) TRUE, if successful.
 #'
 #' @examples
-#' ## Not run:
-#'
-#' # myfile_problem = BLMEngineInR::DefineProblem(ParamFile = "myfile.dat4")
-#' # BLMEngineInR::WriteParamFile(ThisProblem = myfile_problem, ParamFile = "myfile_copy.dat4")
-#'
-#' # myfile.dat4 and myfile_copy.dat4 should be nearly identical, except for white space
-#'
-#' ## End (Not run )
+#' tf = tempfile()
+#' WriteParamFile(ThisProblem = carbonate_system_problem, ParamFile = tf)
+#' DefineProblem(tf)
 #'
 #' @export
 WriteParamFile = function(ThisProblem, ParamFile) {
+
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
 
   MakeUniformTXTColumn = function(X) {
     if (length(unique(nchar(X))) > 1) {
@@ -125,10 +122,10 @@ WriteParamFile = function(ThisProblem, ParamFile) {
 
 
   TmpTable = ThisProblem$Phase
-  TmpList = EquationToStoich(SpecEquation = TmpTable$Equation,
-                             CompName = ThisProblem$Comp$Name)
   write("Phase List", file = ParamFile, append = TRUE)
   if (ThisProblem$N["Phase"] > 0) {
+    TmpList = EquationToStoich(SpecEquation = TmpTable$Equation,
+                               CompName = ThisProblem$Comp$Name)
     Tmp = MakeUniformTXTColumn(paste0(c("Phases", TmpTable$Name), ", "))
     Tmp = MakeUniformTXTColumn(paste0(Tmp, c("NC", TmpTable$NC), ", "))
     for (i in 1:max(TmpTable$NC)) {
@@ -153,24 +150,37 @@ WriteParamFile = function(ThisProblem, ParamFile) {
   write(SectionBreak, file = ParamFile, append = TRUE)
 
   write("Special Definitions", file = ParamFile, append = TRUE)
-  TmpTable = data.frame(
-    A = c("Definition",
-          rep("BL", ThisProblem$N["BL"]),
-          rep("Metal", ThisProblem$N["Metal"]),
-          rep("BL-Metal", ThisProblem$N["BLMetal"]),
-          ifelse(ThisProblem$WHAM$DoWHAM,
-                 "WHAM",
-                 NULL)),
-    B = c("Value",
-          ThisProblem$BL$Name,
-          ThisProblem$Metal$Name,
-          ThisProblem$BLMetal$Name,
-          ifelse(ThisProblem$WHAM$DoWHAM,
-                 ifelse(is.na(ThisProblem$WHAM$WHAMVer),
-                        ThisProblem$WHAM$WdatFile,
-                        ThisProblem$WHAM$WHAMVer),
-                 NULL))
-  )
+  TmpTable = data.frame(A = "Definition", B = "Value")
+  if (ThisProblem$N["BL"] > 0) {
+    TmpTable = rbind(TmpTable,
+                     data.frame(
+                       A = rep("BL", ThisProblem$N["BL"]),
+                       B = ThisProblem$BL$Name
+                     ))
+  }
+  if (ThisProblem$N["Metal"] > 0) {
+    TmpTable = rbind(TmpTable,
+                     data.frame(
+                       A = rep("Metal", ThisProblem$N["Metal"]),
+                       B = ThisProblem$Metal$Name
+                     ))
+  }
+  if (ThisProblem$N["BLMetal"] > 0) {
+    TmpTable = rbind(TmpTable,
+                     data.frame(
+                       A = rep("BL-Metal", ThisProblem$N["BLMetal"]),
+                       B = ThisProblem$BLMetal$Name
+                     ))
+  }
+  if (ThisProblem$WHAM$DoWHAM) {
+    TmpTable = rbind(TmpTable,
+                     data.frame(
+                       A = "WHAM",
+                       B = ifelse(is.na(ThisProblem$WHAM$WHAMVer),
+                                      ThisProblem$WHAM$WdatFile,
+                                      ThisProblem$WHAM$WHAMVer)
+                     ))
+  }
   Tmp = MakeUniformTXTColumn(paste0(TmpTable$A, ", "))
   Tmp = paste0(Tmp, TmpTable$B)
   write(Tmp, file = ParamFile, append = TRUE)

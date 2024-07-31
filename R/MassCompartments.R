@@ -22,9 +22,21 @@
 #'   components, input variables, etc. associated with those mass compartments
 #'   edited.
 #'
-#' @inherit BlankProblem examples
-#'
 #' @family problem manipulation functions
+#'
+#' @examples
+#' print(carbonate_system_problem$Mass)
+#' my_new_problem = carbonate_system_problem
+#' my_new_problem = AddMassCompartments(ThisProblem = my_new_problem,
+#'                                      MassTable = data.frame(
+#'                                        Name = c("Soil", "BL"),
+#'                                        Amt = 1,
+#'                                        Unit = c("kg","kg wet")))
+#' print(my_new_problem$Mass)
+#' my_new_problem = RemoveMassCompartments(ThisProblem = my_new_problem,
+#'                                         MCToRemove = "Soil")
+#' print(my_new_problem$Mass)
+#'
 NULL
 
 
@@ -37,6 +49,7 @@ AddMassCompartments = function(ThisProblem,
                                MassUnit = MassTable$Unit,
                                InMass = TRUE) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   # error checking
@@ -66,10 +79,16 @@ AddMassCompartments = function(ThisProblem,
 
   # Update MCR indices
   NewProblem$Index$AqueousMCR = which(tolower(NewProblem$Mass$Name) %in% c("water", "aqueous"))
+  if (length(NewProblem$Index$AqueousMCR) == 0) {
+    NewProblem$Index$AqueousMCR = as.integer(NA)
+  }
   NewProblem$Index$BioticLigMCR = which(
     grepl("BL", NewProblem$Mass$Name, ignore.case = TRUE) |
       grepl("gill", NewProblem$Mass$Name, ignore.case = TRUE)
   )
+  if (length(NewProblem$Index$BioticLigMCR) == 0) {
+    NewProblem$Index$BioticLigMCR = as.integer(NA)
+  }
   if (any(NewProblem$Mass$Name %in% "Water_DonnanHA")) {
     NewProblem$Index$WHAMDonnanMCR[1] = which(NewProblem$Mass$Name == "Water_DonnanHA")
   } else {
@@ -81,6 +100,8 @@ AddMassCompartments = function(ThisProblem,
     NewProblem$Index$WHAMDonnanMCR[2] = -1L
   }
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+
   return(NewProblem)
 
 }
@@ -90,6 +111,7 @@ AddMassCompartments = function(ThisProblem,
 #' @export
 RemoveMassCompartments = function(ThisProblem, MCToRemove) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   MCToRemoveOrig = MCToRemove
@@ -132,6 +154,7 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove) {
 
   # remove mass compartment
   NewProblem$Mass = ThisProblem$Mass[-MCToRemove, , drop = FALSE]
+  rownames(NewProblem$Mass) = NULL
   NewProblem$N["Mass"] = ThisProblem$N["Mass"] - length(MCToRemove)
 
   # Remove InMass's that are the Mass compartment to remove
@@ -162,6 +185,8 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove) {
   } else {
     NewProblem$Index$WHAMDonnanMCR[2] = -1L
   }
+
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
 
   return(NewProblem)
 

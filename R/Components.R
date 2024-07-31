@@ -58,9 +58,22 @@
 #'   "trickle-down" changes, such as removing formation reactions that used a
 #'   now-removed component.
 #'
-#' @inherit BlankProblem examples
+#' @seealso The in-depth example in [BlankProblem()] will show all problem
+#'   manipulation functions in use.
 #'
 #' @family problem manipulation functions
+#'
+#' @examples
+#' print(carbonate_system_problem$Comp)
+#' my_new_problem = carbonate_system_problem
+#' my_new_problem = AddInComps(ThisProblem = my_new_problem,
+#'                             InCompName = "Ca",
+#'                             InCompCharge = 2,
+#'                             InCompMCName = "Water",
+#'                             InCompType = "MassBal",
+#'                             InCompActCorr = "Debye")
+#' print(my_new_problem$Comp)
+
 NULL
 
 
@@ -68,10 +81,19 @@ NULL
 #' @export
 AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
                          CompType, CompActCorr, CompSiteDens = 1.0,
-                         CompMCR = match(CompMCName, ThisProblem$Mass$Name),
-                         InComp = TRUE) {
+                         CompMCR = match(CompMCName, ThisProblem$Mass$Name)) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
+
+  # coerce to correct types
+  CompName = trimws(as.character(CompName))
+  CompCharge = as.integer(CompCharge)
+  CompMCName = trimws(as.character(CompMCName))
+  CompMCR = as.integer(CompMCR)
+  CompType = trimws(as.character(CompType))
+  CompActCorr = trimws(as.character(CompActCorr))
+  CompSiteDens = as.numeric(CompSiteDens)
 
   # error checking
   if (any(CompName %in% ThisProblem$Spec$Name)) {
@@ -86,6 +108,7 @@ AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
       !all(CompMCR <= ThisProblem$N["Mass"])) {
     stop("Mass compartment(s) specified in CompMCName or CompMCR does not exist.")
   }
+
   if (any(is.na(c(CompName, CompCharge, CompMCName,
                   CompType, CompActCorr, CompMCR, CompSiteDens)))) {
     stop("NA arguments not allowed.")
@@ -133,15 +156,6 @@ AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
   )
   NewProblem$N["Comp"] = ThisProblem$N["Comp"] + NCompAdd
 
-  # Add the input component
-  if (any(InComp)) {
-    if (length(InComp) == 1) { InComp = rep(InComp, NCompAdd) }
-    NewProblem$N["InComp"] = NewProblem$N["InComp"] + as.integer(sum(InComp))
-    NewProblem$InCompName = c(NewProblem$InCompName,
-                              trimws(as.character(CompName[InComp])))
-  }
-
-
   # Add components to species list
   SpecType = ifelse(CompType %in% c("FixedAct","FixedConc","MassBal"),
                     "Normal", CompType)
@@ -163,6 +177,8 @@ AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
   # Update Special Definitions
   NewProblem$BLMetal$SpecsR = match(NewProblem$BLMetal$Name, NewProblem$Spec$Name)
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+
   return(NewProblem)
 
 }
@@ -172,6 +188,7 @@ AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
 #' @export
 RemoveComponents = function(ThisProblem, ComponentToRemove) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   ComponentToRemoveOrig = ComponentToRemove
@@ -230,6 +247,7 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
 
   # Remove Components
   NewProblem$Comp = ThisProblem$Comp[-ComponentToRemove, , drop = FALSE]
+  rownames(NewProblem$Comp) = NULL
   NewProblem$N["Comp"] = ThisProblem$N["Comp"] - length(ComponentToRemove)
   NewProblem$SpecStoich = NewProblem$SpecStoich[, -ComponentToRemove, drop = FALSE]
   NewProblem$PhaseStoich = NewProblem$PhaseStoich[, -ComponentToRemove, drop = FALSE]
@@ -287,6 +305,8 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
     NewProblem$PhaseCompList = matrix(data = 0L, nrow = 0, ncol = 0)
   }
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+
   return(NewProblem)
 }
 
@@ -297,6 +317,8 @@ AddInComps = function(ThisProblem, InCompName, InCompCharge, InCompMCName = NULL
                      InCompType, InCompActCorr,
                      InCompMCR = match(InCompMCName, ThisProblem$Mass$Name)) {
 
+
+
   # Add the component
   NewProblem = AddComponents(ThisProblem = ThisProblem,
                              CompName = InCompName,
@@ -304,8 +326,13 @@ AddInComps = function(ThisProblem, InCompName, InCompCharge, InCompMCName = NULL
                              CompMCName = InCompMCName,
                              CompType = InCompType,
                              CompActCorr = InCompActCorr,
-                             CompSiteDens = 1.0,
-                             InComp = TRUE)
+                             CompSiteDens = 1.0)
+
+  # Add the input component
+    NewProblem$N["InComp"] = NewProblem$N["InComp"] + length(InCompName)
+    NewProblem$InCompName = c(NewProblem$InCompName, trimws(as.character(InCompName)))
+
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
 
   return(NewProblem)
 
@@ -316,7 +343,26 @@ AddInComps = function(ThisProblem, InCompName, InCompCharge, InCompMCName = NULL
 #' @export
 RemoveInComps = function(ThisProblem, InCompToRemove) {
 
-  NewProblem = RemoveComponents(ThisProblem, ComponentToRemove = InCompToRemove)
+  InCompToRemoveOrig = InCompToRemove
+  if (is.character(InCompToRemove)) {
+    InCompToRemove = match(InCompToRemove, ThisProblem$InCompName)
+  }
+  if (any(is.na(InCompToRemove))) {
+    stop(paste0("Input component(s) (",
+                paste(InCompToRemoveOrig[is.na(InCompToRemove)],
+                      collapse = ", "),
+                ") does not exist."))
+  }
+
+  NewProblem = ThisProblem
+
+  NewProblem = RemoveComponents(ThisProblem = NewProblem,
+                                ComponentToRemove = InCompToRemoveOrig)
+
+  # NewProblem$InCompName = NewProblem$InCompName[-InCompToRemove]
+  # RemoveComponents should already do this...
+
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
 
   return(NewProblem)
 
@@ -331,16 +377,28 @@ AddDefComps = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
                       DefCompMCR = match(DefCompMCName, ThisProblem$Mass$Name),
                       InDefComp = TRUE) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
+
+  # coerce to correct types
+  DefCompName = trimws(as.character(DefCompName))
+  DefCompFromNum = as.numeric(DefCompFromNum)
+  DefCompFromVar = trimws(as.character(DefCompFromVar))
+  DefCompCharge = as.integer(DefCompCharge)
+  DefCompMCName = trimws(as.character(DefCompMCName))
+  DefCompMCR = as.integer(DefCompMCR)
+  DefCompType = trimws(as.character(DefCompType))
+  DefCompActCorr = trimws(as.character(DefCompActCorr))
+  DefCompSiteDens = as.numeric(DefCompSiteDens)
 
   # error checking
   if (any(DefCompName %in% ThisProblem$Spec$Name)) {
-    stop(paste0(
+    stop(
       "Input Component(s) (",
       paste(paste0("\"", DefCompName[DefCompName %in% ThisProblem$Spec$Name], "\""),
             collapse = ", "),
       ") already exist as a component or species."
-    ))
+    )
   }
   if (any(is.na(c(DefCompName, DefCompCharge, DefCompMCName,
                   DefCompType, DefCompActCorr, DefCompMCR, DefCompSiteDens)))) {
@@ -350,13 +408,21 @@ AddDefComps = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
       !all(DefCompMCR <= ThisProblem$N["Mass"])) {
     stop("Mass compartment(s) specified in DefCompMCName or DefCompMCR does not exist.")
   }
-  if (is.null(DefCompFromVar)){
+  if (length(DefCompFromVar) == 0){
     DefCompFromVar = array(NA, dim = length(DefCompName),
                            dimnames = list(DefCompName))
   }
-  if (is.null(DefCompFromNum)){
+  if (length(DefCompFromNum) == 0){
     DefCompFromNum = array(NA, dim = length(DefCompName),
                            dimnames = list(DefCompName))
+  }
+  if (all(is.na(DefCompFromVar) & is.na(DefCompFromNum))) {
+    stop("Either DefCompFromNum or DefCompFromVar must be specified. ",
+         "Use DefCompFromNum = 1 to specify the total concentration = DefCompSiteDens.")
+  }
+  if (any(DefCompFromVar %in%
+          c(ThisProblem$Comp$Name, ThisProblem$InVar$Name, NA) == FALSE)) {
+    stop("DefCompFromVar must be an input variable or component.")
   }
   if(is.null(DefCompMCName)) {
     DefCompMCName = ThisProblem$Mass$Name[DefCompMCR]
@@ -394,8 +460,9 @@ AddDefComps = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
                              CompType = DefCompType,
                              CompActCorr = DefCompActCorr,
                              CompSiteDens = DefCompSiteDens,
-                             CompMCR = DefCompMCR,
-                             InComp = FALSE)
+                             CompMCR = DefCompMCR)
+
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
 
   return(NewProblem)
 
@@ -406,6 +473,7 @@ AddDefComps = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
 #' @export
 RemoveDefComps = function(ThisProblem, DefCompToRemove) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   DefCompToRemoveOrig = DefCompToRemove
@@ -441,6 +509,8 @@ RemoveDefComps = function(ThisProblem, DefCompToRemove) {
   # Remove DefComps
   NewProblem$DefComp = ThisProblem$DefComp[-DefCompToRemove, , drop= FALSE]
   NewProblem$N["DefComp"] = ThisProblem$N["DefComp"] - length(DefCompToRemove)
+
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
 
   return(NewProblem)
 

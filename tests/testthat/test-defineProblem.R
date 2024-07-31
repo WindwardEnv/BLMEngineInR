@@ -1,13 +1,12 @@
 test_that("DefineProblem works", {
+
   expect_error(DefineProblem())
-  # TestResult = DefineProblem("Test")
-  # expect_type(TestResult, "list")
-  # expect_identical(names(TestResult),
-  #                  c("NComp", "NSpec","CompNames","SpecNames",
-  #                    "K", "logK", "Stoich", "CConc"))
-  # expect_identical(TestResult$NComp, length(TestResult$CConc))
-  # expect_identical(TestResult$NSpec, length(TestResult$K))
-  # expect_identical(TestResult$NSpec, length(TestResult$logK))
-  # expect_identical(c(TestResult$NSpec, TestResult$NComp),
-  #                  dim(TestResult$Stoich))
+
+  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+                        package = "BLMEngineInR",
+                        mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
+  expect_equal(CheckBLMObject(myproblem, BlankProblem(), FALSE),
+               character())
+
 })

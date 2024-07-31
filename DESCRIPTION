@@ -2,17 +2,28 @@ Package: BLMEngineInR
 Type: Package
 Version: 0.1.6
 Date: 2024-07-14
-Title: BLM Engine in R
+Title: Biotic Ligand Model Engine
 Authors@R: c(person(given = "Robert", family = "Santore", 
                     email = "roberts@windwardenv.com",
                     role = c("aut")),
              person(given = "Kelly", family = "Croteau",
                     email = "kellyc@windwardenv.com",
                     role = c("aut","cre")))
-Description: The Windward Environmental, LLC Biotic Ligand Model, now as an R 
-    package. Originally programmed in PowerBasic by Robert Santore and others.
-    WORK IN PROGRESS.
-License: MIT + file LICENSE
+Description: THIS PACKAGE IS A WORK IN PROGRESS. This package is the Biotic 
+    Ligand Model (BLM) engine developed by Windward Environmental, LLC. The BLM 
+    was originally programmed in 'PowerBasic' by Robert Santore and others. The 
+    main way the BLM can be used is to predict the toxicity of a metal to an 
+    organism with a known sensitivity (i.e., it is known how much of that metal 
+    must accumulate on that organism's biotic ligand to cause a physiological 
+    effect in a certain percentage of the population, such as a 20% loss in 
+    reproduction or a 50% mortality rate). The second way the BLM can be used 
+    is to estimate the chemical speciation of the metal and other constituents 
+    in water, including estimating the amount of metal accumulated to an 
+    organism's biotic ligand during a toxicity test. In the first application 
+    of the BLM, the amount of metal will be predicted, while in the second 
+    application, the amount of metal is known and the portions of that metal 
+    that exist in various forms will be determined.
+License: Apache License (>= 2)
 URL: https://www.windwardenv.com/biotic-ligand-model/
 Encoding: UTF-8
 Language: en-US

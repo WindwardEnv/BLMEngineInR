@@ -5,10 +5,10 @@
 \alias{StoichCompsToStoichMatrix}
 \alias{StoichCompsToEquation}
 \alias{StoichMatrixToEquation}
-\alias{EquationToStoich}
 \alias{EquationToStoichMatrix}
 \alias{StoichMatrixToStoichComps}
 \alias{EquationToStoichComps}
+\alias{EquationToStoich}
 \title{Stoichiometry conversion functions}
 \usage{
 StoichCompsToStoichMatrix(
@@ -37,13 +37,13 @@ StoichMatrixToEquation(
   CompName = colnames(SpecStoich)
 )
 
-EquationToStoich(SpecEquation = character(), CompName)
-
 EquationToStoichMatrix(SpecEquation = character(), CompName)
 
 StoichMatrixToStoichComps(SpecStoich = matrix(), CompName)
 
 EquationToStoichComps(SpecEquation = character(), CompName)
+
+EquationToStoich(SpecEquation = character(), CompName)
 }
 \arguments{
 \item{SpecCompNames}{a list object where each element is a vector of

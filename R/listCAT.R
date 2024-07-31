@@ -30,45 +30,50 @@
 #' @export
 #'
 #' @examples
-#' ## Not Run
-#' # ListCAT("my_parameter_file.dat")
-#' ## End Not Run
+#' mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+#'                       package = "BLMEngineInR",
+#'                       mustWork = TRUE)
+#' ListCAT(ParamFile = mypfile)
 ListCAT = function(ParamFile){
 
   # error catching
   stopifnot(file.exists(ParamFile))
 
   # read the dimensions of the various elements of the reaction list
-  skipRows = 2
-  tmp = read.csv(file = ParamFile, header = FALSE, skip = skipRows,
-                 nrows = 9, strip.white = T)
-  NMass = tmp[1, 1]
-  NInLab = tmp[2, 1]
-  NInVar = tmp[3, 1]
-  NInComp = tmp[4, 1]
-  NDefComp = tmp[5, 1]
-  NSpec = tmp[6, 1]
-  NPhase = tmp[7, 1]
-  NSpecialDef = tmp[8, 1]
-  NCAT = tmp[9, 1]
+  SkipRows = 2
+  Tmp = read.csv(file = ParamFile, header = FALSE, skip = SkipRows,
+                 nrows = 9, strip.white = TRUE)
+  NMass = as.integer(Tmp[1, 1])
+  NInLab = as.integer(Tmp[2, 1])
+  NInVar = as.integer(Tmp[3, 1])
+  NInComp = as.integer(Tmp[4, 1])
+  NDefComp = as.integer(Tmp[5, 1])
+  NSpec = as.integer(Tmp[6, 1])
+  NPhase = as.integer(Tmp[7, 1])
+  NSpecialDef = as.integer(Tmp[8, 1])
+  NCAT = as.integer(Tmp[9, 1])
 
-  # skip past other information
-  skipRows = skipRows + 9 + 2
-  skipRows = skipRows + NMass + 3
-  skipRows = skipRows + NInLab + 2
-  skipRows = skipRows + NInVar + 3
-  skipRows = skipRows + NInComp + 3
-  skipRows = skipRows + NDefComp + 4
-  skipRows = skipRows + NSpec + 3
-  skipRows = skipRows + NPhase + 2
-  skipRows = skipRows + NSpecialDef + 3
+  if (NCAT > 0) {
+    # skip past other information
+    SkipRows = SkipRows + 9 + 2
+    SkipRows = SkipRows + NMass + 3
+    SkipRows = SkipRows + NInLab + 2
+    SkipRows = SkipRows + NInVar + 3
+    SkipRows = SkipRows + NInComp + 3
+    SkipRows = SkipRows + NDefComp + 4
+    SkipRows = SkipRows + NSpec + 3
+    SkipRows = SkipRows + NPhase + 2
+    SkipRows = SkipRows + NSpecialDef + 3
 
-  # Read in CAT table from parameter file
-  CATab = read.csv(file = ParamFile, header = TRUE, skip = skipRows,
-                   nrows = NCAT, strip.white = T)
-  colnames(CATab) = c("Num","CA (nmol/gw)","Species","Test Type","Duration",
-                      "Lifestage","Endpoint","Quantifier","References",
-                      "Miscellaneous")
+    # Read in CAT table from parameter file
+    CATab = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
+                     nrows = NCAT, strip.white = T)
+    colnames(CATab) = c("Num","CA (nmol/gw)","Species","Test Type","Duration",
+                        "Lifestage","Endpoint","Quantifier","References",
+                        "Miscellaneous")
+  } else {
+    CATab = BlankProblem()$CATab
+  }
 
   # Return that table for the user
   return(CATab)

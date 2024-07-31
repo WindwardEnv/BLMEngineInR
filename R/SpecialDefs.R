@@ -30,9 +30,23 @@
 #'
 #' @return `ThisProblem`, with the special definitions changed.
 #'
-#' @inherit BlankProblem examples
-#'
 #' @family problem manipulation functions
+#'
+#' @examples
+#' print(carbonate_system_problem[c("BL","Metal","BLMetal","WHAM")])
+#' my_new_problem = carbonate_system_problem
+#' my_new_problem = AddInComps(ThisProblem = my_new_problem, InCompName = "Cu",
+#'                             InCompCharge = 2,
+#'                             InCompMCName = "Water",
+#'                             InCompType = "MassBal",
+#'                             InCompActCorr = "Debye")
+#' my_new_problem = AddSpecialDefs(ThisProblem = my_new_problem,
+#'                                 Value = "Cu",
+#'                                 SpecialDef = "Metal")
+#' print(my_new_problem[c("BL","Metal","BLMetal","WHAM")])
+#' my_new_problem = RemoveSpecialDefs(ThisProblem = my_new_problem,
+#'                                    SpecialDefToRemove = "Metal")
+#' print(my_new_problem[c("BL","Metal","BLMetal","WHAM")])
 NULL
 
 
@@ -40,6 +54,7 @@ NULL
 #' @export
 AddSpecialDefs = function(ThisProblem, Value, SpecialDef) {
 
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   if (any(is.na(Value))) {
@@ -77,26 +92,35 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef) {
         stop("WHAM version or file specified without a WHAM input variable.")
       }
     } else if (SpecialDef[i] %in% c("BL", "Metal")) {
-      NewProblem[[SpecialDef[i]]] = rbind(
-        NewProblem[[SpecialDef[i]]],
-        data.frame(
-          Name = Value[i],
-          CompR = match(Value[i], ThisProblem$Comp$Name)
+      if (Value[i] %in% ThisProblem$Comp$Name) {
+        NewProblem[[SpecialDef[i]]] = rbind(
+          NewProblem[[SpecialDef[i]]],
+          data.frame(
+            Name = Value[i],
+            CompR = match(Value[i], ThisProblem$Comp$Name)
+          )
         )
-      )
-      NewProblem$N[SpecialDef[i]] = NewProblem$N[SpecialDef[i]] + 1L
+        NewProblem$N[SpecialDef[i]] = NewProblem$N[SpecialDef[i]] + 1L
+      } else {
+        stop("Unknown component specifed for ", SpecialDef[i])
+      }
     } else if (SpecialDef[i] %in% c("BL-Metal","BLMetal")) {
-      NewProblem[[SpecialDef[i]]] = rbind(
-        NewProblem[[SpecialDef[i]]],
-        data.frame(
-          Name = Value[i],
-          SpecsR = match(Value[i], ThisProblem$Spec$Name)
+      if (Value[i] %in% ThisProblem$Spec$Name) {
+        NewProblem[[SpecialDef[i]]] = rbind(
+          NewProblem[[SpecialDef[i]]],
+          data.frame(
+            Name = Value[i],
+            SpecsR = match(Value[i], ThisProblem$Spec$Name)
+          )
         )
-      )
-      NewProblem$N[SpecialDef[i]] = NewProblem$N[SpecialDef[i]] + 1L
+        NewProblem$N[SpecialDef[i]] = NewProblem$N[SpecialDef[i]] + 1L
+      } else {
+        stop("Unknown species specifed for ", SpecialDef[i])
+      }
     }
   }
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
   return(NewProblem)
 
 }
@@ -105,6 +129,7 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef) {
 #' @rdname SpecialDefs
 #' @export
 RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1) {
+  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
   RemovalTable = data.frame(SpecialDef = SpecialDefToRemove, Index = Index)
@@ -133,10 +158,11 @@ RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1) {
       NewProblem$WHAM = BlankProblem()$WHAM
 
     } else {
-      NewProblem[i] = NewProblem[i][-RemovalTable$Index[RemovalTable$SpecialDef %in% i], ]
+      NewProblem[[i]] = NewProblem[[i]][-RemovalTable$Index[RemovalTable$SpecialDef %in% i], ]
       NewProblem$N[i] = NewProblem$N[i] - sum(RemovalTable$SpecialDef %in% i)
     }
   }
 
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
   return(NewProblem)
 }

@@ -21,3 +21,37 @@
 #' MW["CaCO3"] #=100.086
 #'
 "MW"
+
+#' @title Carbonate system problem
+#'
+#' @description An example BLMEngineInR problem object, which describes a
+#'   water-only system with only the (closed) carbonate system.
+#'
+#' @usage carbonate_system_problem
+#'
+#' @details This problem consists of two components (hydrogen "H" and carbonate
+#'   "CO3") and three reactions (dissociation of water/formation of hydroxide
+#'   "OH", formation of bicarbonate "HCO3" and formation of carbonic acid
+#'   "H2CO3"). The pH and temperature are supplied as input variables, and the
+#'   input label "ID" is supplied as well.
+#'
+#' @examples
+#' print(carbonate_system_problem$Comp[, c("Name", "Charge", "Type")])
+#' print(carbonate_system_problem$Spec[, c("Equation", "Charge", "ActCorr", "LogK", "DeltaH")])
+#'
+"carbonate_system_problem"
+
+#' @title Water mass compartment only problem
+#'
+#' @description An example BLMEngineInR problem object, which describes a
+#'   water-only system with no input variables or components yet, and the input
+#'   label "ID".
+"water_MC_problem"
+
+#' @title Water-only problem
+#'
+#' @description An example BLMEngineInR problem object, which describes a
+#'   water-only system with pH and temperature are supplied as input variables,
+#'   and the input label "ID" is supplied as well. The only reaction is water
+#'   dissociation (hydroxide "OH" formation reaction).
+"water_problem"
