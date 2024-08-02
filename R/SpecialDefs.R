@@ -57,6 +57,11 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef) {
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
+
   if (any(is.na(Value))) {
     stop("NA inputs not allowed.")
   }
@@ -132,6 +137,16 @@ RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1) {
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
+
+  if (any(SpecialDefToRemove %in% c("BL", "Metal", "BLMetal","BL-Metal", "WHAM") == FALSE)){
+    stop("SpecialDefToRemove should be one of 'BL', 'Metal', 'BLMetal', ",
+         "'BL-Metal', or 'WHAM'.")
+  }
+  SpecialDefToRemove = gsub("[-]","", SpecialDefToRemove)
   RemovalTable = data.frame(SpecialDef = SpecialDefToRemove, Index = Index)
   RemovalTable = RemovalTable[order(RemovalTable$SpecialDef,
                                     -RemovalTable$Index), ]

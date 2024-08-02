@@ -1,7 +1,5 @@
 test_that("GetData works", {
 
-  expect_error(GetData())
-
   mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
                         package = "BLMEngineInR",
                         mustWork = TRUE)

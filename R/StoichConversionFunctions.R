@@ -97,7 +97,7 @@ StoichMatrixToEquation = function(SpecStoich = matrix(),
         apply(SpecStoich, MARGIN = 1, FUN = function(X){
           X.nonzero = X[X != 0]
           X.react = names(X.nonzero)
-          return(gsub(" [+] -", " - ",
+          return(gsub(" [+] -", " -",
                       paste(paste(X.nonzero, X.react, sep = " * "),
                             collapse = " + ")))
         }),

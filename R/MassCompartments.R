@@ -52,6 +52,11 @@ AddMassCompartments = function(ThisProblem,
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
+
   # error checking
   if (any((MassName %in% ThisProblem$Mass$Name))) {
     stop(paste0(
@@ -114,6 +119,11 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove) {
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
+
   MCToRemoveOrig = MCToRemove
   if (is.character(MCToRemove)) {
     MCToRemove = match(MCToRemove, ThisProblem$Mass$Name)
@@ -126,6 +136,11 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove) {
                 "trying to remove the #(",
                 MCToRemove[MCToRemove > ThisProblem$N["Mass"]],
                 ") element(s)."))
+  }
+
+  if (length(MCToRemove) >= ThisProblem$N["Mass"]) {
+    stop("Removing last mass compartment",
+         " - please use 'BlankProblem()' if you wish to start over.")
   }
 
   # Remove input variables that depend on the mass compartment
@@ -156,6 +171,8 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove) {
   NewProblem$Mass = ThisProblem$Mass[-MCToRemove, , drop = FALSE]
   rownames(NewProblem$Mass) = NULL
   NewProblem$N["Mass"] = ThisProblem$N["Mass"] - length(MCToRemove)
+
+
 
   # Remove InMass's that are the Mass compartment to remove
   InMassToRemove = which(NewProblem$InMassName %in%

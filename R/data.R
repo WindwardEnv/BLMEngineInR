@@ -55,3 +55,14 @@
 #'   and the input label "ID" is supplied as well. The only reaction is water
 #'   dissociation (hydroxide "OH" formation reaction).
 "water_problem"
+
+#' @title Copper problem with WHAM V organic matter
+#'
+#' @description An example BLMEngineInR problem object, which describes a system
+#'   with organic matter represented by WHAM V, and all of the common cations
+#'   (Ca, Mg, Na, K) and anions (SO4, Cl, CO3) represented with their usual
+#'   reactions. Copper is also represented as the toxic metal binding to a
+#'   biotic ligand, and some example critical accumulations values are provided,
+#'   including one for the United States Environmental Protection Agency's
+#'   (USEPA) final acute value (FAV).
+"Cu_full_organic_problem"

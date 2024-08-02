@@ -9,12 +9,13 @@
 #' @param ParamFile a character value, indicating the file path and name of the
 #'   parameter file to write.
 #'
-#' @return (invisibly) TRUE, if successful.
+#' @return ThisProblem, with the ParamFile element  changed to the ParamFile
+#'   argument.
 #'
 #' @examples
 #' tf = tempfile()
 #' WriteParamFile(ThisProblem = carbonate_system_problem, ParamFile = tf)
-#' DefineProblem(tf)
+#' DefineProblem(ParamFile = tf)
 #'
 #' @export
 WriteParamFile = function(ThisProblem, ParamFile) {
@@ -32,7 +33,6 @@ WriteParamFile = function(ThisProblem, ParamFile) {
 
   write("Column model parameter file, Ver 4.00", file = ParamFile, append = FALSE)
   write(SectionBreak, file = ParamFile, append = TRUE)
-
 
   Tmp = c(
     ThisProblem$N[c("InMass","InLab","InVar","InComp","InDefComp","InSpec","Phase")],
@@ -202,5 +202,6 @@ WriteParamFile = function(ThisProblem, ParamFile) {
   write("-------Notes--------", file = ParamFile, append = TRUE)
   write(paste0("written by ", Sys.info()["user"], " from R: ", Sys.time()), file = ParamFile, append = TRUE)
 
-  invisible(TRUE)
+  ThisProblem$ParamFile = ParamFile
+  return(invisible(ThisProblem))
 }

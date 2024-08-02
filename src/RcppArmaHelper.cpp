@@ -99,20 +99,20 @@ arma::mat SvdInverse(arma::mat X) {
   bool tmp = false;  
   if (tmp) {
     Rcpp::NumericMatrix RcppU = MatrixToRcppMatrix(U);
-    Rcpp::Rcout << RcppU << std::endl;
+    //Rcpp::Rcout << RcppU << std::endl;
   }  
   if (tmp) {
     Rcpp::NumericMatrix RcppV = MatrixToRcppMatrix(V);
-    Rcpp::Rcout << RcppV << std::endl;
+    //Rcpp::Rcout << RcppV << std::endl;
   }  
   if (tmp) {
     Rcpp::NumericMatrix RcppX = MatrixToRcppMatrix(X);
-    Rcpp::Rcout << RcppX << std::endl;
+    //Rcpp::Rcout << RcppX << std::endl;
   }
   if (tmp) {
     Rcpp::NumericMatrix Rcppdinv = MatrixToRcppMatrix(s);
-    Rcpp::Rcout << 1 / Rcppdinv << std::endl;
-    Rcpp::Rcout << Rcppdinv << std::endl;
+    //Rcpp::Rcout << 1 / Rcppdinv << std::endl;
+    //Rcpp::Rcout << Rcppdinv << std::endl;
   }  
   
   double max_dinv = arma::max(1 / s);
@@ -138,7 +138,7 @@ arma::mat SvdInverse(arma::mat X) {
 
   if (tmp) {
     Rcpp::NumericMatrix RcppXinv = MatrixToRcppMatrix(Xinv);
-    Rcpp::Rcout << RcppXinv << std::endl;
+    //Rcpp::Rcout << RcppXinv << std::endl;
   }
 
   return Xinv;

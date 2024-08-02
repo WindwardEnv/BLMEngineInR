@@ -7,9 +7,8 @@ iCA = 1L
 QuietFlag ="Quiet"
 ConvergenceCriteria = 0.0001
 MaxIter = 500L
-DoPartialStepsAlways = FALSE
 
-ParamFile = "scrap/parameter file format/Zn_full_organic.dat4"
+ParamFile = system.file(file.path("extdata","ParameterFiles","Zn_full_organic.dat4"), package = "BLMEngineInR", mustWork = TRUE)
 InputFile = "scrap/input files/Zn demo chem.blm4"
 
 # # ParamFile = "inst/extdata/ParameterFiles/full_inorg_noBL.dat4"
@@ -56,7 +55,7 @@ InputFile = "scrap/input files/Zn demo chem.blm4"
 # InputFile = "scrap/parameter file format/full_organic_FixedConcComps.blm4"
 
 
-ThisProblem = DefineProblem(ParamFile, WriteLog = TRUE)
+ThisProblem = DefineProblem(ParamFile, WriteLog = FALSE)
 
 FunctionInputs = ThisProblem[
   which(names(ThisProblem) %in% formalArgs("GetData"))]
@@ -72,8 +71,7 @@ ResultsTable <- BLM(
   iCA = iCA,
   QuietFlag = QuietFlag,
   ConvergenceCriteria = ConvergenceCriteria,
-  MaxIter = MaxIter,
-  DoPartialStepsAlways = DoPartialStepsAlways
+  MaxIter = MaxIter
 )
 # , file = "scrap/debug.txt")
 beepr::beep()

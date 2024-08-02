@@ -1,10 +1,10 @@
-SomethingExtra = list(ExtraIntValue = 1L,
-                      ExtraUnnamedVector = 1:3,
-                      ExtraNamedVector = c(A = 1, B = 2, C = 3),
-                      ExtraDFTable = data.frame(A = 1:5, B = 6:10),
-                      ExtraMatrix = matrix(runif(12), 3, 4))
-
 test_that("ConvertToDF works", {
+
+  SomethingExtra = list(ExtraIntValue = 1L,
+                        ExtraUnnamedVector = 1:3,
+                        ExtraNamedVector = c(A = 1, B = 2, C = 3),
+                        ExtraDFTable = data.frame(A = 1:5, B = 6:10),
+                        ExtraMatrix = matrix(runif(12), 3, 4))
 
   BlankDF = BlankProblem()
   ConvertedBlankDF = ConvertToDF(BlankProblemList())
@@ -18,6 +18,13 @@ test_that("ConvertToDF works", {
 })
 
 test_that("ConvertToList works", {
+
+  SomethingExtra = list(ExtraIntValue = 1L,
+                        ExtraUnnamedVector = 1:3,
+                        ExtraNamedVector = c(A = 1, B = 2, C = 3),
+                        ExtraDFTable = data.frame(A = 1:5, B = 6:10),
+                        ExtraMatrix = matrix(runif(12), 3, 4))
+
   BlankList = BlankProblemList()
   ConvertedBlankList = ConvertToList(BlankProblem())
   expect_equal(BlankList, ConvertedBlankList)
@@ -25,9 +32,19 @@ test_that("ConvertToList works", {
   BlankListWithExtra = c(BlankList, SomethingExtra)
   ConvertedWithExtraList = ConvertToList(c(BlankProblem(), SomethingExtra))
   expect_equal(BlankListWithExtra, ConvertedWithExtraList)
+
 })
 
 test_that("Convert Back and Forth works", {
+
   expect_equal(carbonate_system_problem,
                ConvertToDF(ConvertToList(carbonate_system_problem)))
+
+  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+                        package = "BLMEngineInR",
+                        mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
+  expect_equal(myproblem,
+               ConvertToDF(ConvertToList(myproblem)))
+
 })

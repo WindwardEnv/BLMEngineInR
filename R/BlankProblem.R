@@ -15,6 +15,8 @@ BlankProblem = function() {
   # assemble Output
   Out = list(
 
+    ParamFile = "",
+
     # Counts
     N = c(
       Mass = 0L,
@@ -108,7 +110,7 @@ BlankProblem = function() {
       NC = integer(),
       LogK = numeric(),
       DeltaH = numeric(),
-      Temp = numeric(),
+      TempKelvin = numeric(),
       Moles = numeric()
     ),
     PhaseCompList = matrix(data = 0L, nrow = 0, ncol = 0),
@@ -146,8 +148,8 @@ BlankProblem = function() {
     # WHAM parameters
     WHAM = list(
       DoWHAM = FALSE,
-      WHAMVer = as.character(NA),
-      WdatFile = as.character(NA),
+      WHAMVer = NA_character_,
+      WdatFile = NA_character_,
       wDLF = as.numeric(NA),
       wKZED = as.numeric(NA),
       wP = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
@@ -156,8 +158,8 @@ BlankProblem = function() {
     ),
 
     Index = list(
-      AqueousMCR = as.integer(NA),
-      BioticLigMCR = as.integer(NA),
+      AqueousMCR = NA_integer_,
+      BioticLigMCR = NA_integer_,
       WHAMDonnanMCR = array(-1L, dim = 2, dimnames = list(c("HA","FA")))
     )
 
@@ -187,6 +189,8 @@ BlankProblemList = function() {
 
   Out = list(
 
+    ParamFile = "",
+
     # Counts
     NMass = 0L,
     NInLab = 0L,
@@ -209,8 +213,8 @@ BlankProblemList = function() {
     MassName = character(),
     MassAmt = named.numeric.vector,
     MassUnit = named.character.vector,
-    AqueousMCR = as.integer(NA),
-    BioticLigMCR = as.integer(NA),
+    AqueousMCR = NA_integer_,
+    BioticLigMCR = NA_integer_,
 
     # Input Labels
     InLabName = character(),
@@ -268,7 +272,7 @@ BlankProblemList = function() {
     PhaseStoich = matrix(data = 0L, nrow = 0, ncol = 0),
     PhaseLogK = named.numeric.vector,
     PhaseDeltaH = named.numeric.vector,
-    PhaseTemp = named.numeric.vector,
+    PhaseTempKelvin = named.numeric.vector,
     PhaseMoles = named.numeric.vector,
 
     # Special Definitions
@@ -288,8 +292,8 @@ BlankProblemList = function() {
 
     # WHAM parameters
     DoWHAM = FALSE,
-    WHAMVer = as.character(NA),
-    WdatFile = as.character(NA),
+    WHAMVer = NA_character_,
+    WdatFile = NA_character_,
     WHAMDonnanMCR = array(-1L, dim =2, dimnames = list(c("HA","FA"))),
     wDLF = as.numeric(NA),
     wKZED = as.numeric(NA),

@@ -261,7 +261,9 @@ MatchInputsToProblem = function(
   }
 
   # Other Defined Components - based on variables
-  VarDefComps = which(DefCompFromVar %in% c("DOC-HA_", "DOC-FA_", NA) == FALSE)
+  VarDefComps = which(DefCompFromVar %in% c(
+    paste0(InVarName[InVarType %in% c("WHAM-HA","WHAM-FA","WHAM-HAFA")],
+           "-", c("HA","FA"),"_"), NA) == FALSE)
   if (length(VarDefComps) > 0) {
     VarDefCompName = DefCompName[VarDefComps]
     for (i in which(DefCompName %in% VarDefCompName)){

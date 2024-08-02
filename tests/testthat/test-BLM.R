@@ -1,14 +1,13 @@
-mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
-                      package = "BLMEngineInR",
-                      mustWork = TRUE)
-myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
-                          package = "BLMEngineInR",
-                          mustWork = TRUE)
-myproblem = DefineProblem(ParamFile = mypfile)
-myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+test_that("BLM function works - general functionality", {
 
-
-test_that("BLM function works", {
+  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+                        package = "BLMEngineInR",
+                        mustWork = TRUE)
+  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+                            package = "BLMEngineInR",
+                            mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
+  myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
 
   tmp = BLM(ParamFile = mypfile,
             InputFile = myinputfile,
@@ -26,7 +25,13 @@ test_that("BLM function works", {
 
 })
 
-test_that("CHESS works", {
+test_that("BLM function works - CHESS works", {
+
+  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+                        package = "BLMEngineInR",
+                        mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
+
 
   testinputsDF = data.frame(ID = "",
                             Temp = 25,
@@ -50,5 +55,41 @@ test_that("CHESS works", {
   # with no activity correction, we expect these to match perfectly
   expect_equal(log10(testinputsDF$CO3.CHESSfree),
                log10(testinputsDF$CO3.calcfree))
+
+})
+
+test_that("BLM function works - toxicity mode works", {
+
+  skip_on_cran()
+
+  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+                        package = "BLMEngineInR",
+                        mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
+
+
+  testinputsDF = data.frame(ObsNum = 1,
+                            ID = "Full_Organic",
+                            ID2 = "Hard ser 10",
+                            Temp = 15,
+                            pH = 7.57,
+                            DOC = 0.01,
+                            HA = 10,
+                            Cu = 4.2112e-7,
+                            Ca = 0.000037427,
+                            Mg = 6.274425e-05,
+                            Na = 0.0001375612,
+                            K = 6.713850e-06,
+                            SO4 = 9.993587e-05,
+                            Cl = 6.699012e-06,
+                            CO3 = 0.0001374837)
+  testinputs = MatchInputsToProblem(
+    DFInputs = testinputsDF,
+    ThisProblem = myproblem
+  )
+  tmp = BLM(ThisProblem = myproblem,
+            AllInput = testinputs, DoTox = TRUE, iCA = 2L)
+
+  expect_equal(tmp$Concentrations$`T.Cu (mol/L)`, 7.62202e-10)
 
 })

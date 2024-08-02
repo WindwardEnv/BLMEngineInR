@@ -99,7 +99,7 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
     }
     if (!InverseSuccess) { 
 
-      Rcpp::Rcout << "ResidSolve = [" << ResidSolve << "]" << std::endl;
+      /*Rcpp::Rcout << "ResidSolve = [" << ResidSolve << "]" << std::endl;
       Rcpp::Rcout << "ArmaResidSolve = [";
       for (i = 0; i < NSolve; i++) {
         if (i != 0) { Rcpp::Rcout << " "; }
@@ -116,7 +116,7 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
           Rcpp::Rcout << ArmaJacobianMatSolve(i, j);
         }
       }
-      Rcpp::Rcout << "]" << std::endl;
+      Rcpp::Rcout << "]" << std::endl;*/
 
       throw ERROR_MATRIX_INVERSION; 
     }
@@ -130,13 +130,13 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
     CompConcStepSolve = MatrixToRcppVector(ArmaCompConcStepSolve);
   }
   catch (int e) {
-    if (e == ERROR_SINGULAR_MATRIX) {
+    /*if (e == ERROR_SINGULAR_MATRIX) {
       Rcpp::Rcout << "Singluar Matrix" << std::endl;
     } else if (e == ERROR_MATRIX_INVERSION) {
       Rcpp::Rcout << "Matrix inversion failed." << std::endl;
     } else {
       Rcpp::Rcout << "Unknown exception occurred" << std::endl;
-    }
+    }*/
     
     // default to a brute-force step value
     i = 0;

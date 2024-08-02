@@ -1,12 +1,17 @@
 test_that("DefineProblem works", {
 
-  expect_error(DefineProblem())
-
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
                         package = "BLMEngineInR",
                         mustWork = TRUE)
+  expect_no_error(DefineProblem(ParamFile = mypfile))
+
   myproblem = DefineProblem(ParamFile = mypfile)
-  expect_equal(CheckBLMObject(myproblem, BlankProblem(), FALSE),
-               character())
+  myproblem$WHAM$WdatFile = gsub(dirname(myproblem$WHAM$WdatFile), "", myproblem$WHAM$WdatFile)
+
+  mytestproblem = Cu_full_organic_problem
+  mytestproblem$WHAM$WdatFile = gsub(dirname(mytestproblem$WHAM$WdatFile), "", mytestproblem$WHAM$WdatFile)
+
+  expect_equal(myproblem[names(myproblem) != "ParamFile"],
+               mytestproblem[names(mytestproblem) != "ParamFile"])
 
 })

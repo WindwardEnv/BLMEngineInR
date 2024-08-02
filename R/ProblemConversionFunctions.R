@@ -53,12 +53,14 @@ ConvertToList = function(ThisProblemDF) {
   }
 
   for (i in NoZeroLengthNames) {
-    if (typeof(ThisProblemList[[i]]) == "character"){
-      ThisProblemList[[i]] = ""
-    } else if (typeof(ThisProblemList[[i]]) == "integer") {
-      ThisProblemList[[i]] = -1L
-    } else {
-      ThisProblemList[[i]] = NA
+    if (length(ThisProblemList[[i]]) == 0) {
+      if (typeof(ThisProblemList[[i]]) == "character") {
+        ThisProblemList[[i]] = ""
+      } else if (typeof(ThisProblemList[[i]]) == "integer") {
+        ThisProblemList[[i]] = -1L
+      } else {
+        ThisProblemList[[i]] = NA
+      }
     }
   }
 
@@ -93,12 +95,18 @@ ConvertToDF = function(ThisProblemList) {
   NoZeroLengthNames = c("MetalName","MetalCompR")
 
   for (i in NoZeroLengthNames) {
-    if (typeof(ThisProblemList[[i]]) == "character"){
-      ThisProblemList[[i]] = character()
+    if (typeof(ThisProblemList[[i]]) == "character") {
+      if (ThisProblemList[[i]] == ""){
+        ThisProblemList[[i]] = character()
+      }
     } else if (typeof(ThisProblemList[[i]]) == "integer") {
-      ThisProblemList[[i]] = integer()
-    } else if (typeof(ThisProblemList[[i]]) == "double") {
-      ThisProblemList[[i]] = double()
+      if (ThisProblemList[[i]] <= 0L) {
+        ThisProblemList[[i]] = integer()
+      }
+    } else if (typeof(ThisProblemList[[i]]) == "logical") {
+      if (is.na(ThisProblemList[[i]])) {
+        ThisProblemList[[i]] = logical()
+      }
     } else {
       ThisProblemList[[i]] = NULL
     }

@@ -19,7 +19,7 @@ WriteDetailedFile(
 By default, it will give the date/time the file was saved.}
 }
 \value{
-Returns TRUE if successful.
+Returns TRUE (invisibly) if successful.
 }
 \description{
 This will write an output XLSX file with everything that is returned by the

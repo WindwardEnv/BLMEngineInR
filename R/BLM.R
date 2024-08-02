@@ -39,9 +39,6 @@
 #'   TotMoles) / TotMoles
 #' @param MaxIter (integer) The maximum allowed CHESS iterations before the
 #'   program should give up.
-#' @param DoPartialStepsAlways Should CHESS do strict Newton-Raphson iterations
-#'   (FALSE), or try to improve the simulation with partial N-R steps (trying to
-#'   prevent oscillations).
 #'
 #' @return A data frame with chemistry speciation information, including species
 #'   concentrations, species activities, and total concentrations.
@@ -59,38 +56,44 @@ BLM = function(ParamFile = character(),
                # writeOutputFile = F, outputFileName = NULL,
                # criticalSource = c("ParamFile","InputFile"),
                ConvergenceCriteria = 0.0001,
-               MaxIter = 500L,
-               DoPartialStepsAlways = FALSE) {
+               MaxIter = 500L) {
 
   StartTime = Sys.time()
 
   # error catching
-  stopifnot(file.exists(ParamFile) || !is.null(ThisProblem))
-  stopifnot(file.exists(InputFile) || !is.null(AllInput))
+  if ((length(ParamFile) == 0) && (length(ThisProblem) == 0)) {
+    stop("Supply either ParamFile or ThisProblem arguments.")
+  }
+  if ((length(InputFile) == 0) && (length(AllInput) == 0)) {
+    stop("Supply either InputFile or AllInput arguments.")
+  }
   QuietFlag = match.arg(QuietFlag, c("Very Quiet", "Quiet", "Debug"))
 
   # 1. parse out parameter file in DefineProblem
   #   --> parameter file name
   #   <-- R variable that defines the problem for immediate use in CHESS
   if (length(ThisProblem) == 0) {
+    if (!file.exists(ParamFile)) {
+      stop("ParamFile ", ParamFile, " does not exist.")
+    }
     ThisProblem = DefineProblem(ParamFile = ParamFile)
   }
+  CheckBLMObject(Object = ThisProblem,
+                 Reference = BlankProblem(),
+                 BreakOnError = TRUE)
 
   # 2. Read InputFile
   #   --> input file name, component info from ParamFile
   #   <-- R variable with component concentrations (total/free dep on ParamFile)
   if (length(AllInput) == 0) {
+    if (!file.exists(InputFile)) {
+      stop("InputFile ", InputFile, " does not exist.")
+    }
     AllInput = GetData(InputFile = InputFile, ThisProblem = ThisProblem)
   }
-
-  # Inputs Error catching
-  CheckBLMObject(Object = ThisProblem,
-                 Reference = BlankProblem(),
-                 BreakOnError = TRUE)
   CheckBLMObject(Object = AllInput,
                  Reference = BlankInputList(ThisProblem),
                  BreakOnError = TRUE)
-
 
   # Save some common variables for initializing arrays
   NObs = AllInput$NObs
@@ -101,6 +104,11 @@ BLM = function(ParamFile = character(),
   SpecName = ThisProblem$Spec$Name
   BLComp = ThisProblem$BL$CompR
   if (DoTox) {
+
+    if (any(ThisProblem$N[c("BL","Metal","BLMetal")]) < 1){
+      stop("Cannot do tox mode without at least one each of BL, Metal, and BLMetal defined.")
+    }
+
     CATargetDefault = ThisProblem$CATab$CA[iCA] * (10^-6) /
       ThisProblem$Comp$SiteDens[BLComp]
   } else {
@@ -122,7 +130,6 @@ BLM = function(ParamFile = character(),
     QuietFlag = QuietFlag,
     ConvergenceCriteria = ConvergenceCriteria,
     MaxIter = MaxIter,
-    DoPartialStepsAlways = DoPartialStepsAlways,
     DoTox = DoTox,
     CATarget = NA
   )
@@ -150,8 +157,8 @@ BLM = function(ParamFile = character(),
     ),
     Miscellaneous = cbind(
       OutputLabels,
-      matrix(NA, nrow = NObs, ncol = length(MiscOutputCols) + length(ZCols) + length(MassAmtCols) + 1,
-             dimnames = list(NULL, c(MiscOutputCols, ZCols, MassAmtCols, "Status")))
+      matrix(NA, nrow = NObs, ncol = length(MiscOutputCols) + length(ZCols) + length(MassAmtCols) + 2,
+             dimnames = list(NULL, c(MiscOutputCols, ZCols, MassAmtCols, "Status", "Message")))
     ),
     Concentrations = cbind(
       OutputLabels,
@@ -283,6 +290,7 @@ BLM = function(ParamFile = character(),
         if (is.na(OutList$Miscellaneous$FinalMaxError[iObs]) |
             (OutList$Miscellaneous$FinalMaxError[iObs] > ConvergenceCriteria)) {
           OutList$Miscellaneous$Status[iObs] = "Not Converged"
+          OutList$Miscellaneous$Message[iObs] = Tmp$StatusMessage
         } else {
           OutList$Miscellaneous$Status[iObs] = "Okay"
         }

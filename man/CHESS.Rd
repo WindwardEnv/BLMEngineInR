@@ -8,7 +8,6 @@ CHESS(
   QuietFlag,
   ConvergenceCriteria,
   MaxIter,
-  DoPartialStepsAlways,
   NMass,
   MassName,
   MassAmt,
@@ -53,10 +52,6 @@ counts as convergence by the Newton-Raphson root-finding algorithm}
 
 \item{MaxIter}{integer, the maximum number of iterations the Newton-Raphson
 root-finding algorithm should do before giving up}
-
-\item{DoPartialStepsAlways}{boolean, Should CHESS do strict Newton-Raphson
-iterations (FALSE), or try to improve the simulation with partial N-R
-steps (trying to prevent oscillations).}
 
 \item{NMass}{integer, number of mass compartments}
 

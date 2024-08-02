@@ -77,51 +77,97 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) {
   }
 
   # more specific comparisons
-  if ("NObs" %in% names(Object)) {
-    # Each array and matrix need to have the correct NObs
+  if ("NObs" %in% intersect(names(Object), names(Reference))) {
     ObsVars = intersect(names(Object),
                         names(Reference)[grepl("Obs$", names(Reference)) &
                                            (names(Reference) != "NObs")])
     for (i in ObsVars) {
+
+      # Each array and matrix need to have the correct NObs
       LenType = dim(Object[[i]])[1]
       if (is.null(LenType)) { LenType = length(Object[[i]]) }
       if (LenType != Object$NObs) {
-        ErrorList = c(ErrorList, "Observation counts mismatch.")
+        ErrorList = c(ErrorList, paste0("Observation counts mismatch in ", i, "."))
+      }
+
+      # Each matrix also needs to have the correct columns
+      LenType = dim(Object[[i]])[2]
+      if (!is.null(LenType)) {
+        if (LenType != dim(Reference[[i]])[2]) {
+          ErrorList = c(ErrorList, paste0("Column counts mismatch in ", i, "."))
+        }
       }
     }
   }
-  if ("N" %in% names(Object)) {
+  if ("N" %in% intersect(names(Object), names(Reference))) {
     # An array of "N"'s, each of the data.frames, matrices, and arrays
     # controlled by those "N"'s need to be the correct length
     for (iType in names(Reference$N)) {
       TypeVars = intersect(names(Object),
                            names(Reference)[grepl(paste0("^",iType), names(Reference))])
+      if (iType == "BL") {
+        TypeVars = setdiff(TypeVars, "BLMetal")
+      }
       for (i in TypeVars) {
         LenType = dim(Object[[i]])[1]
         if (is.null(LenType)) { LenType = length(Object[[i]]) }
         if (LenType != Object$N[iType]) {
-          ErrorList = c(ErrorList, paste0(iType, " counts mismatch in", i,"."))
+          ErrorList = c(ErrorList, paste0(iType, " counts mismatch in ", i,"."))
         }
       }
 
       if (iType == "Comp") {
         for (i in intersect(c("SpecStoich", "PhaseStoich"), names(Object))) {
-          if (dim(Object$SpecStoich)[2] != Object$N["Comp"]) {
-            ErrorList = c(ErrorList, paste0(iType, " counts mismatch in", i,"."))
+          if (dim(Object[[i]])[2] != Object$N["Comp"]) {
+            ErrorList = c(ErrorList, paste0(iType, " counts mismatch in ", i,"."))
           }
         }
       }
     }
   }
-  if (all(c("NMass","NComp","NSpec","") %in% names(Object))) {
-    # each of the arrays controlled by those "N"'s need to be the correct length
+
+  # each of the arrays controlled by those "N"'s need to be the correct length
+  NVarInBoth = intersect(c("NMass","NInLab","NInVar","NInMass","NInComp","NInDefComp","NInSpec",
+                           "NDefComp","NComp","NSpec","NPhase","NBL","NMetal","NBLMetal","NCAT"),
+                         intersect(names(Object), names(Reference)))
+  TypeInBoth = gsub("^N", "", NVarInBoth)
+  for (iType in TypeInBoth) {
+    NVar = paste0("N", iType)
+    TypeVars = intersect(names(Object),
+                         names(Reference)[grepl(paste0("^",iType), names(Reference))])
+    if (iType == "BL") {
+      TypeVars = TypeVars[!grepl("BLMetal", TypeVars)]
+    }
+    for (i in TypeVars) {
+      LenType = dim(Object[[i]])[1]
+      if (is.null(LenType)) { LenType = length(Object[[i]]) }
+      if ((iType == "Metal") && (Object[[NVar]] == 0)) {
+        if ((typeof(Object[[i]]) == "character") & (Object[[i]] == "")){
+          LenType = 0L
+        }
+        if ((typeof(Object[[i]]) == "integer") & (Object[[i]] == -1L)){
+          LenType = 0L
+        }
+      }
+      if (LenType != Object[[NVar]]) {
+        ErrorList = c(ErrorList, paste0(iType, " counts mismatch in ", i,"."))
+      }
+    }
+    if (iType == "Comp") {
+      for (i in intersect(c("SpecStoich", "PhaseStoich"), names(Object))) {
+        if (dim(Object[[i]])[2] != Object$NComp) {
+          ErrorList = c(ErrorList, paste0(iType, " counts mismatch in ", i,"."))
+        }
+      }
+    }
+
   }
 
   if (BreakOnError) {
     if (length(ErrorList) > 0) {
       stop(ErrorList)
     } else {
-      invisible(TRUE)
+      return(invisible(TRUE))
     }
   } else {
     return(ErrorList)

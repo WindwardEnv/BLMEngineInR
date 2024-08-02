@@ -14,7 +14,8 @@ WriteParamFile(ThisProblem, ParamFile)
 parameter file to write.}
 }
 \value{
-(invisibly) TRUE, if successful.
+ThisProblem, with the ParamFile element  changed to the ParamFile
+  argument.
 }
 \description{
 This function will take a BLM chemical problem list object and
@@ -24,6 +25,6 @@ This function will take a BLM chemical problem list object and
 \examples{
 tf = tempfile()
 WriteParamFile(ThisProblem = carbonate_system_problem, ParamFile = tf)
-DefineProblem(tf)
+DefineProblem(ParamFile = tf)
 
 }

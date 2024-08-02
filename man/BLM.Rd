@@ -13,8 +13,7 @@ BLM(
   iCA = 1L,
   QuietFlag = c("Very Quiet", "Quiet", "Debug"),
   ConvergenceCriteria = 1e-04,
-  MaxIter = 500L,
-  DoPartialStepsAlways = FALSE
+  MaxIter = 500L
 )
 }
 \arguments{
@@ -48,10 +47,6 @@ TotMoles) / TotMoles}
 
 \item{MaxIter}{(integer) The maximum allowed CHESS iterations before the
 program should give up.}
-
-\item{DoPartialStepsAlways}{Should CHESS do strict Newton-Raphson iterations
-(FALSE), or try to improve the simulation with partial N-R steps (trying to
-prevent oscillations).}
 }
 \value{
 A data frame with chemistry speciation information, including species

@@ -1,0 +1,39 @@
+test_that("AddCriticalValues works", {
+  expect_no_error(AddCriticalValues(
+    ThisProblem = carbonate_system_problem,
+    CA = 12345,
+    Species = "A. species",
+    Test.Type = "Acute",
+    Duration = "24h",
+    Lifestage = "adult",
+    Endpoint = "survival",
+    Quantifier = "LC50",
+    References = "thin air",
+    Miscellaneous = "individual data point"
+  ))
+  expect_no_error(AddCriticalValues(
+    ThisProblem = carbonate_system_problem,
+    CATab = data.frame(
+      CA = 12345,
+      Species = "A. species",
+      Test.Type = "Acute",
+      Duration = "24h",
+      Lifestage = "adult",
+      Endpoint = "survival",
+      Quantifier = "LC50",
+      References = "thin air",
+      Miscellaneous = "individual data point"
+    )))
+})
+test_that("RemoveCriticalValues works", {
+
+  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+                        package = "BLMEngineInR",
+                        mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
+
+  expect_no_error(
+    RemoveCriticalValues(ThisProblem = myproblem, CAToRemove = 1)
+  )
+
+})

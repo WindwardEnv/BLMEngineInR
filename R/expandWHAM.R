@@ -293,6 +293,7 @@ ExpandWHAM = function(ThisProblem,
                                      InMass = FALSE)
     NewProblem = AddDefComps(ThisProblem = NewProblem,
                              DefCompName = DonnanCompName,
+                             # DefCompFromNum = 1.0,
                              DefCompFromVar = WHAMprefix,
                              DefCompCharge = 0L,
                              DefCompMCName = DonnanMCName,

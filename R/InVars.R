@@ -46,6 +46,11 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
+
   # error checking
   if (any((InVarName %in% ThisProblem$InVar$Name))) {
     stop(paste0(
@@ -114,6 +119,11 @@ RemoveInVars = function(ThisProblem, InVarToRemove) {
 
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
+
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
 
   if (length(InVarToRemove) < 1) {
     stop("Specify an input variable to add.")

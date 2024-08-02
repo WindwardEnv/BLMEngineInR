@@ -33,6 +33,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
   NewProblem = BlankProblem()
 
+  NewProblem$ParamFile = ParamFile
+
   # read the dimensions of the various elements of the reaction list
   SkipRows = 2
   Tmp = read.csv(file = ParamFile, header = FALSE, skip = SkipRows,
@@ -172,8 +174,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
       NewProblem = AddPhases(
         ThisProblem = NewProblem,
         PhaseName = as.character(trimws(TmpSplit[[i]][1])),
-        PhaseCompNames = as.list(trimws(as.character(TmpSplit[[i]][2 + seq(1, 2 * PhaseNC_i, by = 2)]))),
-        PhaseCompStoichs = as.list(as.integer(trimws(TmpSplit[[i]][2 + seq(2, 2 * PhaseNC_i, by = 2)]))),
+        PhaseCompNames = list(trimws(as.character(TmpSplit[[i]][2 + seq(1, 2 * PhaseNC_i, by = 2)]))),
+        PhaseCompStoichs = list(as.integer(trimws(TmpSplit[[i]][2 + seq(2, 2 * PhaseNC_i, by = 2)]))),
         PhaseLogK = as.numeric(trimws(TmpSplit[[i]][3 + PhaseNC_i * 2])),
         PhaseDeltaH = as.numeric(trimws(TmpSplit[[i]][4 + PhaseNC_i * 2])),
         PhaseTempKelvin = as.numeric(trimws(TmpSplit[[i]][5 + PhaseNC_i * 2])),
@@ -208,7 +210,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   }
 
   if (WriteLog) {
-    CHESSLog(NewProblem, ParamFile)
+    CHESSLog(ThisProblem = NewProblem)
   }
 
   return(NewProblem)

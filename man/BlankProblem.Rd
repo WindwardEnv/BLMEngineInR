@@ -35,13 +35,13 @@ ThisProblem = AddInVars(ThisProblem,
                        InVarType = c("Temperature", "pH"))
 
 # Add CO3 as a component:
-ThisProblem = AddComponents(
+ThisProblem = AddInComps(
   ThisProblem,
-  CompName = "CO3",
-  CompCharge = -2,
-  CompMCName = "Water",
-  CompType = "MassBal",
-  CompActCorr = "Debye"
+  InCompName = "CO3",
+  InCompCharge = -2,
+  InCompMCName = "Water",
+  InCompType = "MassBal",
+  InCompActCorr = "Debye"
 )
 
 # Add reactions (using SpecCompNames and SpecCompStoichs for arguments):
@@ -62,13 +62,13 @@ ThisProblem = AddSpecies(
 # ...ThisProblem now simulates carbonate reactions.
 
 # Add major ions and a copper as components
-ThisProblem = AddComponents(
+ThisProblem = AddInComps(
   ThisProblem,
-  CompName = c("Cu", "Ca", "Mg", "Na", "K", "SO4", "Cl", "S"),
-  CompCharge = c(2, 2, 2, 1, 1, -2, -1, -2),
-  CompMCName = "Water",
-  CompType = "MassBal",
-  CompActCorr = "Debye"
+  InCompName = c("Cu", "Ca", "Mg", "Na", "K", "SO4", "Cl", "S"),
+  InCompCharge = c(2, 2, 2, 1, 1, -2, -1, -2),
+  InCompMCName = "Water",
+  InCompType = "MassBal",
+  InCompActCorr = "Debye"
 )
 
 # Add reactions (using SpecEquation as an argument):

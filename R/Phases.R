@@ -72,6 +72,11 @@ AddPhases = function(ThisProblem,
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
+
   HasName = length(PhaseName) > 0
   HasStoichCompsNames = (length(PhaseCompNames) > 0) && (length(PhaseCompStoichs) > 0)
   HasStoichMatrix = !is.null(PhaseStoich)
@@ -206,6 +211,11 @@ RemovePhases = function(ThisProblem, PhasesToRemove) {
 
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
+
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
 
   PhasesToRemoveOrig = PhasesToRemove
   if (is.character(PhasesToRemove)) {

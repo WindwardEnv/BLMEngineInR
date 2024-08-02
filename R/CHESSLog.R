@@ -1,4 +1,15 @@
-CHESSLog = function(ThisProblem, ParamFile) {
+#' Create a file that shows the problem in a different, human-friendly format
+#'
+#' @param ThisProblem A problem list object, such as returned by
+#'   `DefineProblem`.
+#' @param LogFilename The path and file name of the created log file. By
+#'   default, it is "CHESSLOG.txt", placed in the same directory as ParamFile.
+#'
+#' @return invisibly returns TRUE
+#'
+#' @keywords internal
+CHESSLog = function(ThisProblem,
+                    LogFilename = file.path(dirname(ThisProblem$ParamFile), "CHESSLOG.txt")) {
 
   # initialize
   CompName = character()
@@ -16,8 +27,7 @@ CHESSLog = function(ThisProblem, ParamFile) {
   }
 
   # initialize log file
-  LogFilename = file.path(dirname(ParamFile), "CHESSLOG.txt")
-  write(paste0("CHESS problem defined by '", ParamFile, "' parameter file:\n",
+  write(paste0("CHESS problem defined by '", ThisProblem$ParamFile, "' parameter file:\n",
                "(",Sys.time(),")"),
         file = LogFilename, append = FALSE)
 
@@ -131,6 +141,6 @@ CHESSLog = function(ThisProblem, ParamFile) {
     }
   }
 
-
+  return(invisible(TRUE))
 
 }

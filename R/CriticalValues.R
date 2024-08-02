@@ -102,13 +102,27 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
-  if (is.null(Duration)) { Duration = NA }
-  if (is.null(Lifestage)) { Lifestage = NA }
-  if (is.null(Quantifier)) { Quantifier = NA }
-  if (is.null(Miscellaneous)) { Miscellaneous = NA }
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
+
+  if (is.null(Duration)) { Duration = NA_character_ }
+  if (is.null(Lifestage)) { Lifestage = NA_character_ }
+  if (is.null(Quantifier)) { Quantifier = NA_character_ }
+  if (is.null(Miscellaneous)) { Miscellaneous = NA_character_ }
+
+  CA = as.numeric(CA)
+  Species = as.character(Species)
+  Duration = as.character(Duration)
+  Lifestage = as.character(Lifestage)
+  Endpoint = as.character(Endpoint)
+  Quantifier = as.character(Quantifier)
+  References = as.character(References)
+  Miscellaneous = as.character(Miscellaneous)
 
   NewCATab = data.frame(
-    Num = NA,
+    Num = NA_integer_,
     CA = CA,
     Species = Species,
     Test.Type = Test.Type,
@@ -120,7 +134,7 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
     Miscellaneous = Miscellaneous
   )
   NumNewCA = nrow(NewCATab)
-  NewCATab$Num = ThisProblem$N["CAT"] + seq(1, NumNewCA)
+  NewCATab$Num = ThisProblem$N["CAT"] + seq(1L, NumNewCA)
   NewProblem$N["CAT"] = NewProblem$N["CAT"] + NumNewCA
 
   NewProblem$CATab = rbind(
@@ -141,6 +155,11 @@ RemoveCriticalValues = function(ThisProblem, CAToRemove) {
 
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
+
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
 
   CAToRemove = unique(CAToRemove)
   if (any(CAToRemove > ThisProblem$N["CAT"])) {

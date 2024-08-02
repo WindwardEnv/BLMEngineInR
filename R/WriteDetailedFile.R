@@ -9,7 +9,8 @@
 #' @param AdditionalInfo This vector will be included in the "Additional Info".
 #'   By default, it will give the date/time the file was saved.
 #'
-#' @return Returns TRUE if successful.
+#' @return Returns TRUE (invisibly) if successful.
+#'
 #' @export
 WriteDetailedFile = function(
     OutList,
@@ -27,5 +28,5 @@ WriteDetailedFile = function(
   openxlsx::writeData(wb, sheet = "Additional Info", x = AdditionalInfo)
   openxlsx::saveWorkbook(wb, file = FileName, overwrite = TRUE)
 
-  return(TRUE)
+  return(invisible(TRUE))
 }

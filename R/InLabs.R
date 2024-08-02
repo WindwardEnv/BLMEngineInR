@@ -31,6 +31,11 @@ AddInLabs = function(ThisProblem, InLabName) {
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
+
   # error checking
   if (any((InLabName %in% ThisProblem$InLabName))) {
     stop(paste0(
@@ -59,6 +64,11 @@ RemoveInLabs = function(ThisProblem, InLabToRemove) {
 
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
+
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
 
   InLabToRemoveOrig = InLabToRemove
   if (is.character(InLabToRemove)) {

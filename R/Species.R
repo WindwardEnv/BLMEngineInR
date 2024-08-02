@@ -99,6 +99,11 @@ AddSpecies = function(ThisProblem,
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
 
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
+
   HasName = length(SpecName) > 0
   HasStoichCompsNames = (length(SpecCompNames) > 0) && (length(SpecCompStoichs) > 0)
   HasStoichMatrix = !is.null(SpecStoich)
@@ -148,10 +153,13 @@ AddSpecies = function(ThisProblem,
       SpecStoich = tmp$SpecStoich
       HasStoichMatrix = TRUE
     }
+    SpecEquation = StoichMatrixToEquation(SpecStoich = SpecStoich,
+                                          SpecName = SpecName,
+                                          CompName = ThisProblem$Comp$Name)
   } else {
     SpecEquation = StoichMatrixToEquation(SpecStoich = SpecStoich,
-                                    SpecName = SpecName,
-                                    CompName = ThisProblem$Comp$Name)
+                                          SpecName = SpecName,
+                                          CompName = ThisProblem$Comp$Name)
     HasEquation = TRUE
   }
   NSpecAdd = length(SpecName)
@@ -195,7 +203,7 @@ AddSpecies = function(ThisProblem,
   NewProblem$Spec = rbind(ThisProblem$Spec,
                           data.frame(
                             Name = trimws(as.character(SpecName)),
-                            Equation = trimws(as.character(SpecEquation)),
+                            Equation = SpecEquation,
                             Charge = as.integer(NA),
                             MCName = trimws(as.character(SpecMCName)),
                             MCR = as.integer(SpecMCR),
@@ -260,6 +268,7 @@ AddSpecies = function(ThisProblem,
     NewProblem[[i]] = rbind(NewProblem[[i]][CompIndexes, , drop = FALSE],
                             NewProblem[[i]][SpecIndexes, , drop = FALSE])
   }
+  rownames(NewProblem$Spec) = NULL
 
   CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
   return(NewProblem)
@@ -273,6 +282,11 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove) {
 
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
+
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
 
   SpeciesToRemoveOrig = SpeciesToRemove
   if (is.character(SpeciesToRemove)) {

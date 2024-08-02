@@ -18,8 +18,7 @@ AddComponents(
   CompType,
   CompActCorr,
   CompSiteDens = 1,
-  CompMCR = match(CompMCName, ThisProblem$Mass$Name),
-  InComp = TRUE
+  CompMCR = match(CompMCName, ThisProblem$Mass$Name)
 )
 
 RemoveComponents(ThisProblem, ComponentToRemove)
@@ -85,13 +84,6 @@ densities of the new components. `AddInComps` assumes a site density of
 indices of the mass compartments the new components are associated with.
 Only needs to be specified if `CompMCName`/`InCompMCName`/`DefCompMCName`
 is not specified.}
-
-\item{InComp}{A logical value indicating if this is an input component
-(`TRUE`) or a component that gets its value from elsewhere (`FALSE`). The
-default for `AddComponents` is `TRUE`, essentially acting the same as
-`AddInComps`. This should usually only be `FALSE` when another function is
-calling this function, such as when a defined component is being added with
-`AddDefComps`.}
 
 \item{ComponentToRemove, InCompToRemove, DefCompToRemove}{A character vector
 with names or indices of the component(s) to remove from `ThisProblem`. It

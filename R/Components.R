@@ -39,12 +39,6 @@
 #'   indices of the mass compartments the new components are associated with.
 #'   Only needs to be specified if `CompMCName`/`InCompMCName`/`DefCompMCName`
 #'   is not specified.
-#' @param InComp A logical value indicating if this is an input component
-#'   (`TRUE`) or a component that gets its value from elsewhere (`FALSE`). The
-#'   default for `AddComponents` is `TRUE`, essentially acting the same as
-#'   `AddInComps`. This should usually only be `FALSE` when another function is
-#'   calling this function, such as when a defined component is being added with
-#'   `AddDefComps`.
 #' @param InDefComp A logical value indicating if this is a defined component
 #'   from the parameter file (`TRUE`) or was added from another process, such as
 #'   `ExpandWHAM` (`FALSE`).
@@ -85,6 +79,11 @@ AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
 
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
+
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
 
   # coerce to correct types
   CompName = trimws(as.character(CompName))
@@ -190,6 +189,11 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
 
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   NewProblem = ThisProblem
+
+  if ((NewProblem$ParamFile != "") &&
+      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+    NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
+  }
 
   ComponentToRemoveOrig = ComponentToRemove
   if (is.character(ComponentToRemove)) {
@@ -307,6 +311,7 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
 
   CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
 
+
   return(NewProblem)
 }
 
@@ -421,7 +426,9 @@ AddDefComps = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
          "Use DefCompFromNum = 1 to specify the total concentration = DefCompSiteDens.")
   }
   if (any(DefCompFromVar %in%
-          c(ThisProblem$Comp$Name, ThisProblem$InVar$Name, NA) == FALSE)) {
+          c(ThisProblem$Comp$Name, ThisProblem$InVar$Name, NA,
+            paste0(ThisProblem$InVar$Name[ThisProblem$InVar$Type %in% c(
+              "WHAM-HA","WHAM-FA","WHAM-HAFA")], "-",c("HA","FA"),"_")) == FALSE)) {
     stop("DefCompFromVar must be an input variable or component.")
   }
   if(is.null(DefCompMCName)) {
