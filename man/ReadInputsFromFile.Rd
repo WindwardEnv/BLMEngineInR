@@ -47,8 +47,8 @@ Returns a \code{list} object with the following components:
 }
 }
 \description{
-`ReadInputsFromFile` will read a BLM input file, assuming it matches the
-problem as defined by the input arguments.
+`ReadInputsFromFile` will read a BLM input file, assuming it
+matches the problem as defined by the input arguments.
 }
 \examples{
 myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),

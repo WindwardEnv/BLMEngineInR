@@ -41,6 +41,11 @@
 #' @param PhaseMoles A numeric vector with the moles of the phase.
 #' @param PhasesToRemove A character or integer vector indicating the names or
 #'   indices (respectively) of the phase formation reactions to remove.
+#' @param DoCheck A logical value indicating whether checks should be performed
+#'   on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+#'   usually want to make sure something isn't awry, but the value is often set
+#'   to `FALSE` when used internally (like in DefineProblem) so the problem is
+#'   only checked once at the end.
 #'
 #' @return `ThisProblem`, with the phase reaction(s) changed.
 #'
@@ -67,9 +72,12 @@ AddPhases = function(ThisProblem,
                      PhaseName = character(),
                      PhaseCompNames = list(), PhaseCompStoichs = list(),
                      PhaseStoich = NULL,
-                     PhaseLogK, PhaseDeltaH, PhaseTempKelvin, PhaseMoles) {
+                     PhaseLogK, PhaseDeltaH, PhaseTempKelvin, PhaseMoles,
+                     DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -200,16 +208,20 @@ AddPhases = function(ThisProblem,
   )
   NewProblem$N["Phase"] = ThisProblem$N["Phase"] + NPhaseAdd
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   return(NewProblem)
 
 }
 
 #' @rdname Phases
 #' @export
-RemovePhases = function(ThisProblem, PhasesToRemove) {
+RemovePhases = function(ThisProblem, PhasesToRemove, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -223,6 +235,10 @@ RemovePhases = function(ThisProblem, PhasesToRemove) {
   }
   if (length(PhasesToRemove) < 1) {
     stop(paste0("Phases \"", PhasesToRemoveOrig, "\" does not exist."))
+  }
+  if (any(PhasesToRemove <= 0L)) {
+    stop("Invalid index in PhasesToRemove (",
+         PhasesToRemove[PhasesToRemove <= 0L],").")
   }
   if (any(PhasesToRemove > ThisProblem$N["Phase"])) {
     stop(paste0("There are ", ThisProblem$N["Phase"], " Phases, ",
@@ -238,7 +254,9 @@ RemovePhases = function(ThisProblem, PhasesToRemove) {
   NewProblem$PhaseStoich = ThisProblem$PhaseStoich[-PhasesToRemove, , drop = FALSE]
   NewProblem$N["Phase"] = ThisProblem$N["Phase"] - length(PhasesToRemove)
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   return(NewProblem)
 
 }

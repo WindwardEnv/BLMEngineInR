@@ -1,7 +1,7 @@
-#' Read a BLM Input File
+#' @title Read a BLM Input File
 #'
-#' `ReadInputsFromFile` will read a BLM input file, assuming it matches the
-#' problem as defined by the input arguments.
+#' @description `ReadInputsFromFile` will read a BLM input file, assuming it
+#' matches the problem as defined by the input arguments.
 #'
 #' @param InputFile character; the path and file name to a BLM input file
 #' @param ThisProblem a list object following the template of BlankProblem
@@ -155,8 +155,8 @@ ReadInputsFromFile = function(
 #' @export
 #'
 MatchInputsToProblem = function(
-    DFInputs = data.frame(),
     #inputs from file
+    DFInputs = data.frame(),
     NObs = nrow(DFInputs),
     InLabObs = DFInputs[, ThisProblem$InLabName, drop = FALSE],
     InVarObs = DFInputs[, ThisProblem$InVar$Name, drop = FALSE],
@@ -276,7 +276,7 @@ MatchInputsToProblem = function(
                  dimnames = list(1:NObs, DefCompName[i]))
       } else if (DefCompFromVar[i] %in% InVarName) {
         TotConcObs[, DefCompName[i]] =
-          InVarObs[, DefCompFromVar[i], drop = FALSE] *
+          as.matrix(InVarObs[, DefCompFromVar[i], drop = FALSE]) *
           matrix(DefCompSiteDens[i], byrow = TRUE, nrow = NObs, ncol = 1,
                  dimnames = list(1:NObs, DefCompName[i]))
       } else {
@@ -312,9 +312,10 @@ MatchInputsToProblem = function(
 }
 
 
-#' Get data from the input file
+#' @title Get data from the input file
 #'
-#' `GetData` reads in the input file and prepares it for input to the BLM function.
+#' @description `GetData` reads in the input file and prepares it for input to
+#'   the BLM function.
 #'
 #' @param InputFile character(1); the path and file name to a BLM input file
 #' @param ThisProblem a list object following the template of BlankProblem
@@ -323,8 +324,8 @@ MatchInputsToProblem = function(
 #' @param NInVar integer; Number of input variables
 #' @param InVarName character vector of length `NInVar`; Names of input
 #'   variables
-#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of input
-#'   variables
+#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of
+#'   input variables
 #' @param InVarType character vector of length `NInVar`; Types of input
 #'   variables
 #' @param NInComp integer; Number in input components
@@ -423,12 +424,11 @@ GetData = function(InputFile,
   return(Out2)
 }
 
-#'
 #' @title Make a blank inputs list object
 #'
 #' @description This function is internal because the inputs can be specified in
 #'   a data.frame object then matched to ThisProblem with
-#'   `MatchInputsToProblem(DFInput = , ThisProblem = )`. This function is useful
+#'   `MatchInputsToProblem(DFInputs = , ThisProblem = )`. This function is useful
 #'   as a comparison to make sure the outputs of `GetData` or
 #'   `MatchInputsToProblem` and the inputs of `BLM` are acceptable.
 #'

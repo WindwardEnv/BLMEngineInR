@@ -33,8 +33,6 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
   NewProblem = BlankProblem()
 
-  NewProblem$ParamFile = ParamFile
-
   # read the dimensions of the various elements of the reaction list
   SkipRows = 2
   Tmp = read.csv(file = ParamFile, header = FALSE, skip = SkipRows,
@@ -57,23 +55,26 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   NewProblem = AddMassCompartments(ThisProblem = NewProblem,
                                    MassName = as.character(trimws(Tmp[, 1])),
                                    MassAmt = as.numeric(Tmp[, 2]),
-                                   MassUnit = as.character(trimws(Tmp[, 3])))
+                                   MassUnit = as.character(trimws(Tmp[, 3])),
+                                   DoCheck = FALSE)
 
   # read input Labels
   SkipRows = SkipRows + NMass + 3
   Tmp = scan(file = ParamFile, what = character(), nlines = NInLab, sep = "\n",
              skip = SkipRows, quiet = TRUE, strip.white = TRUE)
   NewProblem = AddInLabs(ThisProblem = NewProblem,
-                         InLabName = as.character(Tmp))
+                         InLabName = as.character(Tmp),
+                         DoCheck = FALSE)
 
   # read input variables -
   SkipRows = SkipRows + NInLab + 2
   Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                  nrows = NInVar, strip.white = TRUE)
   NewProblem = AddInVars(ThisProblem = NewProblem,
-                        InVarName = as.character(trimws(Tmp[, 1])),
-                        InVarMCName = as.character(trimws(Tmp[, 2])),
-                        InVarType = as.character(trimws(Tmp[, 3])))
+                         InVarName = as.character(trimws(Tmp[, 1])),
+                         InVarMCName = as.character(trimws(Tmp[, 2])),
+                         InVarType = as.character(trimws(Tmp[, 3])),
+                         DoCheck = FALSE)
   stopifnot("Temperature" %in% NewProblem$InVar$Type)
   # - Temperature = the temperature in degrees C
   # - pH = the -log[H]...you know, pH
@@ -94,7 +95,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
                           InCompCharge = as.integer(Tmp[, 2]),
                           InCompMCName = as.character(trimws(Tmp[, 3])),
                           InCompType = as.character(trimws(Tmp[, 4])),
-                          InCompActCorr = as.character(trimws(Tmp[, 5])))
+                          InCompActCorr = as.character(trimws(Tmp[, 5])),
+                          DoCheck = FALSE)
 
   # read defined component list and properties
   SkipRows = SkipRows + NInComp + 3
@@ -110,7 +112,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompFromNum[!is.na(DefCompFromVar)] = NA
     if (any(NewProblem$Comp$Name %in% "H")) {
       NewProblem = RemoveDefComps(ThisProblem = NewProblem,
-                                  DefCompToRemove = "H")
+                                  DefCompToRemove = "H",
+                                  DoCheck = FALSE)
     }
     NewProblem = AddDefComps(ThisProblem = NewProblem,
                             DefCompName = as.character(trimws(Tmp[, 1])),
@@ -120,7 +123,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
                             DefCompMCName = as.character(trimws(Tmp[, 4])),
                             DefCompType = as.character(trimws(Tmp[, 5])),
                             DefCompActCorr = as.character(trimws(Tmp[, 6])),
-                            DefCompSiteDens = as.numeric(Tmp[, 7]))
+                            DefCompSiteDens = as.numeric(Tmp[, 7]),
+                            DoCheck = FALSE)
   }
 
   # Check that pH is in the component list
@@ -146,7 +150,6 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   Tmp = scan(file = ParamFile, skip = SkipRows, sep = "\n", nlines = NSpec,
              what = "character", quiet = TRUE)
   TmpSplit = strsplit(Tmp, ",")
-
   for (i in 1:NSpec) {
     SpecNC_i = as.integer(trimws(TmpSplit[[i]][4]))
     NewProblem = AddSpecies(
@@ -158,7 +161,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
       SpecCompStoichs = list(as.integer(trimws(TmpSplit[[i]][4 + seq(2, 2 * SpecNC_i, by = 2)]))),
       SpecLogK = as.numeric(trimws(TmpSplit[[i]][5 + SpecNC_i * 2])),
       SpecDeltaH = as.numeric(trimws(TmpSplit[[i]][6 + SpecNC_i * 2])),
-      SpecTempKelvin = as.numeric(trimws(TmpSplit[[i]][7 + SpecNC_i * 2]))
+      SpecTempKelvin = as.numeric(trimws(TmpSplit[[i]][7 + SpecNC_i * 2])),
+      DoCheck = FALSE
     )
   }
 
@@ -179,7 +183,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
         PhaseLogK = as.numeric(trimws(TmpSplit[[i]][3 + PhaseNC_i * 2])),
         PhaseDeltaH = as.numeric(trimws(TmpSplit[[i]][4 + PhaseNC_i * 2])),
         PhaseTempKelvin = as.numeric(trimws(TmpSplit[[i]][5 + PhaseNC_i * 2])),
-        PhaseMoles = as.numeric(trimws(TmpSplit[[i]][6 + PhaseNC_i * 2]))
+        PhaseMoles = as.numeric(trimws(TmpSplit[[i]][6 + PhaseNC_i * 2])),
+        DoCheck = FALSE
       )
     }
   }
@@ -192,7 +197,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     NewProblem = AddSpecialDefs(
       ThisProblem = NewProblem,
       Value = trimws(Tmp[, 2]),
-      SpecialDef = trimws(Tmp[, 1])
+      SpecialDef = trimws(Tmp[, 1]),
+      DoCheck = FALSE
     )
   }
 
@@ -205,9 +211,13 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     colnames(CATab) = c("Num", "CA", "Species", "Test.Type", "Duration",
                         "Lifestage", "Endpoint", "Quantifier", "References",
                         "Miscellaneous")
-    NewProblem = AddCriticalValues(ThisProblem = NewProblem, CATab = CATab)
+    NewProblem = AddCriticalValues(ThisProblem = NewProblem, CATab = CATab, DoCheck = FALSE)
 
   }
+
+  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+
+  NewProblem$ParamFile = ParamFile
 
   if (WriteLog) {
     CHESSLog(ThisProblem = NewProblem)

@@ -1,0 +1,19 @@
+test_that("WriteInputFile works", {
+
+  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+                        package = "BLMEngineInR",
+                        mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
+  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+                            package = "BLMEngineInR",
+                            mustWork = TRUE)
+  myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+
+  mytestinputfile = withr::local_tempfile(fileext = ".blm4")
+
+  expect_no_error(WriteInputFile(AllInput = myinputs, ThisProblem = myproblem, InputFile = mytestinputfile))
+
+  expect_equal(scan(mytestinputfile, what = character(), quiet = TRUE, sep = ",", strip.white = TRUE),
+               scan(myinputfile, what = character(), quiet = TRUE, sep = ",", strip.white = TRUE))
+
+})

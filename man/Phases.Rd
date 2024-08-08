@@ -16,10 +16,11 @@ AddPhases(
   PhaseLogK,
   PhaseDeltaH,
   PhaseTempKelvin,
-  PhaseMoles
+  PhaseMoles,
+  DoCheck = TRUE
 )
 
-RemovePhases(ThisProblem, PhasesToRemove)
+RemovePhases(ThisProblem, PhasesToRemove, DoCheck = TRUE)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by
@@ -63,6 +64,12 @@ formation reactions.}
 corresponding to `PhaseDeltaH` values of the phase formation reactions.}
 
 \item{PhaseMoles}{A numeric vector with the moles of the phase.}
+
+\item{DoCheck}{A logical value indicating whether checks should be performed
+on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+usually want to make sure something isn't awry, but the value is often set
+to `FALSE` when used internally (like in DefineProblem) so the problem is
+only checked once at the end.}
 
 \item{PhasesToRemove}{A character or integer vector indicating the names or
 indices (respectively) of the phase formation reactions to remove.}

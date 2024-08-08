@@ -10,11 +10,13 @@ AddInVars(
   ThisProblem,
   InVarName,
   InVarMCName = NULL,
-  InVarType,
-  InVarMCR = match(InVarMCName, ThisProblem$Mass$Name)
+  InVarType = c("Temperature", "pH", "WHAM-FA", "WHAM-HA", "WHAM-HAFA", "PercHA",
+    "PercAFA"),
+  InVarMCR = match(InVarMCName, ThisProblem$Mass$Name, nomatch = -1L),
+  DoCheck = TRUE
 )
 
-RemoveInVars(ThisProblem, InVarToRemove)
+RemoveInVars(ThisProblem, InVarToRemove, DoCheck = TRUE)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by
@@ -34,6 +36,12 @@ variables. Must be one of "Temp", "pH", "WHAM-HA", "WHAM-FA", "WHAM-HAFA",
 \item{InVarMCR}{(optional) A character vector with the indices of the mass
 compartments the new input variables are associated with. Only needs to be
 specified if `InVarMCName` is not specified.}
+
+\item{DoCheck}{A logical value indicating whether checks should be performed
+on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+usually want to make sure something isn't awry, but the value is often set
+to `FALSE` when used internally (like in DefineProblem) so the problem is
+only checked once at the end.}
 
 \item{InVarToRemove}{A character vector with names or indices of the input
 variable(s) to remove from `ThisProblem`.}

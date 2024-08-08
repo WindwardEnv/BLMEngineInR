@@ -18,6 +18,7 @@ test_that("ExpandWHAM works", {
                           WdatFile = system.file(file.path("extdata","WHAM","WHAM_V.wdat"),
                                                  package = "BLMEngineInR", mustWork = TRUE))[c("N","Mass","DefComp","Comp","Spec","SpecStoich")])
 
+  # WHAM V
   myproblem_humics = AddInComps(
     ThisProblem = AddInVars(
       ThisProblem = carbonate_system_problem,
@@ -31,10 +32,19 @@ test_that("ExpandWHAM works", {
     InCompType = "MassBal",
     InCompActCorr = "Debye"
   )
-  myproblem_humics = ExpandWHAM(ThisProblem = myproblem_humics, WHAMVer = "V")
-  expect_equal(myproblem_humics$N,
+  myproblem_HA_V = ExpandWHAM(ThisProblem = myproblem_humics, WHAMVer = "V")
+  expect_equal(myproblem_HA_V$N,
                c(Mass = 2L, InLab = 1L, InVar = 3L, InMass = 1L, InComp = 2L,
-                 InDefComp = 0L, InSpec = 3L, DefComp = 22L, Comp = 24L,
+                 InDefComp = 1L, InSpec = 3L, DefComp = 22L, Comp = 24L,
                  Spec = 96L, Phase = 0L, BL = 0L, Metal = 0L, BLMetal = 0L,
                  CAT = 0L))
+
+  # WHAM VII
+  myproblem_HA_VII = ExpandWHAM(ThisProblem = myproblem_humics, WHAMVer = "VII")
+  expect_equal(myproblem_HA_VII$N,
+               c(Mass = 2L, InLab = 1L, InVar = 3L, InMass = 1L, InComp = 2L,
+                 InDefComp = 1L, InSpec = 3L, DefComp = 24L, Comp = 26L,
+                 Spec = 138L, Phase = 0L, BL = 0L, Metal = 0L, BLMetal = 0L,
+                 CAT = 0L))
+
 })

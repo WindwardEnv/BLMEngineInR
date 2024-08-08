@@ -6,9 +6,9 @@
 \alias{RemoveSpecialDefs}
 \title{Add or remove species definitions}
 \usage{
-AddSpecialDefs(ThisProblem, Value, SpecialDef)
+AddSpecialDefs(ThisProblem, Value, SpecialDef, DoCheck = TRUE)
 
-RemoveSpecialDefs(ThisProblem, SpecialDefToRemove, Index = 1)
+RemoveSpecialDefs(ThisProblem, SpecialDefToRemove, Index = 1, DoCheck = TRUE)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by
@@ -28,6 +28,12 @@ example).}
 \item{SpecialDef}{A character vector indicating which special definition to
 add a value for. Valid values are `"BL"`, `"Metal"`, `"BL-Metal"`,
 `"BLMetal"` (same as `"BL-Metal"`), and `"WHAM"`.}
+
+\item{DoCheck}{A logical value indicating whether checks should be performed
+on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+usually want to make sure something isn't awry, but the value is often set
+to `FALSE` when used internally (like in DefineProblem) so the problem is
+only checked once at the end.}
 
 \item{SpecialDefToRemove}{The name of the special definition to remove.}
 

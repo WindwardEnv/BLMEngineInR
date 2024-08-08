@@ -373,7 +373,6 @@ ExpandWHAM = function(ThisProblem,
       )
 
       # bound to each metal
-      iDeprotSpec = which(NewProblem$Spec$Name %in% paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot))
       for (iMetal in 1:nMP) {
         iMetalSpec = which(ThisProblem$Spec$Name == MetalsTable$Metal[iMetal])
         NewProblem = AddSpecies(
@@ -461,8 +460,6 @@ ExpandWHAM = function(ThisProblem,
         )
 
         # bound to each metal
-        iDeprotSpec = which(NewProblem$Spec$Name %in%
-                              paste0(WHAMprefix[OMType], BidentTable$FullyDeprot))
         for (iMetal in 1:nMP) {
           iMetalSpec = which(ThisProblem$Spec$Name == MetalsTable$Metal[iMetal])
           NewProblem = AddSpecies(
@@ -587,7 +584,7 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S22Deprot, " = ",
+            WHAMprefix[OMType], TridentTable$S23Deprot, " = ",
             "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
@@ -618,8 +615,6 @@ ExpandWHAM = function(ThisProblem,
         )
 
         # bound to each metal
-        iDeprotSpec = which(NewProblem$Spec$Name %in%
-                              paste0(WHAMprefix[OMType], TridentTable$FullyDeprot))
         for (iMetal in 1:nMP) {
           iMetalSpec = which(ThisProblem$Spec$Name == MetalsTable$Metal[iMetal])
           NewProblem = AddSpecies(

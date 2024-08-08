@@ -40,6 +40,11 @@
 #'   value.
 #' @param CAToRemove an integer vector - the indices/row numbers of the critical
 #'   values to remove from the table.
+#' @param DoCheck A logical value indicating whether checks should be performed
+#'   on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+#'   usually want to make sure something isn't awry, but the value is often set
+#'   to `FALSE` when used internally (like in DefineProblem) so the problem is
+#'   only checked once at the end.
 #'
 #'
 #' @return The edited version of `ThisProblem`.
@@ -97,9 +102,12 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
                              Endpoint = CATab$Endpoint,
                              Quantifier = CATab$Quantifier,
                              References = CATab$References,
-                             Miscellaneous = CATab$Miscellaneous) {
+                             Miscellaneous = CATab$Miscellaneous,
+                             DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -142,7 +150,9 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
     NewCATab
   )
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 
@@ -151,9 +161,11 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
 
 #' @rdname CriticalValues
 #' @export
-RemoveCriticalValues = function(ThisProblem, CAToRemove) {
+RemoveCriticalValues = function(ThisProblem, CAToRemove, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -162,6 +174,10 @@ RemoveCriticalValues = function(ThisProblem, CAToRemove) {
   }
 
   CAToRemove = unique(CAToRemove)
+  if (any(CAToRemove <= 0L)) {
+    stop("Invalid index in CAToRemove (",
+         CAToRemove[CAToRemove <= 0L],").")
+  }
   if (any(CAToRemove > ThisProblem$N["CAT"])) {
     stop(paste0("There are ", ThisProblem$N["CAT"], " CAs, ",
                 "trying to remove the #(",
@@ -176,7 +192,9 @@ RemoveCriticalValues = function(ThisProblem, CAToRemove) {
     NewProblem$CATab$Num = seq(1, NewProblem$N["CAT"])
   }
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 

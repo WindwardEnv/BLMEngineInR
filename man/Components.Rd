@@ -18,10 +18,11 @@ AddComponents(
   CompType,
   CompActCorr,
   CompSiteDens = 1,
-  CompMCR = match(CompMCName, ThisProblem$Mass$Name)
+  CompMCR = match(CompMCName, ThisProblem$Mass$Name, nomatch = -1L),
+  DoCheck = TRUE
 )
 
-RemoveComponents(ThisProblem, ComponentToRemove)
+RemoveComponents(ThisProblem, ComponentToRemove, DoCheck = TRUE)
 
 AddInComps(
   ThisProblem,
@@ -30,10 +31,11 @@ AddInComps(
   InCompMCName = NULL,
   InCompType,
   InCompActCorr,
-  InCompMCR = match(InCompMCName, ThisProblem$Mass$Name)
+  InCompMCR = match(InCompMCName, ThisProblem$Mass$Name, nomatch = -1L),
+  DoCheck = TRUE
 )
 
-RemoveInComps(ThisProblem, InCompToRemove)
+RemoveInComps(ThisProblem, InCompToRemove, DoCheck = TRUE)
 
 AddDefComps(
   ThisProblem,
@@ -45,11 +47,12 @@ AddDefComps(
   DefCompType,
   DefCompActCorr,
   DefCompSiteDens,
-  DefCompMCR = match(DefCompMCName, ThisProblem$Mass$Name),
-  InDefComp = TRUE
+  DefCompMCR = match(DefCompMCName, ThisProblem$Mass$Name, nomatch = -1L),
+  InDefComp = TRUE,
+  DoCheck = TRUE
 )
 
-RemoveDefComps(ThisProblem, DefCompToRemove)
+RemoveDefComps(ThisProblem, DefCompToRemove, DoCheck = TRUE)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by
@@ -84,6 +87,12 @@ densities of the new components. `AddInComps` assumes a site density of
 indices of the mass compartments the new components are associated with.
 Only needs to be specified if `CompMCName`/`InCompMCName`/`DefCompMCName`
 is not specified.}
+
+\item{DoCheck}{A logical value indicating whether checks should be performed
+on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+usually want to make sure something isn't awry, but the value is often set
+to `FALSE` when used internally (like in DefineProblem) so the problem is
+only checked once at the end.}
 
 \item{ComponentToRemove, InCompToRemove, DefCompToRemove}{A character vector
 with names or indices of the component(s) to remove from `ThisProblem`. It

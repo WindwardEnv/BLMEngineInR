@@ -19,11 +19,12 @@ AddSpecies(
   SpecLogK,
   SpecDeltaH,
   SpecTempKelvin,
-  SpecMCR = match(SpecMCName, ThisProblem$Mass$Name),
-  InSpec = TRUE
+  SpecMCR = match(SpecMCName, ThisProblem$Mass$Name, nomatch = -1L),
+  InSpec = TRUE,
+  DoCheck = TRUE
 )
 
-RemoveSpecies(ThisProblem, SpeciesToRemove)
+RemoveSpecies(ThisProblem, SpeciesToRemove, DoCheck = TRUE)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by
@@ -88,6 +89,12 @@ reaction indicated from the parameter file (`TRUE`, the default) or a
 reaction that was added from another process such as `ExpandWHAM`
 (`FALSE`). This should usually only be `FALSE` when another function is
 calling this function, such as `ExpandWHAM`.}
+
+\item{DoCheck}{A logical value indicating whether checks should be performed
+on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+usually want to make sure something isn't awry, but the value is often set
+to `FALSE` when used internally (like in DefineProblem) so the problem is
+only checked once at the end.}
 
 \item{SpeciesToRemove}{A character or integer vector indicating the names or
 indices (respectively) of the species formation reactions to remove.}

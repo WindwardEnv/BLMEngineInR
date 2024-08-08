@@ -8,6 +8,11 @@
 #'   label(s).
 #' @param InLabToRemove A character vector with names or indices of the input
 #'   label(s) to remove from `ThisProblem`.
+#' @param DoCheck A logical value indicating whether checks should be performed
+#'   on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+#'   usually want to make sure something isn't awry, but the value is often set
+#'   to `FALSE` when used internally (like in DefineProblem) so the problem is
+#'   only checked once at the end.
 #'
 #' @return `ThisProblem`, with the edited input labels.
 #'
@@ -26,9 +31,11 @@ NULL
 
 #' @rdname InLabs
 #' @export
-AddInLabs = function(ThisProblem, InLabName) {
+AddInLabs = function(ThisProblem, InLabName, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -53,16 +60,20 @@ AddInLabs = function(ThisProblem, InLabName) {
                            trimws(as.character(InLabName)))
   NewProblem$N["InLab"] = ThisProblem$N["InLab"] + length(InLabName)
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   return(NewProblem)
 
 }
 
 #' @rdname InLabs
 #' @export
-RemoveInLabs = function(ThisProblem, InLabToRemove) {
+RemoveInLabs = function(ThisProblem, InLabToRemove, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -74,21 +85,28 @@ RemoveInLabs = function(ThisProblem, InLabToRemove) {
   if (is.character(InLabToRemove)) {
     InLabToRemove = which(ThisProblem$InLabName %in% InLabToRemove)
   }
+  InLabToRemove = as.integer(InLabToRemove)
   if (length(InLabToRemove) < 1) {
-    stop(paste0("Mass Compartment \"", InLabToRemoveOrig, "\" does not exist."))
+    stop(paste0("Input Label(s) \"", InLabToRemoveOrig, "\" does not exist."))
+  }
+  if (any(InLabToRemove <= 0L)) {
+    stop("Invalid index in InLabToRemove (",
+         InLabToRemove[InLabToRemove <= 0L],").")
   }
   if (any(InLabToRemove > ThisProblem$N["InLab"])) {
-    stop(paste0("There are ", ThisProblem$N["InLab"], " input labels, ",
-                "trying to remove the #(",
-                InLabToRemove[InLabToRemove > ThisProblem$N["InLab"]],
-                ") element(s)."))
+    stop("There are ", ThisProblem$N["InLab"], " input labels, ",
+         "trying to remove the #(",
+         InLabToRemove[InLabToRemove > ThisProblem$N["InLab"]],
+         ") element(s).")
   }
 
   # Remove input labels
   NewProblem$InLabName = NewProblem$InLabName[-InLabToRemove]
   NewProblem$N["InLab"] = ThisProblem$N["InLab"] - length(InLabToRemove)
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   return(NewProblem)
 
 }

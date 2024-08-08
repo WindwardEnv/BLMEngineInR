@@ -20,7 +20,7 @@ A list object with a template for defining the inputs for the
 \description{
 This function is internal because the inputs can be specified in
   a data.frame object then matched to ThisProblem with
-  `MatchInputsToProblem(DFInput = , ThisProblem = )`. This function is useful
+  `MatchInputsToProblem(DFInputs = , ThisProblem = )`. This function is useful
   as a comparison to make sure the outputs of `GetData` or
   `MatchInputsToProblem` and the inputs of `BLM` are acceptable.
 }

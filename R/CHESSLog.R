@@ -9,7 +9,8 @@
 #'
 #' @keywords internal
 CHESSLog = function(ThisProblem,
-                    LogFilename = file.path(dirname(ThisProblem$ParamFile), "CHESSLOG.txt")) {
+                    LogFilename = file.path(dirname(ThisProblem$ParamFile),
+                                            "CHESSLOG.txt")) {
 
   # initialize
   CompName = character()

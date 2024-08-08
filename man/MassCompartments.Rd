@@ -12,10 +12,11 @@ AddMassCompartments(
   MassName = MassTable$Name,
   MassAmt = MassTable$Amt,
   MassUnit = MassTable$Unit,
-  InMass = TRUE
+  InMass = TRUE,
+  DoCheck = TRUE
 )
 
-RemoveMassCompartments(ThisProblem, MCToRemove)
+RemoveMassCompartments(ThisProblem, MCToRemove, DoCheck = TRUE)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by
@@ -36,6 +37,12 @@ mass compartment(s).}
 \item{InMass}{A logical value or vector indicating if this mass compartment
 is in the parameter file (`TRUE`, default) or was created as a result of,
 e.g. the `ExpandWHAM` function (`FALSE`).}
+
+\item{DoCheck}{A logical value indicating whether checks should be performed
+on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+usually want to make sure something isn't awry, but the value is often set
+to `FALSE` when used internally (like in DefineProblem) so the problem is
+only checked once at the end.}
 
 \item{MCToRemove}{A character vector with names or indices of the mass
 compartment(s) to remove from `ThisProblem`.}

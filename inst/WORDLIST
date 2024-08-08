@@ -18,11 +18,13 @@ BlankProblem
 BlankProblemList
 Bosse
 Bowles
+BreakOnError
 Brix
 Böhlke
 CATab
 CATarget
 CCC
+CHESSLOG
 CHemical
 CMC
 CaCl
@@ -38,6 +40,7 @@ CompMCR
 Coplen
 Cotsifas
 DDL
+DFInputs
 Daphnia
 DeForest
 Debye
@@ -72,6 +75,7 @@ Grosell
 Gröning
 HAFA
 HC
+HCO
 Hogstrand
 Humic
 IUPAC
@@ -80,6 +84,7 @@ InCompMCName
 InCompMCR
 InCompName
 InLab
+InLabName
 InVar
 InVarMCName
 InVarMCR
@@ -119,6 +124,7 @@ Naddy
 Nordheim
 NumericVector
 Paquin
+ParamFile
 PercAFA
 PercHA
 PhaseCompNames
@@ -174,6 +180,7 @@ Zhu
 bioavailability
 bioavailable
 biotic
+carbonic
 doi
 enthalpy
 equilibria

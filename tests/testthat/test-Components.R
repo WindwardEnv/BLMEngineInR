@@ -27,6 +27,48 @@ test_that("AddComponents works", {
                              CompActCorr = "None",
                              CompSiteDens = 1.0))
 
+  # NA arguments
+  expect_error(AddComponents(ThisProblem = carbonate_system_problem,
+                                CompName = NA,
+                                CompCharge = 0L,
+                                CompMCName = "Water",
+                                CompType = "MassBal",
+                                CompActCorr = "None",
+                                CompSiteDens = 1.0),
+               regexp = "NA arguments not allowed")
+  expect_error(AddComponents(ThisProblem = carbonate_system_problem,
+                                CompName = "test",
+                                CompCharge = NA,
+                                CompMCName = "Water",
+                                CompType = "MassBal",
+                                CompActCorr = "None",
+                                CompSiteDens = 1.0),
+               regexp = "NA arguments not allowed")
+  expect_error(AddComponents(ThisProblem = carbonate_system_problem,
+                                CompName = "test",
+                                CompCharge = 0L,
+                                CompMCName = "Water",
+                                CompType = NA,
+                                CompActCorr = "None",
+                                CompSiteDens = 1.0),
+               regexp = "NA arguments not allowed")
+  expect_error(AddComponents(ThisProblem = carbonate_system_problem,
+                                CompName = "test",
+                                CompCharge = 0L,
+                                CompMCName = "Water",
+                                CompType = "MassBal",
+                                CompActCorr = NA,
+                                CompSiteDens = 1.0),
+               regexp = "NA arguments not allowed")
+  expect_error(AddComponents(ThisProblem = carbonate_system_problem,
+                                CompName = "test",
+                                CompCharge = 0L,
+                                CompMCName = "Water",
+                                CompType = "MassBal",
+                                CompActCorr = "None",
+                                CompSiteDens = NA),
+               regexp = "NA arguments not allowed")
+
   # Incorrect types
   expect_no_error(AddComponents(ThisProblem = carbonate_system_problem,
                                 CompName = "test",
@@ -77,6 +119,42 @@ test_that("AddComponents works", {
 
 })
 
+test_that("RemoveComponents works", {
+
+  # all good
+  expect_no_error(RemoveComponents(ThisProblem = carbonate_system_problem,
+                                   ComponentToRemove = "CO3"))
+  expect_no_error(RemoveComponents(ThisProblem = carbonate_system_problem,
+                                   ComponentToRemove = 2))
+
+  # removing "H" in this way is probably not okay, since the defined component
+  # will still be hanging around.
+  expect_no_error(RemoveComponents(ThisProblem = carbonate_system_problem,
+                                   ComponentToRemove = 1))
+
+  # invalid
+  expect_error(RemoveComponents(ThisProblem = list(),
+                                ComponentToRemove = "CO3", DoCheck = TRUE),
+               regexp = "Invalid object")
+  expect_error(RemoveComponents(ThisProblem = carbonate_system_problem,
+                                   ComponentToRemove = "Junk"),
+               regexp = "does not exist")
+  expect_error(RemoveComponents(ThisProblem = carbonate_system_problem,
+                                   ComponentToRemove = 999),
+               regexp = "trying to remove the #")
+  expect_error(RemoveComponents(ThisProblem = carbonate_system_problem,
+                                   ComponentToRemove = -999),
+               regexp = "Invalid index")
+
+  # check content
+  expect_equal(RemoveComponents(ThisProblem = carbonate_system_problem,
+                                ComponentToRemove = "CO3")$N,
+               c(Mass = 1L, InLab = 1L, InVar = 2L, InMass = 1L, InComp = 0L,
+                 InDefComp = 1L, InSpec = 1L, DefComp = 1L, Comp = 1L,
+                 Spec = 2L, Phase = 0L, BL = 0L, Metal = 0L, BLMetal = 0L,
+                 CAT = 0L))
+})
+
 test_that("AddInComp works", {
 
   # nothing wrong
@@ -122,6 +200,29 @@ test_that("AddInComp works", {
   # names should never really intermingle with each other, it's okay to do this,
   # and might be desired (e.g., for biotic ligand mass compartment and
   # components.)
+
+})
+
+test_that("RemoveInComps works", {
+
+  # All good
+  expect_no_error(RemoveInComps(ThisProblem = carbonate_system_problem,
+                                InCompToRemove = 1))
+  expect_no_error(RemoveInComps(ThisProblem = carbonate_system_problem,
+                                InCompToRemove = "CO3"))
+
+  # Try to remove non-input component
+  expect_error(RemoveInComps(ThisProblem = carbonate_system_problem,
+                                InCompToRemove = "H"))
+
+  # check content
+  expect_equal(RemoveInComps(ThisProblem = carbonate_system_problem,
+                             InCompToRemove = "CO3")$N[
+                               c("Mass","InLab","InVar","InMass","InComp",
+                                 "InDefComp","InSpec","DefComp","Comp","Spec")],
+               c(Mass = 1L, InLab = 1L, InVar = 2L, InMass = 1L, InComp = 0L,
+                 InDefComp = 1L, InSpec = 1L, DefComp = 1L, Comp = 1L,
+                 Spec = 2L))
 
 })
 
@@ -228,30 +329,38 @@ test_that("AddDefComp works", {
                                c("Mass","InLab","InVar","InMass","InComp",
                                  "InDefComp","InSpec","DefComp","Comp","Spec")],
                c(Mass = 1L, InLab = 1L, InVar = 2L, InMass = 1L, InComp = 1L,
-                 InDefComp = 1L, InSpec = 3L, DefComp = 2L, Comp = 3L,
+                 InDefComp = 2L, InSpec = 3L, DefComp = 2L, Comp = 3L,
                  Spec = 6L))
 
 })
 
-test_that("RemoveInComps works", {
+test_that("RemoveDefComps works", {
 
-  # All good
-  expect_no_error(RemoveInComps(ThisProblem = carbonate_system_problem,
-                                InCompToRemove = 1))
-  expect_no_error(RemoveInComps(ThisProblem = carbonate_system_problem,
-                                InCompToRemove = "CO3"))
+  # all good
+  expect_no_error(RemoveDefComps(ThisProblem = carbonate_system_problem,
+                                 DefCompToRemove = "H"))
+  expect_no_error(RemoveDefComps(ThisProblem = carbonate_system_problem,
+                                 DefCompToRemove = 1))
 
-  # Try to remove non-input component
-  expect_error(RemoveInComps(ThisProblem = carbonate_system_problem,
-                                InCompToRemove = "H"))
+  # invalid DefCompToRemove
+  expect_error(RemoveDefComps(ThisProblem = carbonate_system_problem,
+                                 DefCompToRemove = -999),
+               regexp = "Invalid index")
+  expect_error(RemoveDefComps(ThisProblem = carbonate_system_problem,
+                                 DefCompToRemove = 999),
+               regexp = "trying to remove the #")
+
+  # trying to remove non-defined component
+  expect_error(RemoveDefComps(ThisProblem = carbonate_system_problem,
+                                 DefCompToRemove = "CO3"),
+               regexp = "does not exist")
 
   # check content
-  expect_equal(RemoveInComps(ThisProblem = carbonate_system_problem,
-                             InCompToRemove = "CO3")$N[
-                               c("Mass","InLab","InVar","InMass","InComp",
-                                 "InDefComp","InSpec","DefComp","Comp","Spec")],
-               c(Mass = 1L, InLab = 1L, InVar = 2L, InMass = 1L, InComp = 0L,
-                 InDefComp = 0L, InSpec = 1L, DefComp = 1L, Comp = 1L,
-                 Spec = 2L))
+  expect_equal(RemoveDefComps(ThisProblem = carbonate_system_problem,
+                              DefCompToRemove = "H")$N,
+               c(Mass = 1L, InLab = 1L, InVar = 2L, InMass = 1L, InComp = 1L,
+                 InDefComp = 0L, InSpec = 0L, DefComp = 0L, Comp = 1L,
+                 Spec = 1L, Phase = 0L, BL = 0L, Metal = 0L, BLMetal = 0L,
+                 CAT = 0L))
 
 })

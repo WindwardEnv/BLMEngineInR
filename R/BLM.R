@@ -17,8 +17,9 @@
 #' `BLM` will run the Windward Environmental Biotic Ligand Model (BLM) with the
 #' provided parameter file, input file, and options.
 #'
-#' @param ParamFile The path and file name of the parameter file
-#' @param InputFile The path and file name of the chemistry input file
+#' @param ParamFile (optional) The path and file name of the parameter file
+#' @param InputFile (optional) The path and file name of the chemistry input
+#'   file
 #' @param ThisProblem (optional) A problem list object, such as returned by
 #'   `DefineProblem`.
 #' @param AllInput (optional) An input chemistry list object, such as returned

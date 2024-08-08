@@ -27,6 +27,11 @@
 #' @param SpecialDefToRemove The name of the special definition to remove.
 #' @param Index If applicable (such as if there are two BL-Metal species), the
 #'   index of which to remove (i.e., the first one or second one).
+#' @param DoCheck A logical value indicating whether checks should be performed
+#'   on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+#'   usually want to make sure something isn't awry, but the value is often set
+#'   to `FALSE` when used internally (like in DefineProblem) so the problem is
+#'   only checked once at the end.
 #'
 #' @return `ThisProblem`, with the special definitions changed.
 #'
@@ -52,9 +57,11 @@ NULL
 
 #' @rdname SpecialDefs
 #' @export
-AddSpecialDefs = function(ThisProblem, Value, SpecialDef) {
+AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -62,7 +69,7 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
-  if (any(is.na(Value))) {
+  if (any(is.na(Value)) | any(is.na(SpecialDef))) {
     stop("NA inputs not allowed.")
   }
   NSpecialDef = length(Value)
@@ -125,7 +132,9 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef) {
     }
   }
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   return(NewProblem)
 
 }
@@ -133,8 +142,10 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef) {
 
 #' @rdname SpecialDefs
 #' @export
-RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1) {
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1, DoCheck = TRUE) {
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -159,14 +170,16 @@ RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1) {
       # species along with it)
       NewProblem = RemoveDefComps(
         ThisProblem = NewProblem,
-        DefCompToRemove = which(ThisProblem$DefComp$Type %in% c("WHAMHA","WHAMFA"))
+        DefCompToRemove = which(ThisProblem$DefComp$Type %in% c("WHAMHA","WHAMFA")),
+        DoCheck = DoCheck
       )
 
       # ...remove Donnan Mass compartments (this will remove components and
       # species along with it)
       NewProblem = RemoveMassCompartments(
         ThisProblem = NewProblem,
-        MCToRemove = which(grepl("Donnan", ThisProblem$Mass$Name))
+        MCToRemove = which(grepl("Donnan", ThisProblem$Mass$Name)),
+        DoCheck = DoCheck
       )
 
       # ...reset WHAM values to NA
@@ -178,6 +191,8 @@ RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1) {
     }
   }
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   return(NewProblem)
 }

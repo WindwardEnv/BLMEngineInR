@@ -3,10 +3,10 @@ test_that("BLM function works - general functionality", {
   mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
                         package = "BLMEngineInR",
                         mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
   myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
                             package = "BLMEngineInR",
                             mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
 
   tmp = BLM(ParamFile = mypfile,

@@ -17,9 +17,10 @@ BLM(
 )
 }
 \arguments{
-\item{ParamFile}{The path and file name of the parameter file}
+\item{ParamFile}{(optional) The path and file name of the parameter file}
 
-\item{InputFile}{The path and file name of the chemistry input file}
+\item{InputFile}{(optional) The path and file name of the chemistry input
+file}
 
 \item{ThisProblem}{(optional) A problem list object, such as returned by
 `DefineProblem`.}

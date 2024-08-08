@@ -47,6 +47,11 @@
 #'   is safer to use a name, since the index of the component may be different
 #'   within `ThisProblem$Comp$Name` versus `ThisProblem$InCompName` versus
 #'   `ThisProblem$DefComp$Name`.
+#' @param DoCheck A logical value indicating whether checks should be performed
+#'   on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+#'   usually want to make sure something isn't awry, but the value is often set
+#'   to `FALSE` when used internally (like in DefineProblem) so the problem is
+#'   only checked once at the end.
 #'
 #' @return `ThisProblem`, with the edits done to the component list, including
 #'   "trickle-down" changes, such as removing formation reactions that used a
@@ -67,7 +72,6 @@
 #'                             InCompType = "MassBal",
 #'                             InCompActCorr = "Debye")
 #' print(my_new_problem$Comp)
-
 NULL
 
 
@@ -75,9 +79,12 @@ NULL
 #' @export
 AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
                          CompType, CompActCorr, CompSiteDens = 1.0,
-                         CompMCR = match(CompMCName, ThisProblem$Mass$Name)) {
+                         CompMCR = match(CompMCName, ThisProblem$Mass$Name, nomatch = -1L),
+                         DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -171,12 +178,15 @@ AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
                           SpecDeltaH = 0,
                           SpecTempKelvin = 0,
                           SpecMCR = CompMCR,
-                          InSpec = FALSE)
+                          InSpec = FALSE,
+                          DoCheck = FALSE)
 
   # Update Special Definitions
   NewProblem$BLMetal$SpecsR = match(NewProblem$BLMetal$Name, NewProblem$Spec$Name)
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 
@@ -185,9 +195,11 @@ AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
 
 #' @rdname Components
 #' @export
-RemoveComponents = function(ThisProblem, ComponentToRemove) {
+RemoveComponents = function(ThisProblem, ComponentToRemove, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -205,6 +217,10 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
                       collapse = ", "),
                 ") does not exist."))
   }
+  if (any(ComponentToRemove <= 0L)) {
+    stop("Invalid index in ComponentToRemove (",
+         ComponentToRemove[ComponentToRemove <= 0L],").")
+  }
   if (any(ComponentToRemove > ThisProblem$N["Comp"])) {
     stop(paste0("There are ", ThisProblem$N["Comp"], " Components, ",
                 "trying to remove the #(",
@@ -212,6 +228,14 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
                       collapse = ", "),
                 ") element(s)."))
   }
+  # if (ThisProblem$Comp$Name[ComponentToRemove] %in% ThisProblem$DefComp$Name) {
+  #   stop("Trying to remove a defined component with RemoveComponents(). ",
+  #        "Please use RemoveDefComps() instead.")
+  # }
+  # if (ThisProblem$Comp$Name[ComponentToRemove] %in% ThisProblem$InCompName) {
+  #   stop("Trying to remove an input component with RemoveComponents(). ",
+  #        "Please use RemoveInComps() instead.")
+  # }
 
   # Remove Species that depend on the component
   SpeciesToRemove = unique(c(
@@ -220,7 +244,8 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
                 MARGIN = 1, FUN = function(X){any(X != 0L)}))
   ))
   NewProblem = RemoveSpecies(ThisProblem = NewProblem,
-                             SpeciesToRemove = SpeciesToRemove)
+                             SpeciesToRemove = SpeciesToRemove,
+                             DoCheck = FALSE)
 
   # Remove Phases that depend on the component
   if (ThisProblem$N["Phase"] > 0) {
@@ -230,7 +255,7 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
                   MARGIN = 1, FUN = function(X){any(X != 0L)}))
     ))
     if (length(PhasesToRemove) >= 1) {
-      NewProblem = RemovePhases(NewProblem, PhasesToRemove)
+      NewProblem = RemovePhases(NewProblem, PhasesToRemove, DoCheck = FALSE)
     }
   }
 
@@ -238,7 +263,7 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
   DefCompToRemove = which(NewProblem$DefComp$FromVar %in%
                             ThisProblem$Comp$Name[ComponentToRemove])
   if (length(DefCompToRemove) >= 1) {
-    NewProblem = RemoveDefComps(NewProblem, DefCompToRemove)
+    NewProblem = RemoveDefComps(NewProblem, DefCompToRemove, DoCheck = FALSE)
   }
 
   # Remove InComps that are the component to remove
@@ -309,8 +334,9 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
     NewProblem$PhaseCompList = matrix(data = 0L, nrow = 0, ncol = 0)
   }
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
-
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 }
@@ -319,10 +345,14 @@ RemoveComponents = function(ThisProblem, ComponentToRemove) {
 #' @rdname Components
 #' @export
 AddInComps = function(ThisProblem, InCompName, InCompCharge, InCompMCName = NULL,
-                     InCompType, InCompActCorr,
-                     InCompMCR = match(InCompMCName, ThisProblem$Mass$Name)) {
+                      InCompType, InCompActCorr,
+                      InCompMCR = match(InCompMCName, ThisProblem$Mass$Name, nomatch = -1L),
+                      DoCheck = TRUE) {
 
 
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   # Add the component
   NewProblem = AddComponents(ThisProblem = ThisProblem,
@@ -331,13 +361,16 @@ AddInComps = function(ThisProblem, InCompName, InCompCharge, InCompMCName = NULL
                              CompMCName = InCompMCName,
                              CompType = InCompType,
                              CompActCorr = InCompActCorr,
-                             CompSiteDens = 1.0)
+                             CompSiteDens = 1.0,
+                             DoCheck = FALSE)
 
   # Add the input component
-    NewProblem$N["InComp"] = NewProblem$N["InComp"] + length(InCompName)
-    NewProblem$InCompName = c(NewProblem$InCompName, trimws(as.character(InCompName)))
+  NewProblem$N["InComp"] = NewProblem$N["InComp"] + length(InCompName)
+  NewProblem$InCompName = c(NewProblem$InCompName, trimws(as.character(InCompName)))
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 
@@ -346,7 +379,11 @@ AddInComps = function(ThisProblem, InCompName, InCompCharge, InCompMCName = NULL
 
 #' @rdname Components
 #' @export
-RemoveInComps = function(ThisProblem, InCompToRemove) {
+RemoveInComps = function(ThisProblem, InCompToRemove, DoCheck = TRUE) {
+
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   InCompToRemoveOrig = InCompToRemove
   if (is.character(InCompToRemove)) {
@@ -362,12 +399,15 @@ RemoveInComps = function(ThisProblem, InCompToRemove) {
   NewProblem = ThisProblem
 
   NewProblem = RemoveComponents(ThisProblem = NewProblem,
-                                ComponentToRemove = InCompToRemoveOrig)
+                                ComponentToRemove = InCompToRemoveOrig,
+                                DoCheck = FALSE)
 
   # NewProblem$InCompName = NewProblem$InCompName[-InCompToRemove]
   # RemoveComponents should already do this...
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 
@@ -377,12 +417,14 @@ RemoveInComps = function(ThisProblem, InCompToRemove) {
 #' @rdname Components
 #' @export
 AddDefComps = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
-                      DefCompFromVar = NULL, DefCompCharge, DefCompMCName = NULL,
-                      DefCompType, DefCompActCorr, DefCompSiteDens,
-                      DefCompMCR = match(DefCompMCName, ThisProblem$Mass$Name),
-                      InDefComp = TRUE) {
+                       DefCompFromVar = NULL, DefCompCharge, DefCompMCName = NULL,
+                       DefCompType, DefCompActCorr, DefCompSiteDens,
+                       DefCompMCR = match(DefCompMCName, ThisProblem$Mass$Name, nomatch = -1L),
+                       InDefComp = TRUE, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   # coerce to correct types
@@ -467,9 +509,12 @@ AddDefComps = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
                              CompType = DefCompType,
                              CompActCorr = DefCompActCorr,
                              CompSiteDens = DefCompSiteDens,
-                             CompMCR = DefCompMCR)
+                             CompMCR = DefCompMCR,
+                             DoCheck = FALSE)
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 
@@ -478,9 +523,11 @@ AddDefComps = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
 
 #' @rdname Components
 #' @export
-RemoveDefComps = function(ThisProblem, DefCompToRemove) {
+RemoveDefComps = function(ThisProblem, DefCompToRemove, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   DefCompToRemoveOrig = DefCompToRemove
@@ -489,6 +536,10 @@ RemoveDefComps = function(ThisProblem, DefCompToRemove) {
   }
   if (length(DefCompToRemove) < 1) {
     stop(paste0("Defined Component \"", DefCompToRemoveOrig, "\" does not exist."))
+  }
+  if (any(DefCompToRemove <= 0L)) {
+    stop("Invalid index in DefCompToRemove (",
+         DefCompToRemove[DefCompToRemove <= 0L],").")
   }
   if (any(DefCompToRemove > ThisProblem$N["DefComp"])) {
     stop(paste0("There are ", ThisProblem$N["DefComp"], " Defined Components, ",
@@ -502,7 +553,8 @@ RemoveDefComps = function(ThisProblem, DefCompToRemove) {
   ComponentToRemove = which(ThisProblem$Comp$Name %in%
                               ThisProblem$DefComp$Name[DefCompToRemove])
   NewProblem = RemoveComponents(ThisProblem = NewProblem,
-                                ComponentToRemove = ComponentToRemove)
+                                ComponentToRemove = ComponentToRemove,
+                                DoCheck = FALSE)
 
   # Remove InDefComp's that are the defined component to remove
   InDefCompToRemove = which(NewProblem$InDefCompName %in%
@@ -517,7 +569,9 @@ RemoveDefComps = function(ThisProblem, DefCompToRemove) {
   NewProblem$DefComp = ThisProblem$DefComp[-DefCompToRemove, , drop= FALSE]
   NewProblem$N["DefComp"] = ThisProblem$N["DefComp"] - length(DefCompToRemove)
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 

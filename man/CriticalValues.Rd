@@ -17,10 +17,11 @@ AddCriticalValues(
   Endpoint = CATab$Endpoint,
   Quantifier = CATab$Quantifier,
   References = CATab$References,
-  Miscellaneous = CATab$Miscellaneous
+  Miscellaneous = CATab$Miscellaneous,
+  DoCheck = TRUE
 )
 
-RemoveCriticalValues(ThisProblem, CAToRemove)
+RemoveCriticalValues(ThisProblem, CAToRemove, DoCheck = TRUE)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by
@@ -65,6 +66,12 @@ character string with no line breaks.}
 information (e.g., how the value was calculated, test conditions not
 covered by other columns, etc.) to include for the corresponding `CA`
 value.}
+
+\item{DoCheck}{A logical value indicating whether checks should be performed
+on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+usually want to make sure something isn't awry, but the value is often set
+to `FALSE` when used internally (like in DefineProblem) so the problem is
+only checked once at the end.}
 
 \item{CAToRemove}{an integer vector - the indices/row numbers of the critical
 values to remove from the table.}

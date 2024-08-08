@@ -17,6 +17,11 @@
 #'   e.g. the `ExpandWHAM` function (`FALSE`).
 #' @param MCToRemove A character vector with names or indices of the mass
 #'   compartment(s) to remove from `ThisProblem`.
+#' @param DoCheck A logical value indicating whether checks should be performed
+#'   on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+#'   usually want to make sure something isn't awry, but the value is often set
+#'   to `FALSE` when used internally (like in DefineProblem) so the problem is
+#'   only checked once at the end.
 #'
 #' @return `ThisProblem`, with all the edited mass compartments, along with any
 #'   components, input variables, etc. associated with those mass compartments
@@ -47,9 +52,12 @@ AddMassCompartments = function(ThisProblem,
                                MassName = MassTable$Name,
                                MassAmt = MassTable$Amt,
                                MassUnit = MassTable$Unit,
-                               InMass = TRUE) {
+                               InMass = TRUE,
+                               DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -105,7 +113,9 @@ AddMassCompartments = function(ThisProblem,
     NewProblem$Index$WHAMDonnanMCR[2] = -1L
   }
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 
@@ -114,9 +124,11 @@ AddMassCompartments = function(ThisProblem,
 
 #' @rdname MassCompartments
 #' @export
-RemoveMassCompartments = function(ThisProblem, MCToRemove) {
+RemoveMassCompartments = function(ThisProblem, MCToRemove, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -130,6 +142,10 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove) {
   }
   if (any(is.na(MCToRemove))) {
     stop(paste0("Mass Compartment (", paste(MCToRemoveOrig[is.na(MCToRemove)], collapse = ", "), ") does not exist."))
+  }
+  if (any(MCToRemove <= 0L)) {
+    stop("Invalid index in MCToRemove (",
+         MCToRemove[MCToRemove <= 0L],").")
   }
   if (any(MCToRemove > ThisProblem$N["Mass"])) {
     stop(paste0("There are ", ThisProblem$N["Mass"], " Mass Compartments, ",
@@ -146,25 +162,25 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove) {
   # Remove input variables that depend on the mass compartment
   InVarToRemove = which(NewProblem$InVar$MCR %in% MCToRemove)
   if (length(InVarToRemove) >= 1) {
-    NewProblem = RemoveInVars(NewProblem, InVarToRemove)
+    NewProblem = RemoveInVars(NewProblem, InVarToRemove, DoCheck = FALSE)
   }
 
   # Remove DefComps that depend on the mass compartment
   DefCompToRemove = which(NewProblem$DefComp$MCR %in% MCToRemove)
   if (length(DefCompToRemove) >= 1) {
-    NewProblem = RemoveDefComps(NewProblem, DefCompToRemove)
+    NewProblem = RemoveDefComps(NewProblem, DefCompToRemove, DoCheck = FALSE)
   }
 
   # Remove Components that depend on the mass compartment
   ComponentToRemove = which(NewProblem$Comp$MCR %in% MCToRemove)
   if (length(ComponentToRemove) >= 1) {
-    NewProblem = RemoveComponents(NewProblem, ComponentToRemove)
+    NewProblem = RemoveComponents(NewProblem, ComponentToRemove, DoCheck = FALSE)
   }
 
   # Remove Species that depend on the mass compartment
   SpeciesToRemove = which(NewProblem$Spec$MCR %in% MCToRemove)
   if (length(SpeciesToRemove) >= 1) {
-    NewProblem = RemoveSpecies(NewProblem, SpeciesToRemove)
+    NewProblem = RemoveSpecies(NewProblem, SpeciesToRemove, DoCheck = FALSE)
   }
 
   # remove mass compartment
@@ -203,7 +219,9 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove) {
     NewProblem$Index$WHAMDonnanMCR[2] = -1L
   }
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
 
   return(NewProblem)
 

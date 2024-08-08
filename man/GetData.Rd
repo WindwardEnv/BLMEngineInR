@@ -38,8 +38,8 @@ GetData(
 \item{InVarName}{character vector of length `NInVar`; Names of input
 variables}
 
-\item{InVarMCR}{integer vector of length `NInVar`;  Mass compartments of input
-variables}
+\item{InVarMCR}{integer vector of length `NInVar`;  Mass compartments of
+input variables}
 
 \item{InVarType}{character vector of length `NInVar`; Types of input
 variables}
@@ -92,7 +92,8 @@ Returns a `list` object with the following components:
  }
 }
 \description{
-`GetData` reads in the input file and prepares it for input to the BLM function.
+`GetData` reads in the input file and prepares it for input to
+  the BLM function.
 }
 \examples{
 myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),

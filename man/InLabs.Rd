@@ -6,9 +6,9 @@
 \alias{RemoveInLabs}
 \title{Add or remove input labels in a problem}
 \usage{
-AddInLabs(ThisProblem, InLabName)
+AddInLabs(ThisProblem, InLabName, DoCheck = TRUE)
 
-RemoveInLabs(ThisProblem, InLabToRemove)
+RemoveInLabs(ThisProblem, InLabToRemove, DoCheck = TRUE)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by
@@ -16,6 +16,12 @@ RemoveInLabs(ThisProblem, InLabToRemove)
 
 \item{InLabName}{A character vector with the name(s) of the new input
 label(s).}
+
+\item{DoCheck}{A logical value indicating whether checks should be performed
+on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+usually want to make sure something isn't awry, but the value is often set
+to `FALSE` when used internally (like in DefineProblem) so the problem is
+only checked once at the end.}
 
 \item{InLabToRemove}{A character vector with names or indices of the input
 label(s) to remove from `ThisProblem`.}

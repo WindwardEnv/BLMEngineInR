@@ -55,6 +55,11 @@
 #'   calling this function, such as `ExpandWHAM`.
 #' @param SpeciesToRemove A character or integer vector indicating the names or
 #'   indices (respectively) of the species formation reactions to remove.
+#' @param DoCheck A logical value indicating whether checks should be performed
+#'   on the incoming and outgoing problem objects. Defaults to `TRUE`, as you
+#'   usually want to make sure something isn't awry, but the value is often set
+#'   to `FALSE` when used internally (like in DefineProblem) so the problem is
+#'   only checked once at the end.
 #'
 #' @return `ThisProblem`, with the species reaction(s) changed.
 #'
@@ -93,10 +98,12 @@ AddSpecies = function(ThisProblem,
                       SpecCompNames = list(), SpecCompStoichs = list(),
                       SpecStoich = NULL,
                       SpecLogK, SpecDeltaH, SpecTempKelvin,
-                      SpecMCR = match(SpecMCName, ThisProblem$Mass$Name),
-                      InSpec = TRUE) {
+                      SpecMCR = match(SpecMCName, ThisProblem$Mass$Name, nomatch = -1L),
+                      InSpec = TRUE, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -108,15 +115,21 @@ AddSpecies = function(ThisProblem,
   HasStoichCompsNames = (length(SpecCompNames) > 0) && (length(SpecCompStoichs) > 0)
   HasStoichMatrix = !is.null(SpecStoich)
   HasEquation = length(SpecEquation) > 0
-  if (!((HasName && (HasStoichMatrix || HasStoichCompsNames)) | HasEquation)) {
-    stop(c(
-      "Inputs differ in length.  Must specify either: ",
-      "  (1) SpecEquation (and optionally SpecName); ",
-      "  (2) SpecName, SpecCompNames, and SpecCompStoichs; or ",
-      "  (3) SpecName and SpecStoich   for each reaction."
-    ))
+  if (!((HasName && (HasStoichMatrix || HasStoichCompsNames)) || HasEquation)) {
+    stop("Missing stoichiometry and/or species name information. ",
+         "Must specify either: ",
+         "(1) SpecEquation (and optionally SpecName); ",
+         "(2) SpecName, SpecCompNames, and SpecCompStoichs; or ",
+         "(3) SpecName and SpecStoich for each reaction.")
   }
 
+  if (HasStoichMatrix) {
+    mode(SpecStoich) = "integer"
+    if (!is.null(colnames(SpecStoich))){
+      SpecStoich = SpecStoich[, ThisProblem$Comp$Name, drop = FALSE]
+      SpecStoich[is.na(SpecStoich)] = 0L
+    }
+  }
   if (HasStoichCompsNames) {
     tmp = StoichCompsToStoichMatrix(CompName = ThisProblem$Comp$Name,
                                     SpecName = SpecName,
@@ -130,15 +143,25 @@ AddSpecies = function(ThisProblem,
     }
   }
   if (HasEquation) {
+
+    if (HasName && (all(grepl("^=", trimws(SpecEquation)) ||
+                        !grepl("=", SpecEquation)))) {
+      SpecEquation = paste(SpecName, "=", trimws(gsub("=","",SpecEquation)))
+    }
+
     tmp = EquationToStoich(SpecEquation, CompName = ThisProblem$Comp$Name)
-    if (!HasName) {
+    if (HasName) {
+      stopifnot(SpecName == tmp$SpecName)
+    } else {
       SpecName = tmp$SpecName
       HasName = TRUE
-    } else if (all(trimws(gsub("=.*", "", SpecEquation)) == "")) {
-      SpecEquation = paste(SpecName, "=", SpecEquation)
     }
     if (HasStoichCompsNames) {
       for (i in 1:length(SpecCompNames)) {
+        SpecCompsAgg = stats::aggregate(SpecCompStoichs[[i]], by = list(SpecCompNames[[i]]), FUN = sum)
+        NewOrder = stats::na.omit(match(SpecCompsAgg$Group.1, ThisProblem$Comp$Name))
+        SpecCompNames[[i]] = SpecCompsAgg$Group.1[NewOrder]
+        SpecCompStoichs[[i]] = SpecCompsAgg$x[NewOrder]
         stopifnot(SpecCompNames[[i]] == tmp$SpecCompNames[[i]],
                   SpecCompStoichs[[i]] == tmp$SpecCompStoichs[[i]])
       }
@@ -270,7 +293,9 @@ AddSpecies = function(ThisProblem,
   }
   rownames(NewProblem$Spec) = NULL
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   return(NewProblem)
 
 }
@@ -278,9 +303,11 @@ AddSpecies = function(ThisProblem,
 
 #' @rdname Species
 #' @export
-RemoveSpecies = function(ThisProblem, SpeciesToRemove) {
+RemoveSpecies = function(ThisProblem, SpeciesToRemove, DoCheck = TRUE) {
 
-  CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
@@ -294,6 +321,10 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove) {
   }
   if (length(SpeciesToRemove) < 1) {
     stop(paste0("Species \"", SpeciesToRemoveOrig, "\" does not exist."))
+  }
+  if (any(SpeciesToRemove <= 0L)) {
+    stop("Invalid index in SpeciesToRemove (",
+         SpeciesToRemove[SpeciesToRemove <= 0L],").")
   }
   if (any(SpeciesToRemove > ThisProblem$N["Spec"])) {
     stop(paste0("There are ", ThisProblem$N["Spec"], " Species, ",
@@ -323,7 +354,9 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove) {
   NewProblem$BLMetal$SpecsR = match(NewProblem$BLMetal$Name, NewProblem$Spec$Name)
   NewProblem$N["BLMetal"] = length(NewProblem$BLMetal$Name)
 
-  CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  if (DoCheck) {
+    CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
+  }
   return(NewProblem)
 
 }
