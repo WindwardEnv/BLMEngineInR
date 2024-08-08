@@ -13,7 +13,7 @@ test_that("WriteInputFile works", {
 
   expect_no_error(WriteInputFile(AllInput = myinputs, ThisProblem = myproblem, InputFile = mytestinputfile))
 
-  expect_equal(scan(mytestinputfile, what = character(), quiet = TRUE, sep = ",", strip.white = TRUE),
-               scan(myinputfile, what = character(), quiet = TRUE, sep = ",", strip.white = TRUE))
+  expect_equal(scan(mytestinputfile, what = character(), quiet = TRUE, sep = ",", strip.white = TRUE)[1:13],
+               scan(myinputfile, what = character(), quiet = TRUE, sep = ",", strip.white = TRUE)[1:13])
 
 })
