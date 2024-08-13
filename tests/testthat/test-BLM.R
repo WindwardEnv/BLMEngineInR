@@ -23,6 +23,9 @@ test_that("BLM function works - general functionality", {
   )
   expect_equal(tmp, tmp2)
 
+  # for CRAN submission, we do not want any output by default
+  expect_silent(BLM(ThisProblem = myproblem, AllInput = myinputs, DoTox = FALSE))
+
 })
 
 test_that("BLM function works - CHESS works", {
@@ -67,7 +70,6 @@ test_that("BLM function works - toxicity mode works", {
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
 
-
   testinputsDF = data.frame(ObsNum = 1,
                             ID = "Full_Organic",
                             ID2 = "Hard ser 10",
@@ -91,5 +93,10 @@ test_that("BLM function works - toxicity mode works", {
             AllInput = testinputs, DoTox = TRUE, iCA = 2L)
 
   expect_equal(tmp$Concentrations$`T.Cu (mol/L)`, 7.62202e-10)
+
+  # for CRAN submission, we do not want any output by default
+  expect_silent(BLM(ThisProblem = myproblem,
+                    AllInput = testinputs, DoTox = TRUE, iCA = 2L))
+
 
 })
