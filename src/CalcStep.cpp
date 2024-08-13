@@ -47,9 +47,9 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   }
   
   Rcpp::NumericVector CompConcStepSolve(NSolve);
-  Rcpp::NumericVector ResidSolve(NSolve);  
+  /*Rcpp::NumericVector ResidSolve(NSolve);  
   Rcpp::NumericMatrix JacobianMatrixSolve(NSolve, NSolve);
-  Rcpp::NumericMatrix JacobianMatrixInv(NSolve, NSolve);
+  Rcpp::NumericMatrix JacobianMatrixInv(NSolve, NSolve);*/
 
   arma::mat ArmaCompConcStepSolve(NSolve, 1);
   arma::mat ArmaResidSolve(NSolve, 1);
@@ -60,12 +60,12 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   i = 0;
   for (iComp = 0; iComp < NComp; iComp++){
     if (CompSolve[iComp]) {
-      ResidSolve(i) = Resid(iComp);
+      //ResidSolve(i) = Resid(iComp);
       ArmaResidSolve(i, 0) = Resid(iComp);
       j = 0;
       for (iComp2 = 0; iComp2 < NComp; iComp2++){
         if (CompSolve[iComp2]) {
-          JacobianMatrixSolve(i, j) = JacobianMatrix(iComp, iComp2);
+          //JacobianMatrixSolve(i, j) = JacobianMatrix(iComp, iComp2);
           ArmaJacobianMatSolve(i, j) = JacobianMatrix(iComp, iComp2);
           j++;
         }
