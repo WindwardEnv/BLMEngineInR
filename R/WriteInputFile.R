@@ -11,9 +11,14 @@
 #'
 #' @examples
 #' tf = tempfile()
-#' myinputs = GetData(InputFile = sys, ThisProblem = carbonate_system_problem)
-#' WriteInputFile(AllInput = , ThisProblem = carbonate_system_problem, InputFile = tf)
-#'
+#' myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+#'                           package = "BLMEngineInR",
+#'                           mustWork = TRUE)
+#' myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+#' WriteInputFile(AllInput = myinputs, ThisProblem = carbonate_system_problem, InputFile = tf)
+#' scan(tf, what = character(), sep = "\n")
+#' scan(myinputfile, what = character(), sep = "\n")
+#' file.remove(tf)
 #'
 #' @export
 WriteInputFile = function(AllInput, ThisProblem, InputFile) {

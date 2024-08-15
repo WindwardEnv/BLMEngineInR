@@ -318,7 +318,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
     /* END SPECIATION ITERATIONS */
 
-  }
 
   if ((MaxError > ConvergenceCriteria)) { 
     StatusMessage += STATUS_SPEC_DNC;    
@@ -345,7 +344,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   return Rcpp::List::create(
       Rcpp::Named("StatusMessage") = StatusMessage,
       Rcpp::Named("FinalIter") = Iter,
-      Rcpp::Named("FinalToxIter") = ToxIter,
       Rcpp::Named("FinalMaxError") = MaxError,
       Rcpp::Named("IonicStrength") = IonicStrength,
       Rcpp::Named("SpecConc") = SpecConc,

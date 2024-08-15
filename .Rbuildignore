@@ -1,6 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^scrap$
+^soup$
+^benchmarking$
 ^data-raw$
 ^tools$
 ^.vscode$
