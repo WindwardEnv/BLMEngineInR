@@ -176,7 +176,7 @@ double CHESSIter(
   if (DoTox) {
     AdjustForToxMode(NBLMetal, BLMetalSpecs, MetalComp, CATarget, SpecConc,
                       Resid, CompError);
-  }*/
+  }
 
   // Determine which component has the highest error fraction
   MaxError = MaxCompError(NComp, CompError, WhichMax);
