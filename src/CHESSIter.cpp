@@ -172,7 +172,7 @@ double CHESSIter(
   CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, 
                     SpecType, Resid, CompError);
 
-  // Adjust Resid and CompError for toxicity mode
+  /*// Adjust Resid and CompError for toxicity mode
   if (DoTox) {
     AdjustForToxMode(NBLMetal, BLMetalSpecs, MetalComp, CATarget, SpecConc,
                       Resid, CompError);
