@@ -92,9 +92,9 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) {
 
         if (Value[i] %in% c("V", "VI", "VII")) {
           WHAMVer = Value[i]
-          WdatFile = NA
+          WdatFile = NA_character_
         } else {
-          WHAMVer = NA
+          WHAMVer = NA_character_
           WdatFile = Value[i]
         }
         NewProblem = ExpandWHAM(ThisProblem = NewProblem,
