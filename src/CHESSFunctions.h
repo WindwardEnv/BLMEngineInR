@@ -428,7 +428,8 @@ const int ERROR_SINGULAR_MATRIX = 11;
 const int ERROR_JACOBIAN_NAN = 20;
 
 // status messages
-const Rcpp::String STATUS_SPEC_DNC = "CHESS did not converge.";
+const Rcpp::String STATUS_SPEC_DNC = "Speciation did not converge.";
+const Rcpp::String STATUS_TOX_DNC = "Toxicity did not converge.";
 const Rcpp::String STATUS_JAC_ERR = "Jacobian matrix error.";
 const Rcpp::String STATUS_MAT_ERR = "Matrix inversion error.";
 
