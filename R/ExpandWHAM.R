@@ -306,20 +306,21 @@ ExpandWHAM = function(ThisProblem,
     MonodentAbundance = numeric(nMS)
     BidentAbundance = numeric(nBP)
     TridentAbundance = numeric(nTG)
-    for (OMType in 1:NWHAMFracAdd) {
+    for (OMi in 1:NWHAMFracAdd) {
 
-      ColspKM = paste0("pKM", c("A", "B"), WHAMFracAdd[OMType])
-      OMSpecType = paste0("WHAM", WHAMFracAdd[OMType])
+      OMType = WHAMFracAdd[OMi]
+      ColspKM = paste0("pKM", c("A", "B"), OMType)
+      OMSpecType = paste0("WHAM", OMType)
 
       # Donnan Species
       for (iSpec in match(ChargedSpecName, ThisProblem$Spec$Name)){
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
-          SpecName = paste0(DonnanCompName[OMType],"-",ThisProblem$Spec$Name[iSpec]),
-          SpecMCName = DonnanMCName[OMType],
-          SpecType = DonnanCompName[OMType],
+          SpecName = paste0(DonnanCompName[OMi],"-",ThisProblem$Spec$Name[iSpec]),
+          SpecMCName = DonnanMCName[OMi],
+          SpecType = DonnanCompName[OMi],
           SpecActCorr = ThisProblem$Spec$ActCorr[iSpec],
-          SpecCompNames = list(c(DonnanCompName[OMType],
+          SpecCompNames = list(c(DonnanCompName[OMi],
                                  ThisProblem$Comp$Name[ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
           SpecCompStoichs = list(c(abs(ThisProblem$Spec$Charge[iSpec]),
                                    ThisProblem$SpecStoich[iSpec, ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
@@ -341,8 +342,8 @@ ExpandWHAM = function(ThisProblem,
       # Components - fully protonated
       NewProblem = AddDefComps(
         ThisProblem = NewProblem,
-        DefCompName = paste0(WHAMprefix[OMType], MonodentTable$FullyProt),
-        DefCompFromVar = WHAMprefix[OMType],
+        DefCompName = paste0(WHAMprefix[OMi], MonodentTable$FullyProt),
+        DefCompFromVar = WHAMprefix[OMi],
         DefCompCharge = 0L,
         DefCompMCName = ThisProblem$Mass$Name[iMass],
         DefCompType = OMSpecType,
@@ -354,12 +355,12 @@ ExpandWHAM = function(ThisProblem,
       # - fully deprotonated
       NewProblem = AddSpecies(
         ThisProblem = NewProblem,
-        SpecName = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot),
+        SpecName = paste0(WHAMprefix[OMi], MonodentTable$FullyDeprot),
         SpecMCName = ThisProblem$Mass$Name[iMass],
         SpecType = OMSpecType,
         SpecActCorr = "None",
         SpecCompNames = as.list(as.data.frame(rbind(
-          paste0(WHAMprefix[OMType], MonodentTable$FullyProt),
+          paste0(WHAMprefix[OMi], MonodentTable$FullyProt),
           rep(ThisProblem$Comp$Name[iH], nMS)
         ))),
         SpecCompStoichs = as.list(as.data.frame(rbind(
@@ -378,9 +379,9 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], MonodentTable$FullyDeprot, "-",
+            WHAMprefix[OMi], MonodentTable$FullyDeprot, "-",
             ThisProblem$Spec$Equation[iMetalSpec],
-            " -1 * H + 1 * ", WHAMprefix[OMType], MonodentTable$FullyProt),
+            " -1 * H + 1 * ", WHAMprefix[OMi], MonodentTable$FullyProt),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
           SpecActCorr = "None",
@@ -401,8 +402,8 @@ ExpandWHAM = function(ThisProblem,
         # Components - fully protonated
         NewProblem = AddDefComps(
           ThisProblem = NewProblem,
-          DefCompName = paste0(WHAMprefix[OMType], BidentTable$FullyProt),
-          DefCompFromVar = WHAMprefix[OMType],
+          DefCompName = paste0(WHAMprefix[OMi], BidentTable$FullyProt),
+          DefCompFromVar = WHAMprefix[OMi],
           DefCompCharge = 0L,
           DefCompMCName = ThisProblem$Mass$Name[iMass],
           DefCompType = OMSpecType,
@@ -415,8 +416,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], BidentTable$S1Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], BidentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], BidentTable$S1Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], BidentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -431,8 +432,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], BidentTable$S2Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], BidentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], BidentTable$S2Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], BidentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -447,8 +448,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], BidentTable$FullyDeprot, " = ",
-            "1 * ", WHAMprefix[OMType], BidentTable$FullyProt, " -2 * H"
+            WHAMprefix[OMi], BidentTable$FullyDeprot, " = ",
+            "1 * ", WHAMprefix[OMi], BidentTable$FullyProt, " -2 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -465,9 +466,9 @@ ExpandWHAM = function(ThisProblem,
           NewProblem = AddSpecies(
             ThisProblem = NewProblem,
             SpecEquation = paste0(
-              WHAMprefix[OMType], BidentTable$FullyDeprot, "-",
+              WHAMprefix[OMi], BidentTable$FullyDeprot, "-",
               ThisProblem$Spec$Equation[iMetalSpec],
-              " -2 * H + 1 * ", WHAMprefix[OMType], BidentTable$FullyProt),
+              " -2 * H + 1 * ", WHAMprefix[OMi], BidentTable$FullyProt),
             SpecMCName = ThisProblem$Mass$Name[iMass],
             SpecType = OMSpecType,
             SpecActCorr = "None",
@@ -490,8 +491,8 @@ ExpandWHAM = function(ThisProblem,
         # Components - fully protonated
         NewProblem = AddDefComps(
           ThisProblem = NewProblem,
-          DefCompName = paste0(WHAMprefix[OMType], TridentTable$FullyProt),
-          DefCompFromVar = WHAMprefix[OMType],
+          DefCompName = paste0(WHAMprefix[OMi], TridentTable$FullyProt),
+          DefCompFromVar = WHAMprefix[OMi],
           DefCompCharge = 0L,
           DefCompMCName = ThisProblem$Mass$Name[iMass],
           DefCompType = OMSpecType,
@@ -504,8 +505,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S1Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], TridentTable$S1Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -520,8 +521,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S2Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], TridentTable$S2Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -536,8 +537,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S3Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], TridentTable$S3Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -552,8 +553,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S12Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
+            WHAMprefix[OMi], TridentTable$S12Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -2 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -568,8 +569,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S13Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
+            WHAMprefix[OMi], TridentTable$S13Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -2 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -584,8 +585,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S23Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
+            WHAMprefix[OMi], TridentTable$S23Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -2 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -600,8 +601,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$FullyDeprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -3 * H"
+            WHAMprefix[OMi], TridentTable$FullyDeprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -3 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -620,9 +621,9 @@ ExpandWHAM = function(ThisProblem,
           NewProblem = AddSpecies(
             ThisProblem = NewProblem,
             SpecEquation = paste0(
-              WHAMprefix[OMType], TridentTable$FullyDeprot, "-",
+              WHAMprefix[OMi], TridentTable$FullyDeprot, "-",
               ThisProblem$Spec$Equation[iMetalSpec],
-              " -3 * H + 1 * ", WHAMprefix[OMType], TridentTable$FullyProt),
+              " -3 * H + 1 * ", WHAMprefix[OMi], TridentTable$FullyProt),
             SpecMCName = ThisProblem$Mass$Name[iMass],
             SpecType = OMSpecType,
             SpecActCorr = "None",
