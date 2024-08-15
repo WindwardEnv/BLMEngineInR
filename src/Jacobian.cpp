@@ -183,7 +183,7 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
     for (iComp2 = 0; iComp2 < NComp; iComp2++) {
       Name2 = CompName[iComp2];
       Sum = 0;
-      if (DoTox && (iComp1 == MetalComp)) {
+      /*if (DoTox && (iComp1 == MetalComp)) {
         // Toxicity mode the metal's derivatives are relative to the CA error
         for (i = 0; i < NBLMetal; i++) {
           iSpec = BLMetalSpecs[i];
