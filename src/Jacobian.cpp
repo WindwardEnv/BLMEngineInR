@@ -195,7 +195,7 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
         } else {
           JacobianMatrix(iComp1, iComp2) = Sum / (SpecConc[iComp2]);// * SpecCtoM(iComp2));
         }
-      } else */if ((SpecType[iComp1] == STYPE_WHAMHA) || 
+      } else if ((SpecType[iComp1] == STYPE_WHAMHA) || 
                    (SpecType[iComp1] == STYPE_WHAMFA)) {
         /* WHAM species shouldn't have their CToM adjusted, but just to be sure, 
            let's take it out of the calculation. */
