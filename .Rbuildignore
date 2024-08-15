@@ -4,4 +4,9 @@
 ^data-raw$
 ^tools$
 ^.vscode$
+^.github$
 ^\.lintr$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
+^LICENSE\.md$
+^\.github$

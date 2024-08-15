@@ -15,15 +15,15 @@ A \code{data.frame} object with the CAT table in the given parameter
   file. Columns include:
 \describe{
    \item{\code{Num}}{the number or index in the table}
-   \item{\code{`CA (nmol/gw)`}}{the critical accumulation in units of 
+   \item{\code{`CA (nmol/gw)`}}{the critical accumulation in units of
      nmol/gw}
-   \item{\code{Species}}{species name or CA significance, such as HC5 or 
+   \item{\code{Species}}{species name or CA significance, such as HC5 or
      FAV}
    \item{\code{`Test Type`}}{acute or chronic}
    \item{\code{Duration}}{test duration (e.g., 48 h)}
    \item{\code{Lifestage}}{age or size of the organisms}
    \item{\code{Endpoint}}{toxicity endpoint (e.g., mortality, reproduction)}
-   \item{\code{Quantifier}}{endpoint quanifier or effect level (e.g., LC50, 
+   \item{\code{Quantifier}}{endpoint quantifier or effect level (e.g., LC50,
      EC10, NOEC)}
    \item{\code{References}}{citations of sources with the toxicity data that
      went into calculating the CA, or the citation of the HC5 or FAV}
@@ -37,7 +37,8 @@ which CAT number they should specify for a toxicity run where the critical
 value is coming from the table in the parameter file.
 }
 \examples{
-## Not Run
-# ListCAT("my_parameter_file.dat")
-## End Not Run
+mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+                      package = "BLMEngineInR",
+                      mustWork = TRUE)
+ListCAT(ParamFile = mypfile)
 }

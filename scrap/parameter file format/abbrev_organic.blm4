@@ -84,12 +84,11 @@ n/a,    n/a,           n/a,                   deg C,   SU,   mgC/L, mol/L,      
 65,     Abbrev_Organic,  hi DOC Cu ser 100000,  15,    7.57, 10.0,  1.5737E-03,  0.0019555708,  0.0019529491  
 
 6
-ID,              ID2,        Temp,   pH,  DOC,    Cu,       Na,       Cl
-n/a,             n/a,        deg C,  SU,  mgC/L,  mol/L,    mol/L,    mol/L
-Abbrev_Organic,  DOC ser 2,  15,     7,   1.0,    1.00E-5,  1.00E-3,  1.02E-3
-Abbrev_Organic,  DOC ser 1,  15,     7,   0.1,    1.00E-5,  1.00E-3,  1.02E-3
-Abbrev_Organic,  DOC ser 3,  15,     7,   2.0,    1.00E-5,  1.00E-3,  1.02E-3
-Abbrev_Organic,  DOC ser 4,  15,     7,   5.0,    1.00E-5,  1.00E-3,  1.02E-3
-Abbrev_Organic,  DOC ser 5,  15,     7,   10.0,   1.00E-5,  1.00E-3,  1.02E-3
-Abbrev_Organic,  DOC ser 6,  15,     7,   20.0,   1.00E-5,  1.00E-3,  1.02E-3
-
+ObsNum, ID,              ID2,        Temp,   pH,  DOC,    Cu,       Na,       Cl
+n/a,    n/a,             n/a,        deg C,  SU,  mgC/L,  mol/L,    mol/L,    mol/L
+1,      Abbrev_Organic,  DOC ser 2,  15,     7,   1.0,    1.00E-5,  1.00E-3,  1.02E-3
+2,      Abbrev_Organic,  DOC ser 1,  15,     7,   0.1,    1.00E-5,  1.00E-3,  1.02E-3
+3,      Abbrev_Organic,  DOC ser 3,  15,     7,   2.0,    1.00E-5,  1.00E-3,  1.02E-3
+4,      Abbrev_Organic,  DOC ser 4,  15,     7,   5.0,    1.00E-5,  1.00E-3,  1.02E-3
+5,      Abbrev_Organic,  DOC ser 5,  15,     7,   10.0,   1.00E-5,  1.00E-3,  1.02E-3
+6,      Abbrev_Organic,  DOC ser 6,  15,     7,   20.0,   1.00E-5,  1.00E-3,  1.02E-3

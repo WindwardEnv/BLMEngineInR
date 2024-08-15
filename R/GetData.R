@@ -1,9 +1,10 @@
-#' Read a BLM Input File
+#' @title Read a BLM Input File
 #'
-#' `ReadInputsFromFile` will read a BLM input file, assuming it matches the
-#' problem as defined by the input arguments.
+#' @description `ReadInputsFromFile` will read a BLM input file, assuming it
+#' matches the problem as defined by the input arguments.
 #'
 #' @param InputFile character; the path and file name to a BLM input file
+#' @param ThisProblem a list object following the template of BlankProblem
 #' @param NInLab integer; number of input label columns
 #' @param InLabName character vector of length `NInLab`; names of input columns
 #' @param NInVar integer; Number of input variables
@@ -29,20 +30,20 @@
 #' @export
 #'
 #' @examples
-#' ## Not Run
-#' # thisProblem = DefineProblem("my_parameter_file.dat")
-#' # do.call(
-#' #   "ReadInputsFromFile",
-#' #   args = c(thisProblem[names(thisProblem) %in%
-#' #              formalArgs("ReadInputsFromFile")],
-#' #            list(InputFile="my_input_file.dat"))
-#' # )
-#' ## End Not Run
+#' myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+#'                           package = "BLMEngineInR", mustWork = TRUE)
+#' ReadInputsFromFile(InputFile = myinputfile,
+#'                    ThisProblem = carbonate_system_problem)
+#'
 ReadInputsFromFile = function(
     InputFile,
-    NInLab, InLabName,
-    NInVar, InVarName,
-    NInComp, InCompName) {
+    ThisProblem = NULL,
+    NInLab = ThisProblem$N["InLab"],
+    InLabName = ThisProblem$InLabName,
+    NInVar = ThisProblem$N["InVar"],
+    InVarName = ThisProblem$InVar$Name,
+    NInComp = ThisProblem$N["InComp"],
+    InCompName = ThisProblem$InCompName) {
 
   stopifnot(file.exists(InputFile))
 
@@ -87,22 +88,28 @@ ReadInputsFromFile = function(
 
 
 
-#' Match Inputs to Problem
+#' @title Match Inputs to Problem
 #'
-#' `MatchInputsToProblem` will take the input variables and component
-#' concentrations and match/transform them to the inputs for full list of
-#' components, including defined components and WHAM components.
+#' @description `MatchInputsToProblem` will take the input variables and
+#'   component concentrations and match/transform them to the inputs for full
+#'   list of components, including defined components and WHAM components.
 #'
+#' @param DFInputs A data.frame object with, at a minimum, columns named for
+#'   `ThisProblem$InLabName`, `ThisProblem$InVar$Name` and
+#'   `ThisProblem$InCompName`.
 #' @param NObs integer; the number of chemistry observations
+#' @param InLabObs character matrix with NObs rows and InLab columns; the input
+#'   labels for each observation
 #' @param InVarObs matrix with `NObs` rows and `NInVar` columns; the input
 #'   variables for each observation
 #' @param InCompObs matrix with `NObs` rows and `NInComp` columns; the input
 #'   component concentrations for each observation
+#' @param ThisProblem a list object following the template of BlankProblem
 #' @param NInVar integer; Number of input variables
 #' @param InVarName character vector of length `NInVar`; Names of input
 #'   variables
-#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of input
-#'   variables
+#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of
+#'   input variables
 #' @param InVarType character vector of length `NInVar`; Types of input
 #'   variables
 #' @param NInComp integer; Number in input components
@@ -122,13 +129,25 @@ ReadInputsFromFile = function(
 #'
 #' @return Returns a \code{list} object with the following components:
 #' \describe{
-#'  \item{\code{SysTempCelsiusObs}}{numeric vector of length \code{NObs}; input
+#'   \item{NObs}{integer; the number of chemistry observations}
+#'   \item{InLabObs}{matrix with NObs rows and InLab columns; the input labels
+#'     for each observation}
+#'   \item{InVarObs}{matrix with NObs rows and InVar columns; the input
+#'     variables for each observation}
+#'   \item{InCompObs}{matrix with NObs rows and InComp columns; the input
+#'     component concentrations for each observation}
+#'   \item{\code{SysTempCelsiusObs}}{numeric vector of length \code{NObs}; input
 #'    temperatures, in Celsius}
-#'  \item{\code{pH}}{numeric vector (\code{NObs}); input pH for each
+#'   \item{\code{SysTempKelvinObs}}{numeric vector of length \code{NObs}; input
+#'    temperatures, in Kelvin}
+#'  \item{\code{pHObs}}{numeric vector (\code{NObs}); input pH for each
 #'    observation}
 #'  \item{\code{TotConcObs}}{numeric matrix with \code{NObs} rows and
 #'    \code{NComp} columns; the total concentrations of each component,
 #'    including derived components}
+#'  \item{\code{HumicSubstGramsPerLiterObs}}{numeric matrix with \code{NObs}
+#'    rows and 2 columns; the total concentration of humic substances (humic/HA
+#'    and fulvic/FA) in grams per liter}
 #' }
 #'
 #' @family BLMEngine Functions
@@ -136,12 +155,27 @@ ReadInputsFromFile = function(
 #' @export
 #'
 MatchInputsToProblem = function(
-    NObs, InVarObs, InCompObs, #inputs from file
+    #inputs from file
+    DFInputs = data.frame(),
+    NObs = nrow(DFInputs),
+    InLabObs = DFInputs[, ThisProblem$InLabName, drop = FALSE],
+    InVarObs = DFInputs[, ThisProblem$InVar$Name, drop = FALSE],
+    InCompObs = DFInputs[, ThisProblem$InCompName, drop = FALSE],
     #information from DefineProblem:
-    NInVar, InVarName, InVarMCR, InVarType,
-    NInComp, InCompName,
-    NComp, CompName,
-    NDefComp, DefCompName, DefCompFromNum, DefCompFromVar, DefCompSiteDens) {
+    ThisProblem = NULL,
+    NInVar = ThisProblem$N["InVar"],
+    InVarName = ThisProblem$InVar$Name,
+    InVarMCR = ThisProblem$InVar$MCR,
+    InVarType = ThisProblem$InVar$Type,
+    NInComp = ThisProblem$N["InComp"],
+    InCompName = ThisProblem$InCompName,
+    NComp = ThisProblem$N["Comp"],
+    CompName = ThisProblem$Comp$Name,
+    NDefComp = ThisProblem$N["DefComp"],
+    DefCompName = ThisProblem$DefComp$Name,
+    DefCompFromNum = ThisProblem$DefComp$FromNum,
+    DefCompFromVar = ThisProblem$DefComp$FromVar,
+    DefCompSiteDens = ThisProblem$DefComp$SiteDens) {
 
   # -get table of input concentrations
   TotConcObs = matrix(numeric(), nrow = NObs, ncol = NComp,
@@ -151,11 +185,11 @@ MatchInputsToProblem = function(
   # -get temperatures
   SysTempCelsiusObs = as.numeric(InVarObs[, InVarName[InVarType == "Temperature"]])
 
-  # -get pH - from InVarObs or InCompObs
+  # -get pHObs - from InVarObs or InCompObs
   if (any(InVarType == "pH")) {
-    pH = as.numeric(InVarObs[, InVarName[InVarType == "pH"]]) # nolint: object_name_linter, line_length_linter.
+    pHObs = as.numeric(InVarObs[, InVarName[InVarType == "pH"]]) # nolint: object_name_linter, line_length_linter.
   } else {
-    pH = -log10(InCompObs[, "H"]) # nolint: object_name_linter, line_length_linter.
+    pHObs = -log10(InCompObs[, "H"]) # nolint: object_name_linter, line_length_linter.
   }
 
   # -get organic matter and parse into components
@@ -227,12 +261,14 @@ MatchInputsToProblem = function(
   }
 
   # Other Defined Components - based on variables
-  VarDefComps = which(DefCompFromVar %in% c("DOC-HA_", "DOC-FA_", NA) == FALSE)
+  VarDefComps = which(DefCompFromVar %in% c(
+    paste0(InVarName[InVarType %in% c("WHAM-HA","WHAM-FA","WHAM-HAFA")],
+           "-", c("HA","FA"),"_"), NA) == FALSE)
   if (length(VarDefComps) > 0) {
     VarDefCompName = DefCompName[VarDefComps]
     for (i in which(DefCompName %in% VarDefCompName)){
       if (DefCompFromVar[i] == "pH") {
-        TotConcObs[, DefCompName[i]] = 10^-pH
+        TotConcObs[, DefCompName[i]] = 10^-pHObs
       } else if (DefCompFromVar[i] %in% CompName) {
         TotConcObs[, DefCompName[i]] =
           TotConcObs[, DefCompFromVar[i], drop = FALSE] *
@@ -240,7 +276,7 @@ MatchInputsToProblem = function(
                  dimnames = list(1:NObs, DefCompName[i]))
       } else if (DefCompFromVar[i] %in% InVarName) {
         TotConcObs[, DefCompName[i]] =
-          InVarObs[, DefCompFromVar[i], drop = FALSE] *
+          as.matrix(InVarObs[, DefCompFromVar[i], drop = FALSE]) *
           matrix(DefCompSiteDens[i], byrow = TRUE, nrow = NObs, ncol = 1,
                  dimnames = list(1:NObs, DefCompName[i]))
       } else {
@@ -260,9 +296,13 @@ MatchInputsToProblem = function(
   }
 
   Out = list(
+    NObs = as.integer(NObs),
+    InLabObs = as.matrix(InLabObs),
+    InVarObs = as.matrix(InVarObs),
+    InCompObs = as.matrix(InCompObs),
     SysTempCelsiusObs = SysTempCelsiusObs,
-    SysTempKelvinObs = SysTempCelsiusObs + 273,#.15,
-    pH = pH,
+    SysTempKelvinObs = SysTempCelsiusObs + 273.15,
+    pHObs = pHObs,
     TotConcObs = TotConcObs,
     HumicSubstGramsPerLiterObs = HumicSubstGramsPerLiterObs
   )
@@ -272,18 +312,20 @@ MatchInputsToProblem = function(
 }
 
 
-#' Get data from the input file
+#' @title Get data from the input file
 #'
-#' `GetData` reads in the input file and prepares it for input to the BLM function.
+#' @description `GetData` reads in the input file and prepares it for input to
+#'   the BLM function.
 #'
 #' @param InputFile character(1); the path and file name to a BLM input file
+#' @param ThisProblem a list object following the template of BlankProblem
 #' @param NInLab integer; number of input label columns
 #' @param InLabName character vector of length `NInLab`; names of input columns
 #' @param NInVar integer; Number of input variables
 #' @param InVarName character vector of length `NInVar`; Names of input
 #'   variables
-#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of input
-#'   variables
+#' @param InVarMCR integer vector of length `NInVar`;  Mass compartments of
+#'   input variables
 #' @param InVarType character vector of length `NInVar`; Types of input
 #'   variables
 #' @param NInComp integer; Number in input components
@@ -310,24 +352,46 @@ MatchInputsToProblem = function(
 #'     variables for each observation}
 #'   \item{InCompObs}{matrix with NObs rows and InComp columns; the input
 #'     component concentrations for each observation}
-#'   \item{SysTempCelsiusObs}{numeric vector of length NObs; input temperatures,
-#'     in Celsius}
-#'   \item{pH}{numeric vector NObs; input pH for each observation}
-#'   \item{TotConcObs}{numeric matrix with NObs rows and NComp columns; the
-#'     total concentrations of each component, including derived components}
-#' }
+#'   \item{\code{SysTempCelsiusObs}}{numeric vector of length \code{NObs}; input
+#'    temperatures, in Celsius}
+#'   \item{\code{SysTempKelvinObs}}{numeric vector of length \code{NObs}; input
+#'    temperatures, in Kelvin}
+#'  \item{\code{pHObs}}{numeric vector (\code{NObs}); input pH for each
+#'    observation}
+#'  \item{\code{TotConcObs}}{numeric matrix with \code{NObs} rows and
+#'    \code{NComp} columns; the total concentrations of each component,
+#'    including derived components}
+#'  \item{\code{HumicSubstGramsPerLiterObs}}{numeric matrix with \code{NObs}
+#'    rows and 2 columns; the total concentration of humic substances (humic/HA
+#'    and fulvic/FA) in grams per liter}
+#'  }
 #'
 #' @family BLMEngine Functions
 #'
 #' @export
 #'
+#' @examples
+#' myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+#'                           package = "BLMEngineInR", mustWork = TRUE)
+#' GetData(InputFile = myinputfile, ThisProblem = carbonate_system_problem)#'
+#'
 GetData = function(InputFile,
-                   NInLab, InLabName,
-                   NInVar, InVarName, InVarMCR, InVarType,
-                   NInComp, InCompName,
-                   NComp, CompName,
-                   NDefComp, DefCompName, DefCompFromNum,
-                   DefCompFromVar, DefCompSiteDens) {
+                   ThisProblem = NULL,
+                   NInLab = ThisProblem$N["InLab"],
+                   InLabName = ThisProblem$InLabName,
+                   NInVar = ThisProblem$N["InVar"],
+                   InVarName = ThisProblem$InVar$Name,
+                   InVarMCR = ThisProblem$InVar$MCR,
+                   InVarType = ThisProblem$InVar$Type,
+                   NInComp = ThisProblem$N["InComp"],
+                   InCompName = ThisProblem$InCompName,
+                   NComp = ThisProblem$N["Comp"],
+                   CompName = ThisProblem$Comp$Name,
+                   NDefComp = ThisProblem$N["DefComp"],
+                   DefCompName = ThisProblem$DefComp$Name,
+                   DefCompFromNum = ThisProblem$DefComp$FromNum,
+                   DefCompFromVar = ThisProblem$DefComp$FromVar,
+                   DefCompSiteDens = ThisProblem$DefComp$SiteDens) {
 
   stopifnot(file.exists(InputFile))
 
@@ -340,6 +404,7 @@ GetData = function(InputFile,
                            InCompName = InCompName)
 
   Out2 = MatchInputsToProblem(NObs = Out$NObs,
+                              InLabObs = Out$InLabObs,
                               InVarObs = Out$InVarObs,
                               InCompObs = Out$InCompObs,
                               NInVar = NInVar,
@@ -356,7 +421,47 @@ GetData = function(InputFile,
                               DefCompFromVar = DefCompFromVar,
                               DefCompSiteDens = DefCompSiteDens)
 
-  Out[names(Out2)] = Out2
+  return(Out2)
+}
+
+#' @title Make a blank inputs list object
+#'
+#' @description This function is internal because the inputs can be specified in
+#'   a data.frame object then matched to ThisProblem with
+#'   `MatchInputsToProblem(DFInputs = , ThisProblem = )`. This function is useful
+#'   as a comparison to make sure the outputs of `GetData` or
+#'   `MatchInputsToProblem` and the inputs of `BLM` are acceptable.
+#'
+#' @param ThisProblem A list object with a structure like that returned by
+#'   `BlankProblem()`.
+#'
+#' @return A list object with a template for defining the inputs for the
+#'   chemical problem for the `BLMEngineInR` functions. Each element in the list
+#'   is a vector, list, or data.frame object grouping related parameters
+#'   together. See `str(BlankProblem())` for the structure and names of the list
+#'   object.
+#'
+#' @keywords internal
+BlankInputList = function(ThisProblem, NObs = 0L) {
+
+  Out = list(
+    NObs = as.integer(NObs),
+    InLabObs = array("", dim = c(NObs, ThisProblem$N["InLab"]),
+                     dimnames = list(NULL, ThisProblem$InLabName)),
+    InVarObs = array(0.0, dim = c(NObs, ThisProblem$N["InVar"]),
+                     dimnames = list(NULL, ThisProblem$InVar$Name)),
+    InCompObs = array(0.0, dim = c(NObs, ThisProblem$N["InComp"]),
+                      dimnames = list(NULL, ThisProblem$InCompName)),
+    SysTempCelsiusObs = numeric(NObs),
+    SysTempKelvinObs = numeric(NObs),
+    pHObs = numeric(NObs),
+    TotConcObs = array(0.0, dim = c(NObs, ThisProblem$N["Comp"]),
+                       dimnames = list(NULL, ThisProblem$Comp$Name)),
+    HumicSubstGramsPerLiterObs = array(0.0, dim = c(NObs,2),
+                                       dimnames = list(NULL,c("HA","FA")))
+  )
 
   return(Out)
+
 }
+

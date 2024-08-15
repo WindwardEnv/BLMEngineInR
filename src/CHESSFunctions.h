@@ -41,6 +41,14 @@ void AdjustForToxMode(int NBLMetal,
                       Rcpp::NumericVector &Resid,
                       Rcpp::NumericVector &CompError);
 
+void CalcToxError (int NBLMetal, 
+                   Rcpp::IntegerVector BLMetalSpecs, 
+                   int MetalComp,
+                   double CATarget,
+                   Rcpp::NumericVector SpecConc,
+                   double &ToxResid,
+                   double &ToxError) ;
+
 double MaxCompError(int NComp, Rcpp::NumericVector CompError, 
                     int &WhichMax);
                     
@@ -395,9 +403,11 @@ const Rcpp::String FLAG_QUIET = "Quiet";
 //Component Types
 const Rcpp::String CTYPE_FIXEDCONC = "FixedConc";
 const Rcpp::String CTYPE_FIXEDACT = "FixedAct";
+const Rcpp::String CTYPE_MASSBAL = "MassBal";
 const Rcpp::String CTYPE_DONNANHA = "DonnanHA";
 const Rcpp::String CTYPE_DONNANFA = "DonnanFA";
-const Rcpp::String CTYPE_MASSBAL = "MassBal";
+const Rcpp::String CTYPE_WHAMHA = "WHAMHA";
+const Rcpp::String CTYPE_WHAMFA = "WHAMFA";
 
 //Species types
 const Rcpp::String STYPE_NORMAL = "Normal";
@@ -415,5 +425,10 @@ const Rcpp::String ACTYPE_DAVIES = "Davies";
 const int ERROR_MATRIX_INVERSION = 10;
 const int ERROR_SINGULAR_MATRIX = 11;
 const int ERROR_JACOBIAN_NAN = 20;
+
+// status messages
+const Rcpp::String STATUS_SPEC_DNC = "CHESS did not converge.";
+const Rcpp::String STATUS_JAC_ERR = "Jacobian matrix error.";
+const Rcpp::String STATUS_MAT_ERR = "Matrix inversion error.";
 
 #endif //__CHESSFUNCTIONS_H__

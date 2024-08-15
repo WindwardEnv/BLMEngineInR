@@ -8,7 +8,6 @@ CHESS(
   QuietFlag,
   ConvergenceCriteria,
   MaxIter,
-  DoPartialStepsAlways,
   NMass,
   MassName,
   MassAmt,
@@ -18,6 +17,7 @@ CHESS(
   TotConc,
   NSpec,
   SpecName,
+  SpecType,
   SpecMCR,
   SpecK,
   SpecTempKelvin,
@@ -53,10 +53,6 @@ counts as convergence by the Newton-Raphson root-finding algorithm}
 \item{MaxIter}{integer, the maximum number of iterations the Newton-Raphson
 root-finding algorithm should do before giving up}
 
-\item{DoPartialStepsAlways}{boolean, Should CHESS do strict Newton-Raphson
-iterations (FALSE), or try to improve the simulation with partial N-R
-steps (trying to prevent oscillations).}
-
 \item{NMass}{integer, number of mass compartments}
 
 \item{MassName}{CharacterVector (NMass), the names of the mass compartments}
@@ -78,6 +74,9 @@ component in the simulation (units of e.g., mol/L and mol/kg)}
 
 \item{SpecName}{character vector (NSpec), the name of the chemical species
 for which we have formation reactions}
+
+\item{SpecType}{character vector (NSpec), the type or category of the 
+chemical species for which we have formation reactions.}
 
 \item{SpecMCR}{IntegerVector (NSpec), the mass compartment of the chemical
 species for which we have formation reactions}

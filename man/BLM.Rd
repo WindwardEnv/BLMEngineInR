@@ -11,16 +11,16 @@ BLM(
   AllInput = list(),
   DoTox = logical(),
   iCA = 1L,
-  QuietFlag = c("Quiet", "Very Quiet", "Debug"),
+  QuietFlag = c("Very Quiet", "Quiet", "Debug"),
   ConvergenceCriteria = 1e-04,
-  MaxIter = 500L,
-  DoPartialStepsAlways = FALSE
+  MaxIter = 500L
 )
 }
 \arguments{
-\item{ParamFile}{The path and file name of the parameter file}
+\item{ParamFile}{(optional) The path and file name of the parameter file}
 
-\item{InputFile}{The path and file name of the chemistry input file}
+\item{InputFile}{(optional) The path and file name of the chemistry input
+file}
 
 \item{ThisProblem}{(optional) A problem list object, such as returned by
 `DefineProblem`.}
@@ -38,7 +38,7 @@ would result in that amount bound to the biotic ligand is calculated.}
 parameter file critical accumulation table.}
 
 \item{QuietFlag}{Either "Quiet", "Very Quiet", or "Debug". With "Very Quiet",
-the simulation will run siliently. With "Quiet", the simulation will print
+the simulation will run silently. With "Quiet", the simulation will print
 "Obs=1", "Obs=2", etc... to the console. With "Debug", intermediate
 information from the CHESS function will print to the console.}
 
@@ -48,10 +48,6 @@ TotMoles) / TotMoles}
 
 \item{MaxIter}{(integer) The maximum allowed CHESS iterations before the
 program should give up.}
-
-\item{DoPartialStepsAlways}{Should CHESS do strict Newton-Raphson iterations
-(FALSE), or try to improve the simulation with partial N-R steps (trying to
-prevent oscillations).}
 }
 \value{
 A data frame with chemistry speciation information, including species
@@ -62,47 +58,19 @@ A data frame with chemistry speciation information, including species
 provided parameter file, input file, and options.
 }
 \examples{
-## Not run:
-## running the BLM function with a parameter file and input file:
-# BLM(ParamFile = "path/mypfile.dat", InputFile = "path/myinputfile.blm")
-#
-## running the BLM with parameter and input objects
-# ThisProblem = DefineProblem(ParamFile = "path/mypfile.dat")
-# AllInput = list(
-#   NObs = 5,
-#   InLabObs = as.matrix(data.frame(
-#     row.names = "Obs",
-#     Obs = 1:5,
-#     ObsNum = as.character(1:5),
-#     ID = "pH series",
-#     ID2 = paste0("pH=",5:9)
-#   )),
-#   InVarObs = as.matrix(data.frame(
-#     row.names = "Obs",
-#     Obs = 1:5,
-#     Temp = 15,
-#     pH = 5:9,
-#     DOC = 0.1,
-#     HA = 10
-#   )),
-#   InCompObs = as.matrix(data.frame(
-#     row.names = "Obs",
-#     Obs = 1:5,
-#     Zn = 1E-7,
-#     Ca = 0.000299416,
-#     Mg = 0.000501954,
-#     Na = 0.00110049,
-#     K = 5.37108e-05,
-#     SO4 = 0.000799487,
-#     Cl = 5.35921e-05,
-#     CO3 = 0.00109987
-#   ))
-# )
-# FunctionInputs = c(
-#   ThisProblem[which(names(ThisProblem) \%in\% formalArgs("MatchInputsToProblem"))],
-#   AllInput[which(names(AllInput) \%in\% formalArgs("MatchInputsToProblem"))])
-# AllInput = c(AllInput, do.call("MatchInputsToProblem", args = FunctionInputs))
-# ResultsTable_pH = BLM(ThisProblem = ThisProblem, AllInput = AllInput,
-#                       DoTox = TRUE, iCA = 1)
-## End(Not run)
+# running the BLM function with a parameter file and input file:
+mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+                      package = "BLMEngineInR",
+                      mustWork = TRUE)
+myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+                          package = "BLMEngineInR",
+                          mustWork = TRUE)
+BLM(ParamFile = mypfile, InputFile = myinputfile, DoTox = FALSE)
+
+# running the BLM with parameter and input objects
+myinputs = GetData(InputFile = myinputfile, ThisProblem = carbonate_system_problem)
+BLM(ThisProblem = carbonate_system_problem, AllInput = myinputs, DoTox = FALSE)
+
+# here we only read in the same files, but the inputs could also be constructed
+
 }

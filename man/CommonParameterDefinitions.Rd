@@ -272,7 +272,7 @@ kg (only used when DoTox == TRUE)}
 
 \item{NObs}{integer; the number of chemistry observations}
 
-\item{InLabObs}{matrix with NObs rows and InLab columns; the input labels for
+\item{InLabObs}{character matrix with NObs rows and InLab columns; the input labels for
 each observation}
 
 \item{InVarObs}{matrix with NObs rows and InVar columns; the input variables

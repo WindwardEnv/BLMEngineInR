@@ -150,7 +150,6 @@ Rcpp::NumericVector CalcActivityCoef(int NSpec,
 
   /* variables */
   int iSpec;
-  //int iSpec2;
   int MaxCharge = Rcpp::max(Rcpp::abs(SpecCharge));
   Rcpp::NumericVector ActivityCoefDebye;
   Rcpp::NumericVector ActivityCoefDavies;
@@ -162,9 +161,9 @@ Rcpp::NumericVector CalcActivityCoef(int NSpec,
   
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
     if (SpecActCorr(iSpec) == ACTYPE_DEBYE) {
-      SpecActivityCoef(iSpec) = ActivityCoefDebye(abs(SpecCharge(iSpec)));
+      SpecActivityCoef(iSpec) = ActivityCoefDebye(std::abs(SpecCharge(iSpec)));
     } else if (SpecActCorr(iSpec) == ACTYPE_DAVIES) {
-      SpecActivityCoef(iSpec) = ActivityCoefDavies(abs(SpecCharge(iSpec)));
+      SpecActivityCoef(iSpec) = ActivityCoefDavies(std::abs(SpecCharge(iSpec)));
     } else {//if (SpecActCorr(iSpec) == ACTYPE_NONE) {
       SpecActivityCoef(iSpec) = 1.0;
     }

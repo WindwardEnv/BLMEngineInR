@@ -1,4 +1,3 @@
-#include <cmath>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -33,7 +32,7 @@ void CalcDonnanLayerParams(int NSpec,
   VTerm3 = (4 * pi / 3) * VTerm2;
   MaxVolDiffusePerGramHS = Avogadro * VTerm3 * (1000 / wMolWt);
   MaxVolDiffuse = MaxVolDiffusePerGramHS * HumicSubstGramsPerLiter;
-  ZTerm = wKZED * abs(WHAMSpecCharge);
+  ZTerm = wKZED * Rcpp::abs(WHAMSpecCharge);
   MaxVolDiffuse = MaxVolDiffuse * ZTerm / (1 + ZTerm);
   
   // adjust for diffuse layer overlap with wDLF

@@ -1,10 +1,25 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' Run the Biotic Ligand Model
 #'
 #' `BLM` will run the Windward Environmental Biotic Ligand Model (BLM) with the
 #' provided parameter file, input file, and options.
 #'
-#' @param ParamFile The path and file name of the parameter file
-#' @param InputFile The path and file name of the chemistry input file
+#' @param ParamFile (optional) The path and file name of the parameter file
+#' @param InputFile (optional) The path and file name of the chemistry input
+#'   file
 #' @param ThisProblem (optional) A problem list object, such as returned by
 #'   `DefineProblem`.
 #' @param AllInput (optional) An input chemistry list object, such as returned
@@ -17,7 +32,7 @@
 #' @param iCA (integer) The index of the critical accumulation value in the
 #'   parameter file critical accumulation table.
 #' @param QuietFlag Either "Quiet", "Very Quiet", or "Debug". With "Very Quiet",
-#'   the simulation will run siliently. With "Quiet", the simulation will print
+#'   the simulation will run silently. With "Quiet", the simulation will print
 #'   "Obs=1", "Obs=2", etc... to the console. With "Debug", intermediate
 #'   information from the CHESS function will print to the console.
 #' @param ConvergenceCriteria (numeric) The maximum allowed CompError in for the
@@ -25,179 +40,98 @@
 #'   TotMoles) / TotMoles
 #' @param MaxIter (integer) The maximum allowed CHESS iterations before the
 #'   program should give up.
-#' @param DoPartialStepsAlways Should CHESS do strict Newton-Raphson iterations
-#'   (FALSE), or try to improve the simulation with partial N-R steps (trying to
-#'   prevent oscillations).
 #'
 #' @return A data frame with chemistry speciation information, including species
 #'   concentrations, species activities, and total concentrations.
 #'
 #' @export
 #'
-#' @examples
-#' ## Not run:
-#' ## running the BLM function with a parameter file and input file:
-#' # BLM(ParamFile = "path/mypfile.dat", InputFile = "path/myinputfile.blm")
-#' #
-#' ## running the BLM with parameter and input objects
-#' # ThisProblem = DefineProblem(ParamFile = "path/mypfile.dat")
-#' # AllInput = list(
-#' #   NObs = 5,
-#' #   InLabObs = as.matrix(data.frame(
-#' #     row.names = "Obs",
-#' #     Obs = 1:5,
-#' #     ObsNum = as.character(1:5),
-#' #     ID = "pH series",
-#' #     ID2 = paste0("pH=",5:9)
-#' #   )),
-#' #   InVarObs = as.matrix(data.frame(
-#' #     row.names = "Obs",
-#' #     Obs = 1:5,
-#' #     Temp = 15,
-#' #     pH = 5:9,
-#' #     DOC = 0.1,
-#' #     HA = 10
-#' #   )),
-#' #   InCompObs = as.matrix(data.frame(
-#' #     row.names = "Obs",
-#' #     Obs = 1:5,
-#' #     Zn = 1E-7,
-#' #     Ca = 0.000299416,
-#' #     Mg = 0.000501954,
-#' #     Na = 0.00110049,
-#' #     K = 5.37108e-05,
-#' #     SO4 = 0.000799487,
-#' #     Cl = 5.35921e-05,
-#' #     CO3 = 0.00109987
-#' #   ))
-#' # )
-#' # FunctionInputs = c(
-#' #   ThisProblem[which(names(ThisProblem) %in% formalArgs("MatchInputsToProblem"))],
-#' #   AllInput[which(names(AllInput) %in% formalArgs("MatchInputsToProblem"))])
-#' # AllInput = c(AllInput, do.call("MatchInputsToProblem", args = FunctionInputs))
-#' # ResultsTable_pH = BLM(ThisProblem = ThisProblem, AllInput = AllInput,
-#' #                       DoTox = TRUE, iCA = 1)
-#' ## End(Not run)
+#' @example tests/examples/examples-BLM.R
 BLM = function(ParamFile = character(),
                InputFile = character(),
                ThisProblem = list(),
                AllInput = list(),
                DoTox = logical(),
                iCA = 1L,
-               QuietFlag = c("Quiet", "Very Quiet", "Debug"),
+               QuietFlag = c("Very Quiet", "Quiet", "Debug"),
                # writeOutputFile = F, outputFileName = NULL,
                # criticalSource = c("ParamFile","InputFile"),
                ConvergenceCriteria = 0.0001,
-               MaxIter = 500L,
-               DoPartialStepsAlways = FALSE) {
+               MaxIter = 500L) {
 
   StartTime = Sys.time()
 
   # error catching
-  stopifnot(file.exists(ParamFile) || !is.null(ThisProblem))
-  stopifnot(file.exists(InputFile) || !is.null(AllInput))
-  QuietFlag = match.arg(QuietFlag)
+  if ((length(ParamFile) == 0) && (length(ThisProblem) == 0)) {
+    stop("Supply either ParamFile or ThisProblem arguments.")
+  }
+  if ((length(InputFile) == 0) && (length(AllInput) == 0)) {
+    stop("Supply either InputFile or AllInput arguments.")
+  }
+  QuietFlag = match.arg(QuietFlag, c("Very Quiet", "Quiet", "Debug"))
 
   # 1. parse out parameter file in DefineProblem
   #   --> parameter file name
   #   <-- R variable that defines the problem for immediate use in CHESS
   if (length(ThisProblem) == 0) {
-    ThisProblem = DefineProblem(ParamFile)
+    if (!file.exists(ParamFile)) {
+      stop("ParamFile ", ParamFile, " does not exist.")
+    }
+    ThisProblem = DefineProblem(ParamFile = ParamFile)
   }
+  CheckBLMObject(Object = ThisProblem,
+                 Reference = BlankProblem(),
+                 BreakOnError = TRUE)
 
   # 2. Read InputFile
   #   --> input file name, component info from ParamFile
   #   <-- R variable with component concentrations (total/free dep on ParamFile)
   if (length(AllInput) == 0) {
-    FunctionInputs = ThisProblem[
-      which(names(ThisProblem) %in% formalArgs("GetData"))]
-    FunctionInputs$InputFile = InputFile
-    AllInput = do.call("GetData", args = FunctionInputs)
+    if (!file.exists(InputFile)) {
+      stop("InputFile ", InputFile, " does not exist.")
+    }
+    AllInput = GetData(InputFile = InputFile, ThisProblem = ThisProblem)
   }
-
-  # Inputs Error catching
-  ReferenceProblemList = BlankProblem()
-  if (typeof(ThisProblem) != "list") {
-    stop("Invalid problem list - it's not a list.")
-  }
-  if(!all(names(ReferenceProblemList) %in% names(ThisProblem))) {
-    print(setdiff(names(ReferenceProblemList), names(ThisProblem)))
-    stop("Invalid problem list - missing elements.")
-  }
-  ThisProblem.types = sapply(ThisProblem, typeof)[match(names(ReferenceProblemList), names(ThisProblem))]
-  Reference.types = sapply(ReferenceProblemList, typeof)
-  if (!all(ThisProblem.types == Reference.types, na.rm = TRUE)) {
-    print(
-      data.frame(
-        element.name = names(ReferenceProblemList),
-        ThisProblem.type = ThisProblem.types,
-        Reference.type = Reference.types
-      )[ThisProblem.types != Reference.types, ]
-    )
-    stop("Invalid problem list - incorrect types.")
-  }
-  ReferenceInputList = list(NObs = 1L,
-                            InLabObs = array("", dim = c(1, ThisProblem$NInLab)),
-                            InVarObs = array(0.0, dim = c(1, ThisProblem$NInVar)),
-                            InCompObs = array(0.0, dim = c(1, ThisProblem$NInComp)),
-                            SysTempCelsiusObs = array(0.0, 1),
-                            SysTempKelvinObs = array(0.0, 1),
-                            pH = array(0.0, 1),
-                            TotConcObs = array(0.0, dim = c(1, ThisProblem$NComp)),
-                            HumicSubstGramsPerLiterObs = array(0.0, dim = c(1,2)))
-  if (typeof(AllInput) != "list") {
-    stop("Invalid inputs list - it's not a list.")
-  }
-  if(!all(names(ReferenceInputList) %in% names(AllInput))) {
-    print(setdiff(names(ReferenceInputList), names(AllInput)))
-    stop("Invalid inputs list - missing elements.")
-  }
-  AllInput.types = sapply(AllInput, typeof)[match(names(ReferenceInputList), names(AllInput))]
-  Reference.types = sapply(ReferenceInputList, typeof)
-  if (!all(AllInput.types == Reference.types, na.rm = TRUE)) {
-    print(
-      data.frame(
-        element.name = names(ReferenceInputList),
-        AllInput.type = AllInput.types,
-        Reference.type = Reference.types
-      )[AllInput.types != Reference.types, ]
-    )
-    stop("Invalid inputs list - incorrect types.")
-  }
-
+  CheckBLMObject(Object = AllInput,
+                 Reference = BlankInputList(ThisProblem),
+                 BreakOnError = TRUE)
 
   # Save some common variables for initializing arrays
   NObs = AllInput$NObs
-  MassName = ThisProblem$MassName
-  NComp = ThisProblem$NComp
-  CompName = ThisProblem$CompName
-  NSpec = ThisProblem$NSpec
-  SpecName = ThisProblem$SpecName
-  BLComp = ThisProblem$BLComp
+  MassName = ThisProblem$Mass$Name
+  NComp = ThisProblem$N["Comp"]
+  CompName = ThisProblem$Comp$Name
+  NSpec = ThisProblem$N["Spec"]
+  SpecName = ThisProblem$Spec$Name
+  BLComp = ThisProblem$BL$CompR
   if (DoTox) {
+
+    if (any(ThisProblem$N[c("BL","Metal","BLMetal")]) < 1){
+      stop("Cannot do tox mode without at least one each of BL, Metal, and BLMetal defined.")
+    }
+
     CATargetDefault = ThisProblem$CATab$CA[iCA] * (10^-6) /
-      ThisProblem$CompSiteDens[BLComp]
+      ThisProblem$Comp$SiteDens[BLComp]
   } else {
     CATargetDefault = NA
   }
 
   # Initialize ThisInput as ThisProblem, with one observation's worth of
   # concentrations
-  ThisInput = ThisProblem
-  ThisInput$InLab = array(character(ThisProblem$NInLab),
+  ThisInput = ConvertToList(ThisProblemDF = ThisProblem)
+  ThisInput$InLab = array(character(ThisProblem$N["InLab"]),
                           dimnames = list(ThisProblem$InLabName))
   ThisInput$TotConc = array(numeric(NComp), dimnames = list(CompName))
   ThisInput$CompConc = array(numeric(NComp), dimnames = list(CompName))
   ThisInput$SpecConc = array(numeric(NSpec), dimnames = list(SpecName))
-  ThisInput$HumicSubstGramsPerLiter = array(numeric(2), dimnames = list(c("HA", "FA")))
+  ThisInput$HumicSubstGramsPerLiter =
+    array(numeric(2), dimnames = list(c("HA", "FA")))
 
   FunctionInputs = list(
     QuietFlag = QuietFlag,
     ConvergenceCriteria = ConvergenceCriteria,
     MaxIter = MaxIter,
-    DoPartialStepsAlways = DoPartialStepsAlways,
     DoTox = DoTox,
-    # MetalComp = ThisProblem$MetalComp,
     CATarget = NA
   )
   ObsFunctionInputNames = formalArgs("CHESS")[
@@ -208,13 +142,11 @@ BLM = function(ParamFile = character(),
     data.frame(Obs = 1:NObs),
     AllInput$InLabObs
   )
-  # InputCols = c("Obs", ThisProblem$InLabName, ThisProblem$InVarName,
-  #               paste0("Input.",ThisProblem$InCompName))
   MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength")
   ZCols = paste0("Z_", c("HA","FA"))
-  MassAmtCols = paste0(MassName, " (",ThisProblem$MassUnit,")")
-  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$MassUnit[ThisProblem$SpecMCR],")")
-  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$MassUnit[ThisProblem$CompMCR],")")
+  MassAmtCols = paste0(MassName, " (",ThisProblem$Mass$Unit,")")
+  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$Mass$Unit[ThisProblem$Spec$MCR],")")
+  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$Mass$Unit[ThisProblem$Comp$MCR],")")
   SpecMolesCols = paste0(SpecName," (mol)")
   TotMolesCols = paste0("T.", CompName, " (mol)")
   SpecActCols = paste0("Act.", SpecName)
@@ -226,8 +158,8 @@ BLM = function(ParamFile = character(),
     ),
     Miscellaneous = cbind(
       OutputLabels,
-      matrix(NA, nrow = NObs, ncol = length(MiscOutputCols) + length(ZCols) + length(MassAmtCols) + 1,
-             dimnames = list(NULL, c(MiscOutputCols, ZCols, MassAmtCols, "Status")))
+      matrix(NA, nrow = NObs, ncol = length(MiscOutputCols) + length(ZCols) + length(MassAmtCols) + 2,
+             dimnames = list(NULL, c(MiscOutputCols, ZCols, MassAmtCols, "Status", "Message")))
     ),
     Concentrations = cbind(
       OutputLabels,
@@ -260,7 +192,7 @@ BLM = function(ParamFile = character(),
       NStandardsCols = 1
       NTUCols = 1
       StandardsCols = paste0(
-        c(ThisProblem$CAT$Endpoint[iCA], ThisProblem$MetalName, "TU"),
+        c(ThisProblem$CAT$Endpoint[iCA], ThisProblem$Metal$Name, "TU"),
         " (", c("\U00B5g/L", "\U00B5g/L", "unitless"), ")"
       )
       WQSCols = StandardsCols[1]
@@ -305,9 +237,9 @@ BLM = function(ParamFile = character(),
                dimnames = list(NULL, StandardsCols))
       )
     }
-    EmptyOrInvalidMetalObs = is.na(AllInput$TotConcObs[, ThisProblem$MetalName]) |
-      (AllInput$TotConcObs[, ThisProblem$MetalName] <= 0)
-    AllInput$TotConcObs[EmptyOrInvalidMetalObs, ThisProblem$MetalName] = 1.0E-7
+    EmptyOrInvalidMetalObs = is.na(AllInput$TotConcObs[, ThisProblem$Metal$Name]) |
+      (AllInput$TotConcObs[, ThisProblem$Metal$Name] <= 0)
+    AllInput$TotConcObs[EmptyOrInvalidMetalObs, ThisProblem$Metal$Name] = 1.0E-7
   }
 
   # Loop through each observation
@@ -333,13 +265,13 @@ BLM = function(ParamFile = character(),
 
     if (is.na(ThisInput$SysTempKelvin) |
         any(is.na(ThisInput$TotConc)) |
-        (ThisProblem$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$WHAMDonnanMCR)])))) {
+        (ThisProblem$WHAM$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[ThisProblem$Index$WHAMDonnanMCR > 0])))) {
       # Incomplete chemistry, so skip calling CHESS
       OutList$Miscellaneous$Status[iObs] = "Incomplete Chemistry"
     } else if ((ThisInput$SysTempKelvin <= 263) |
                any(ThisInput$TotConc <= 0) |
                (ThisInput$TotConc["H"] > 1) | (ThisInput$TotConc["H"] < 1.0E-14) |
-               (any(ThisInput$HumicSubstGramsPerLiter[!is.na(ThisProblem$WHAMDonnanMCR)] <= 0))) {
+               (any(ThisInput$HumicSubstGramsPerLiter[ThisProblem$Index$WHAMDonnanMCR > 0] <= 0))) {
       # Invalid chemistry, so skip calling CHESS
       OutList$Miscellaneous$Status[iObs] = "Invalid Chemistry"
     } else {
@@ -359,6 +291,7 @@ BLM = function(ParamFile = character(),
         if (is.na(OutList$Miscellaneous$FinalMaxError[iObs]) |
             (OutList$Miscellaneous$FinalMaxError[iObs] > ConvergenceCriteria)) {
           OutList$Miscellaneous$Status[iObs] = "Not Converged"
+          OutList$Miscellaneous$Message[iObs] = Tmp$StatusMessage
         } else {
           OutList$Miscellaneous$Status[iObs] = "Okay"
         }
@@ -373,7 +306,7 @@ BLM = function(ParamFile = character(),
   }
 
   # Make summary columns for organically-bound components
-  if (ThisProblem$DoWHAM) {
+  if (ThisProblem$WHAM$DoWHAM) {
     for (iComp in ThisProblem$InCompName){
       OrgCols = SpecMolesCols[grepl(iComp, SpecMolesCols) &
                                 (grepl("DOC", SpecMolesCols) |
@@ -386,10 +319,10 @@ BLM = function(ParamFile = character(),
 
   if (DoStandards) {
     PredMetalOutputCol = paste0(
-      "T.", ThisProblem$MetalName, " (mol/",
-      ThisProblem$MassUnit[ThisProblem$CompMCR[ThisProblem$MetalCompR]], ")"
+      "T.", ThisProblem$Metal$Name, " (mol/",
+      ThisProblem$Mass$Unit[ThisProblem$Comp$MCR[ThisProblem$Metal$CompR]], ")"
     )
-    MetalMW = BLMEngineInR::MW[[ThisProblem$MetalName]]
+    MetalMW = BLMEngineInR::MW[[ThisProblem$Metal$Name]]
 
     # Predicted Metal Column
     OutList$Standards[, StandardsCols[1]] = signif(
@@ -399,7 +332,7 @@ BLM = function(ParamFile = character(),
 
     # Input Metal Column
     OutList$Standards[, StandardsCols[NStandardsCols + 1]] =
-      signif(OutList$Inputs[, ThisProblem$MetalName] * MetalMW * 10^6,
+      signif(OutList$Inputs[, ThisProblem$Metal$Name] * MetalMW * 10^6,
              digits = 4)
 
     # WQS column with DIV
@@ -417,11 +350,14 @@ BLM = function(ParamFile = character(),
     # Calculate Toxic Units
     OutList$Standards[!EmptyOrInvalidMetalObs, TUCols] =
       signif(OutList$Standards[, StandardsCols[NStandardsCols + 1]] /
-               OutList$Standards[, WQSCols],
+               OutList$Standards[, WQSCols, drop = FALSE],
              digits = 4)[!EmptyOrInvalidMetalObs, ]
   }
 
-  print(Sys.time() - StartTime)
+  TimeElapsed = Sys.time() - StartTime
+  if (QuietFlag != "Very Quiet") {
+    print(TimeElapsed)
+  }
 
 
   return(OutList)

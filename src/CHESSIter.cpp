@@ -137,7 +137,7 @@ double CHESSIter(
   if (DoWHAM) {
     WHAMIonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
                                     SpecMC, AqueousMC, SpecType, true);
-    AdjustForWHAMBeforeCalcSpecies(NMass, MassAmt, MassAmtAdj, NSpec, SpecType, 
+    AdjustForWHAMBeforeCalcSpecies(NMass, MassAmt, MassAmtAdj, NSpec, SpecType,
       SpecMC, SpecCharge, SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,
       WHAMIonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC, 
       HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED);

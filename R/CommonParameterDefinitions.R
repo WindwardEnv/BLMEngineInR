@@ -196,7 +196,7 @@
 #'   kg (only used when DoTox == TRUE)
 #'
 #' @param NObs integer; the number of chemistry observations
-#' @param InLabObs matrix with NObs rows and InLab columns; the input labels for
+#' @param InLabObs character matrix with NObs rows and InLab columns; the input labels for
 #'   each observation
 #' @param InVarObs matrix with NObs rows and InVar columns; the input variables
 #'   for each observation

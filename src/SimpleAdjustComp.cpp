@@ -1,3 +1,4 @@
+#include <math.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -28,7 +29,7 @@ void SimpleAdjustComp(int iComp,
       CalcCompTotalMoles(iComp, NSpec, SpecConc * SpecCtoMAdj, SpecStoich);
   
   // calculate a starting CompError value for iComp
-  CompErrori = abs(TotMolesi - CalcTotMolesi) / TotMolesi;
+  CompErrori = std::fabs(TotMolesi - CalcTotMolesi) / TotMolesi;
 
   while ((CompErrori > ConvCrit) && (Iter < MaxIter)) {
     Iter++;
@@ -52,7 +53,7 @@ void SimpleAdjustComp(int iComp,
       CalcCompTotalMoles(iComp, NSpec, SpecConc * SpecCtoMAdj, SpecStoich);
     
     // update the CompError
-    CompErrori = abs(TotMolesi - CalcTotMolesi) / TotMolesi;
+    CompErrori = std::fabs(TotMolesi - CalcTotMolesi) / TotMolesi;
             
   }
 

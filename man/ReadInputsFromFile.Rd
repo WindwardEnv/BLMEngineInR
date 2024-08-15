@@ -6,16 +6,19 @@
 \usage{
 ReadInputsFromFile(
   InputFile,
-  NInLab,
-  InLabName,
-  NInVar,
-  InVarName,
-  NInComp,
-  InCompName
+  ThisProblem = NULL,
+  NInLab = ThisProblem$N["InLab"],
+  InLabName = ThisProblem$InLabName,
+  NInVar = ThisProblem$N["InVar"],
+  InVarName = ThisProblem$InVar$Name,
+  NInComp = ThisProblem$N["InComp"],
+  InCompName = ThisProblem$InCompName
 )
 }
 \arguments{
 \item{InputFile}{character; the path and file name to a BLM input file}
+
+\item{ThisProblem}{a list object following the template of BlankProblem}
 
 \item{NInLab}{integer; number of input label columns}
 
@@ -44,19 +47,15 @@ Returns a \code{list} object with the following components:
 }
 }
 \description{
-`ReadInputsFromFile` will read a BLM input file, assuming it matches the
-problem as defined by the input arguments.
+`ReadInputsFromFile` will read a BLM input file, assuming it
+matches the problem as defined by the input arguments.
 }
 \examples{
-## Not Run
-# thisProblem = DefineProblem("my_parameter_file.dat")
-# do.call(
-#   "ReadInputsFromFile",
-#   args = c(thisProblem[names(thisProblem) \%in\%
-#              formalArgs("ReadInputsFromFile")],
-#            list(InputFile="my_input_file.dat"))
-# )
-## End Not Run
+myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+                          package = "BLMEngineInR", mustWork = TRUE)
+ReadInputsFromFile(InputFile = myinputfile,
+                   ThisProblem = carbonate_system_problem)
+
 }
 \seealso{
 Other BLMEngine Functions: 

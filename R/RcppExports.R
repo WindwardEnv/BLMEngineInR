@@ -13,9 +13,6 @@
 #'   counts as convergence by the Newton-Raphson root-finding algorithm
 #' @param MaxIter integer, the maximum number of iterations the Newton-Raphson
 #'   root-finding algorithm should do before giving up
-#' @param DoPartialStepsAlways boolean, Should CHESS do strict Newton-Raphson
-#'   iterations (FALSE), or try to improve the simulation with partial N-R
-#'   steps (trying to prevent oscillations).
 #' @param NMass integer, number of mass compartments
 #' @param MassName CharacterVector (NMass), the names of the mass compartments
 #' @param MassAmt NumericVector (NMass), The amount of each mass compartment. 
@@ -29,6 +26,8 @@
 #' @param NSpec integer, number of species reactions
 #' @param SpecName character vector (NSpec), the name of the chemical species
 #'   for which we have formation reactions
+#' @param SpecType character vector (NSpec), the type or category of the 
+#'   chemical species for which we have formation reactions.
 #' @param SpecMCR IntegerVector (NSpec), the mass compartment of the chemical
 #'   species for which we have formation reactions
 #' @param SpecK numeric vector (NSpec), the equilibrium coefficient of the
@@ -89,7 +88,7 @@
 #' }
 #' @export
 #'
-CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget) {
-    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, DoPartialStepsAlways, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget)
+CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget) {
+    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget)
 }
 

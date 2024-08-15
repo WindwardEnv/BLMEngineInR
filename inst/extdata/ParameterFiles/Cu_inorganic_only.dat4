@@ -1,0 +1,81 @@
+Column model parameter file, Ver 4.00
+--------------------------------------------------------------------------------
+2,  Number of Mass Compartments
+3,  Input Labels
+2,  Input Variables
+8,  Input Components
+2,  Defined Components
+22, Species
+0,  Phases
+4,  Number of Special Definitions
+0,  Number of Critical Values
+--------------------------------------------------------------------------------
+Mass Compartment List
+Compartment,   C to M,     Units label
+Water,         1,          L
+BL,            1,          kg wet
+--------------------------------------------------------------------------------
+Input Labels
+ObsNum
+ID
+ID2
+--------------------------------------------------------------------------------
+Input Variables
+Variable,  Compartment, Type
+Temp,      Water,       Temperature
+pH,        Water,       pH
+--------------------------------------------------------------------------------
+Input Components
+Component, Charge, Compartment, Type,     Activity
+Cu,         2,     Water,       MassBal,  Debye
+Ca,         2,     Water,       MassBal,  Debye
+Mg,         2,     Water,       MassBal,  Debye
+Na,         1,     Water,       MassBal,  Debye
+K,          1,     Water,       MassBal,  Debye
+SO4,       -2,     Water,       MassBal,  Debye
+Cl,        -1,     Water,       MassBal,  Debye
+CO3,       -2,     Water,       MassBal,  Debye
+--------------------------------------------------------------------------------
+Defined components
+Component,  From,     Charge,   Compartment, Type,      Activity,   Site Den
+H,          pH,       1,        Water,       FixedConc, Debye,      1
+BL1,        1.78E-05, -1,       BL,          MassBal,   None,       3E-5
+--------------------------------------------------------------------------------
+Formation Reactions
+Species, Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,       Delta H,   Temp
+BL1-Cu,  BL,       None,  2,  BL1, 1,   Cu,  1,            7.400,         0.000,  0.000
+BL1-CuOH,BL,       None,  3,  BL1, 1,   Cu,  1,  H,  -1,  -1.300,         0.000,  0.000
+BL1-Ca,  BL,       None,  2,  BL1, 1,   Ca,  1,            3.600,         0.000,  0.000
+BL1-Mg,  BL,       None,  2,  BL1, 1,   Mg,  1,            3.600,         0.000,  0.000
+BL1-H,   BL,       None,  2,  BL1, 1,    H,  1,            5.400,         0.000,  0.000
+BL1-Na,  BL,       None,  2,  BL1, 1,   Na,  1,            3.000,         0.000,  0.000
+OH,      Water,    Debye, 1,  H,  -1,                    -14.000,    56186.73738, 298.1514609
+HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,   -14997.55155, 298.1514609
+H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,   -24166.23162, 298.1514609
+MgHCO3,  Water,    Debye, 3,  CO3, 1,   Mg,  1,  H,   1,  11.400,   -11666.16619, 298.1514609
+MgCO3,   Water,    Debye, 2,  CO3, 1,   Mg,  1,            2.980,    11413.46945, 298.1514609
+MgSO4,   Water,    Debye, 2,  Mg,  1,  SO4,  1,            2.370,    19162.83616, 298.1514609
+CaHCO3,  Water,    Debye, 3,  Ca,  1,  CO3,  1,  H,   1,  11.440,    -3664.102737,298.1514609
+CaCO3,   Water,    Debye, 2,  Ca,  1,  CO3,  1,            3.220,    14951.22381, 298.1514609
+CaSO4,   Water,    Debye, 2,  Ca,  1,  SO4,  1,            2.300,     6949.160364,298.1514609
+CuOH,    Water,    Debye, 2,  Cu,  1,    H, -1,           -7.520,    56186.73738, 298.1514609
+Cu(OH)2, Water,    Debye, 2,  Cu,  1,    H, -2,          -16.220,   112373.47476, 298.1514609
+CuSO4,   Water,    Debye, 2,  Cu,  1,  SO4,  1,            2.360,     8844.385918,298.1514609
+CuCl,    Water,    Debye, 2,  Cu,  1,   Cl,  1,            0.400,     6738.57975, 298.1514609
+CuCO3,   Water,    Debye, 2,  Cu,  1,  CO3,  1,            6.750,              0, 298.1514609
+Cu(CO3)2,Water,    Debye, 2,  Cu,  1,  CO3,  2,            9.920,              0, 298.1514609
+CuHCO3,  Water,    Debye, 3,  Cu,  1,  CO3,  1,   H,  1,  14.620,              0, 298.1514609
+--------------------------------------------------------------------------------
+Phase List
+Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles
+--------------------------------------------------------------------------------
+Special Definitions
+Definition, Species
+Metal,      Cu
+BL,         BL1
+BL-Metal,   BL1-Cu
+BL-Metal,   BL1-CuOH
+--------------------------------------------------------------------------------
+Critical Accumulation Table
+#, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
+--------------------------------------------------------------------------------

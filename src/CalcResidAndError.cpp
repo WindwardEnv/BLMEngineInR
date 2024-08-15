@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include <cmath>
+#include <math.h>
 //#include "RcppArmaHelper.h"
 #include "CHESSFunctions.h"
 
@@ -45,9 +45,9 @@ void CalcResidAndError(int NComp,
   TotHSMoles(iHA) = 0.0;
   TotHSMoles(iFA) = 0.0;
   for (iComp = 0; iComp < NComp; iComp++) {
-    if (SpecType(iComp) == STYPE_WHAMHA) {
+    if (SpecActCorr(iComp) == ACTYPE_WHAMHA) {
       TotHSMoles(iHA) += TotMoles(iComp);
-    } else if (SpecType(iComp) == STYPE_WHAMFA) {
+    } else if (SpecActCorr(iComp) == ACTYPE_WHAMFA) {
       TotHSMoles(iFA) = TotMoles(iComp);
     }
   }*/
@@ -56,16 +56,16 @@ void CalcResidAndError(int NComp,
   Resid = CalcTotMoles - TotMoles;
   
   // Calculate the error fraction for each component
-  CompError = abs(Resid / CalcTotMoles);
+  CompError = Rcpp::abs(Resid / TotMoles);
   
   for (iComp = 0; iComp < NComp; iComp++) {
     if ((CompType(iComp) == CTYPE_FIXEDCONC) || (CompType(iComp) == CTYPE_FIXEDACT)) {
       Resid(iComp) = 0.0;
       CompError(iComp) = 0.0;
     //} else if (SpecType(iComp) == STYPE_WHAMHA) {
-    //  CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iHA]);
+    //  CompError(iComp) = Rcpp::abs(Resid(iComp) / TotHSMoles[iHA]);
     //} else if (SpecType(iComp) == STYPE_WHAMFA) {
-    //  CompError(iComp) = abs(Resid(iComp) / TotHSMoles[iFA]);
+    //  CompError(iComp) = Rcpp::abs(Resid(iComp) / TotHSMoles[iFA]);
     }
   }  
   

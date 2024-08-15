@@ -19,13 +19,13 @@ Prohaska, T., Irrgeher, J., Benefield, J., Böhlke, J., Chesson, L.,
 MW
 }
 \description{
-`MW` is a named vector of molecular and atomic weights. The name
-  of the vector element is the symbol or formula of the chemical element or
+`MW` is a named list of molecular and atomic weights. The name
+  of the list element is the symbol or formula of the chemical element or
   molecule (e.g. find hydrogen with "H", carbon dioxide as "CO2").
 }
 \examples{
 # check that the molecular weight of CaCO3 is the same as Ca + C + O * 3
-MW["Ca"] + MW["C"] + MW["O"] * 3 #=100.086
+sum(MW[c("Ca", "C")], MW["O"] * 3) #=100.086
 MW["CaCO3"] #=100.086
 
 }

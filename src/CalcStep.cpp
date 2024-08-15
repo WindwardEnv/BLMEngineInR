@@ -47,9 +47,9 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   }
   
   Rcpp::NumericVector CompConcStepSolve(NSolve);
-  Rcpp::NumericVector ResidSolve(NSolve);  
+  /*Rcpp::NumericVector ResidSolve(NSolve);  
   Rcpp::NumericMatrix JacobianMatrixSolve(NSolve, NSolve);
-  Rcpp::NumericMatrix JacobianMatrixInv(NSolve, NSolve);
+  Rcpp::NumericMatrix JacobianMatrixInv(NSolve, NSolve);*/
 
   arma::mat ArmaCompConcStepSolve(NSolve, 1);
   arma::mat ArmaResidSolve(NSolve, 1);
@@ -60,12 +60,12 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   i = 0;
   for (iComp = 0; iComp < NComp; iComp++){
     if (CompSolve[iComp]) {
-      ResidSolve(i) = Resid(iComp);
+      //ResidSolve(i) = Resid(iComp);
       ArmaResidSolve(i, 0) = Resid(iComp);
       j = 0;
       for (iComp2 = 0; iComp2 < NComp; iComp2++){
         if (CompSolve[iComp2]) {
-          JacobianMatrixSolve(i, j) = JacobianMatrix(iComp, iComp2);
+          //JacobianMatrixSolve(i, j) = JacobianMatrix(iComp, iComp2);
           ArmaJacobianMatSolve(i, j) = JacobianMatrix(iComp, iComp2);
           j++;
         }
@@ -74,22 +74,24 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
     }
   }
 
-  try {
 
+  try {
+    
     /*// find the matrix inverse of JacobianMatrix by SVD
     JacobianMatrixInv = SvdInverse(JacobianMatrixSolve);
+
     if (JacobianMatrixInv.nrow() != NSolve) {
       throw ERROR_MATRIX_INVERSION;
     }
     CompConcStepSolve = RcppMatMult(JacobianMatrixInv, ResidSolve);*/
-
+    
     // Doing the calculations with Armadillo classes
     bool InverseSuccess;
     // Start with the general inverse
     // (https://arma.sourceforge.net/docs.html#inv)
     InverseSuccess = arma::inv(ArmaJacobianMatInv, ArmaJacobianMatSolve, 
                                arma::inv_opts::allow_approx);    
-
+    
     if (!InverseSuccess) {
       // Try to calculate the Moore-Penrose pseudo-invserse (uses SVD)
       // (https://arma.sourceforge.net/docs.html#pinv)
@@ -97,7 +99,7 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
     }
     if (!InverseSuccess) { 
 
-      Rcpp::Rcout << "ResidSolve = [" << ResidSolve << "]" << std::endl;
+      /*Rcpp::Rcout << "ResidSolve = [" << ResidSolve << "]" << std::endl;
       Rcpp::Rcout << "ArmaResidSolve = [";
       for (i = 0; i < NSolve; i++) {
         if (i != 0) { Rcpp::Rcout << " "; }
@@ -114,7 +116,7 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
           Rcpp::Rcout << ArmaJacobianMatSolve(i, j);
         }
       }
-      Rcpp::Rcout << "]" << std::endl;
+      Rcpp::Rcout << "]" << std::endl;*/
 
       throw ERROR_MATRIX_INVERSION; 
     }
@@ -128,14 +130,14 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
     CompConcStepSolve = MatrixToRcppVector(ArmaCompConcStepSolve);
   }
   catch (int e) {
-    if (e == ERROR_SINGULAR_MATRIX) {
+    /*if (e == ERROR_SINGULAR_MATRIX) {
       Rcpp::Rcout << "Singluar Matrix" << std::endl;
     } else if (e == ERROR_MATRIX_INVERSION) {
       Rcpp::Rcout << "Matrix inversion failed." << std::endl;
     } else {
       Rcpp::Rcout << "Unknown exception occurred" << std::endl;
-    }
-
+    }*/
+    
     // default to a brute-force step value
     i = 0;
     for (iComp = 0; iComp < NComp; iComp++){

@@ -1,3 +1,4 @@
+#include <math.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -125,10 +126,10 @@ void AdjustForWHAM(
   // Set -Z_HS to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
     if (CompType(iComp) == CTYPE_DONNANHA) {
-      TotMoles(iComp) = abs(WHAMSpecCharge(iHA)) * HumicSubstGramsPerLiter(iHA);
+      TotMoles(iComp) = std::fabs(WHAMSpecCharge(iHA)) * HumicSubstGramsPerLiter(iHA);
       TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
     } else if (CompType(iComp) == CTYPE_DONNANFA) {
-      TotMoles(iComp) = abs(WHAMSpecCharge(iFA)) * HumicSubstGramsPerLiter(iFA);
+      TotMoles(iComp) = std::fabs(WHAMSpecCharge(iFA)) * HumicSubstGramsPerLiter(iFA);
       TotConc(iComp) = TotMoles(iComp) / SpecCtoMAdj(iComp);
     }
   }
@@ -241,7 +242,7 @@ void AdjustForWHAMBeforeCalcSpecies(
                                      HumicSubstGramsPerLiter);
   //SpecCtoMAdj = MassAmtAdj[SpecMC];
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
-    if ((SpecType(iSpec) == STYPE_WHAMHA) || (SpecType(iSpec) == STYPE_WHAMFA)) {
+    if ((SpecType[iSpec] == STYPE_WHAMHA) || (SpecType[iSpec] == STYPE_WHAMFA)) {
       SpecCtoMAdj[iSpec] = MassAmt[AqueousMC];
     } else {
       SpecCtoMAdj[iSpec] = MassAmtAdj[SpecMC[iSpec]];
@@ -327,7 +328,7 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
   
   // Update the WHAM component concentrations
   for (iComp = 0; iComp < NComp; iComp++) {
-    if ((SpecType(iComp) == STYPE_WHAMHA) || (SpecType(iComp) == STYPE_WHAMFA)) {
+    if ((CompType(iComp) == CTYPE_WHAMHA) || (CompType(iComp) == CTYPE_WHAMFA)) {
 
       SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
                        NComp, CompConc,
@@ -335,9 +336,6 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                        SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
                        WHAMSpecCharge);
 
-      //Rcpp::NumericVector FP(NSpec);
-      //FP[72] = 1 / (1 + (SpecKISTempAdj[72] * std::exp(2 * W * WHAMSpecCharge[iHA]) / (SpecConc[8] * SpecActivityCoef[8])));
-      
     }
   }
 
@@ -353,10 +351,10 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
   // Set -Z_HS*Th to the "known" total for the Donnan component
   for (iComp = 0; iComp < NComp; iComp++) {
     if (CompType(iComp) == CTYPE_DONNANHA) {
-      TotMoles[iComp] = abs(WHAMSpecCharge[iHA]) * HumicSubstGramsPerLiter[iHA];
+      TotMoles[iComp] = std::fabs(WHAMSpecCharge[iHA]) * HumicSubstGramsPerLiter[iHA];
       TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
     } else if (CompType(iComp) == CTYPE_DONNANFA) {
-      TotMoles[iComp] = abs(WHAMSpecCharge[iFA]) * HumicSubstGramsPerLiter[iFA];
+      TotMoles[iComp] = std::fabs(WHAMSpecCharge[iFA]) * HumicSubstGramsPerLiter[iFA];
       TotConc[iComp] = TotMoles[iComp] / SpecCtoMAdj[iComp];
     }
   }

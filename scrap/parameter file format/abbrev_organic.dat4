@@ -1,7 +1,7 @@
 Column model parameter file, Ver 4.00
 --------------------------------------------------------------------------------
 1,  Number of Mass Compartments
-2,  Input Labels
+3,  Input Labels
 3,  Input Variables
 3,  Input Components 
 1,  Defined Components
@@ -15,6 +15,7 @@ Compartment,   C to M,     Units label
 Water,         1,          L             
 --------------------------------------------------------------------------------
 Input Labels
+ObsNum
 ID
 ID2
 --------------------------------------------------------------------------------

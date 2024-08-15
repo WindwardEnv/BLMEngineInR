@@ -1,0 +1,26 @@
+test_that("AddMassCompartments works", {
+  expect_no_error(AddMassCompartments(ThisProblem = carbonate_system_problem,
+                                      MassName = "Test",
+                                      MassAmt = 999,
+                                      MassUnit = "test"))
+  expect_no_error(AddMassCompartments(ThisProblem = carbonate_system_problem,
+                                      MassTable = data.frame(
+                                        Name = "Test",
+                                        Amt = 999,
+                                        Unit = "test")))
+  expect_equal(AddMassCompartments(ThisProblem = carbonate_system_problem,
+                                   MassName = "Test",
+                                   MassAmt = 999,
+                                   MassUnit = "test"),
+               AddMassCompartments(ThisProblem = carbonate_system_problem,
+                                   MassTable = data.frame(
+                                     Name = "Test",
+                                     Amt = 999,
+                                     Unit = "test")))
+})
+test_that("RemoveMassCompartments works", {
+  expect_error(RemoveMassCompartments(ThisProblem = carbonate_system_problem,
+                                      MCToRemove = 1))
+  expect_no_error(RemoveMassCompartments(ThisProblem = Cu_full_organic_problem,
+                                         MCToRemove = "BL"))
+})

@@ -1,4 +1,4 @@
-#include <cmath>
+#include <math.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -58,10 +58,10 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
       if (SpecStoich(iSpec, iComp) != 0) {
           /*if ((SpecType(iSpec) == STYPE_DONNANHA) || 
             (SpecType(iSpec) == STYPE_DONNANFA)) {
-              Rcpp::Rcout << SpecType(iSpec) << std::endl;
+              Rcpp::Rcout << SpecActCorr(iSpec) << std::endl;
           }*/
-          /*if ((SpecType(iComp) == STYPE_DONNANHA) || 
-              (SpecType(iComp) == STYPE_DONNANFA)) {
+          /*if ((SpecActCorr(iComp) == ACTYPE_DONNANHA) || 
+              (SpecActCorr(iComp) == ACTYPE_DONNANFA)) {
             SpecActivity(iSpec) *= std::pow(CompConc(iComp), 
                                             SpecStoich(iSpec, iComp));
           } else {

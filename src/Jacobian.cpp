@@ -1,4 +1,5 @@
 #include <strings.h>
+#include <math.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -64,26 +65,25 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
     Rcpp::colnames(JacobianMatrix) = CompName;
 
   /* variables: */
-  double Sum, Sum2, SumCiHi2, SumCiHiSij;
+  double Sum, Sum2;
   int iComp1, iComp2, iSpec, iHS;
-  int i;
-  double Sik, Sij, Ci, Cj, Vi, Th, Hi, Ki;
+  //int i;
+  double Sik, Sij, Ci, Cj, Vi, Th, Hi;
   std::string Name1, Name2, NameS;
   Rcpp::String HSName;   
   Rcpp::NumericVector W = wP * log10(IonicStrength);
-  Rcpp::NumericVector HumicTerm = HumicSubstGramsPerLiter * WHAMSpecCharge / abs(WHAMSpecCharge);
+  Rcpp::NumericVector HumicTerm = HumicSubstGramsPerLiter * WHAMSpecCharge / Rcpp::abs(WHAMSpecCharge);
     if (WHAMSpecCharge[iHA] == 0) { HumicTerm[iHA] = 0.0; }
     if (WHAMSpecCharge[iFA] == 0) { HumicTerm[iFA] = 0.0; }
-  Rcpp::NumericVector absZhThCheck = abs(WHAMSpecCharge) * HumicSubstGramsPerLiter;
+  Rcpp::NumericVector absZhThCheck = Rcpp::abs(WHAMSpecCharge) * HumicSubstGramsPerLiter;
+  Rcpp::NumericMatrix dZhdC(2, NComp);
+  Rcpp::NumericMatrix dVDLmaxdC(2, NComp);
+  Rcpp::NumericMatrix dVDLdC(2, NComp);
   Rcpp::NumericVector MaxVolDiffusePerGramHS(2);
   Rcpp::NumericVector MaxVolDiffuse(2);
   Rcpp::NumericVector VolDiffuse(2);
-  Rcpp::NumericMatrix dZhdCj(2, NComp);
-  Rcpp::NumericMatrix dVDLmaxdCj(2, NComp);
-  Rcpp::NumericMatrix dVDLdCj(2, NComp);
-  Rcpp::NumericMatrix dKidCj(NSpec, NComp);
-  Rcpp::NumericMatrix dCidCj(NSpec, NComp);
-  Rcpp::NumericMatrix dVidCj(NSpec, NComp);
+  Rcpp::NumericMatrix dKidC(NSpec, NComp);
+  Rcpp::NumericMatrix dVidC(NSpec, NComp);
   Rcpp::CharacterVector SpecTypeWHAM(2);
     SpecTypeWHAM[iHA] = STYPE_WHAMHA;
     SpecTypeWHAM[iFA] = STYPE_WHAMFA;
@@ -114,13 +114,13 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
             Hi = SpecCharge[iSpec];
             Ci = SpecConc[iSpec];
             if (SpecType[iSpec] == SpecTypeWHAM[iHS]) {
-              SumCiHiSij += (Ci * Hi * Sij); 
-              SumCiHi2 += (Ci * Hi * Hi);
+              Sum += (Sij * Ci * Hi);
+              Sum2 += (Ci * pow(Hi, 2));
             }
           }
-          dZhdCj(iHS, iComp2) = SumCiHiSij / (Cj * (Th + 2 * W[iHS] * SumCiHi2));
-          dVDLmaxdCj(iHS, iComp2) = (dZhdCj(iHS, iComp2) * MaxVolDiffuse[iHS]) / 
-                  (WHAMSpecCharge[iHS] * (1 + wKZED * abs(WHAMSpecCharge[iHS])));
+          dZhdC(iHS, iComp2) = Sum / (Th * Cj + 2 * W[iHS] * SpecConc[iComp2] * Sum2);
+          dVDLmaxdC(iHS, iComp2) = (dZhdC(iHS, iComp2) * MaxVolDiffuse[iHS]) / 
+                  (WHAMSpecCharge[iHS] * (1 + wKZED * std::fabs(WHAMSpecCharge[iHS])));
         }        
       }      
 
@@ -138,6 +138,23 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
       //Rcpp::Rcout << "dVDLmaxdCj = [" << std::endl << dVDLmaxdCj << std::endl << "]" << std::endl;
       //Rcpp::Rcout << "dVDLdCj = [" << std::endl << dVDLdCj << std::endl << "]" << std::endl;
 
+      for (iSpec = 0; iSpec < NSpec; iSpec++) {
+        if (iSpec < NComp) {
+          // components have a Ki of 1, so dKi/dCj is 0
+          dKidC(iSpec, iComp2) = 0.0;
+        } else if ((SpecType[iSpec] == STYPE_WHAMHA) || 
+                   (SpecType[iSpec] == STYPE_WHAMFA)) {
+          // WHAM species have Ki = Kint * exp(-2*w*Hi*Zh), so 
+          // dKi/dCj = Ki * (-2) * w * Hi * dZh/dCj
+          if (SpecType[iSpec] == STYPE_WHAMHA) { iHS = iHA; }
+          if (SpecType[iSpec] == STYPE_WHAMFA) { iHS = iFA; }
+          Hi = SpecCharge[iSpec];
+          dKidC(iSpec, iComp2) = SpecK[iSpec] * (-2) * W[iHS] * Hi * dZhdC(iHS, iComp2);
+        } else {
+          // everything else (i.e., inorganic, Donnan, and BL species) have a Ki
+          // that does not vary with concentration
+          dKidC(iSpec, iComp2) = 0.0;
+        }
 
     for (iSpec = 0; iSpec < NSpec; iSpec++) {
       Ci = SpecConc(iSpec);
@@ -185,11 +202,14 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
       }
     }
 
-    // calculate dRk/dCj for the Jacobian matrix
-    for (iComp1 = 0; iComp1 < NComp; iComp1++) {
-      Sum = 0.0;
+  /* Loop through the Jacobian */
+  for (iComp1 = 0; iComp1 < NComp; iComp1++) {
+    Name1 = CompName(iComp1);
+    for (iComp2 = 0; iComp2 < NComp; iComp2++) {
+      Name2 = CompName[iComp2];
+      Sum = 0;
       if (DoTox && (iComp1 == MetalComp)) {
-        /* Toxicity mode the metal's derivatives are relative to the CA error */
+        // Toxicity mode the metal's derivatives are relative to the CA error
         for (i = 0; i < NBLMetal; i++) {
           iSpec = BLMetalSpecs[i];
           Sum += (SpecStoich(iSpec, iComp2) * //SpecStoich(iSpec, iComp1) *
@@ -201,11 +221,9 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
           JacobianMatrix(iComp1, iComp2) = Sum / (SpecConc[iComp2]);// * SpecCtoM(iComp2));
         }
       } else if ((SpecType[iComp1] == STYPE_WHAMHA) || 
-                 (SpecType[iComp1] == STYPE_WHAMFA)) {
-        /* WHAM species have a variable Ki that varies with Zh, and a known 
-           total concentration that does not vary. 
-           dRk/dCj = Sum(Sik * Ci * ((dKi/dCj)/Ki + Sij/Cj))
-        */
+                   (SpecType[iComp1] == STYPE_WHAMFA)) {
+        /* WHAM species shouldn't have their CToM adjusted, but just to be sure, 
+           let's take it out of the calculation. */
         if (SpecType[iComp1] == STYPE_WHAMHA) { 
           iHS = iHA;
         }
@@ -223,10 +241,9 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
       } else if ((SpecType[iComp1] == STYPE_DONNANFA) || 
                  (SpecType[iComp1] == STYPE_DONNANHA)) {
         /* diffuse double layer residual is a function of the humic charge, 
-           which is itself a function of component concentrations 
-           dRk/dCj = 
-        */
-         if (SpecType[iComp1] == STYPE_DONNANHA) { 
+           which is itself a function of component concentrations */
+        iHS = -1;
+        if (SpecType[iComp1] == STYPE_DONNANHA) { 
           HSName = STYPE_WHAMHA; 
           iHS = iHA;
         }
@@ -276,13 +293,14 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
         JacobianMatrix(iComp1, iComp2) = Sum - Sum2;
       }
       if (!std::isfinite(JacobianMatrix(iComp1, iComp2))) {
-        Rcpp::Rcout << "d.Residual(" << CompName[iComp1] << 
-          ") / d.Conc(" << CompName[iComp2] << ") is nan/Inf." << std::endl;
+        /*Rcpp::Rcout << "d.Residual(" << CompName[iComp1] << 
+          ") / d.Conc(" << CompName[iComp2] << ") is nan/Inf." << std::endl;*/
+        
         JacobianMatrix(iComp1, iComp2) = 0.0;  
         //throw ERROR_JACOBIAN_NAN;
       }
-    } //for iComp1
-  } //for iComp2 
+    };//NEXT iComp2
+  };//NEXT iComp1
 
   return JacobianMatrix;
 }

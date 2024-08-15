@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include <cmath>
+#include <math.h>
 #include "CHESSFunctions.h"
 
 //' Set the initial guess for component concentrations
@@ -87,7 +87,7 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
       }
     }*/
 
-	  if (DoTox) {
+    if (DoTox) {
       // Sum toxic BL-bound metal species
       CalcCA = 0;
       for (i = 0; i < NBLMetal; i++){
@@ -98,22 +98,16 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
       TotMoles(MetalComp) = TotMoles(MetalComp) * (CATarget / CalcCA);
     }
 
-    /* Adjust component concentrations */
+	  /* Adjust component concentrations */
     for (iComp = 0; iComp < NComp; iComp++) {
-      if (DoTox && (iComp == MetalComp)) {
-        // Sum toxic BL-bound metal species
-        CalcCA = 0;
-        for (i = 0; i < NBLMetal; i++){
-          iSpec = BLMetalSpecs[i];
-          CalcCA += SpecConc[iSpec];
-        }
-        CompConc(iComp) = CompConc(iComp) * (CATarget / CalcCA);
-      } else if (CompType(iComp) == CTYPE_MASSBAL) {
-        //CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTotConc(iComp));
-        CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp));
-      } else if ((iRound == 1) && ((CompType(iComp) == CTYPE_DONNANHA) ||
+      if ((iRound == 1) && ((CompType(iComp) == CTYPE_DONNANHA) ||
                                    (CompType(iComp) == CTYPE_DONNANFA))) {
         CompConc(iComp) = 10.0;//CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;//
+      } else if ((CompType(iComp) == CTYPE_MASSBAL) || 
+                 (CompType(iComp) == CTYPE_WHAMHA) ||
+                 (CompType(iComp) == CTYPE_WHAMFA)) {
+        //CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTotConc(iComp));
+        CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp));
       }
     }
   }

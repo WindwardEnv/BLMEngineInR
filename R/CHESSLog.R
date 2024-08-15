@@ -1,4 +1,25 @@
-CHESSLog = function(ThisProblem, ParamFile) {
+#' Create a file that shows the problem in a different, human-friendly format
+#'
+#' @param ThisProblem A problem list object, such as returned by
+#'   `DefineProblem`.
+#' @param LogFilename The path and file name of the created log file. By
+#'   default, it is "CHESSLOG.txt", placed in the same directory as ParamFile.
+#'
+#' @return invisibly returns TRUE
+#'
+#' @keywords internal
+CHESSLog = function(ThisProblem,
+                    LogFilename = file.path(dirname(ThisProblem$ParamFile),
+                                            "CHESSLOG.txt")) {
+
+  # initialize
+  CompName = character()
+  SpecName = character()
+  SpecStoich = matrix()
+  SpecLogK = numeric()
+  SpecDeltaH = numeric()
+  CompType = character()
+  SpecCharge = integer()
 
   # initialize
   CompName = character()
@@ -11,13 +32,13 @@ CHESSLog = function(ThisProblem, ParamFile) {
   SpecCharge = integer()
 
   # unpack the input list
-  for (i in names(ThisProblem)) {
-    assign(i, ThisProblem[[i]])
+  ThisProblemList = ConvertToList(ThisProblem)
+  for (i in names(ThisProblemList)) {
+    assign(i, ThisProblemList[[i]])
   }
 
   # initialize log file
-  LogFilename = file.path(dirname(ParamFile), "CHESSLOG.txt")
-  write(paste0("CHESS problem defined by '", ParamFile, "' parameter file:\n",
+  write(paste0("CHESS problem defined by '", ThisProblem$ParamFile, "' parameter file:\n",
                "(",Sys.time(),")"),
         file = LogFilename, append = FALSE)
 
@@ -83,11 +104,27 @@ CHESSLog = function(ThisProblem, ParamFile) {
   write("MassBal Totals:", file = LogFilename, append = TRUE)
   write(tmp, file = LogFilename, append = TRUE)
 
+  # WHAM Totals
+  tmp = paste0(
+    "T.", CompName[CompType %in% c("WHAMHA","WHAMFA")],
+    " = ",
+    apply(SpecStoich[, CompType %in% c("WHAMHA","WHAMFA"), drop = FALSE], MARGIN = 2, FUN = function(X){
+      X.nonzero = X[X != 0]
+      X.species = names(X.nonzero)
+      return(gsub(" [+] -", " - ",
+                  paste(paste(X.nonzero, X.species, sep = " * "),
+                        collapse = " + ")))
+    })
+  )
+  write(strrep("-", 80), file = LogFilename, append = TRUE)
+  write("WHAM Component Totals:", file = LogFilename, append = TRUE)
+  write(tmp, file = LogFilename, append = TRUE)
+
   # DonnanChargeBal Totals
   write(strrep("-", 80), file = LogFilename, append = TRUE)
-  write("DonnanChargeBal Totals:", file = LogFilename, append = TRUE)
+  write("Donnan Charge Balance Totals:", file = LogFilename, append = TRUE)
   for (iHS in c("HA", "FA")) {
-    if (any(CompActCorr == paste0("WHAM", iHS))) {
+    if (any(CompType == paste0("WHAM", iHS))) {
       DonnanComp = paste0("Donnan", iHS)
       tmp = paste0(
         "Z_Donnan", iHS,
@@ -102,7 +139,7 @@ CHESSLog = function(ThisProblem, ParamFile) {
       )
       write(tmp, file = LogFilename, append = TRUE)
 
-      HSSpecName = SpecName[apply(SpecStoich[, CompActCorr == paste0("WHAM", iHS), drop = FALSE], MARGIN = 1, FUN = function(X){any(X != 0)})]
+      HSSpecName = SpecName[apply(SpecStoich[, CompType == paste0("WHAM", iHS), drop = FALSE], MARGIN = 1, FUN = function(X){any(X != 0)})]
       HSSpecCharge = SpecCharge[SpecName %in% HSSpecName]
       Nonzero = HSSpecCharge != 0
       tmp = paste0("Z_", iHS, " = ",
@@ -115,6 +152,6 @@ CHESSLog = function(ThisProblem, ParamFile) {
     }
   }
 
-
+  return(invisible(TRUE))
 
 }
