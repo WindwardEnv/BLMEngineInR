@@ -57,10 +57,43 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
   Rcpp::NumericVector TotMoles(NComp);
   double CalcCA;
   int i;
-  
+  /*int CompTotStoich;
+  double CompStoichMoles;
+  Rcpp::NumericVector MaxSpecConc(NSpec);
+
+  for (iSpec = 0; iSpec < NSpec; iSpec++) {    
+    MaxSpecConc(iSpec) = INFINITY;
+    for (iComp = 0; iComp < NComp; iComp++) {
+      if ((((CompType(iComp) == CTYPE_MASSBAL) || 
+            (CompType(iComp) == CTYPE_WHAMHA) ||
+            (CompType(iComp) == CTYPE_WHAMFA))) && 
+          (TotConc(iComp) < MaxSpecConc(iSpec))) {
+        MaxSpecConc(iSpec) = TotConc(iComp);
+      }
+    }
+  }*/
+
   /* Seed component concentrations with total concentrations */
-  for (iComp = 0; iComp < NComp; iComp++){
-	  CompConc(iComp) = TotConc(iComp);
+  for (iComp = 0; iComp < NComp; iComp++) {    
+    /*if ((CompType[iComp] == CTYPE_FIXEDACT) ||
+        (CompType[iComp] == CTYPE_FIXEDCONC)) {
+      CompConc(iComp) = TotConc(iComp);
+    } else if ((CompType(iComp) == CTYPE_MASSBAL) || 
+                 (CompType(iComp) == CTYPE_WHAMHA) ||
+                 (CompType(iComp) == CTYPE_WHAMFA)) {
+      CompTotStoich = 0;
+      CompStoichMoles = 0.0;
+      for (iSpec = 0; iSpec < NSpec; iSpec++) {
+        CompTotStoich += SpecStoich(iSpec, iComp);
+        CompStoichMoles += SpecStoich(iSpec, iComp) * SpecCtoM(iSpec);
+      }
+      CompConc(iComp) = TotConc(iComp) / CompStoichMoles;
+    } else */if ((CompType(iComp) == CTYPE_DONNANHA) ||
+               (CompType(iComp) == CTYPE_DONNANFA)) {
+      CompConc(iComp) = 10.0;
+    } else {
+      CompConc(iComp) = TotConc(iComp);
+    }
     TotMoles(iComp) = TotConc(iComp) * SpecCtoM(iComp);
   }
 
@@ -100,10 +133,10 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
 
 	  /* Adjust component concentrations */
     for (iComp = 0; iComp < NComp; iComp++) {
-      if ((iRound == 1) && ((CompType(iComp) == CTYPE_DONNANHA) ||
+      /*if ((iRound == 1) && ((CompType(iComp) == CTYPE_DONNANHA) ||
                                    (CompType(iComp) == CTYPE_DONNANFA))) {
         CompConc(iComp) = 10.0;//CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;//
-      } else if ((CompType(iComp) == CTYPE_MASSBAL) || 
+      } else */if ((CompType(iComp) == CTYPE_MASSBAL) || 
                  (CompType(iComp) == CTYPE_WHAMHA) ||
                  (CompType(iComp) == CTYPE_WHAMFA)) {
         //CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTotConc(iComp));

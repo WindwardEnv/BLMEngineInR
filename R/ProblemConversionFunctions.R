@@ -27,7 +27,7 @@ ConvertToList = function(ThisProblemDF) {
                      "Spec", "Phase", "BL", "Metal", "BLMetal")
   OrganizedNames = c("Index", "WHAM")
   AsIsNames = setdiff(names(ThisProblemDF), c(CompositeNames, OrganizedNames))
-  NoZeroLengthNames = c("MetalName","MetalCompR")
+  NoZeroLengthNames = c("MetalName","MetalCompR","BLName","BLCompR")
 
   for (i in CompositeNames) {
     if (is.data.frame(ThisProblemDF[[i]])) {
@@ -92,7 +92,7 @@ ConvertToDF = function(ThisProblemList) {
     WHAM = c("DoWHAM", "WHAMVer", "WdatFile", "wDLF", "wKZED",
              "wP", "wRadius", "wMolWt")
   )
-  NoZeroLengthNames = c("MetalName","MetalCompR")
+  NoZeroLengthNames = c("MetalName","MetalCompR","BLName","BLCompR")
 
   for (i in NoZeroLengthNames) {
     if (typeof(ThisProblemList[[i]]) == "character") {

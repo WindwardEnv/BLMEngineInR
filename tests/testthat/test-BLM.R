@@ -13,6 +13,8 @@ test_that("BLM function works - general functionality", {
             InputFile = myinputfile,
             DoTox = FALSE)
   tmp2 = BLM(ThisProblem = myproblem, AllInput = myinputs, DoTox = FALSE)
+  tmp$TimeElapsed = "999 secs"
+  tmp2$TimeElapsed = "999 secs"
 
   expect_error(BLM())
   expect_identical(tmp$Miscellaneous$Status[1], "Okay")

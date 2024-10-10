@@ -3,16 +3,16 @@ Column model parameter file, Ver 4.00
 2,  Number of Mass Compartments
 3,  Input Labels
 4,  Input Variables
-8,  Input Components 
+8,  Input Components
 2,  Defined Components
 22, Species
 0,  Phases
 5,  Number of Special Definitions
-2,  Number of Critical Values     
+2,  Number of Critical Values
 --------------------------------------------------------------------------------
 Mass Compartment List
 Compartment,   C to M,     Units label
-Water,         1,          L             
+Water,         1,          L
 BL,            1,          kg wet
 --------------------------------------------------------------------------------
 Input Labels
@@ -22,7 +22,7 @@ ID2
 --------------------------------------------------------------------------------
 Input Variables
 Variable,  Compartment, Type
-Temp,      Water,       Temperature 
+Temp,      Water,       Temperature
 pH,        Water,       pH
 DOC,       Water,       WHAM-HAFA
 HA,        Water,       PercHA
@@ -38,7 +38,7 @@ SO4,       -2,     Water,       MassBal,  Debye
 Cl,        -1,     Water,       MassBal,  Debye
 CO3,       -2,     Water,       MassBal,  Debye
 --------------------------------------------------------------------------------
-Defined components                                    
+Defined components
 Component,  From,        Charge,   Compartment, Type,     Activity,   Site Den
 H,          pH,          1,        Water,       FixedConc, Debye,      1.0
 BL1,        1.78E-05,    -1,       BL,          MassBal,  None,       3E-5
@@ -84,25 +84,3 @@ Critical Accumulation Table
 1, 0.05541,     Ceriodaphnia dubia, Acute,     48h,      Neonate (<24 hr), Mortality, EC50; LC50, Gensemer et al. 2002; Hyne et al. 2005; Naddy et al. 2002; Naddy et al. 2003; Van Genderen et al. 2007,SMEA calculated by median
 2, 0.03395,     FAV,                Acute,     DIV=2.00, ACR=3.22,         FAV,       NA,         US EPA 2007,         none
 --------------------------------------------------------------------------------
--------Notes--------
-Types: 
-  PB  C++  R/PFile      Comment
-  1   1    MassBal     (Float previously)
-  2   2    FixedConc
-  3   3    Substituted 
-  4   4    ChargeBal   (not useful in BLM)
-  15  15   SurfPot     (keep for now - double layer stuff)
-  -   5    WHAMV
-  -   6    WHAMVI
-  -   7    WHAMVII
-  -   -    WHAMFile=Filename.wdat
-Activity Correction Methods: 
-  PB  C++   R/PFile  
-  1   1     None
-  2   2     Davies
-  3   3     Debye
-  4   4     MoleFraction
-  5   5     ChargeFraction
-  6   6     WHAMHA (usually internal use only)
-  7   7     WHAMFA (usually internal use only)
-  

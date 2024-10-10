@@ -276,8 +276,8 @@ BlankProblemList = function() {
     PhaseMoles = named.numeric.vector,
 
     # Special Definitions
-    BLName = character(),
-    BLCompR = named.integer.vector,
+    BLName = as.character(""),
+    BLCompR = -1L,
     MetalName = as.character(""),
     MetalCompR = -1L,
     BLMetalName = character(),

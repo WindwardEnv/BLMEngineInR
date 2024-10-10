@@ -93,11 +93,14 @@ ExpandWHAM = function(ThisProblem,
     skip = SkipRows,
     nrows = nMS
   )
-  names(MonodentTable) = c("S","AbundDenom")
+  names(MonodentTable) = c("S","AbundDenom","StrongWeak")
   MonodentTable$FullyProt = paste0(MonodentTable$S, "H")
   MonodentTable$FullyDeprot = paste0(MonodentTable$S)
-  nStrong = nMS / 2
-  MonodentTable$Strong1Weak2 = rep(c(1L, 2L), each = nStrong)#c(rep(1L, 4), rep(2L, 4))
+  MonodentTable$Strong1Weak2 =
+    match(x = tolower(substr(trimws(MonodentTable$StrongWeak), 1, 1)),
+          table = c("s", "w"))
+  nStrong = (MonodentTable$Strong1Weak2 == 1L)
+
 
   # Bidentate Pairs
   SkipRows = SkipRows + nMS + 3L
@@ -114,8 +117,8 @@ ExpandWHAM = function(ThisProblem,
     BidentTable$S1Deprot = paste0(BidentTable$S1, "-", BidentTable$S2, "H")
     BidentTable$S2Deprot = paste0(BidentTable$S2, "-", BidentTable$S1, "H")
     BidentTable$FullyDeprot = paste0(BidentTable$S1, BidentTable$S2)
-    BidentTable$S1Strong1Weak2 = ifelse(BidentTable$S1 <= nStrong, 1L, 2L)
-    BidentTable$S2Strong1Weak2 = ifelse(BidentTable$S2 <= nStrong, 1L, 2L)
+    BidentTable$S1Strong1Weak2 = MonodentTable$Strong1Weak2[match(BidentTable$S1, MonodentTable$S)]
+    BidentTable$S2Strong1Weak2 = MonodentTable$Strong1Weak2[match(BidentTable$S2, MonodentTable$S)]
   } else {
     BidentTable = data.frame()
   }
@@ -166,9 +169,9 @@ ExpandWHAM = function(ThisProblem,
                                     "H")
     TridentTable$FullyDeprot = paste0(TridentTable$S1, TridentTable$S2,
                                       TridentTable$S3)
-    TridentTable$S1Strong1Weak2 = ifelse(TridentTable$S1 <= nStrong, 1L, 2L)
-    TridentTable$S2Strong1Weak2 = ifelse(TridentTable$S2 <= nStrong, 1L, 2L)
-    TridentTable$S3Strong1Weak2 = ifelse(TridentTable$S3 <= nStrong, 1L, 2L)
+    TridentTable$S1Strong1Weak2 = MonodentTable$Strong1Weak2[match(TridentTable$S1, MonodentTable$S)]
+    TridentTable$S2Strong1Weak2 = MonodentTable$Strong1Weak2[match(TridentTable$S2, MonodentTable$S)]
+    TridentTable$S3Strong1Weak2 = MonodentTable$Strong1Weak2[match(TridentTable$S3, MonodentTable$S)]
   } else {
     TridentTable = data.frame()
   }
@@ -332,10 +335,10 @@ ExpandWHAM = function(ThisProblem,
       }
 
       # Monodentate sites
-      MonodentpKH[1:nStrong] = pKHA[OMType] + dpKHA[OMType] *
-        (2 * MonodentTable$S[1:nStrong] - 5) / 6
-      MonodentpKH[(nStrong + 1):nMS] = pKHB[OMType] + dpKHB[OMType] *
-        (2 * MonodentTable$S[(nStrong + 1):nMS] - 13) / 6
+      MonodentpKH[MonodentTable$Strong1Weak2 == 1L] = pKHA[OMType] + dpKHA[OMType] *
+        (2 * MonodentTable$S[MonodentTable$Strong1Weak2 == 1L] - 5) / 6
+      MonodentpKH[MonodentTable$Strong1Weak2 == 2L] = pKHB[OMType] + dpKHB[OMType] *
+        (2 * MonodentTable$S[MonodentTable$Strong1Weak2 == 2L] - 13) / 6
       MonodentAbundance = (1 - fprB[OMType] - fprT[OMType]) *
         nCOOH[OMType] / MonodentTable$AbundDenom
 

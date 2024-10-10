@@ -13,7 +13,7 @@ BLM(
   iCA = 1L,
   QuietFlag = c("Very Quiet", "Quiet", "Debug"),
   ConvergenceCriteria = 1e-04,
-  MaxIter = 500L
+  MaxIter = 100L
 )
 }
 \arguments{

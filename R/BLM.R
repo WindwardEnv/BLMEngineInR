@@ -54,10 +54,17 @@ BLM = function(ParamFile = character(),
                DoTox = logical(),
                iCA = 1L,
                QuietFlag = c("Very Quiet", "Quiet", "Debug"),
-               # writeOutputFile = F, outputFileName = NULL,
                # criticalSource = c("ParamFile","InputFile"),
                ConvergenceCriteria = 0.0001,
-               MaxIter = 500L) {
+               MaxIter = 100L,
+               DodVidCj = logical(),
+               DodVidCjDonnan = logical(),
+               DodKidCj = logical(),
+               DoGammai = logical(),
+               DoJacDonnan = logical(),
+               DoJacWHAM = logical(),
+               DoWHAMSimpleAdjust = logical(),
+               DoDonnanSimpleAdjust = logical()) {
 
   StartTime = Sys.time()
 
@@ -132,7 +139,15 @@ BLM = function(ParamFile = character(),
     ConvergenceCriteria = ConvergenceCriteria,
     MaxIter = MaxIter,
     DoTox = DoTox,
-    CATarget = NA
+    CATarget = NA,
+    DodVidCj = DodVidCj,
+    DodVidCjDonnan = DodVidCjDonnan,
+    DodKidCj = DodKidCj,
+    DoGammai = DoGammai,
+    DoJacDonnan = DoJacDonnan,
+    DoJacWHAM = DoJacWHAM,
+    DoWHAMSimpleAdjust = DoWHAMSimpleAdjust,
+    DoDonnanSimpleAdjust = DoDonnanSimpleAdjust
   )
   ObsFunctionInputNames = formalArgs("CHESS")[
     formalArgs("CHESS") %in% names(FunctionInputs) == FALSE]
@@ -142,7 +157,7 @@ BLM = function(ParamFile = character(),
     data.frame(Obs = 1:NObs),
     AllInput$InLabObs
   )
-  MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength")
+  MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength", "WHAMIonicStrength", "ChargeBalance")
   ZCols = paste0("Z_", c("HA","FA"))
   MassAmtCols = paste0(MassName, " (",ThisProblem$Mass$Unit,")")
   SpecConcCols = paste0(SpecName," (mol/",ThisProblem$Mass$Unit[ThisProblem$Spec$MCR],")")
@@ -355,6 +370,7 @@ BLM = function(ParamFile = character(),
   }
 
   TimeElapsed = Sys.time() - StartTime
+  OutList$TimeElapsed = TimeElapsed
   if (QuietFlag != "Very Quiet") {
     print(TimeElapsed)
   }

@@ -23,6 +23,8 @@ WriteDetailedFile = function(
   #   openxlsx::addWorksheet(wb, sheetName = i)
   #   openxlsx::writeDataTable(wb, sheet = i, x = OutList[[i]])
   # }
+  AdditionalInfo = c(OutList$TimeElapsed, AdditionalInfo)
+  OutList$TimeElapsed = NULL
   wb = openxlsx::buildWorkbook(OutList, asTable = TRUE, colWidths = "auto")
   openxlsx::addWorksheet(wb, sheetName = "Additional Info")
   openxlsx::writeData(wb, sheet = "Additional Info", x = AdditionalInfo)

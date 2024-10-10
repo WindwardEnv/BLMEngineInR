@@ -176,12 +176,16 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
   return CompConcStep;
 }
 
-Rcpp::NumericVector CalcStepBrute(int NComp, 
+Rcpp::NumericVector CalcStepBrute(int NComp,
                                   Rcpp::CharacterVector CompName, 
                                   Rcpp::CharacterVector CompType, 
                                   Rcpp::NumericVector CompConc, 
-                                  Rcpp::NumericVector TotMoles, 
-                                  Rcpp::NumericVector CalcTotMoles) {
+                                  Rcpp::NumericVector TotConc, 
+                                  Rcpp::NumericVector CalcTotConc,
+                                  bool DoTox,
+                                  int MetalComp,
+                                  double CACalc,
+                                  double CATarget) {
   /*outputs*/
   Rcpp::NumericVector CompConcStep(NComp);
     CompConcStep.names() = CompName;
@@ -190,10 +194,13 @@ Rcpp::NumericVector CalcStepBrute(int NComp,
   int iComp;
 
   for (iComp = 0; iComp < NComp; iComp++){
-    if ((CompType(iComp) != CTYPE_FIXEDCONC) && (CompType(iComp) != CTYPE_FIXEDACT)
-        //&& (CompType(iComp) != CTYPE_DONNANHA) && (CompType(iComp) != CTYPE_DONNANFA)
-       ) { 
-      CompConcStep(iComp) = CompConc(iComp) * (1 - TotMoles(iComp) / CalcTotMoles(iComp));
+    if ((CompType(iComp) != CTYPE_FIXEDCONC) && (CompType(iComp) != CTYPE_FIXEDACT)) { 
+      CompConcStep(iComp) = CompConc(iComp) * (1 - TotConc(iComp) / CalcTotConc(iComp));
+      if (CompConcStep(iComp) < (CompConc(iComp) - TotConc(iComp))) {
+        CompConcStep(iComp) = (CompConc(iComp) - TotConc(iComp));
+      }
+    } else if (DoTox && (iComp == MetalComp)) {
+      CompConcStep(iComp) = CompConc(iComp) * (1 - CATarget / CACalc);
     } else {
       CompConcStep(iComp) = 0.0;
     }

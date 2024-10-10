@@ -57,7 +57,7 @@
 //'   concentration to mass conversion factor of the chemical species for which
 //'   we have formation reactions, adjusted to take into account diffuse binding
 //'   to organic matter.
-//' @param IonicStrength double, the ionic strength of the solution
+//' @param WHAMIonicStrength double, the ionic strength of the solution
 //' @param WHAMSpecCharge (OUTPUT) NumericVector, length 2, the net humic charge
 //'   for humic (0) and fulvic (1) substances.
 //' @param AqueousMC int, the mass compartment corresponding to water/aqueous
@@ -89,7 +89,7 @@ void AdjustForWHAM(
   Rcpp::NumericVector SpecKTempAdj,
   Rcpp::NumericVector &SpecKISTempAdj,
   Rcpp::NumericVector &SpecCtoMAdj,  
-  double IonicStrength,
+  double WHAMIonicStrength,
   Rcpp::NumericVector &WHAMSpecCharge,
   int AqueousMC,
   Rcpp::IntegerVector WHAMDonnanMC,
@@ -112,12 +112,12 @@ void AdjustForWHAM(
   WHAMSpecCharge = WHAMSpecCharge / HumicSubstGramsPerLiter;
 
   //Adjust organic matter specific binding based on ionic strength
-  SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
+  SpecKISTempAdj = CalcIonicStrengthEffects(WHAMIonicStrength, WHAMSpecCharge, 
                                             NSpec, SpecCharge, SpecKTempAdj, 
                                             SpecType, wP);
 
   //Calculate the portion of the solution that's in the diffuse layer
-  MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, IonicStrength, MassAmt, 
+  MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, WHAMIonicStrength, MassAmt, 
                                      AqueousMC, WHAMDonnanMC, wMolWt, 
                                      wRadius, wDLF, wKZED, WHAMSpecCharge, 
                                      HumicSubstGramsPerLiter);
@@ -189,7 +189,7 @@ void AdjustForWHAM(
 //'   concentration to mass conversion factor of the chemical species for which
 //'   we have formation reactions, adjusted to take into account diffuse binding
 //'   to organic matter.
-//' @param IonicStrength double, the ionic strength of the solution
+//' @param WHAMIonicStrength double, the ionic strength of the solution
 //' @param WHAMSpecCharge NumericVector, length 2, the net humic charge for
 //'   humic (0) and fulvic (1) substances.
 //' @param AqueousMC int, the mass compartment corresponding to water/aqueous
@@ -216,7 +216,7 @@ void AdjustForWHAMBeforeCalcSpecies(
   Rcpp::NumericVector SpecKTempAdj,
   Rcpp::NumericVector &SpecKISTempAdj,
   Rcpp::NumericVector &SpecCtoMAdj,  
-  double IonicStrength,
+  double WHAMIonicStrength,
   Rcpp::NumericVector WHAMSpecCharge,
   int AqueousMC,
   Rcpp::IntegerVector WHAMDonnanMC,
@@ -231,12 +231,12 @@ void AdjustForWHAMBeforeCalcSpecies(
   int iSpec;
 
   //Adjust organic matter specific binding based on ionic strength
-  SpecKISTempAdj = CalcIonicStrengthEffects(IonicStrength, WHAMSpecCharge, 
+  SpecKISTempAdj = CalcIonicStrengthEffects(WHAMIonicStrength, WHAMSpecCharge, 
                                             NSpec, SpecCharge, SpecKTempAdj, 
                                             SpecType, wP);
 
   //Calculate the portion of the solution that's in the diffuse layer
-  MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, IonicStrength, MassAmt, 
+  MassAmtAdj = CalcDonnanLayerVolume(NMass, NSpec, WHAMIonicStrength, MassAmt, 
                                      AqueousMC, WHAMDonnanMC, wMolWt, 
                                      wRadius, wDLF, wKZED, WHAMSpecCharge, 
                                      HumicSubstGramsPerLiter);
@@ -304,8 +304,8 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                                    Rcpp::NumericVector &TotConc,
                                    Rcpp::NumericVector &TotMoles,
                                    int NSpec,
-                                   Rcpp::CharacterVector SpecType,
                                    Rcpp::CharacterVector SpecName,
+                                   Rcpp::CharacterVector SpecType,
                                    Rcpp::NumericVector &SpecConc,
                                    Rcpp::NumericVector SpecKISTempAdj,
                                    Rcpp::IntegerMatrix SpecStoich,
@@ -316,26 +316,30 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                                    Rcpp::NumericVector &WHAMSpecCharge,
                                    int AqueousMC,
                                    Rcpp::NumericVector HumicSubstGramsPerLiter,
-                                   bool UpdateZED) {
+                                   bool UpdateZED,
+                                   bool DoWHAMSimpleAdjust,
+                                   bool DoDonnanSimpleAdjust,
+                                   double ConvCrit,
+                                   int MaxIter) {
 
   /* variables */
-  const double ConvCrit = 0.000001;
-  const int MaxIter = 100;
+  //const double ConvCrit = 0.000001;
+  //const int MaxIter = 100;
   int iComp;
   Rcpp::NumericVector NewWHAMSpecCharge(2);
   Rcpp::NumericVector CompConc(NComp);
   for (iComp = 0; iComp < NComp; iComp++) { CompConc(iComp) = SpecConc(iComp); }
   
-  // Update the WHAM component concentrations
-  for (iComp = 0; iComp < NComp; iComp++) {
-    if ((CompType(iComp) == CTYPE_WHAMHA) || (CompType(iComp) == CTYPE_WHAMFA)) {
-
-      SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
-                       NComp, CompConc,
-                       NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
-                       SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
-                       WHAMSpecCharge);
-
+  if (DoWHAMSimpleAdjust) {
+    // Update the WHAM component concentrations
+    for (iComp = 0; iComp < NComp; iComp++) {
+      if ((CompType(iComp) == CTYPE_WHAMHA) || (CompType(iComp) == CTYPE_WHAMFA)) {
+        SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
+                        NComp, CompConc,
+                        NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
+                        SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
+                        WHAMSpecCharge);
+      }
     }
   }
 
@@ -359,17 +363,19 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
     }
   }
 
-  // Update the Donnan layers the way WHAM does it
-  for (iComp = 0; iComp < NComp; iComp++) {
-    if ((CompType(iComp) == CTYPE_DONNANHA) || (CompType(iComp) == CTYPE_DONNANFA)) {
-
-      SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
-                       NComp, CompConc,
-                       NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
-                       SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
-                       WHAMSpecCharge);
+  if (DoDonnanSimpleAdjust){
+    // Update the Donnan layers the way WHAM does it
+    for (iComp = 0; iComp < NComp; iComp++) {
+      if ((CompType(iComp) == CTYPE_DONNANHA) || (CompType(iComp) == CTYPE_DONNANFA)) {
+        SimpleAdjustComp(iComp, ConvCrit, MaxIter, TotMoles(iComp), 
+                        NComp, CompConc,
+                        NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
+                        SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
+                        WHAMSpecCharge);
+      }
     }
   }
+  
 
 }
 

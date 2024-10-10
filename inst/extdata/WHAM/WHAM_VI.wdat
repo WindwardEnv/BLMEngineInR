@@ -23,15 +23,15 @@ radius, m,        1.72E-9, 8.00E-10
 MolWt,  daltons,  15000,   1500
 --------------------------------------------------------
 Monodentate Sites
-S, AbundDenom
-1, 4
-2, 4
-3, 4
-4, 4
-5, 8
-6, 8
-7, 8
-8, 8
+S, AbundDenom, StrongWeak
+1, 4,          S
+2, 4,          S
+3, 4,          S
+4, 4,          S
+5, 8,          W
+6, 8,          W
+7, 8,          W
+8, 8,          W
 --------------------------------------------------------
 Bidentate Sites
 S1, S2, AbundDenom

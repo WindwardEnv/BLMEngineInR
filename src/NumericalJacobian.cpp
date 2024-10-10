@@ -42,7 +42,12 @@ Rcpp::NumericMatrix NumericalJacobian(
     Rcpp::NumericVector SpecActivityCoef,
     Rcpp::NumericVector WHAMSpecCharge,
     double IonicStrength,
-    Rcpp::NumericVector Resid) {
+    double WHAMIonicStrength,
+    Rcpp::NumericVector Resid,
+                 bool DoWHAMSimpleAdjust,
+                 bool DoDonnanSimpleAdjust,
+                                   double ConvCrit,
+                                   int MaxIter) {
 
   /* outputs: */
   Rcpp::NumericMatrix JacobianMatrix(NComp);
@@ -67,6 +72,8 @@ Rcpp::NumericMatrix NumericalJacobian(
   Rcpp::NumericVector CalcTotMolesMod(NComp);
   int WhichMaxMod;
   double IonicStrengthMod;
+  double WHAMIonicStrengthMod;
+  double ChargeBalanceMod;
   Rcpp::NumericVector ResidMod(NComp);
   Rcpp::NumericVector CompErrorMod(NComp);
   Rcpp::NumericVector WHAMSpecChargeMod(2);
@@ -101,7 +108,9 @@ Rcpp::NumericMatrix NumericalJacobian(
               MassAmtAdjMod, TotConcMod, TotMolesMod, SpecKISTempAdjMod,
               SpecCtoMAdjMod, SpecConcMod, SpecActivityCoefMod,
               CalcTotMolesMod, WHAMSpecChargeMod, WhichMaxMod,
-              IonicStrengthMod, ResidMod, CompErrorMod);
+              IonicStrengthMod, WHAMIonicStrengthMod, ChargeBalanceMod, ResidMod, CompErrorMod,
+                      DoWHAMSimpleAdjust, DoDonnanSimpleAdjust,
+                      ConvCrit, MaxIter);
 
     dConcComp2 = (SpecConcMod[iComp2] - SpecConc[iComp2]);
     

@@ -43,41 +43,45 @@ void AdjustForToxMode(int NBLMetal,
                       Rcpp::NumericVector &CompError) {
 
   /* variables */
-   double CalcCA;
-  int i, iSpec;
+  double CACalc;
   
   // Adjust Resid and CompError for toxicity mode
-  CalcCA = 0;
-  
-  // Sum toxic BL-bound metal species
-  for (i = 0; i < NBLMetal; i++) {
-    iSpec = BLMetalSpecs[i];
-    CalcCA += SpecConc[iSpec];
-  }
+  CACalc = CalcCA(NBLMetal, BLMetalSpecs, SpecConc);
 
   // Resid and CompError for the metal component are based on these species
-  Resid[MetalComp] = CalcCA - CATarget;
+  Resid[MetalComp] = CACalc - CATarget;
   CompError[MetalComp] = std::fabs(Resid[MetalComp] / CATarget);
 
 }
 
 void CalcToxError (int NBLMetal, 
                    Rcpp::IntegerVector BLMetalSpecs, 
-                   int MetalComp,
                    double CATarget,
                    Rcpp::NumericVector SpecConc,
                    double &ToxResid,
                    double &ToxError) {
   /* variables */
-  double CalcCA;
+  double CACalc;
+  
+  CACalc = CalcCA(NBLMetal, BLMetalSpecs, SpecConc);
+  ToxResid = CACalc - CATarget;
+  ToxError = std::fabs(ToxResid) / CATarget;
+}
+
+double CalcCA(int NBLMetal, 
+              Rcpp::IntegerVector BLMetalSpecs, 
+              Rcpp::NumericVector SpecConc) {
+
+  /* variables */
+  double CACalc;
   int i, iSpec;
 
   // Sum toxic BL-bound metal species
-  CalcCA = 0;
+  CACalc = 0;
   for (i = 0; i < NBLMetal; i++) {
     iSpec = BLMetalSpecs[i];
-    CalcCA += SpecConc[iSpec];
+    CACalc += SpecConc[iSpec];
   }
-  ToxResid = CalcCA - CATarget;
-  ToxError = std::fabs(ToxResid) / CATarget;
+
+  return CACalc;
 }

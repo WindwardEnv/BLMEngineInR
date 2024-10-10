@@ -43,11 +43,14 @@ void AdjustForToxMode(int NBLMetal,
 
 void CalcToxError (int NBLMetal, 
                    Rcpp::IntegerVector BLMetalSpecs, 
-                   int MetalComp,
                    double CATarget,
                    Rcpp::NumericVector SpecConc,
                    double &ToxResid,
-                   double &ToxError) ;
+                   double &ToxError);
+                   
+double CalcCA(int NBLMetal, 
+              Rcpp::IntegerVector BLMetalSpecs, 
+              Rcpp::NumericVector SpecConc);
 
 double MaxCompError(int NComp, Rcpp::NumericVector CompError, 
                     int &WhichMax);
@@ -77,8 +80,12 @@ Rcpp::NumericVector CalcStepBrute(int NComp,
                                   Rcpp::CharacterVector CompName, 
                                   Rcpp::CharacterVector CompType, 
                                   Rcpp::NumericVector CompConc, 
-                                  Rcpp::NumericVector TotMoles, 
-                                  Rcpp::NumericVector CalcTotMoles);
+                                  Rcpp::NumericVector TotConc, 
+                                  Rcpp::NumericVector CalcTotConc,
+                                  bool DoTox,
+                                  int MetalComp,
+                                  double CACalc,
+                                  double CATarget);
 
 void CompUpdate(int NComp, 
                 Rcpp::NumericVector CompConcStep,
@@ -116,10 +123,9 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
                                  int MetalComp,
                                  double CATarget);
 
-Rcpp::NumericMatrix Jacobian (int NComp, //number of components
+Rcpp::NumericMatrix Jacobian(int NComp, //number of components
                               int NSpec, //number of species
-                              Rcpp::CharacterVector CompName, //names of components
-                              Rcpp::NumericVector TotConc,
+                              Rcpp::CharacterVector CompType,
                               Rcpp::IntegerMatrix SpecStoich, //formation reaction stoichiometry (NSpec x NComp)
                               Rcpp::NumericVector SpecConc, //species concentrations
                               Rcpp::IntegerVector SpecMC,
@@ -127,7 +133,8 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
                               Rcpp::CharacterVector SpecType,
                               Rcpp::IntegerVector SpecCharge,
                               Rcpp::NumericVector SpecK,
-                              double IonicStrength,
+                              Rcpp::NumericVector SpecActivityCoef,
+                              double WHAMIonicStrength,
                               bool DoWHAM,
                               Rcpp::NumericVector HumicSubstGramsPerLiter,
                               Rcpp::NumericVector WHAMSpecCharge,
@@ -136,13 +143,18 @@ Rcpp::NumericMatrix Jacobian (int NComp, //number of components
                               Rcpp::NumericVector wRadius,
                               double wDLF,
                               double wKZED,
-                              Rcpp::NumericVector MassAmtAdj,
                               int AqueousMC,
-                              Rcpp::IntegerVector WHAMDonnanMC,
                               int MetalComp, //position of the metal component
+                              int BLComp,//position of BL component
                               int NBLMetal, //number of BL-Metal species
                               Rcpp::IntegerVector BLMetalSpecs, //positions of BL-metal species
-                              bool DoTox);
+                              bool DoTox,
+                 bool DodVidCj,
+                 bool DodVidCjDonnan,
+                 bool DodKidCj,
+                 bool DoGammai,
+                 bool DoJacDonnan,
+                 bool DoJacWHAM);
 
 Rcpp::NumericMatrix NumericalJacobian(
   int NMass,
@@ -185,7 +197,12 @@ Rcpp::NumericMatrix NumericalJacobian(
   Rcpp::NumericVector SpecActivityCoef,
   Rcpp::NumericVector WHAMSpecCharge,
   double IonicStrength,
-  Rcpp::NumericVector Resid) ;
+  double WHAMIonicStrength,
+  Rcpp::NumericVector Resid,
+                 bool DoWHAMSimpleAdjust,
+                 bool DoDonnanSimpleAdjust,
+                                   double ConvCrit,
+                                   int MaxIter) ;
 
 void UpdateTotals(int NComp, 
                   int NSpec, 
@@ -242,7 +259,7 @@ Rcpp::NumericVector CalcWHAMSpecCharge(int NSpec,
                                        Rcpp::NumericVector HumicSubstGramsPerLiter);
 
 void CalcDonnanLayerParams(int NSpec,
-                           double IonicStrength,
+                           double WHAMIonicStrength,
                            Rcpp::NumericVector wMolWt,
                            Rcpp::NumericVector wRadius,
                            double wDLF,
@@ -255,7 +272,7 @@ void CalcDonnanLayerParams(int NSpec,
 
 Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
                                           int NSpec,
-                                          double IonicStrength,
+                                          double WHAMIonicStrength,
                                           Rcpp::NumericVector MassAmt,
                                           int AqueousMC,
                                           Rcpp::IntegerVector WHAMDonnanMC,
@@ -266,7 +283,7 @@ Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
                                           Rcpp::NumericVector WHAMSpecCharge,
                                           Rcpp::NumericVector HumicSubstGramsPerLiter);
 
-Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
+Rcpp::NumericVector CalcIonicStrengthEffects(double WHAMIonicStrength,
                                              Rcpp::NumericVector WHAMSpecCharge,
                                              int NSpec,
                                              Rcpp::IntegerVector SpecCharge,
@@ -290,7 +307,7 @@ void AdjustForWHAM(
   Rcpp::NumericVector SpecKTempAdj,
   Rcpp::NumericVector &SpecKISTempAdj,
   Rcpp::NumericVector &SpecCtoMAdj,  
-  double IonicStrength,
+  double WHAMIonicStrength,
   Rcpp::NumericVector &WHAMSpecCharge,
   int AqueousMC,
   Rcpp::IntegerVector WHAMDonnanMC,
@@ -313,7 +330,7 @@ void AdjustForWHAMBeforeCalcSpecies(
   Rcpp::NumericVector SpecKTempAdj,
   Rcpp::NumericVector &SpecKISTempAdj,
   Rcpp::NumericVector &SpecCtoMAdj,  
-  double IonicStrength,
+  double WHAMIonicStrength,
   Rcpp::NumericVector WHAMSpecCharge,
   int AqueousMC,
   Rcpp::IntegerVector WHAMDonnanMC,
@@ -330,8 +347,8 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                                    Rcpp::NumericVector &TotConc,
                                    Rcpp::NumericVector &TotMoles,
                                    int NSpec,
-                                   Rcpp::CharacterVector SpecType,
                                    Rcpp::CharacterVector SpecName,
+                                   Rcpp::CharacterVector SpecType,
                                    Rcpp::NumericVector &SpecConc,
                                    Rcpp::NumericVector SpecKISTempAdj,
                                    Rcpp::IntegerMatrix SpecStoich,
@@ -342,7 +359,11 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                                    Rcpp::NumericVector &WHAMSpecCharge,
                                    int AqueousMC,
                                    Rcpp::NumericVector HumicSubstGramsPerLiter,
-                                   bool UpdateZED);
+                                   bool UpdateZED,
+                                   bool DoWHAMSimpleAdjust,
+                                   bool DoDonnanSimpleAdjust,
+                                   double ConvCrit,
+                                   int MaxIter);
 
 double CHESSIter(
   Rcpp::NumericVector CompConcStep,
@@ -388,8 +409,14 @@ double CHESSIter(
   Rcpp::NumericVector &WHAMSpecCharge,
   int &WhichMax,
   double &IonicStrength,
+  double &WHAMIonicStrength,
+  double &ChargeBalance,
   Rcpp::NumericVector &Resid,
-  Rcpp::NumericVector &CompError
+  Rcpp::NumericVector &CompError,
+  bool DoWHAMSimpleAdjust,
+  bool DoDonnanSimpleAdjust,
+  double ConvCrit,
+  int MaxIter
 );
 
 // humic substance position indices

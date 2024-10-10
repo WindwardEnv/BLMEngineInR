@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
-Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
+Rcpp::NumericVector CalcIonicStrengthEffects(double WHAMIonicStrength,
                                              Rcpp::NumericVector WHAMSpecCharge,
                                              int NSpec,
                                              Rcpp::IntegerVector SpecCharge,
@@ -13,7 +13,7 @@ Rcpp::NumericVector CalcIonicStrengthEffects(double IonicStrength,
     SpecKISAdj.names() = SpecK.names();
 
   /* variables */
-  Rcpp::NumericVector W = wP * log10(IonicStrength);
+  Rcpp::NumericVector W = wP * log10(WHAMIonicStrength);
   Rcpp::NumericVector WZ2 = -2 * W * WHAMSpecCharge;
   int iSpec;
   

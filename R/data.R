@@ -66,3 +66,18 @@
 #'   including one for the United States Environmental Protection Agency's
 #'   (USEPA) final acute value (FAV).
 "Cu_full_organic_problem"
+
+#' @title Cu problem with only inorganic components
+#'
+#' @description An example BLMEngineInR problem object, which describes a system
+#'   with all of the common cations (Ca, Mg, Na, K) and anions (SO4, Cl, CO3)
+#'   represented with their usual reactions. Copper is also represented as the
+#'   toxic metal binding to a biotic ligand, and some example critical
+#'   accumulations values are provided including one for the United States
+#'   Environmental Protection Agency's (USEPA) final acute value (FAV). These
+#'   critical accumulation values are the ones calibrated from the full organic
+#'   model, as the DOC complexation should not affect the amount of organic
+#'   matter required to induce a toxic effect, in theory. This will not give
+#'   accurate predictions of toxicity when DOC is present in the water.
+#'
+"Cu_full_inorganic_problem"

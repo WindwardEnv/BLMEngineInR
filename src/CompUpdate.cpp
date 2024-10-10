@@ -34,7 +34,7 @@ void CompUpdate(int NComp,
   // newCompConc = CompConc - CompConcStep;
   // newCompConc[ltzero] = CompConc[ltzero] / 10;
 
-  for (iComp = 0; iComp < NComp; iComp++){
+  for (iComp = 0; iComp < NComp; iComp++) {
     oldCompConc[iComp] = CompConc[iComp];
     if (CompConcStep[iComp] >= oldCompConc[iComp]) {
       CompConc[iComp] = oldCompConc[iComp] / 10;

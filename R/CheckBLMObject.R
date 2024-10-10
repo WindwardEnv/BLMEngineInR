@@ -141,7 +141,7 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) {
     for (i in TypeVars) {
       LenType = dim(Object[[i]])[1]
       if (is.null(LenType)) { LenType = length(Object[[i]]) }
-      if ((iType == "Metal") && (Object[[NVar]] == 0)) {
+      if ((iType %in% c("Metal", "BL")) && (Object[[NVar]] == 0)) {
         if ((typeof(Object[[i]]) == "character") & (Object[[i]] == "")){
           LenType = 0L
         }

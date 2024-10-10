@@ -38,6 +38,7 @@ CHESS(
   DoTox,
   MetalName,
   MetalCompR,
+  BLCompR,
   NBLMetal,
   BLMetalSpecsR,
   CATarget
