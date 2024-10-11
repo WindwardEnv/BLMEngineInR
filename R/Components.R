@@ -468,7 +468,7 @@ AddDefComps = function(ThisProblem, DefCompName, DefCompFromNum = NULL,
          "Use DefCompFromNum = 1 to specify the total concentration = DefCompSiteDens.")
   }
   if (any(DefCompFromVar %in%
-          c(ThisProblem$Comp$Name, ThisProblem$InVar$Name, NA,
+          c(ThisProblem$Comp$Name, ThisProblem$InVar$Name, NA, "KW/H",
             paste0(ThisProblem$InVar$Name[ThisProblem$InVar$Type %in% c(
               "WHAM-HA","WHAM-FA","WHAM-HAFA")], "-",c("HA","FA"),"_")) == FALSE)) {
     stop("DefCompFromVar must be an input variable or component.")

@@ -116,15 +116,15 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
                                   DoCheck = FALSE)
     }
     NewProblem = AddDefComps(ThisProblem = NewProblem,
-                            DefCompName = as.character(trimws(Tmp[, 1])),
-                            DefCompFromNum = DefCompFromNum,
-                            DefCompFromVar = DefCompFromVar,
-                            DefCompCharge = as.integer(Tmp[, 3]),
-                            DefCompMCName = as.character(trimws(Tmp[, 4])),
-                            DefCompType = as.character(trimws(Tmp[, 5])),
-                            DefCompActCorr = as.character(trimws(Tmp[, 6])),
-                            DefCompSiteDens = as.numeric(Tmp[, 7]),
-                            DoCheck = FALSE)
+                             DefCompName = as.character(trimws(Tmp[, 1])),
+                             DefCompFromNum = DefCompFromNum,
+                             DefCompFromVar = DefCompFromVar,
+                             DefCompCharge = as.integer(Tmp[, 3]),
+                             DefCompMCName = as.character(trimws(Tmp[, 4])),
+                             DefCompType = as.character(trimws(Tmp[, 5])),
+                             DefCompActCorr = as.character(trimws(Tmp[, 6])),
+                             DefCompSiteDens = as.numeric(Tmp[, 7]),
+                             DoCheck = FALSE)
   }
 
   # Check that pH is in the component list

@@ -184,6 +184,7 @@ MatchInputsToProblem = function(
 
   # -get temperatures
   SysTempCelsiusObs = as.numeric(InVarObs[, InVarName[InVarType == "Temperature"]])
+  SysTempKelvinObs = SysTempCelsiusObs + 273.15
 
   # -get pHObs - from InVarObs or InCompObs
   if (any(InVarType == "pH")) {
@@ -269,6 +270,9 @@ MatchInputsToProblem = function(
     for (i in which(DefCompName %in% VarDefCompName)){
       if (DefCompFromVar[i] == "pH") {
         TotConcObs[, DefCompName[i]] = 10^-pHObs
+      } else if (gsub(" ", "", DefCompFromVar[i]) == "KW/H") {
+        LKW = -14 + (2935 * (.003354 - (1 / SysTempKelvinObs)))
+        TotConcObs[, DefCompName[i]] = (10 ^ LKW) / (10^-pHObs)
       } else if (DefCompFromVar[i] %in% CompName) {
         TotConcObs[, DefCompName[i]] =
           TotConcObs[, DefCompFromVar[i], drop = FALSE] *
@@ -301,7 +305,7 @@ MatchInputsToProblem = function(
     InVarObs = as.matrix(InVarObs),
     InCompObs = as.matrix(InCompObs),
     SysTempCelsiusObs = SysTempCelsiusObs,
-    SysTempKelvinObs = SysTempCelsiusObs + 273.15,
+    SysTempKelvinObs = SysTempKelvinObs,
     pHObs = pHObs,
     TotConcObs = TotConcObs,
     HumicSubstGramsPerLiterObs = HumicSubstGramsPerLiterObs
