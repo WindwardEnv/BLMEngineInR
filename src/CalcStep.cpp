@@ -184,7 +184,7 @@ Rcpp::NumericVector CalcStepBrute(int NComp,
                                   Rcpp::NumericVector CalcTotConc,
                                   bool DoTox,
                                   int MetalComp,
-                                  double CACalc,
+                                  double CACalculated,
                                   double CATarget) {
   /*outputs*/
   Rcpp::NumericVector CompConcStep(NComp);
@@ -200,7 +200,7 @@ Rcpp::NumericVector CalcStepBrute(int NComp,
         CompConcStep(iComp) = (CompConc(iComp) - TotConc(iComp));
       }
     } else if (DoTox && (iComp == MetalComp)) {
-      CompConcStep(iComp) = CompConc(iComp) * (1 - CATarget / CACalc);
+      CompConcStep(iComp) = CompConc(iComp) * (1 - CATarget / CACalculated);
     } else {
       CompConcStep(iComp) = 0.0;
     }

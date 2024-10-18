@@ -24,8 +24,8 @@
 #'   only checked once at the end.
 #'
 #' @return `ThisProblem`, with the changed input variables. If the input
-#'   variable being added is pH, an "H" component will also be added as a fixed
-#'   activity component.
+#'   variable being added is pH, "H" and "OH" components will also be added as
+#'   fixed activity components.
 #'
 #' @family problem manipulation functions
 #'
@@ -104,10 +104,10 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
   for (i in 1:NInVarAdd) {
     if (InVarType[i] == "pH") {
       NewProblem = AddDefComps(ThisProblem = NewProblem,
-                              DefCompName = "H",
-                              DefCompFromVar = InVarName[i],
+                              DefCompName = c("H", "OH"),
+                              DefCompFromVar = c(InVarName[i], "KW/H"),
                               DefCompFromNum = NA,
-                              DefCompCharge = 1L,
+                              DefCompCharge = c(1L, -1L),
                               DefCompMCName = InVarMCName[i],
                               DefCompType = "FixedAct",
                               DefCompActCorr = "Debye",

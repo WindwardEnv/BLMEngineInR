@@ -70,7 +70,7 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
           }
           
         } else {*/
-          SpecActivity(iSpec) *= std::pow(CompActivity(iComp),
+        SpecActivity(iSpec) *= std::pow(CompActivity(iComp),
                                         SpecStoich(iSpec, iComp));
         //}
       }
@@ -81,11 +81,11 @@ Rcpp::NumericVector CalcSpecConc(int NComp,
     for (iSpec = NComp; iSpec < NSpec; iSpec++) {
       if ((SpecType(iSpec) == STYPE_DONNANHA) && 
           (((WHAMSpecCharge(iHA) < 0) && (SpecCharge(iSpec) < 0)) || 
-          ((WHAMSpecCharge(iHA) > 0) && (SpecCharge(iSpec) > 0)))) {
+           ((WHAMSpecCharge(iHA) > 0) && (SpecCharge(iSpec) > 0)))) {
         SpecActivity[iSpec] = 0.0;
       } else if ((SpecType(iSpec) == STYPE_DONNANFA) &&
                 (((WHAMSpecCharge(iFA) < 0) && (SpecCharge(iSpec) < 0)) || 
-                  ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
+                 ((WHAMSpecCharge(iFA) > 0) && (SpecCharge(iSpec) > 0)))) {
         SpecActivity[iSpec] = 0.0;
       }
     }

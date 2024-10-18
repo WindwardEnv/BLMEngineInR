@@ -103,6 +103,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   if (NDefComp > 0) {
     Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                    nrows = NDefComp, strip.white = TRUE)
+    DefCompName = as.character(trimws(Tmp[, 1]))
     NumericDefComp = grepl("^[[:digit:].]+[eE]?[+-]?[[:digit:]]?", Tmp[, 2])
     DefCompFromNum = as.numeric(array(NA, dim = NDefComp))
     DefCompFromNum[NumericDefComp] = as.numeric(Tmp[NumericDefComp, 2])
@@ -115,8 +116,13 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
                                   DefCompToRemove = "H",
                                   DoCheck = FALSE)
     }
+    if (any(NewProblem$Comp$Name %in% "OH") && any("OH" %in% DefCompName)) {
+      NewProblem = RemoveDefComps(ThisProblem = NewProblem,
+                                  DefCompToRemove = "OH",
+                                  DoCheck = FALSE)
+    }
     NewProblem = AddDefComps(ThisProblem = NewProblem,
-                             DefCompName = as.character(trimws(Tmp[, 1])),
+                             DefCompName = DefCompName,
                              DefCompFromNum = DefCompFromNum,
                              DefCompFromVar = DefCompFromVar,
                              DefCompCharge = as.integer(Tmp[, 3]),
@@ -133,8 +139,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
       if (!xor(("H" %in% NewProblem$InCompName),
                     ("pH" %in% NewProblem$InVar$Type[NewProblem$InVar$MCR == iMass]) &
                       ("H" %in% NewProblem$DefComp$Name[NewProblem$DefComp$MCR == iMass]))) {
-        stop("Must specify either H as an input component, or pH with a
-             corresponding H defined component.")
+        stop("Must specify either H as an input component, or pH with a",
+             "corresponding H defined component.")
       }
     } else {
       if (("H" %in% NewProblem$Comp$Name[NewProblem$Comp$MCR == iMass]) ||
@@ -164,6 +170,17 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
       SpecTempKelvin = as.numeric(trimws(TmpSplit[[i]][7 + SpecNC_i * 2])),
       DoCheck = FALSE
     )
+  }
+
+  # Check that OH is either a component, defined component, or species
+  for (iMass in 1:NMass) {
+    if (grepl("Water", NewProblem$Mass$Name[iMass], ignore.case = TRUE)) {
+      if (sum("OH" %in% c(NewProblem$InCompName, NewProblem$InSpecName,
+                          NewProblem$InDefCompName)) != 1L) {
+        stop("Must specify OH as either an input component, a defined",
+             "component, or a formation reaction species.")
+      }
+    }
   }
 
   # -Get Phase information

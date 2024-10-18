@@ -84,7 +84,7 @@ Rcpp::NumericVector CalcStepBrute(int NComp,
                                   Rcpp::NumericVector CalcTotConc,
                                   bool DoTox,
                                   int MetalComp,
-                                  double CACalc,
+                                  double CACalculated,
                                   double CATarget);
 
 void CompUpdate(int NComp, 

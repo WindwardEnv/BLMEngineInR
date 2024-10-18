@@ -55,7 +55,7 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
   Rcpp::NumericVector CalcTotConc(NComp);//calculated total component concentrations
   Rcpp::NumericVector CalcTotMoles(NComp);//calculated total component moles 
   Rcpp::NumericVector TotMoles(NComp);
-  double CalcCA;
+  double CACalculated;
   int i;
   /*int CompTotStoich;
   double CompStoichMoles;
@@ -122,13 +122,14 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
 
     if (DoTox) {
       // Sum toxic BL-bound metal species
-      CalcCA = 0;
+      CACalculated = 0;
       for (i = 0; i < NBLMetal; i++){
         iSpec = BLMetalSpecs[i];
-        CalcCA += SpecConc[iSpec];
+        CACalculated += SpecConc[iSpec];
       }
-      TotConc(MetalComp) = TotConc(MetalComp) * (CATarget / CalcCA);
-      TotMoles(MetalComp) = TotMoles(MetalComp) * (CATarget / CalcCA);
+      CompConc(MetalComp) = CompConc(MetalComp) * (CATarget / CACalculated);
+      TotConc(MetalComp) = TotConc(MetalComp) * (CATarget / CACalculated);
+      TotMoles(MetalComp) = TotMoles(MetalComp) * (CATarget / CACalculated);
     }
 
 	  /* Adjust component concentrations */

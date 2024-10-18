@@ -284,7 +284,8 @@ MatchInputsToProblem = function(
           matrix(DefCompSiteDens[i], byrow = TRUE, nrow = NObs, ncol = 1,
                  dimnames = list(1:NObs, DefCompName[i]))
       } else {
-        stop("Unknown component or variable given in Defined Components 'From' column.") # nolint: line_length_linter.
+        stop("Unknown component or variable given in Defined Components ",
+             "'From' column.")
       }
     }
   }
