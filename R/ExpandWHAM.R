@@ -327,7 +327,7 @@ ExpandWHAM = function(ThisProblem,
                                  ThisProblem$Comp$Name[ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
           SpecCompStoichs = list(c(abs(ThisProblem$Spec$Charge[iSpec]),
                                    ThisProblem$SpecStoich[iSpec, ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
-          SpecLogK = SpecKsel[ThisProblem$Spec$Name[iSpec], OMType],
+          SpecLogK = ChargedSpecDonnanLogK[ThisProblem$Spec$Name[iSpec], OMType],
           SpecDeltaH = ThisProblem$Spec$DeltaH[iSpec],
           SpecTempKelvin = ThisProblem$Spec$TempKelvin[iSpec],
           InSpec = FALSE
