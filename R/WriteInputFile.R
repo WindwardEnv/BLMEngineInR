@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' @title Write a BLM input file
 #'
 #' @description This function will take a BLM inputs list object and turn it
@@ -14,7 +28,7 @@
 #' myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
 #'                           package = "BLMEngineInR",
 #'                           mustWork = TRUE)
-#' myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+#' myinputs = GetData(InputFile = myinputfile, ThisProblem = carbonate_system_problem)
 #' WriteInputFile(AllInput = myinputs, ThisProblem = carbonate_system_problem, InputFile = tf)
 #' scan(tf, what = character(), sep = "\n")
 #' scan(myinputfile, what = character(), sep = "\n")

@@ -13,7 +13,15 @@ BLM(
   iCA = 1L,
   QuietFlag = c("Very Quiet", "Quiet", "Debug"),
   ConvergenceCriteria = 1e-04,
-  MaxIter = 100L
+  MaxIter = 100L,
+  DodVidCj = TRUE,
+  DodVidCjDonnan = FALSE,
+  DodKidCj = FALSE,
+  DoGammai = TRUE,
+  DoJacDonnan = FALSE,
+  DoJacWHAM = TRUE,
+  DoWHAMSimpleAdjust = TRUE,
+  DoDonnanSimpleAdjust = TRUE
 )
 }
 \arguments{

@@ -57,14 +57,14 @@ BLM = function(ParamFile = character(),
                # criticalSource = c("ParamFile","InputFile"),
                ConvergenceCriteria = 0.0001,
                MaxIter = 100L,
-               DodVidCj = logical(),
-               DodVidCjDonnan = logical(),
-               DodKidCj = logical(),
-               DoGammai = logical(),
-               DoJacDonnan = logical(),
-               DoJacWHAM = logical(),
-               DoWHAMSimpleAdjust = logical(),
-               DoDonnanSimpleAdjust = logical()) {
+               DodVidCj = TRUE,
+               DodVidCjDonnan = FALSE,
+               DodKidCj = FALSE,
+               DoGammai = TRUE,
+               DoJacDonnan = FALSE,
+               DoJacWHAM = TRUE,
+               DoWHAMSimpleAdjust = TRUE,
+               DoDonnanSimpleAdjust = TRUE) {
 
   StartTime = Sys.time()
 

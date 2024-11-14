@@ -1,3 +1,17 @@
+// Copyright 2024 Windward Environmental LLC
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <RcppArmadillo.h>
 #include "RcppArmaHelper.h"
 #include "CHESSFunctions.h"
@@ -98,46 +112,12 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
       InverseSuccess = arma::pinv(ArmaJacobianMatInv, ArmaJacobianMatSolve);
     }
     if (!InverseSuccess) { 
-
-      /*Rcpp::Rcout << "ResidSolve = [" << ResidSolve << "]" << std::endl;
-      Rcpp::Rcout << "ArmaResidSolve = [";
-      for (i = 0; i < NSolve; i++) {
-        if (i != 0) { Rcpp::Rcout << " "; }
-        Rcpp::Rcout << ArmaResidSolve(i, 0);
-      }
-      Rcpp::Rcout << "]" << std::endl;
-
-      Rcpp::Rcout << "JacobianMatrixSolve = [" << JacobianMatrixSolve << "]" << std::endl;
-      Rcpp::Rcout << "ArmaJacobianMatSolve = [";
-      for (i = 0; i < NSolve; i++) {
-        if (i != 0) { Rcpp::Rcout << std::endl; }
-        for (j = 0; j < NSolve; j++) {
-          if (j != 0) { Rcpp::Rcout << " "; }
-          Rcpp::Rcout << ArmaJacobianMatSolve(i, j);
-        }
-      }
-      Rcpp::Rcout << "]" << std::endl;*/
-
       throw ERROR_MATRIX_INVERSION; 
     }
-    /*ArmaJacobianMatInv = SvdInverse(ArmaJacobianMatSolve);
-    if (ArmaJacobianMatInv.n_rows != NSolve) {
-      // If we wanted to not do SVD...
-      ArmaJacobianMatInv = arma::inv(ArmaJacobianMatSolve);
-      throw ERROR_SINGULAR_MATRIX;
-    }*/
     ArmaCompConcStepSolve = ArmaJacobianMatInv * ArmaResidSolve;
     CompConcStepSolve = MatrixToRcppVector(ArmaCompConcStepSolve);
   }
   catch (int e) {
-    /*if (e == ERROR_SINGULAR_MATRIX) {
-      Rcpp::Rcout << "Singluar Matrix" << std::endl;
-    } else if (e == ERROR_MATRIX_INVERSION) {
-      Rcpp::Rcout << "Matrix inversion failed." << std::endl;
-    } else {
-      Rcpp::Rcout << "Unknown exception occurred" << std::endl;
-    }*/
-    
     // default to a brute-force step value
     i = 0;
     for (iComp = 0; iComp < NComp; iComp++){
@@ -149,20 +129,7 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
     }
 
   }
-  /*Rcpp::Rcout << "CompConcStepSolve = [" << CompConcStepSolve << "]" << std::endl;
-  std::cout << "ArmaCompConcStepSolve = [";
-  for (i = 0; i < NSolve; i++) {
-    if (i != 0) { std::cout << " "; }
-    std::cout << ArmaCompConcStepSolve(i, 0);
-  }
-  std::cout << "]" << std::endl;*/
-  /*std::cout << "ArmaCompConcStepSolve1N = [";
-  for (i = 0; i < NSolve; i++) {
-    if (i != 0) { std::cout << " "; }
-    std::cout << ArmaCompConcStepSolve1N(0, i);
-  }
-  std::cout << "]" << std::endl;*/
-
+  
   i = 0;
   for (iComp = 0; iComp < NComp; iComp++){
     if (CompSolve[iComp]) {
@@ -173,38 +140,5 @@ Rcpp::NumericVector CalcStep(Rcpp::NumericMatrix JacobianMatrix,
       CompConcStep(iComp) = 0;
     }
   }
-  return CompConcStep;
-}
-
-Rcpp::NumericVector CalcStepBrute(int NComp,
-                                  Rcpp::CharacterVector CompName, 
-                                  Rcpp::CharacterVector CompType, 
-                                  Rcpp::NumericVector CompConc, 
-                                  Rcpp::NumericVector TotConc, 
-                                  Rcpp::NumericVector CalcTotConc,
-                                  bool DoTox,
-                                  int MetalComp,
-                                  double CACalculated,
-                                  double CATarget) {
-  /*outputs*/
-  Rcpp::NumericVector CompConcStep(NComp);
-    CompConcStep.names() = CompName;
-  
-  /*varaibles*/
-  int iComp;
-
-  for (iComp = 0; iComp < NComp; iComp++){
-    if ((CompType(iComp) != CTYPE_FIXEDCONC) && (CompType(iComp) != CTYPE_FIXEDACT)) { 
-      CompConcStep(iComp) = CompConc(iComp) * (1 - TotConc(iComp) / CalcTotConc(iComp));
-      if (CompConcStep(iComp) < (CompConc(iComp) - TotConc(iComp))) {
-        CompConcStep(iComp) = (CompConc(iComp) - TotConc(iComp));
-      }
-    } else if (DoTox && (iComp == MetalComp)) {
-      CompConcStep(iComp) = CompConc(iComp) * (1 - CATarget / CACalculated);
-    } else {
-      CompConcStep(iComp) = 0.0;
-    }
-  }
-
   return CompConcStep;
 }

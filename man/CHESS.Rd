@@ -41,7 +41,15 @@ CHESS(
   BLCompR,
   NBLMetal,
   BLMetalSpecsR,
-  CATarget
+  CATarget,
+  DodVidCj,
+  DodVidCjDonnan,
+  DodKidCj,
+  DoGammai,
+  DoJacDonnan,
+  DoJacWHAM,
+  DoWHAMSimpleAdjust,
+  DoDonnanSimpleAdjust
 )
 }
 \arguments{

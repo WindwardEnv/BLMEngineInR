@@ -1,3 +1,17 @@
+// Copyright 2024 Windward Environmental LLC
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <math.h>
 #include <iostream>
 #include <fstream>
@@ -180,7 +194,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   Rcpp::NumericVector CompError(NComp);
     CompError.names() = CompName;
   Rcpp::NumericMatrix JacobianMatrix(NComp);
-  Rcpp::NumericMatrix NumericalJacobianMatrix(NComp);
 
   Rcpp::String StatusMessage = "";
 
@@ -255,15 +268,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
 
     // update the iteration counter
     Iter++;
-    //if (Iter <= 6) {
-    //  //Rcpp::NumericVector CompConcStepBrute(NComp);
-    //  CompConcStep = CalcStepBrute(NComp, CompName, CompType, CompConc, 
-    //                               TotConc, CalcTotConc,
-    //                               DoTox,
-    //                               MetalComp,
-    //                               CalcCA(NBLMetal, BLMetalSpecs, SpecConc),
-    //                               CATarget);
-    //} else {
       //UpdateZED = true;//!UpdateZED;//             
       try {
         // Calculate the Jacobian Matrix
@@ -358,20 +362,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
       }  
       OldMaxError = MaxError;
       // Don't Be Hasty Routine End    
-
-
-    /*double StepBrute;
-    double StepNR;
-    for (iComp = 0; iComp < NComp; iComp++) {
-      StepBrute = CompConcStepBrute(iComp);
-      StepNR = CompConcStep(iComp);
-      if (StepBrute == StepNR) { continue; }
-      if ((std::fabs(StepNR) > CompConc(iComp)) ||
-          (std::signbit(StepBrute) != std::signbit(StepNR)) ||
-          std::fabs((StepBrute - StepNR) / (StepBrute + StepNR)) > 1.0) {
-        //CompConcStep(iComp) = StepBrute;
-      }
-    }*/
 
     if (false) {//(Iter >= 6) {
       double BestMult = 1.0;
@@ -484,26 +474,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
       
     }
     
-
-    /*if (QuietFlag == FLAG_DEBUG) {
-      //Rcpp::Rcout << "JacobianMatrix = [" <<std::endl << JacobianMatrix << "]" << std::endl;
-      //Rcpp::Rcout << "NumericalJacobianMatrix = [" <<std::endl << NumericalJacobianMatrix << "]" << std::endl;
-      Rcpp::Rcout << "iComp\tSpecName\tSpecConc\tResid\tError\tStep" << std::endl;
-      for (iComp = 0; iComp < NComp; iComp++) {
-        Rcpp::Rcout << iComp << "\t" 
-                    << SpecName[iComp] << "\t" 
-                    << SpecConc[iComp] << "   " 
-                    << Resid[iComp] << "   " 
-                    << CompError[iComp] << "   "
-                    << CompConcStep[iComp]
-                    << std::endl;
-        //Rcpp::Rcout << "Resid[" << SpecName[iComp] << "]=" << 
-        //  Resid[iComp] << std::endl;
-        //Rcpp::Rcout << "CompConcStep[" << SpecName[iComp] << "]=" << 
-        //  CompConcStep[iComp] << std::endl;
-      }
-    } */  
-
     // Do a N-R step
     MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, 
                          CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, 
@@ -539,20 +509,6 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   if (QuietFlag == FLAG_DEBUG) {
     Rcpp::Rcout << Iter << "\t" << MaxError << "\t" << CompName(WhichMax) << std::endl;
   }
-  /*if (QuietFlag == FLAG_DEBUG) {
-      Rcpp::Rcout << "Iter=" << Iter 
-        << ", WhichMax=" << CompName(WhichMax) 
-        << ", MaxError=" << MaxError 
-        << ", WHAMSpecCharge=" << WHAMSpecCharge 
-        << ", Resid=" << Resid 
-        << ", TotMoles=" << TotMoles 
-        << ", CalcTotConc=" << CalcTotConc 
-        << ", CalcTotMoles=" << CalcTotMoles 
-        << ", SpecConc=" << SpecConc 
-        << ", SpecMoles=" << SpecMoles
-        << ", MassAmtAdj=" << MassAmtAdj
-        << std::endl;
-    }*/
 
   return Rcpp::List::create(
       Rcpp::Named("StatusMessage") = StatusMessage,

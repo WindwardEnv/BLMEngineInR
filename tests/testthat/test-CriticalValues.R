@@ -24,6 +24,15 @@ test_that("AddCriticalValues works", {
       References = "thin air",
       Miscellaneous = "individual data point"
     )))
+  expect_no_error(AddCriticalValues(
+    ThisProblem = carbonate_system_problem,
+    CATab = data.frame(
+      CA = 12345,
+      Species = "A. species",
+      Test.Type = "Acute",
+      Endpoint = "survival",
+      References = "thin air"
+    )))
 })
 test_that("RemoveCriticalValues works", {
 
@@ -32,8 +41,8 @@ test_that("RemoveCriticalValues works", {
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
 
-  expect_no_error(
-    RemoveCriticalValues(ThisProblem = myproblem, CAToRemove = 1)
-  )
+  expect_no_error(RemoveCriticalValues(ThisProblem = myproblem, CAToRemove = 1))
+  expect_error(RemoveCriticalValues(ThisProblem = myproblem, CAToRemove = -1))
+  expect_error(RemoveCriticalValues(ThisProblem = myproblem, CAToRemove = 999))
 
 })
