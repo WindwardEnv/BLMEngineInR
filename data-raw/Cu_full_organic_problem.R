@@ -1,4 +1,3 @@
-mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"), package = "BLMEngineInR", mustWork = TRUE)
 # Copyright 2024 Windward Environmental LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +12,8 @@ mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATE
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
+                      package = "BLMEngineInR", mustWork = TRUE)
 Cu_full_organic_problem = DefineProblem(ParamFile = mypfile, WriteLog = FALSE)
 
 usethis::use_data(Cu_full_organic_problem, overwrite = TRUE)

@@ -150,7 +150,7 @@ test_that("RemoveComponents works", {
   expect_equal(RemoveComponents(ThisProblem = carbonate_system_problem,
                                 ComponentToRemove = "CO3")$N,
                c(Mass = 1L, InLab = 1L, InVar = 2L, InMass = 1L, InComp = 0L,
-                 InDefComp = 1L, InSpec = 1L, DefComp = 1L, Comp = 1L,
+                 InDefComp = 2L, InSpec = 0L, DefComp = 2L, Comp = 2L,
                  Spec = 2L, Phase = 0L, BL = 0L, Metal = 0L, BLMetal = 0L,
                  CAT = 0L))
 })
@@ -221,7 +221,7 @@ test_that("RemoveInComps works", {
                                c("Mass","InLab","InVar","InMass","InComp",
                                  "InDefComp","InSpec","DefComp","Comp","Spec")],
                c(Mass = 1L, InLab = 1L, InVar = 2L, InMass = 1L, InComp = 0L,
-                 InDefComp = 1L, InSpec = 1L, DefComp = 1L, Comp = 1L,
+                 InDefComp = 2L, InSpec = 0L, DefComp = 2L, Comp = 2L,
                  Spec = 2L))
 
 })
@@ -329,7 +329,7 @@ test_that("AddDefComp works", {
                                c("Mass","InLab","InVar","InMass","InComp",
                                  "InDefComp","InSpec","DefComp","Comp","Spec")],
                c(Mass = 1L, InLab = 1L, InVar = 2L, InMass = 1L, InComp = 1L,
-                 InDefComp = 2L, InSpec = 3L, DefComp = 2L, Comp = 3L,
+                 InDefComp = 3L, InSpec = 2L, DefComp = 3L, Comp = 4L,
                  Spec = 6L))
 
 })
@@ -359,8 +359,8 @@ test_that("RemoveDefComps works", {
   expect_equal(RemoveDefComps(ThisProblem = carbonate_system_problem,
                               DefCompToRemove = "H")$N,
                c(Mass = 1L, InLab = 1L, InVar = 2L, InMass = 1L, InComp = 1L,
-                 InDefComp = 0L, InSpec = 0L, DefComp = 0L, Comp = 1L,
-                 Spec = 1L, Phase = 0L, BL = 0L, Metal = 0L, BLMetal = 0L,
+                 InDefComp = 1L, InSpec = 0L, DefComp = 1L, Comp = 2L,
+                 Spec = 2L, Phase = 0L, BL = 0L, Metal = 0L, BLMetal = 0L,
                  CAT = 0L))
 
 })

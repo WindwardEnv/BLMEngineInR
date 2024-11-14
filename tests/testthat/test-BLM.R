@@ -67,7 +67,7 @@ test_that("BLM function works - toxicity mode works", {
 
   skip_on_cran()
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)

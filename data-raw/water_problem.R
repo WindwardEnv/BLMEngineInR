@@ -19,17 +19,10 @@ water_MC_problem = AddInLabs(
                                      MassUnit = "L"),
   InLabName = "ID")
 
-water_problem = AddSpecies(
-  ThisProblem = AddInVars(ThisProblem = water_MC_problem,
+water_problem = AddInVars(ThisProblem = water_MC_problem,
                           InVarName = c("Temperature", "pH"),
                           InVarMCName = "Water",
-                          InVarType = c("Temperature", "pH")),
-  SpecEquation = "OH = -1 * H",
-  SpecMCName = "Water",
-  SpecActCorr = "Debye",
-  SpecLogK = -13.997,
-  SpecDeltaH = -55810,
-  SpecTempKelvin = 298.15)
+                          InVarType = c("Temperature", "pH"))
 
 usethis::use_data(water_MC_problem, overwrite = TRUE)
 usethis::use_data(water_problem, overwrite = TRUE)

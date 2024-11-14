@@ -37,7 +37,7 @@ which CAT number they should specify for a toxicity run where the critical
 value is coming from the table in the parameter file.
 }
 \examples{
-mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
                       package = "BLMEngineInR",
                       mustWork = TRUE)
 ListCAT(ParamFile = mypfile)

@@ -35,7 +35,7 @@ test_that("ExpandWHAM works", {
   myproblem_HA_V = ExpandWHAM(ThisProblem = myproblem_humics, WHAMVer = "V")
   expect_equal(myproblem_HA_V$N,
                c(Mass = 2L, InLab = 1L, InVar = 3L, InMass = 1L, InComp = 2L,
-                 InDefComp = 1L, InSpec = 3L, DefComp = 22L, Comp = 24L,
+                 InDefComp = 2L, InSpec = 2L, DefComp = 23L, Comp = 25L,
                  Spec = 96L, Phase = 0L, BL = 0L, Metal = 0L, BLMetal = 0L,
                  CAT = 0L))
 
@@ -43,7 +43,7 @@ test_that("ExpandWHAM works", {
   myproblem_HA_VII = ExpandWHAM(ThisProblem = myproblem_humics, WHAMVer = "VII")
   expect_equal(myproblem_HA_VII$N,
                c(Mass = 2L, InLab = 1L, InVar = 3L, InMass = 1L, InComp = 2L,
-                 InDefComp = 1L, InSpec = 3L, DefComp = 24L, Comp = 26L,
+                 InDefComp = 2L, InSpec = 2L, DefComp = 25L, Comp = 27L,
                  Spec = 138L, Phase = 0L, BL = 0L, Metal = 0L, BLMetal = 0L,
                  CAT = 0L))
 

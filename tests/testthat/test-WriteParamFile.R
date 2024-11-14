@@ -1,6 +1,6 @@
 test_that("WriteParamFile works", {
   mypfile = system.file(
-    file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+    file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
     package = "BLMEngineInR",
     mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
