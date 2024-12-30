@@ -396,9 +396,8 @@ test_that("ConvertWindowsParamFile marine works", {
 })
 test_that("ConvertWindowsParamFile unknown dbs file works", {
 
-  testthat::skip_on_cran()
-
   Zn_file = "C:/Users/kellyc/Documents/BLM/parameter_files/fresh/Zn/Zn_algae_tox_chronic_09-12-24.dat"
+  testthat::skip_if_not(file.exists(Zn_file))
   ex_Rfile = withr::local_tempfile(fileext = ".dat4")
 
   expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Zn_file))

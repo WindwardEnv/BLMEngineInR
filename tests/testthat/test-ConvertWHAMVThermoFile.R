@@ -1,6 +1,6 @@
 test_that("ConvertWHAMVThermoFile works", {
-  testthat::skip_on_cran()
   mydbsfile = "C:/Users/kellyc/Documents/BLM/thermo_databases/water23.dbs"
+  testthat::skip_if_not(file.exists(mydbsfile))
   expect_no_error(ConvertWHAMVThermoFile(ThermoDBSName = mydbsfile))
 
   # testthat::skip_on_cran()
