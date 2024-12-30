@@ -286,7 +286,7 @@ MatchInputsToProblem = function(
         TotConcObs[, DefCompName[i]] = 10^-pHObs
       } else if (gsub(" ", "", DefCompFromVar[i]) == "KW/H") {
         LKW = -14 + (2935 * (.003354 - (1 / SysTempKelvinObs)))
-        TotConcObs[, DefCompName[i]] = (10 ^ LKW) / (10^-pHObs)
+        TotConcObs[, DefCompName[i]] = (10 ^ LKW) / (10 ^ -pHObs)
       } else if (DefCompFromVar[i] %in% CompName) {
         TotConcObs[, DefCompName[i]] =
           TotConcObs[, DefCompFromVar[i], drop = FALSE] *

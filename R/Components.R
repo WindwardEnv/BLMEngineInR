@@ -109,7 +109,7 @@ AddComponents = function(ThisProblem, CompName,  CompCharge, CompMCName = NULL,
   # coerce to correct types
   CompName = trimws(as.character(CompName))
   CompCharge = as.integer(CompCharge)
-  CompMCName = trimws(as.character(CompMCName))
+  if(!is.null(CompMCName)) {CompMCName = trimws(as.character(CompMCName))}
   CompMCR = as.integer(CompMCR)
   CompType = trimws(as.character(CompType))
   CompActCorr = trimws(as.character(CompActCorr))
@@ -376,6 +376,7 @@ AddInComps = function(ThisProblem, InCompName, InCompCharge, InCompMCName = NULL
                              CompType = InCompType,
                              CompActCorr = InCompActCorr,
                              CompSiteDens = 1.0,
+                             CompMCR = InCompMCR,
                              DoCheck = FALSE)
 
   # Add the input component

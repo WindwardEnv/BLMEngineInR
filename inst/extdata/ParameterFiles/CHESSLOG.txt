@@ -1,0 +1,479 @@
+CHESS problem defined by 'inst/extdata/ParameterFiles/Ni_full_organic.dat4 (modified)' parameter file:
+(2024-12-20 11:35:02.343565)
+--------------------------------------------------------------------------------
+Component List:
+H
+OH
+Na
+Mg
+K
+Ca
+Ni
+Cl
+SO4
+CO3
+BL
+DonnanHA
+DonnanFA
+DOC-HA_1H
+DOC-HA_2H
+DOC-HA_3H
+DOC-HA_4H
+DOC-HA_5H
+DOC-HA_6H
+DOC-HA_7H
+DOC-HA_8H
+DOC-HA_12H
+DOC-HA_14H
+DOC-HA_16H
+DOC-HA_18H
+DOC-HA_23H
+DOC-HA_25H
+DOC-HA_27H
+DOC-HA_34H
+DOC-HA_36H
+DOC-HA_38H
+DOC-HA_45H
+DOC-HA_47H
+DOC-FA_1H
+DOC-FA_2H
+DOC-FA_3H
+DOC-FA_4H
+DOC-FA_5H
+DOC-FA_6H
+DOC-FA_7H
+DOC-FA_8H
+DOC-FA_12H
+DOC-FA_14H
+DOC-FA_16H
+DOC-FA_18H
+DOC-FA_23H
+DOC-FA_25H
+DOC-FA_27H
+DOC-FA_34H
+DOC-FA_36H
+DOC-FA_38H
+DOC-FA_45H
+DOC-FA_47H
+--------------------------------------------------------------------------------
+Reaction                                                         LogK     DeltaH
+----------------------------------------------------------    -------    -------
+H = 1 * H                                                       0.000          0
+OH = 1 * OH                                                     0.000          0
+Na = 1 * Na                                                     0.000          0
+Mg = 1 * Mg                                                     0.000          0
+K = 1 * K                                                       0.000          0
+Ca = 1 * Ca                                                     0.000          0
+Ni = 1 * Ni                                                     0.000          0
+Cl = 1 * Cl                                                     0.000          0
+SO4 = 1 * SO4                                                   0.000          0
+CO3 = 1 * CO3                                                   0.000          0
+BL = 1 * BL                                                     0.000          0
+DonnanHA =                                                      0.000          0
+DonnanFA =                                                      0.000          0
+DOC-HA_1H = 1 * DOC-HA_1H                                       0.000          0
+DOC-HA_2H = 1 * DOC-HA_2H                                       0.000          0
+DOC-HA_3H = 1 * DOC-HA_3H                                       0.000          0
+DOC-HA_4H = 1 * DOC-HA_4H                                       0.000          0
+DOC-HA_5H = 1 * DOC-HA_5H                                       0.000          0
+DOC-HA_6H = 1 * DOC-HA_6H                                       0.000          0
+DOC-HA_7H = 1 * DOC-HA_7H                                       0.000          0
+DOC-HA_8H = 1 * DOC-HA_8H                                       0.000          0
+DOC-HA_12H = 1 * DOC-HA_12H                                     0.000          0
+DOC-HA_14H = 1 * DOC-HA_14H                                     0.000          0
+DOC-HA_16H = 1 * DOC-HA_16H                                     0.000          0
+DOC-HA_18H = 1 * DOC-HA_18H                                     0.000          0
+DOC-HA_23H = 1 * DOC-HA_23H                                     0.000          0
+DOC-HA_25H = 1 * DOC-HA_25H                                     0.000          0
+DOC-HA_27H = 1 * DOC-HA_27H                                     0.000          0
+DOC-HA_34H = 1 * DOC-HA_34H                                     0.000          0
+DOC-HA_36H = 1 * DOC-HA_36H                                     0.000          0
+DOC-HA_38H = 1 * DOC-HA_38H                                     0.000          0
+DOC-HA_45H = 1 * DOC-HA_45H                                     0.000          0
+DOC-HA_47H = 1 * DOC-HA_47H                                     0.000          0
+DOC-FA_1H = 1 * DOC-FA_1H                                       0.000          0
+DOC-FA_2H = 1 * DOC-FA_2H                                       0.000          0
+DOC-FA_3H = 1 * DOC-FA_3H                                       0.000          0
+DOC-FA_4H = 1 * DOC-FA_4H                                       0.000          0
+DOC-FA_5H = 1 * DOC-FA_5H                                       0.000          0
+DOC-FA_6H = 1 * DOC-FA_6H                                       0.000          0
+DOC-FA_7H = 1 * DOC-FA_7H                                       0.000          0
+DOC-FA_8H = 1 * DOC-FA_8H                                       0.000          0
+DOC-FA_12H = 1 * DOC-FA_12H                                     0.000          0
+DOC-FA_14H = 1 * DOC-FA_14H                                     0.000          0
+DOC-FA_16H = 1 * DOC-FA_16H                                     0.000          0
+DOC-FA_18H = 1 * DOC-FA_18H                                     0.000          0
+DOC-FA_23H = 1 * DOC-FA_23H                                     0.000          0
+DOC-FA_25H = 1 * DOC-FA_25H                                     0.000          0
+DOC-FA_27H = 1 * DOC-FA_27H                                     0.000          0
+DOC-FA_34H = 1 * DOC-FA_34H                                     0.000          0
+DOC-FA_36H = 1 * DOC-FA_36H                                     0.000          0
+DOC-FA_38H = 1 * DOC-FA_38H                                     0.000          0
+DOC-FA_45H = 1 * DOC-FA_45H                                     0.000          0
+DOC-FA_47H = 1 * DOC-FA_47H                                     0.000          0
+HCO3 = 1 * H + 1 * CO3                                         10.329     -14997
+H2CO3 = 2 * H + 1 * CO3                                        16.681     -24166
+MgHCO3 = 1 * H + 1 * Mg + 1 * CO3                              11.339     -11666
+MgCO3 = 1 * Mg + 1 * CO3                                        2.920      11413
+MgSO4 = 1 * Mg + 1 * SO4                                        2.260      19162
+CaHCO3 = 1 * H + 1 * Ca + 1 * CO3                              11.529      -3664
+CaCO3 = 1 * Ca + 1 * CO3                                        3.220      14951
+CaSO4 = 1 * Ca + 1 * SO4                                        2.360       6949
+NiOH = 1 * OH + 1 * Ni                                          4.100          0
+Ni(OH)2 = 2 * OH + 1 * Ni                                       9.000          0
+NiSO4 = 1 * Ni + 1 * SO4                                        2.300       6317
+NiCO3 = 1 * Ni + 1 * CO3                                        3.570          0
+NiCl = 1 * Ni + 1 * Cl                                         -0.430       2105
+NiHCO3 = 1 * H + 1 * Ni + 1 * CO3                              11.919          0
+BL-Ni = 1 * Ni + 1 * BL                                         4.000          0
+BL-NiOH = -1 * H + 1 * Ni + 1 * BL                             -5.500          0
+BL-Ca = 1 * Ca + 1 * BL                                         4.250          0
+BL-Mg = 1 * Mg + 1 * BL                                         3.600          0
+BL-Na = 1 * Na + 1 * BL                                         1.000          0
+BL-H = 1 * H + 1 * BL                                           4.700          0
+DonnanHA-H = 1 * H + 1 * DonnanHA                               0.000          0
+DonnanHA-OH = 1 * OH + 1 * DonnanHA                             0.000          0
+DonnanHA-Na = 1 * Na + 1 * DonnanHA                             0.000          0
+DonnanHA-Mg = 1 * Mg + 2 * DonnanHA                             0.000          0
+DonnanHA-K = 1 * K + 1 * DonnanHA                               0.000          0
+DonnanHA-Ca = 1 * Ca + 2 * DonnanHA                             0.000          0
+DonnanHA-Ni = 1 * Ni + 2 * DonnanHA                             0.000          0
+DonnanHA-Cl = 1 * Cl + 1 * DonnanHA                             0.000          0
+DonnanHA-SO4 = 1 * SO4 + 2 * DonnanHA                           0.000          0
+DonnanHA-CO3 = 1 * CO3 + 2 * DonnanHA                           0.000          0
+DonnanHA-HCO3 = 1 * H + 1 * CO3 + 1 * DonnanHA                 10.329     -14997
+DonnanHA-MgHCO3 = 1 * H + 1 * Mg + 1 * CO3 + 1 * DonnanHA      11.339     -11666
+DonnanHA-CaHCO3 = 1 * H + 1 * Ca + 1 * CO3 + 1 * DonnanHA      11.529      -3664
+DonnanHA-NiOH = 1 * OH + 1 * Ni + 1 * DonnanHA                  4.100          0
+DonnanHA-NiCl = 1 * Ni + 1 * Cl + 1 * DonnanHA                 -0.430       2105
+DonnanHA-NiHCO3 = 1 * H + 1 * Ni + 1 * CO3 + 1 * DonnanHA      11.919          0
+DOC-HA_1 = -1 * H + 1 * DOC-HA_1H                              -3.130          0
+DOC-HA_2 = -1 * H + 1 * DOC-HA_2H                              -3.723          0
+DOC-HA_3 = -1 * H + 1 * DOC-HA_3H                              -4.317          0
+DOC-HA_4 = -1 * H + 1 * DOC-HA_4H                              -4.910          0
+DOC-HA_5 = -1 * H + 1 * DOC-HA_5H                              -6.835          0
+DOC-HA_6 = -1 * H + 1 * DOC-HA_6H                              -7.978          0
+DOC-HA_7 = -1 * H + 1 * DOC-HA_7H                              -9.122          0
+DOC-HA_8 = -1 * H + 1 * DOC-HA_8H                             -10.265          0
+DOC-HA_1-Ca = -1 * H + 1 * Ca + 1 * DOC-HA_1H                  -3.200          0
+DOC-HA_2-Ca = -1 * H + 1 * Ca + 1 * DOC-HA_2H                  -3.200          0
+DOC-HA_3-Ca = -1 * H + 1 * Ca + 1 * DOC-HA_3H                  -3.200          0
+DOC-HA_4-Ca = -1 * H + 1 * Ca + 1 * DOC-HA_4H                  -3.200          0
+DOC-HA_5-Ca = -1 * H + 1 * Ca + 1 * DOC-HA_5H                  -6.600          0
+DOC-HA_6-Ca = -1 * H + 1 * Ca + 1 * DOC-HA_6H                  -6.600          0
+DOC-HA_7-Ca = -1 * H + 1 * Ca + 1 * DOC-HA_7H                  -6.600          0
+DOC-HA_8-Ca = -1 * H + 1 * Ca + 1 * DOC-HA_8H                  -6.600          0
+DOC-HA_1-Mg = -1 * H + 1 * Mg + 1 * DOC-HA_1H                  -3.300          0
+DOC-HA_2-Mg = -1 * H + 1 * Mg + 1 * DOC-HA_2H                  -3.300          0
+DOC-HA_3-Mg = -1 * H + 1 * Mg + 1 * DOC-HA_3H                  -3.300          0
+DOC-HA_4-Mg = -1 * H + 1 * Mg + 1 * DOC-HA_4H                  -3.300          0
+DOC-HA_5-Mg = -1 * H + 1 * Mg + 1 * DOC-HA_5H                  -6.900          0
+DOC-HA_6-Mg = -1 * H + 1 * Mg + 1 * DOC-HA_6H                  -6.900          0
+DOC-HA_7-Mg = -1 * H + 1 * Mg + 1 * DOC-HA_7H                  -6.900          0
+DOC-HA_8-Mg = -1 * H + 1 * Mg + 1 * DOC-HA_8H                  -6.900          0
+DOC-HA_1-Ni = -1 * H + 1 * Ni + 1 * DOC-HA_1H                  -2.700          0
+DOC-HA_2-Ni = -1 * H + 1 * Ni + 1 * DOC-HA_2H                  -2.700          0
+DOC-HA_3-Ni = -1 * H + 1 * Ni + 1 * DOC-HA_3H                  -2.700          0
+DOC-HA_4-Ni = -1 * H + 1 * Ni + 1 * DOC-HA_4H                  -2.700          0
+DOC-HA_5-Ni = -1 * H + 1 * Ni + 1 * DOC-HA_5H                  -5.100          0
+DOC-HA_6-Ni = -1 * H + 1 * Ni + 1 * DOC-HA_6H                  -5.100          0
+DOC-HA_7-Ni = -1 * H + 1 * Ni + 1 * DOC-HA_7H                  -5.100          0
+DOC-HA_8-Ni = -1 * H + 1 * Ni + 1 * DOC-HA_8H                  -5.100          0
+DOC-HA_1-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_1H        1.400          0
+DOC-HA_2-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_2H        1.400          0
+DOC-HA_3-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_3H        1.400          0
+DOC-HA_4-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_4H        1.400          0
+DOC-HA_5-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_5H       -1.000          0
+DOC-HA_6-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_6H       -1.000          0
+DOC-HA_7-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_7H       -1.000          0
+DOC-HA_8-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_8H       -1.000          0
+DOC-HA_1-2H = -1 * H + 1 * DOC-HA_12H                          -3.130          0
+DOC-HA_1-4H = -1 * H + 1 * DOC-HA_14H                          -3.130          0
+DOC-HA_1-6H = -1 * H + 1 * DOC-HA_16H                          -3.130          0
+DOC-HA_1-8H = -1 * H + 1 * DOC-HA_18H                          -3.130          0
+DOC-HA_2-3H = -1 * H + 1 * DOC-HA_23H                          -3.723          0
+DOC-HA_2-5H = -1 * H + 1 * DOC-HA_25H                          -3.723          0
+DOC-HA_2-7H = -1 * H + 1 * DOC-HA_27H                          -3.723          0
+DOC-HA_3-4H = -1 * H + 1 * DOC-HA_34H                          -4.317          0
+DOC-HA_3-6H = -1 * H + 1 * DOC-HA_36H                          -4.317          0
+DOC-HA_3-8H = -1 * H + 1 * DOC-HA_38H                          -4.317          0
+DOC-HA_4-5H = -1 * H + 1 * DOC-HA_45H                          -4.910          0
+DOC-HA_4-7H = -1 * H + 1 * DOC-HA_47H                          -4.910          0
+DOC-HA_2-1H = -1 * H + 1 * DOC-HA_12H                          -3.723          0
+DOC-HA_4-1H = -1 * H + 1 * DOC-HA_14H                          -4.910          0
+DOC-HA_6-1H = -1 * H + 1 * DOC-HA_16H                          -7.978          0
+DOC-HA_8-1H = -1 * H + 1 * DOC-HA_18H                         -10.265          0
+DOC-HA_3-2H = -1 * H + 1 * DOC-HA_23H                          -4.317          0
+DOC-HA_5-2H = -1 * H + 1 * DOC-HA_25H                          -6.835          0
+DOC-HA_7-2H = -1 * H + 1 * DOC-HA_27H                          -9.122          0
+DOC-HA_4-3H = -1 * H + 1 * DOC-HA_34H                          -4.910          0
+DOC-HA_6-3H = -1 * H + 1 * DOC-HA_36H                          -7.978          0
+DOC-HA_8-3H = -1 * H + 1 * DOC-HA_38H                         -10.265          0
+DOC-HA_5-4H = -1 * H + 1 * DOC-HA_45H                          -6.835          0
+DOC-HA_7-4H = -1 * H + 1 * DOC-HA_47H                          -9.122          0
+DOC-HA_12 = -2 * H + 1 * DOC-HA_12H                            -6.853          0
+DOC-HA_14 = -2 * H + 1 * DOC-HA_14H                            -8.040          0
+DOC-HA_16 = -2 * H + 1 * DOC-HA_16H                           -11.108          0
+DOC-HA_18 = -2 * H + 1 * DOC-HA_18H                           -13.395          0
+DOC-HA_23 = -2 * H + 1 * DOC-HA_23H                            -8.040          0
+DOC-HA_25 = -2 * H + 1 * DOC-HA_25H                           -10.558          0
+DOC-HA_27 = -2 * H + 1 * DOC-HA_27H                           -12.845          0
+DOC-HA_34 = -2 * H + 1 * DOC-HA_34H                            -9.227          0
+DOC-HA_36 = -2 * H + 1 * DOC-HA_36H                           -12.295          0
+DOC-HA_38 = -2 * H + 1 * DOC-HA_38H                           -14.582          0
+DOC-HA_45 = -2 * H + 1 * DOC-HA_45H                           -11.745          0
+DOC-HA_47 = -2 * H + 1 * DOC-HA_47H                           -14.032          0
+DOC-HA_12-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_12H                -6.400          0
+DOC-HA_14-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_14H                -6.400          0
+DOC-HA_16-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_16H                -9.800          0
+DOC-HA_18-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_18H                -9.800          0
+DOC-HA_23-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_23H                -6.400          0
+DOC-HA_25-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_25H                -9.800          0
+DOC-HA_27-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_27H                -9.800          0
+DOC-HA_34-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_34H                -6.400          0
+DOC-HA_36-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_36H                -9.800          0
+DOC-HA_38-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_38H                -9.800          0
+DOC-HA_45-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_45H                -9.800          0
+DOC-HA_47-Ca = -2 * H + 1 * Ca + 1 * DOC-HA_47H                -9.800          0
+DOC-HA_12-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_12H                -6.600          0
+DOC-HA_14-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_14H                -6.600          0
+DOC-HA_16-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_16H               -10.200          0
+DOC-HA_18-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_18H               -10.200          0
+DOC-HA_23-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_23H                -6.600          0
+DOC-HA_25-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_25H               -10.200          0
+DOC-HA_27-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_27H               -10.200          0
+DOC-HA_34-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_34H                -6.600          0
+DOC-HA_36-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_36H               -10.200          0
+DOC-HA_38-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_38H               -10.200          0
+DOC-HA_45-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_45H               -10.200          0
+DOC-HA_47-Mg = -2 * H + 1 * Mg + 1 * DOC-HA_47H               -10.200          0
+DOC-HA_12-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_12H                -5.400          0
+DOC-HA_14-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_14H                -5.400          0
+DOC-HA_16-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_16H                -7.800          0
+DOC-HA_18-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_18H                -7.800          0
+DOC-HA_23-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_23H                -5.400          0
+DOC-HA_25-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_25H                -7.800          0
+DOC-HA_27-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_27H                -7.800          0
+DOC-HA_34-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_34H                -5.400          0
+DOC-HA_36-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_36H                -7.800          0
+DOC-HA_38-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_38H                -7.800          0
+DOC-HA_45-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_45H                -7.800          0
+DOC-HA_47-Ni = -2 * H + 1 * Ni + 1 * DOC-HA_47H                -7.800          0
+DOC-HA_12-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_12H     -1.300          0
+DOC-HA_14-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_14H     -1.300          0
+DOC-HA_16-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_16H     -3.700          0
+DOC-HA_18-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_18H     -3.700          0
+DOC-HA_23-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_23H     -1.300          0
+DOC-HA_25-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_25H     -3.700          0
+DOC-HA_27-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_27H     -3.700          0
+DOC-HA_34-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_34H     -1.300          0
+DOC-HA_36-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_36H     -3.700          0
+DOC-HA_38-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_38H     -3.700          0
+DOC-HA_45-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_45H     -3.700          0
+DOC-HA_47-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-HA_47H     -3.700          0
+DonnanFA-H = 1 * H + 1 * DonnanFA                               0.000          0
+DonnanFA-OH = 1 * OH + 1 * DonnanFA                             0.000          0
+DonnanFA-Na = 1 * Na + 1 * DonnanFA                             0.000          0
+DonnanFA-Mg = 1 * Mg + 2 * DonnanFA                             0.000          0
+DonnanFA-K = 1 * K + 1 * DonnanFA                               0.000          0
+DonnanFA-Ca = 1 * Ca + 2 * DonnanFA                             0.000          0
+DonnanFA-Ni = 1 * Ni + 2 * DonnanFA                             0.000          0
+DonnanFA-Cl = 1 * Cl + 1 * DonnanFA                             0.000          0
+DonnanFA-SO4 = 1 * SO4 + 2 * DonnanFA                           0.000          0
+DonnanFA-CO3 = 1 * CO3 + 2 * DonnanFA                           0.000          0
+DonnanFA-HCO3 = 1 * H + 1 * CO3 + 1 * DonnanFA                 10.329     -14997
+DonnanFA-MgHCO3 = 1 * H + 1 * Mg + 1 * CO3 + 1 * DonnanFA      11.339     -11666
+DonnanFA-CaHCO3 = 1 * H + 1 * Ca + 1 * CO3 + 1 * DonnanFA      11.529      -3664
+DonnanFA-NiOH = 1 * OH + 1 * Ni + 1 * DonnanFA                  4.100          0
+DonnanFA-NiCl = 1 * Ni + 1 * Cl + 1 * DonnanFA                 -0.430       2105
+DonnanFA-NiHCO3 = 1 * H + 1 * Ni + 1 * CO3 + 1 * DonnanFA      11.919          0
+DOC-FA_1 = -1 * H + 1 * DOC-FA_1H                              -1.590          0
+DOC-FA_2 = -1 * H + 1 * DOC-FA_2H                              -2.703          0
+DOC-FA_3 = -1 * H + 1 * DOC-FA_3H                              -3.817          0
+DOC-FA_4 = -1 * H + 1 * DOC-FA_4H                              -4.930          0
+DOC-FA_5 = -1 * H + 1 * DOC-FA_5H                              -6.880          0
+DOC-FA_6 = -1 * H + 1 * DOC-FA_6H                              -8.720          0
+DOC-FA_7 = -1 * H + 1 * DOC-FA_7H                             -10.560          0
+DOC-FA_8 = -1 * H + 1 * DOC-FA_8H                             -12.400          0
+DOC-FA_1-Ca = -1 * H + 1 * Ca + 1 * DOC-FA_1H                  -2.200          0
+DOC-FA_2-Ca = -1 * H + 1 * Ca + 1 * DOC-FA_2H                  -2.200          0
+DOC-FA_3-Ca = -1 * H + 1 * Ca + 1 * DOC-FA_3H                  -2.200          0
+DOC-FA_4-Ca = -1 * H + 1 * Ca + 1 * DOC-FA_4H                  -2.200          0
+DOC-FA_5-Ca = -1 * H + 1 * Ca + 1 * DOC-FA_5H                  -8.712          0
+DOC-FA_6-Ca = -1 * H + 1 * Ca + 1 * DOC-FA_6H                  -8.712          0
+DOC-FA_7-Ca = -1 * H + 1 * Ca + 1 * DOC-FA_7H                  -8.712          0
+DOC-FA_8-Ca = -1 * H + 1 * Ca + 1 * DOC-FA_8H                  -8.712          0
+DOC-FA_1-Mg = -1 * H + 1 * Mg + 1 * DOC-FA_1H                  -2.200          0
+DOC-FA_2-Mg = -1 * H + 1 * Mg + 1 * DOC-FA_2H                  -2.200          0
+DOC-FA_3-Mg = -1 * H + 1 * Mg + 1 * DOC-FA_3H                  -2.200          0
+DOC-FA_4-Mg = -1 * H + 1 * Mg + 1 * DOC-FA_4H                  -2.200          0
+DOC-FA_5-Mg = -1 * H + 1 * Mg + 1 * DOC-FA_5H                  -8.712          0
+DOC-FA_6-Mg = -1 * H + 1 * Mg + 1 * DOC-FA_6H                  -8.712          0
+DOC-FA_7-Mg = -1 * H + 1 * Mg + 1 * DOC-FA_7H                  -8.712          0
+DOC-FA_8-Mg = -1 * H + 1 * Mg + 1 * DOC-FA_8H                  -8.712          0
+DOC-FA_1-Ni = -1 * H + 1 * Ni + 1 * DOC-FA_1H                  -1.500          0
+DOC-FA_2-Ni = -1 * H + 1 * Ni + 1 * DOC-FA_2H                  -1.500          0
+DOC-FA_3-Ni = -1 * H + 1 * Ni + 1 * DOC-FA_3H                  -1.500          0
+DOC-FA_4-Ni = -1 * H + 1 * Ni + 1 * DOC-FA_4H                  -1.500          0
+DOC-FA_5-Ni = -1 * H + 1 * Ni + 1 * DOC-FA_5H                  -5.940          0
+DOC-FA_6-Ni = -1 * H + 1 * Ni + 1 * DOC-FA_6H                  -5.940          0
+DOC-FA_7-Ni = -1 * H + 1 * Ni + 1 * DOC-FA_7H                  -5.940          0
+DOC-FA_8-Ni = -1 * H + 1 * Ni + 1 * DOC-FA_8H                  -5.940          0
+DOC-FA_1-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_1H        2.600          0
+DOC-FA_2-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_2H        2.600          0
+DOC-FA_3-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_3H        2.600          0
+DOC-FA_4-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_4H        2.600          0
+DOC-FA_5-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_5H       -1.840          0
+DOC-FA_6-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_6H       -1.840          0
+DOC-FA_7-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_7H       -1.840          0
+DOC-FA_8-NiOH = -1 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_8H       -1.840          0
+DOC-FA_1-2H = -1 * H + 1 * DOC-FA_12H                          -1.590          0
+DOC-FA_1-4H = -1 * H + 1 * DOC-FA_14H                          -1.590          0
+DOC-FA_1-6H = -1 * H + 1 * DOC-FA_16H                          -1.590          0
+DOC-FA_1-8H = -1 * H + 1 * DOC-FA_18H                          -1.590          0
+DOC-FA_2-3H = -1 * H + 1 * DOC-FA_23H                          -2.703          0
+DOC-FA_2-5H = -1 * H + 1 * DOC-FA_25H                          -2.703          0
+DOC-FA_2-7H = -1 * H + 1 * DOC-FA_27H                          -2.703          0
+DOC-FA_3-4H = -1 * H + 1 * DOC-FA_34H                          -3.817          0
+DOC-FA_3-6H = -1 * H + 1 * DOC-FA_36H                          -3.817          0
+DOC-FA_3-8H = -1 * H + 1 * DOC-FA_38H                          -3.817          0
+DOC-FA_4-5H = -1 * H + 1 * DOC-FA_45H                          -4.930          0
+DOC-FA_4-7H = -1 * H + 1 * DOC-FA_47H                          -4.930          0
+DOC-FA_2-1H = -1 * H + 1 * DOC-FA_12H                          -2.703          0
+DOC-FA_4-1H = -1 * H + 1 * DOC-FA_14H                          -4.930          0
+DOC-FA_6-1H = -1 * H + 1 * DOC-FA_16H                          -8.720          0
+DOC-FA_8-1H = -1 * H + 1 * DOC-FA_18H                         -12.400          0
+DOC-FA_3-2H = -1 * H + 1 * DOC-FA_23H                          -3.817          0
+DOC-FA_5-2H = -1 * H + 1 * DOC-FA_25H                          -6.880          0
+DOC-FA_7-2H = -1 * H + 1 * DOC-FA_27H                         -10.560          0
+DOC-FA_4-3H = -1 * H + 1 * DOC-FA_34H                          -4.930          0
+DOC-FA_6-3H = -1 * H + 1 * DOC-FA_36H                          -8.720          0
+DOC-FA_8-3H = -1 * H + 1 * DOC-FA_38H                         -12.400          0
+DOC-FA_5-4H = -1 * H + 1 * DOC-FA_45H                          -6.880          0
+DOC-FA_7-4H = -1 * H + 1 * DOC-FA_47H                         -10.560          0
+DOC-FA_12 = -2 * H + 1 * DOC-FA_12H                            -4.293          0
+DOC-FA_14 = -2 * H + 1 * DOC-FA_14H                            -6.520          0
+DOC-FA_16 = -2 * H + 1 * DOC-FA_16H                           -10.310          0
+DOC-FA_18 = -2 * H + 1 * DOC-FA_18H                           -13.990          0
+DOC-FA_23 = -2 * H + 1 * DOC-FA_23H                            -6.520          0
+DOC-FA_25 = -2 * H + 1 * DOC-FA_25H                            -9.583          0
+DOC-FA_27 = -2 * H + 1 * DOC-FA_27H                           -13.263          0
+DOC-FA_34 = -2 * H + 1 * DOC-FA_34H                            -8.747          0
+DOC-FA_36 = -2 * H + 1 * DOC-FA_36H                           -12.537          0
+DOC-FA_38 = -2 * H + 1 * DOC-FA_38H                           -16.217          0
+DOC-FA_45 = -2 * H + 1 * DOC-FA_45H                           -11.810          0
+DOC-FA_47 = -2 * H + 1 * DOC-FA_47H                           -15.490          0
+DOC-FA_12-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_12H                -4.400          0
+DOC-FA_14-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_14H                -4.400          0
+DOC-FA_16-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_16H               -10.912          0
+DOC-FA_18-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_18H               -10.912          0
+DOC-FA_23-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_23H                -4.400          0
+DOC-FA_25-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_25H               -10.912          0
+DOC-FA_27-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_27H               -10.912          0
+DOC-FA_34-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_34H                -4.400          0
+DOC-FA_36-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_36H               -10.912          0
+DOC-FA_38-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_38H               -10.912          0
+DOC-FA_45-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_45H               -10.912          0
+DOC-FA_47-Ca = -2 * H + 1 * Ca + 1 * DOC-FA_47H               -10.912          0
+DOC-FA_12-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_12H                -4.400          0
+DOC-FA_14-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_14H                -4.400          0
+DOC-FA_16-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_16H               -10.912          0
+DOC-FA_18-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_18H               -10.912          0
+DOC-FA_23-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_23H                -4.400          0
+DOC-FA_25-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_25H               -10.912          0
+DOC-FA_27-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_27H               -10.912          0
+DOC-FA_34-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_34H                -4.400          0
+DOC-FA_36-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_36H               -10.912          0
+DOC-FA_38-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_38H               -10.912          0
+DOC-FA_45-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_45H               -10.912          0
+DOC-FA_47-Mg = -2 * H + 1 * Mg + 1 * DOC-FA_47H               -10.912          0
+DOC-FA_12-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_12H                -3.000          0
+DOC-FA_14-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_14H                -3.000          0
+DOC-FA_16-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_16H                -7.440          0
+DOC-FA_18-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_18H                -7.440          0
+DOC-FA_23-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_23H                -3.000          0
+DOC-FA_25-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_25H                -7.440          0
+DOC-FA_27-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_27H                -7.440          0
+DOC-FA_34-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_34H                -3.000          0
+DOC-FA_36-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_36H                -7.440          0
+DOC-FA_38-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_38H                -7.440          0
+DOC-FA_45-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_45H                -7.440          0
+DOC-FA_47-Ni = -2 * H + 1 * Ni + 1 * DOC-FA_47H                -7.440          0
+DOC-FA_12-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_12H      1.100          0
+DOC-FA_14-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_14H      1.100          0
+DOC-FA_16-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_16H     -3.340          0
+DOC-FA_18-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_18H     -3.340          0
+DOC-FA_23-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_23H      1.100          0
+DOC-FA_25-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_25H     -3.340          0
+DOC-FA_27-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_27H     -3.340          0
+DOC-FA_34-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_34H      1.100          0
+DOC-FA_36-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_36H     -3.340          0
+DOC-FA_38-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_38H     -3.340          0
+DOC-FA_45-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_45H     -3.340          0
+DOC-FA_47-NiOH = -2 * H + 1 * OH + 1 * Ni + 1 * DOC-FA_47H     -3.340          0
+--------------------------------------------------------------------------------
+FixedAct Components:
+H
+OH
+--------------------------------------------------------------------------------
+FixedConc Components:
+
+--------------------------------------------------------------------------------
+MassBal Totals:
+T.Na = 1 * Na + 1 * BL-Na + 1 * DonnanHA-Na + 1 * DonnanFA-Na
+T.Mg = 1 * Mg + 1 * MgHCO3 + 1 * MgCO3 + 1 * MgSO4 + 1 * BL-Mg + 1 * DonnanHA-Mg + 1 * DonnanHA-MgHCO3 + 1 * DOC-HA_1-Mg + 1 * DOC-HA_2-Mg + 1 * DOC-HA_3-Mg + 1 * DOC-HA_4-Mg + 1 * DOC-HA_5-Mg + 1 * DOC-HA_6-Mg + 1 * DOC-HA_7-Mg + 1 * DOC-HA_8-Mg + 1 * DOC-HA_12-Mg + 1 * DOC-HA_14-Mg + 1 * DOC-HA_16-Mg + 1 * DOC-HA_18-Mg + 1 * DOC-HA_23-Mg + 1 * DOC-HA_25-Mg + 1 * DOC-HA_27-Mg + 1 * DOC-HA_34-Mg + 1 * DOC-HA_36-Mg + 1 * DOC-HA_38-Mg + 1 * DOC-HA_45-Mg + 1 * DOC-HA_47-Mg + 1 * DonnanFA-Mg + 1 * DonnanFA-MgHCO3 + 1 * DOC-FA_1-Mg + 1 * DOC-FA_2-Mg + 1 * DOC-FA_3-Mg + 1 * DOC-FA_4-Mg + 1 * DOC-FA_5-Mg + 1 * DOC-FA_6-Mg + 1 * DOC-FA_7-Mg + 1 * DOC-FA_8-Mg + 1 * DOC-FA_12-Mg + 1 * DOC-FA_14-Mg + 1 * DOC-FA_16-Mg + 1 * DOC-FA_18-Mg + 1 * DOC-FA_23-Mg + 1 * DOC-FA_25-Mg + 1 * DOC-FA_27-Mg + 1 * DOC-FA_34-Mg + 1 * DOC-FA_36-Mg + 1 * DOC-FA_38-Mg + 1 * DOC-FA_45-Mg + 1 * DOC-FA_47-Mg
+T.K = 1 * K + 1 * DonnanHA-K + 1 * DonnanFA-K
+T.Ca = 1 * Ca + 1 * CaHCO3 + 1 * CaCO3 + 1 * CaSO4 + 1 * BL-Ca + 1 * DonnanHA-Ca + 1 * DonnanHA-CaHCO3 + 1 * DOC-HA_1-Ca + 1 * DOC-HA_2-Ca + 1 * DOC-HA_3-Ca + 1 * DOC-HA_4-Ca + 1 * DOC-HA_5-Ca + 1 * DOC-HA_6-Ca + 1 * DOC-HA_7-Ca + 1 * DOC-HA_8-Ca + 1 * DOC-HA_12-Ca + 1 * DOC-HA_14-Ca + 1 * DOC-HA_16-Ca + 1 * DOC-HA_18-Ca + 1 * DOC-HA_23-Ca + 1 * DOC-HA_25-Ca + 1 * DOC-HA_27-Ca + 1 * DOC-HA_34-Ca + 1 * DOC-HA_36-Ca + 1 * DOC-HA_38-Ca + 1 * DOC-HA_45-Ca + 1 * DOC-HA_47-Ca + 1 * DonnanFA-Ca + 1 * DonnanFA-CaHCO3 + 1 * DOC-FA_1-Ca + 1 * DOC-FA_2-Ca + 1 * DOC-FA_3-Ca + 1 * DOC-FA_4-Ca + 1 * DOC-FA_5-Ca + 1 * DOC-FA_6-Ca + 1 * DOC-FA_7-Ca + 1 * DOC-FA_8-Ca + 1 * DOC-FA_12-Ca + 1 * DOC-FA_14-Ca + 1 * DOC-FA_16-Ca + 1 * DOC-FA_18-Ca + 1 * DOC-FA_23-Ca + 1 * DOC-FA_25-Ca + 1 * DOC-FA_27-Ca + 1 * DOC-FA_34-Ca + 1 * DOC-FA_36-Ca + 1 * DOC-FA_38-Ca + 1 * DOC-FA_45-Ca + 1 * DOC-FA_47-Ca
+T.Ni = 1 * Ni + 1 * NiOH + 1 * Ni(OH)2 + 1 * NiSO4 + 1 * NiCO3 + 1 * NiCl + 1 * NiHCO3 + 1 * BL-Ni + 1 * BL-NiOH + 1 * DonnanHA-Ni + 1 * DonnanHA-NiOH + 1 * DonnanHA-NiCl + 1 * DonnanHA-NiHCO3 + 1 * DOC-HA_1-Ni + 1 * DOC-HA_2-Ni + 1 * DOC-HA_3-Ni + 1 * DOC-HA_4-Ni + 1 * DOC-HA_5-Ni + 1 * DOC-HA_6-Ni + 1 * DOC-HA_7-Ni + 1 * DOC-HA_8-Ni + 1 * DOC-HA_1-NiOH + 1 * DOC-HA_2-NiOH + 1 * DOC-HA_3-NiOH + 1 * DOC-HA_4-NiOH + 1 * DOC-HA_5-NiOH + 1 * DOC-HA_6-NiOH + 1 * DOC-HA_7-NiOH + 1 * DOC-HA_8-NiOH + 1 * DOC-HA_12-Ni + 1 * DOC-HA_14-Ni + 1 * DOC-HA_16-Ni + 1 * DOC-HA_18-Ni + 1 * DOC-HA_23-Ni + 1 * DOC-HA_25-Ni + 1 * DOC-HA_27-Ni + 1 * DOC-HA_34-Ni + 1 * DOC-HA_36-Ni + 1 * DOC-HA_38-Ni + 1 * DOC-HA_45-Ni + 1 * DOC-HA_47-Ni + 1 * DOC-HA_12-NiOH + 1 * DOC-HA_14-NiOH + 1 * DOC-HA_16-NiOH + 1 * DOC-HA_18-NiOH + 1 * DOC-HA_23-NiOH + 1 * DOC-HA_25-NiOH + 1 * DOC-HA_27-NiOH + 1 * DOC-HA_34-NiOH + 1 * DOC-HA_36-NiOH + 1 * DOC-HA_38-NiOH + 1 * DOC-HA_45-NiOH + 1 * DOC-HA_47-NiOH + 1 * DonnanFA-Ni + 1 * DonnanFA-NiOH + 1 * DonnanFA-NiCl + 1 * DonnanFA-NiHCO3 + 1 * DOC-FA_1-Ni + 1 * DOC-FA_2-Ni + 1 * DOC-FA_3-Ni + 1 * DOC-FA_4-Ni + 1 * DOC-FA_5-Ni + 1 * DOC-FA_6-Ni + 1 * DOC-FA_7-Ni + 1 * DOC-FA_8-Ni + 1 * DOC-FA_1-NiOH + 1 * DOC-FA_2-NiOH + 1 * DOC-FA_3-NiOH + 1 * DOC-FA_4-NiOH + 1 * DOC-FA_5-NiOH + 1 * DOC-FA_6-NiOH + 1 * DOC-FA_7-NiOH + 1 * DOC-FA_8-NiOH + 1 * DOC-FA_12-Ni + 1 * DOC-FA_14-Ni + 1 * DOC-FA_16-Ni + 1 * DOC-FA_18-Ni + 1 * DOC-FA_23-Ni + 1 * DOC-FA_25-Ni + 1 * DOC-FA_27-Ni + 1 * DOC-FA_34-Ni + 1 * DOC-FA_36-Ni + 1 * DOC-FA_38-Ni + 1 * DOC-FA_45-Ni + 1 * DOC-FA_47-Ni + 1 * DOC-FA_12-NiOH + 1 * DOC-FA_14-NiOH + 1 * DOC-FA_16-NiOH + 1 * DOC-FA_18-NiOH + 1 * DOC-FA_23-NiOH + 1 * DOC-FA_25-NiOH + 1 * DOC-FA_27-NiOH + 1 * DOC-FA_34-NiOH + 1 * DOC-FA_36-NiOH + 1 * DOC-FA_38-NiOH + 1 * DOC-FA_45-NiOH + 1 * DOC-FA_47-NiOH
+T.Cl = 1 * Cl + 1 * NiCl + 1 * DonnanHA-Cl + 1 * DonnanHA-NiCl + 1 * DonnanFA-Cl + 1 * DonnanFA-NiCl
+T.SO4 = 1 * SO4 + 1 * MgSO4 + 1 * CaSO4 + 1 * NiSO4 + 1 * DonnanHA-SO4 + 1 * DonnanFA-SO4
+T.CO3 = 1 * CO3 + 1 * HCO3 + 1 * H2CO3 + 1 * MgHCO3 + 1 * MgCO3 + 1 * CaHCO3 + 1 * CaCO3 + 1 * NiCO3 + 1 * NiHCO3 + 1 * DonnanHA-CO3 + 1 * DonnanHA-HCO3 + 1 * DonnanHA-MgHCO3 + 1 * DonnanHA-CaHCO3 + 1 * DonnanHA-NiHCO3 + 1 * DonnanFA-CO3 + 1 * DonnanFA-HCO3 + 1 * DonnanFA-MgHCO3 + 1 * DonnanFA-CaHCO3 + 1 * DonnanFA-NiHCO3
+T.BL = 1 * BL + 1 * BL-Ni + 1 * BL-NiOH + 1 * BL-Ca + 1 * BL-Mg + 1 * BL-Na + 1 * BL-H
+--------------------------------------------------------------------------------
+WHAM Component Totals:
+T.DOC-HA_1H = 1 * DOC-HA_1H + 1 * DOC-HA_1 + 1 * DOC-HA_1-Ca + 1 * DOC-HA_1-Mg + 1 * DOC-HA_1-Ni + 1 * DOC-HA_1-NiOH
+T.DOC-HA_2H = 1 * DOC-HA_2H + 1 * DOC-HA_2 + 1 * DOC-HA_2-Ca + 1 * DOC-HA_2-Mg + 1 * DOC-HA_2-Ni + 1 * DOC-HA_2-NiOH
+T.DOC-HA_3H = 1 * DOC-HA_3H + 1 * DOC-HA_3 + 1 * DOC-HA_3-Ca + 1 * DOC-HA_3-Mg + 1 * DOC-HA_3-Ni + 1 * DOC-HA_3-NiOH
+T.DOC-HA_4H = 1 * DOC-HA_4H + 1 * DOC-HA_4 + 1 * DOC-HA_4-Ca + 1 * DOC-HA_4-Mg + 1 * DOC-HA_4-Ni + 1 * DOC-HA_4-NiOH
+T.DOC-HA_5H = 1 * DOC-HA_5H + 1 * DOC-HA_5 + 1 * DOC-HA_5-Ca + 1 * DOC-HA_5-Mg + 1 * DOC-HA_5-Ni + 1 * DOC-HA_5-NiOH
+T.DOC-HA_6H = 1 * DOC-HA_6H + 1 * DOC-HA_6 + 1 * DOC-HA_6-Ca + 1 * DOC-HA_6-Mg + 1 * DOC-HA_6-Ni + 1 * DOC-HA_6-NiOH
+T.DOC-HA_7H = 1 * DOC-HA_7H + 1 * DOC-HA_7 + 1 * DOC-HA_7-Ca + 1 * DOC-HA_7-Mg + 1 * DOC-HA_7-Ni + 1 * DOC-HA_7-NiOH
+T.DOC-HA_8H = 1 * DOC-HA_8H + 1 * DOC-HA_8 + 1 * DOC-HA_8-Ca + 1 * DOC-HA_8-Mg + 1 * DOC-HA_8-Ni + 1 * DOC-HA_8-NiOH
+T.DOC-HA_12H = 1 * DOC-HA_12H + 1 * DOC-HA_1-2H + 1 * DOC-HA_2-1H + 1 * DOC-HA_12 + 1 * DOC-HA_12-Ca + 1 * DOC-HA_12-Mg + 1 * DOC-HA_12-Ni + 1 * DOC-HA_12-NiOH
+T.DOC-HA_14H = 1 * DOC-HA_14H + 1 * DOC-HA_1-4H + 1 * DOC-HA_4-1H + 1 * DOC-HA_14 + 1 * DOC-HA_14-Ca + 1 * DOC-HA_14-Mg + 1 * DOC-HA_14-Ni + 1 * DOC-HA_14-NiOH
+T.DOC-HA_16H = 1 * DOC-HA_16H + 1 * DOC-HA_1-6H + 1 * DOC-HA_6-1H + 1 * DOC-HA_16 + 1 * DOC-HA_16-Ca + 1 * DOC-HA_16-Mg + 1 * DOC-HA_16-Ni + 1 * DOC-HA_16-NiOH
+T.DOC-HA_18H = 1 * DOC-HA_18H + 1 * DOC-HA_1-8H + 1 * DOC-HA_8-1H + 1 * DOC-HA_18 + 1 * DOC-HA_18-Ca + 1 * DOC-HA_18-Mg + 1 * DOC-HA_18-Ni + 1 * DOC-HA_18-NiOH
+T.DOC-HA_23H = 1 * DOC-HA_23H + 1 * DOC-HA_2-3H + 1 * DOC-HA_3-2H + 1 * DOC-HA_23 + 1 * DOC-HA_23-Ca + 1 * DOC-HA_23-Mg + 1 * DOC-HA_23-Ni + 1 * DOC-HA_23-NiOH
+T.DOC-HA_25H = 1 * DOC-HA_25H + 1 * DOC-HA_2-5H + 1 * DOC-HA_5-2H + 1 * DOC-HA_25 + 1 * DOC-HA_25-Ca + 1 * DOC-HA_25-Mg + 1 * DOC-HA_25-Ni + 1 * DOC-HA_25-NiOH
+T.DOC-HA_27H = 1 * DOC-HA_27H + 1 * DOC-HA_2-7H + 1 * DOC-HA_7-2H + 1 * DOC-HA_27 + 1 * DOC-HA_27-Ca + 1 * DOC-HA_27-Mg + 1 * DOC-HA_27-Ni + 1 * DOC-HA_27-NiOH
+T.DOC-HA_34H = 1 * DOC-HA_34H + 1 * DOC-HA_3-4H + 1 * DOC-HA_4-3H + 1 * DOC-HA_34 + 1 * DOC-HA_34-Ca + 1 * DOC-HA_34-Mg + 1 * DOC-HA_34-Ni + 1 * DOC-HA_34-NiOH
+T.DOC-HA_36H = 1 * DOC-HA_36H + 1 * DOC-HA_3-6H + 1 * DOC-HA_6-3H + 1 * DOC-HA_36 + 1 * DOC-HA_36-Ca + 1 * DOC-HA_36-Mg + 1 * DOC-HA_36-Ni + 1 * DOC-HA_36-NiOH
+T.DOC-HA_38H = 1 * DOC-HA_38H + 1 * DOC-HA_3-8H + 1 * DOC-HA_8-3H + 1 * DOC-HA_38 + 1 * DOC-HA_38-Ca + 1 * DOC-HA_38-Mg + 1 * DOC-HA_38-Ni + 1 * DOC-HA_38-NiOH
+T.DOC-HA_45H = 1 * DOC-HA_45H + 1 * DOC-HA_4-5H + 1 * DOC-HA_5-4H + 1 * DOC-HA_45 + 1 * DOC-HA_45-Ca + 1 * DOC-HA_45-Mg + 1 * DOC-HA_45-Ni + 1 * DOC-HA_45-NiOH
+T.DOC-HA_47H = 1 * DOC-HA_47H + 1 * DOC-HA_4-7H + 1 * DOC-HA_7-4H + 1 * DOC-HA_47 + 1 * DOC-HA_47-Ca + 1 * DOC-HA_47-Mg + 1 * DOC-HA_47-Ni + 1 * DOC-HA_47-NiOH
+T.DOC-FA_1H = 1 * DOC-FA_1H + 1 * DOC-FA_1 + 1 * DOC-FA_1-Ca + 1 * DOC-FA_1-Mg + 1 * DOC-FA_1-Ni + 1 * DOC-FA_1-NiOH
+T.DOC-FA_2H = 1 * DOC-FA_2H + 1 * DOC-FA_2 + 1 * DOC-FA_2-Ca + 1 * DOC-FA_2-Mg + 1 * DOC-FA_2-Ni + 1 * DOC-FA_2-NiOH
+T.DOC-FA_3H = 1 * DOC-FA_3H + 1 * DOC-FA_3 + 1 * DOC-FA_3-Ca + 1 * DOC-FA_3-Mg + 1 * DOC-FA_3-Ni + 1 * DOC-FA_3-NiOH
+T.DOC-FA_4H = 1 * DOC-FA_4H + 1 * DOC-FA_4 + 1 * DOC-FA_4-Ca + 1 * DOC-FA_4-Mg + 1 * DOC-FA_4-Ni + 1 * DOC-FA_4-NiOH
+T.DOC-FA_5H = 1 * DOC-FA_5H + 1 * DOC-FA_5 + 1 * DOC-FA_5-Ca + 1 * DOC-FA_5-Mg + 1 * DOC-FA_5-Ni + 1 * DOC-FA_5-NiOH
+T.DOC-FA_6H = 1 * DOC-FA_6H + 1 * DOC-FA_6 + 1 * DOC-FA_6-Ca + 1 * DOC-FA_6-Mg + 1 * DOC-FA_6-Ni + 1 * DOC-FA_6-NiOH
+T.DOC-FA_7H = 1 * DOC-FA_7H + 1 * DOC-FA_7 + 1 * DOC-FA_7-Ca + 1 * DOC-FA_7-Mg + 1 * DOC-FA_7-Ni + 1 * DOC-FA_7-NiOH
+T.DOC-FA_8H = 1 * DOC-FA_8H + 1 * DOC-FA_8 + 1 * DOC-FA_8-Ca + 1 * DOC-FA_8-Mg + 1 * DOC-FA_8-Ni + 1 * DOC-FA_8-NiOH
+T.DOC-FA_12H = 1 * DOC-FA_12H + 1 * DOC-FA_1-2H + 1 * DOC-FA_2-1H + 1 * DOC-FA_12 + 1 * DOC-FA_12-Ca + 1 * DOC-FA_12-Mg + 1 * DOC-FA_12-Ni + 1 * DOC-FA_12-NiOH
+T.DOC-FA_14H = 1 * DOC-FA_14H + 1 * DOC-FA_1-4H + 1 * DOC-FA_4-1H + 1 * DOC-FA_14 + 1 * DOC-FA_14-Ca + 1 * DOC-FA_14-Mg + 1 * DOC-FA_14-Ni + 1 * DOC-FA_14-NiOH
+T.DOC-FA_16H = 1 * DOC-FA_16H + 1 * DOC-FA_1-6H + 1 * DOC-FA_6-1H + 1 * DOC-FA_16 + 1 * DOC-FA_16-Ca + 1 * DOC-FA_16-Mg + 1 * DOC-FA_16-Ni + 1 * DOC-FA_16-NiOH
+T.DOC-FA_18H = 1 * DOC-FA_18H + 1 * DOC-FA_1-8H + 1 * DOC-FA_8-1H + 1 * DOC-FA_18 + 1 * DOC-FA_18-Ca + 1 * DOC-FA_18-Mg + 1 * DOC-FA_18-Ni + 1 * DOC-FA_18-NiOH
+T.DOC-FA_23H = 1 * DOC-FA_23H + 1 * DOC-FA_2-3H + 1 * DOC-FA_3-2H + 1 * DOC-FA_23 + 1 * DOC-FA_23-Ca + 1 * DOC-FA_23-Mg + 1 * DOC-FA_23-Ni + 1 * DOC-FA_23-NiOH
+T.DOC-FA_25H = 1 * DOC-FA_25H + 1 * DOC-FA_2-5H + 1 * DOC-FA_5-2H + 1 * DOC-FA_25 + 1 * DOC-FA_25-Ca + 1 * DOC-FA_25-Mg + 1 * DOC-FA_25-Ni + 1 * DOC-FA_25-NiOH
+T.DOC-FA_27H = 1 * DOC-FA_27H + 1 * DOC-FA_2-7H + 1 * DOC-FA_7-2H + 1 * DOC-FA_27 + 1 * DOC-FA_27-Ca + 1 * DOC-FA_27-Mg + 1 * DOC-FA_27-Ni + 1 * DOC-FA_27-NiOH
+T.DOC-FA_34H = 1 * DOC-FA_34H + 1 * DOC-FA_3-4H + 1 * DOC-FA_4-3H + 1 * DOC-FA_34 + 1 * DOC-FA_34-Ca + 1 * DOC-FA_34-Mg + 1 * DOC-FA_34-Ni + 1 * DOC-FA_34-NiOH
+T.DOC-FA_36H = 1 * DOC-FA_36H + 1 * DOC-FA_3-6H + 1 * DOC-FA_6-3H + 1 * DOC-FA_36 + 1 * DOC-FA_36-Ca + 1 * DOC-FA_36-Mg + 1 * DOC-FA_36-Ni + 1 * DOC-FA_36-NiOH
+T.DOC-FA_38H = 1 * DOC-FA_38H + 1 * DOC-FA_3-8H + 1 * DOC-FA_8-3H + 1 * DOC-FA_38 + 1 * DOC-FA_38-Ca + 1 * DOC-FA_38-Mg + 1 * DOC-FA_38-Ni + 1 * DOC-FA_38-NiOH
+T.DOC-FA_45H = 1 * DOC-FA_45H + 1 * DOC-FA_4-5H + 1 * DOC-FA_5-4H + 1 * DOC-FA_45 + 1 * DOC-FA_45-Ca + 1 * DOC-FA_45-Mg + 1 * DOC-FA_45-Ni + 1 * DOC-FA_45-NiOH
+T.DOC-FA_47H = 1 * DOC-FA_47H + 1 * DOC-FA_4-7H + 1 * DOC-FA_7-4H + 1 * DOC-FA_47 + 1 * DOC-FA_47-Ca + 1 * DOC-FA_47-Mg + 1 * DOC-FA_47-Ni + 1 * DOC-FA_47-NiOH
+--------------------------------------------------------------------------------
+Donnan Charge Balance Totals:
+Z_DonnanHA = 1 * DonnanHA-H + 1 * DonnanHA-OH + 1 * DonnanHA-Na + 2 * DonnanHA-Mg + 1 * DonnanHA-K + 2 * DonnanHA-Ca + 2 * DonnanHA-Ni + 1 * DonnanHA-Cl + 2 * DonnanHA-SO4 + 2 * DonnanHA-CO3 + 1 * DonnanHA-HCO3 + 1 * DonnanHA-MgHCO3 + 1 * DonnanHA-CaHCO3 + 1 * DonnanHA-NiOH + 1 * DonnanHA-NiCl + 1 * DonnanHA-NiHCO3
+Z_HA = -1 * DOC-HA_1 - 1 * DOC-HA_2 - 1 * DOC-HA_3 - 1 * DOC-HA_4 - 1 * DOC-HA_5 - 1 * DOC-HA_6 - 1 * DOC-HA_7 - 1 * DOC-HA_8 + 1 * DOC-HA_1-Ca + 1 * DOC-HA_2-Ca + 1 * DOC-HA_3-Ca + 1 * DOC-HA_4-Ca + 1 * DOC-HA_5-Ca + 1 * DOC-HA_6-Ca + 1 * DOC-HA_7-Ca + 1 * DOC-HA_8-Ca + 1 * DOC-HA_1-Mg + 1 * DOC-HA_2-Mg + 1 * DOC-HA_3-Mg + 1 * DOC-HA_4-Mg + 1 * DOC-HA_5-Mg + 1 * DOC-HA_6-Mg + 1 * DOC-HA_7-Mg + 1 * DOC-HA_8-Mg + 1 * DOC-HA_1-Ni + 1 * DOC-HA_2-Ni + 1 * DOC-HA_3-Ni + 1 * DOC-HA_4-Ni + 1 * DOC-HA_5-Ni + 1 * DOC-HA_6-Ni + 1 * DOC-HA_7-Ni + 1 * DOC-HA_8-Ni - 1 * DOC-HA_1-2H - 1 * DOC-HA_1-4H - 1 * DOC-HA_1-6H - 1 * DOC-HA_1-8H - 1 * DOC-HA_2-3H - 1 * DOC-HA_2-5H - 1 * DOC-HA_2-7H - 1 * DOC-HA_3-4H - 1 * DOC-HA_3-6H - 1 * DOC-HA_3-8H - 1 * DOC-HA_4-5H - 1 * DOC-HA_4-7H - 1 * DOC-HA_2-1H - 1 * DOC-HA_4-1H - 1 * DOC-HA_6-1H - 1 * DOC-HA_8-1H - 1 * DOC-HA_3-2H - 1 * DOC-HA_5-2H - 1 * DOC-HA_7-2H - 1 * DOC-HA_4-3H - 1 * DOC-HA_6-3H - 1 * DOC-HA_8-3H - 1 * DOC-HA_5-4H - 1 * DOC-HA_7-4H - 2 * DOC-HA_12 - 2 * DOC-HA_14 - 2 * DOC-HA_16 - 2 * DOC-HA_18 - 2 * DOC-HA_23 - 2 * DOC-HA_25 - 2 * DOC-HA_27 - 2 * DOC-HA_34 - 2 * DOC-HA_36 - 2 * DOC-HA_38 - 2 * DOC-HA_45 - 2 * DOC-HA_47 - 1 * DOC-HA_12-NiOH - 1 * DOC-HA_14-NiOH - 1 * DOC-HA_16-NiOH - 1 * DOC-HA_18-NiOH - 1 * DOC-HA_23-NiOH - 1 * DOC-HA_25-NiOH - 1 * DOC-HA_27-NiOH - 1 * DOC-HA_34-NiOH - 1 * DOC-HA_36-NiOH - 1 * DOC-HA_38-NiOH - 1 * DOC-HA_45-NiOH - 1 * DOC-HA_47-NiOH
+Z_DonnanFA = 1 * DonnanFA-H + 1 * DonnanFA-OH + 1 * DonnanFA-Na + 2 * DonnanFA-Mg + 1 * DonnanFA-K + 2 * DonnanFA-Ca + 2 * DonnanFA-Ni + 1 * DonnanFA-Cl + 2 * DonnanFA-SO4 + 2 * DonnanFA-CO3 + 1 * DonnanFA-HCO3 + 1 * DonnanFA-MgHCO3 + 1 * DonnanFA-CaHCO3 + 1 * DonnanFA-NiOH + 1 * DonnanFA-NiCl + 1 * DonnanFA-NiHCO3
+Z_FA = -1 * DOC-FA_1 - 1 * DOC-FA_2 - 1 * DOC-FA_3 - 1 * DOC-FA_4 - 1 * DOC-FA_5 - 1 * DOC-FA_6 - 1 * DOC-FA_7 - 1 * DOC-FA_8 + 1 * DOC-FA_1-Ca + 1 * DOC-FA_2-Ca + 1 * DOC-FA_3-Ca + 1 * DOC-FA_4-Ca + 1 * DOC-FA_5-Ca + 1 * DOC-FA_6-Ca + 1 * DOC-FA_7-Ca + 1 * DOC-FA_8-Ca + 1 * DOC-FA_1-Mg + 1 * DOC-FA_2-Mg + 1 * DOC-FA_3-Mg + 1 * DOC-FA_4-Mg + 1 * DOC-FA_5-Mg + 1 * DOC-FA_6-Mg + 1 * DOC-FA_7-Mg + 1 * DOC-FA_8-Mg + 1 * DOC-FA_1-Ni + 1 * DOC-FA_2-Ni + 1 * DOC-FA_3-Ni + 1 * DOC-FA_4-Ni + 1 * DOC-FA_5-Ni + 1 * DOC-FA_6-Ni + 1 * DOC-FA_7-Ni + 1 * DOC-FA_8-Ni - 1 * DOC-FA_1-2H - 1 * DOC-FA_1-4H - 1 * DOC-FA_1-6H - 1 * DOC-FA_1-8H - 1 * DOC-FA_2-3H - 1 * DOC-FA_2-5H - 1 * DOC-FA_2-7H - 1 * DOC-FA_3-4H - 1 * DOC-FA_3-6H - 1 * DOC-FA_3-8H - 1 * DOC-FA_4-5H - 1 * DOC-FA_4-7H - 1 * DOC-FA_2-1H - 1 * DOC-FA_4-1H - 1 * DOC-FA_6-1H - 1 * DOC-FA_8-1H - 1 * DOC-FA_3-2H - 1 * DOC-FA_5-2H - 1 * DOC-FA_7-2H - 1 * DOC-FA_4-3H - 1 * DOC-FA_6-3H - 1 * DOC-FA_8-3H - 1 * DOC-FA_5-4H - 1 * DOC-FA_7-4H - 2 * DOC-FA_12 - 2 * DOC-FA_14 - 2 * DOC-FA_16 - 2 * DOC-FA_18 - 2 * DOC-FA_23 - 2 * DOC-FA_25 - 2 * DOC-FA_27 - 2 * DOC-FA_34 - 2 * DOC-FA_36 - 2 * DOC-FA_38 - 2 * DOC-FA_45 - 2 * DOC-FA_47 - 1 * DOC-FA_12-NiOH - 1 * DOC-FA_14-NiOH - 1 * DOC-FA_16-NiOH - 1 * DOC-FA_18-NiOH - 1 * DOC-FA_23-NiOH - 1 * DOC-FA_25-NiOH - 1 * DOC-FA_27-NiOH - 1 * DOC-FA_34-NiOH - 1 * DOC-FA_36-NiOH - 1 * DOC-FA_38-NiOH - 1 * DOC-FA_45-NiOH - 1 * DOC-FA_47-NiOH

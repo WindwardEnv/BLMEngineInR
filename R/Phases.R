@@ -112,12 +112,16 @@ AddPhases = function(ThisProblem,
     ))
   }
 
+  if (HasStoichMatrix) {
+    PhaseStoich = PhaseStoich[, ThisProblem$Comp$Name, drop = FALSE]
+  }
   if (HasStoichCompsNames) {
     tmp = StoichCompsToStoichMatrix(CompName = ThisProblem$Comp$Name,
                                     SpecName = PhaseName,
                                     SpecCompNames = PhaseCompNames,
                                     SpecCompStoichs = PhaseCompStoichs)
     if (HasStoichMatrix) {
+      PhaseStoich = PhaseStoich[, ThisProblem$Comp$Name, drop = FALSE]
       stopifnot(all(tmp == PhaseStoich))
     } else {
       PhaseStoich = tmp
@@ -134,8 +138,14 @@ AddPhases = function(ThisProblem,
     }
     if (HasStoichCompsNames) {
       for (i in 1:length(PhaseCompNames)) {
-        stopifnot(PhaseCompNames[[i]] == tmp$SpecCompNames[[i]],
-                  PhaseCompStoichs[[i]] == tmp$SpecCompStoichs[[i]])
+
+        PhaseCompsAgg = stats::aggregate(PhaseCompStoichs[[i]],
+                                        by = list(PhaseCompNames[[i]]), FUN = sum)
+        NewOrder = stats::na.omit(match(ThisProblem$Comp$Name, PhaseCompsAgg$Group.1))
+        PhaseCompNames[[i]] = PhaseCompsAgg$Group.1[NewOrder]
+        PhaseCompStoichs[[i]] = PhaseCompsAgg$x[NewOrder]
+        stopifnot(PhaseCompNames[[i]] == tmp$PhaseCompNames[[i]],
+                  PhaseCompStoichs[[i]] == tmp$PhaseCompStoichs[[i]])
       }
     } else {
       PhaseCompNames = tmp$SpecCompNames

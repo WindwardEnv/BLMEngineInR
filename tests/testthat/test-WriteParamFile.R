@@ -6,7 +6,7 @@ test_that("WriteParamFile works", {
     mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
   myproblem = AddPhases(ThisProblem = myproblem,
-                        PhaseEquation = "CO2(g) = 1 * CO3 + 2 * H",
+                        PhaseEquation = "CO2(g) = 2 * H + 1 * CO3",
                         PhaseLogK = -1.5,
                         PhaseDeltaH = 0,
                         PhaseTempKelvin = 298,

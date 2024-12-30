@@ -60,7 +60,7 @@ ThisProblem = AddSpecies(
 )
 # ...ThisProblem now simulates carbonate reactions.
 
-# Add major ions and a copper as components
+# Add major ions and copper as components
 ThisProblem = AddInComps(
   ThisProblem,
   InCompName = c("Cu", "Ca", "Mg", "Na", "K", "SO4", "Cl", "S"),
@@ -119,13 +119,15 @@ ThisProblem = AddDefComps(ThisProblem,
 # Add biotic ligand reactions (using SpecStoich):
 spec_that_bind = c("Cu", "CuOH", "Ca", "Mg", "H", "Na")
 temp_stoich_mat = ThisProblem$SpecStoich[spec_that_bind, ]
+rownames(temp_stoich_mat) = paste0("BL1-", spec_that_bind)
 temp_stoich_mat[, "BL1"] = 1L
+temp_stoich_mat["BL1-CuOH", c("H","OH")] = c(-1L, 0L)
 ThisProblem = AddSpecies(
   ThisProblem,
   SpecName = paste0("BL1-", spec_that_bind),
   SpecMCName = "BL",
   SpecActCorr = "None",
-  SpecLogK = c(7.4, 12.7, 3.6, 3.6, 5.4, 3.0),
+  SpecLogK = c(7.4, -1.3, 3.6, 3.6, 5.4, 3.0),
   SpecDeltaH = ThisProblem$Spec$DeltaH[match(spec_that_bind, ThisProblem$Spec$Name)],
   SpecTempKelvin = ThisProblem$Spec$TempKelvin[match(spec_that_bind, ThisProblem$Spec$Name)],
   SpecStoich = temp_stoich_mat

@@ -24,7 +24,7 @@
 //'
 //' @param NSpec integer, the number of chemical species for which we have
 //'   formation reactions in the simulation
-//' @param SpecMoles numeric vector (NSpec), the concentrations of each species
+//' @param SpecConc numeric vector (NSpec), the concentrations of each species
 //'   for which we have formation reactions
 //' @param SpecCharge signed integer vector (NSpec), the charge of the chemical
 //'   species for which we have formation reactions
@@ -34,18 +34,20 @@
 //' @return double, the ionic strength
 //'
 double CalcIonicStrength(int NSpec,
-                         Rcpp::NumericVector SpecMoles,
+                         Rcpp::NumericVector SpecConc,
                          Rcpp::IntegerVector SpecCharge,
                          Rcpp::IntegerVector SpecMC,
                          int AqueousMC, 
                          Rcpp::CharacterVector SpecType,
                          bool ExcludeOrgMatter) {
   /* output */
-  double IonicStrength = 0;
+  double IonicStrength = 0.0;
 
   /* variables */
   int iSpec;
   bool IncludeSpec;
+  double ExcludedIS = 0.0;
+  double tmp;
 
   for (iSpec = 0; iSpec < NSpec; iSpec++) {
     IncludeSpec = (SpecMC(iSpec) == AqueousMC);      
@@ -55,11 +57,14 @@ double CalcIonicStrength(int NSpec,
       IncludeSpec &= (SpecType(iSpec) != STYPE_WHAMHA);
       IncludeSpec &= (SpecType(iSpec) != STYPE_WHAMFA);    
     }
+    tmp = 0.5 * SpecConc(iSpec) * SpecCharge(iSpec) * SpecCharge(iSpec);
     if (IncludeSpec){ 
-      IonicStrength += pow(SpecCharge(iSpec), 2) * SpecMoles(iSpec);
-    } 
+      IonicStrength += tmp;//pow(SpecCharge(iSpec), 2) * SpecConc(iSpec);
+    } else {
+      ExcludedIS += tmp;//pow(SpecCharge(iSpec), 2) * SpecConc(iSpec);
+    }
   }
-  IonicStrength *= 0.5;  
+  //IonicStrength *= 0.5;  
 
   if (IonicStrength > 100.0) { IonicStrength = 100.0; }
   if (IonicStrength <= 0.0) { IonicStrength = 0.1; }

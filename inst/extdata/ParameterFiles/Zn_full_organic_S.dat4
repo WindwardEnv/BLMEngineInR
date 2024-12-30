@@ -3,9 +3,9 @@ Column model parameter file, Ver 4.00
 2,  Number of Mass Compartments
 3,  Number of Input Labels
 4,  Number of Input Variables
-8,  Number of Input Components 
+9,  Number of Input Components 
 3,  Number of Defined Components
-20, Number of Species
+23, Number of Species
 0,  Number of Phases
 5,  Number of Special Definitions
 2,  Number of Critical Values     
@@ -37,6 +37,7 @@ Zn,         2,     Water,       MassBal,  Debye
 Cl,        -1,     Water,       MassBal,  Debye
 SO4,       -2,     Water,       MassBal,  Debye
 CO3,       -2,     Water,       MassBal,  Debye
+S,         -2,     Water,       MassBal,  Debye
 --------------------------------------------------------------------------------
 Defined Components
 Component, From,     Charge, Compartment, Type,     Activity, Site Den
@@ -48,6 +49,8 @@ Formation Reactions
 Species, Compartment, Activity, NC, C1, S1, C2,  S2, C3,  S3, Log K,        Delta H,           TempK
 HCO3,    Water,       Debye,    2,  H,  1,  CO3, 1,           10.329,       -14997.55155,      298.1514609
 H2CO3,   Water,       Debye,    2,  H,  2,  CO3, 1,           16.681,       -24166.23162,      298.1514609
+HS,      Water,       Debye,    2,  H,  1,  S,   1,           13.9,         0,                 298.1514609
+H2S,     Water,       Debye,    2,  H,  2,  S,   1,           20.9,         0,                 298.1514609
 MgHCO3,  Water,       Debye,    3,  H,  1,  Mg,  1,  CO3, 1,  11.4,         -11666.16619,      298.1514609
 MgCO3,   Water,       Debye,    2,  Mg, 1,  CO3, 1,           2.98,         11413.46945,       298.1514609
 MgSO4,   Water,       Debye,    2,  Mg, 1,  SO4, 1,           2.37,         19162.83616,       298.1514609
@@ -60,6 +63,7 @@ ZnSO4,   Water,       Debye,    2,  Zn, 1,  SO4, 1,           2.38,         6317
 ZnCO3,   Water,       Debye,    2,  Zn, 1,  CO3, 1,           4.76,         0,                 298.1514609
 ZnCl,    Water,       Debye,    2,  Zn, 1,  Cl,  1,           0.4,          5475.096044,       298.1514609
 ZnHCO3,  Water,       Debye,    3,  H,  1,  Zn,  1,  CO3, 1,  13.12,        0,                 298.1514609
+ZnS,     Water,       Debye,    2,  Zn, 1,  S,   1,           18.29,        0,                 298.1514609
 BL1-Zn,  BL,          None,     2,  Zn, 1,  BL1, 1,           5.4,          0,                 0
 BL1-ZnOH,BL,          None,     3,  H,  -1, Zn,  1,  BL1, 1,  -2.446579044, 0,                 0
 BL1-Ca,  BL,          None,     2,  Ca, 1,  BL1, 1,           4.2156468681, 0,                 0

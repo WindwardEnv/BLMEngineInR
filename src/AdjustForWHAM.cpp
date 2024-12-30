@@ -206,7 +206,7 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                         NComp, CompConc,
                         NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
                         SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
-                        WHAMSpecCharge);
+                        WHAMSpecCharge, true);
       }
     }
   }
@@ -239,7 +239,7 @@ void AdjustForWHAMAfterCalcSpecies(int NComp,
                         NComp, CompConc,
                         NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
                         SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
-                        WHAMSpecCharge);
+                        WHAMSpecCharge, true);
       }
     }
   }

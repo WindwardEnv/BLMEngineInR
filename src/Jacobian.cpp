@@ -279,12 +279,28 @@ Rcpp::NumericMatrix Jacobian(int NComp, //number of components
           Ci = SpecConc(i);
           Sij = SpecStoich(i, j);
           Vi = SpecCtoM(i);
+          Sik = SpecStoich(i, k);
+          dVidCj = dVdC(i, j);
+          dCidCj = dCdC(i, j);
+          if (DodVidCj) {
+            Tmp = Sik * (dCidCj * Vi + Ci * dVidCj);
+          } else {
+            Tmp = Sik * dCidCj * Vi;
+          }
+          dTkcalcdCj += Tmp;
+        }
+        /*for (ii = 0; ii < NBLMetal; ii++) {
+          i = BLMetalSpecs(ii);
+          Ci = SpecConc(i);
+          Sij = SpecStoich(i, j);
+          Vi = SpecCtoM(i);
           Sik = SpecStoich(i, BLComp);
           dVidCj = dVdC(i, j);
           dCidCj = dCdC(i, j);
           Tmp = Sik * (dCidCj * Vi + Ci * dVidCj);
           dTkcalcdCj += Tmp;
-        }
+        }*/
+
       } else {
         for (i = 0; i < NSpec; i++) {
           Ci = SpecConc(i);

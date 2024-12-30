@@ -20,7 +20,7 @@ water_MC_problem = AddInLabs(
   InLabName = "ID")
 
 water_problem = AddInVars(ThisProblem = water_MC_problem,
-                          InVarName = c("Temperature", "pH"),
+                          InVarName = c("Temp", "pH"),
                           InVarMCName = "Water",
                           InVarType = c("Temperature", "pH"))
 

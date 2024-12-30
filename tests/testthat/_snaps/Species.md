@@ -45,18 +45,18 @@
       
       $Comp
         Name Charge MCName MCR     Type ActCorr SiteDens
-      1  CO3     -2  Water   1  MassBal   Debye        1
-      2    H      1  Water   1 FixedAct   Debye        1
-      3   OH     -1  Water   1 FixedAct   Debye        1
+      1    H      1  Water   1 FixedAct   Debye        1
+      2   OH     -1  Water   1 FixedAct   Debye        1
+      3  CO3     -2  Water   1  MassBal   Debye        1
       
       $Spec
          Name                Equation Charge MCName MCR   Type ActCorr   LogK
-      1   CO3           CO3 = 1 * CO3     -2  Water   1 Normal   Debye  0.000
-      2     H               H = 1 * H      1  Water   1 Normal   Debye  0.000
-      3    OH             OH = 1 * OH     -1  Water   1 Normal   Debye  0.000
-      4  HCO3  HCO3 = 1 * CO3 + 1 * H     -1  Water   1 Normal   Debye 10.329
-      5 H2CO3 H2CO3 = 1 * CO3 + 2 * H      0  Water   1 Normal   Debye 16.681
-      6 H3CO3 H3CO3 = 1 * CO3 + 3 * H      1  Water   1 Normal   Debye  1.230
+      1     H               H = 1 * H      1  Water   1 Normal   Debye  0.000
+      2    OH             OH = 1 * OH     -1  Water   1 Normal   Debye  0.000
+      3   CO3           CO3 = 1 * CO3     -2  Water   1 Normal   Debye  0.000
+      4  HCO3  HCO3 = 1 * H + 1 * CO3     -1  Water   1 Normal   Debye 10.329
+      5 H2CO3 H2CO3 = 2 * H + 1 * CO3      0  Water   1 Normal   Debye 16.681
+      6 H3CO3 H3CO3 = 3 * H + 1 * CO3      1  Water   1 Normal   Debye  1.230
                    K DeltaH TempKelvin NC
       1 1.000000e+00      0       0.00  1
       2 1.000000e+00      0       0.00  1
@@ -67,21 +67,21 @@
       
       $SpecCompList
             [,1] [,2]
-      CO3      1    0
-      H        2    0
-      OH       3    0
-      HCO3     1    2
-      H2CO3    1    2
-      H3CO3    1    2
+      H        1    0
+      OH       2    0
+      CO3      3    0
+      HCO3     1    3
+      H2CO3    1    3
+      H3CO3    1    3
       
       $SpecStoich
-            CO3 H OH
-      CO3     1 0  0
-      H       0 1  0
-      OH      0 0  1
-      HCO3    1 1  0
-      H2CO3   1 2  0
-      H3CO3   1 3  0
+            H OH CO3
+      H     1  0   0
+      OH    0  1   0
+      CO3   0  0   1
+      HCO3  1  0   1
+      H2CO3 2  0   1
+      H3CO3 3  0   1
       
       $Phase
       [1] Name       Equation   NC         LogK       DeltaH     TempKelvin Moles     
@@ -91,7 +91,7 @@
       <0 x 0 matrix>
       
       $PhaseStoich
-           CO3 H OH
+           H OH CO3
       
       $BL
       [1] Name  CompR
@@ -253,16 +253,16 @@
       
       $Comp
         Name Charge MCName MCR     Type ActCorr SiteDens
-      1  CO3     -2  Water   1  MassBal   Debye        1
-      2    H      1  Water   1 FixedAct   Debye        1
-      3   OH     -1  Water   1 FixedAct   Debye        1
+      1    H      1  Water   1 FixedAct   Debye        1
+      2   OH     -1  Water   1 FixedAct   Debye        1
+      3  CO3     -2  Water   1  MassBal   Debye        1
       
       $Spec
          Name                Equation Charge MCName MCR   Type ActCorr   LogK
-      1   CO3           CO3 = 1 * CO3     -2  Water   1 Normal   Debye  0.000
-      2     H               H = 1 * H      1  Water   1 Normal   Debye  0.000
-      3    OH             OH = 1 * OH     -1  Water   1 Normal   Debye  0.000
-      4 H2CO3 H2CO3 = 1 * CO3 + 2 * H      0  Water   1 Normal   Debye 16.681
+      1     H               H = 1 * H      1  Water   1 Normal   Debye  0.000
+      2    OH             OH = 1 * OH     -1  Water   1 Normal   Debye  0.000
+      3   CO3           CO3 = 1 * CO3     -2  Water   1 Normal   Debye  0.000
+      4 H2CO3 H2CO3 = 2 * H + 1 * CO3      0  Water   1 Normal   Debye 16.681
                    K DeltaH TempKelvin NC
       1 1.000000e+00      0       0.00  1
       2 1.000000e+00      0       0.00  1
@@ -271,17 +271,17 @@
       
       $SpecCompList
             [,1] [,2]
-      CO3      1    0
-      H        2    0
-      OH       3    0
-      H2CO3    1    2
+      H        1    0
+      OH       2    0
+      CO3      3    0
+      H2CO3    1    3
       
       $SpecStoich
-            CO3 H OH
-      CO3     1 0  0
-      H       0 1  0
-      OH      0 0  1
-      H2CO3   1 2  0
+            H OH CO3
+      H     1  0   0
+      OH    0  1   0
+      CO3   0  0   1
+      H2CO3 2  0   1
       
       $Phase
       [1] Name       Equation   NC         LogK       DeltaH     TempKelvin Moles     
@@ -291,7 +291,7 @@
       <0 x 0 matrix>
       
       $PhaseStoich
-           CO3 H OH
+           H OH CO3
       
       $BL
       [1] Name  CompR

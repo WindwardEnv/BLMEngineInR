@@ -63,9 +63,9 @@ DiToro D.M., McGrath J.A., Hansen D.J., Berry W.J., Paquin P.R., Mathew R., Wu K
 
 Ryan A.C., Van Genderen E.J., Tomasso J.R., Klaine S.J. 2004. Influence of natural organic matter source on copper toxicity to larval fathead minnows (*Pimephales promelas*): implications for the biotic ligand model. Environmental Toxicology & Chemistry 23:1567-1574. <https://doi.org/10.1897/02-476>
 
-Santore R.C., Mathew R., Paquin P.R., DiToro D.M.. 2002. Application of the biotic ligand model to predicting zinc toxicity to rainbow trout, fathead minnow, and *Daphnia magna*. Aquatic Toxicology 133:271-285. <https://doi.org/10.1016/S1532-0456(02)00106-0>
+Santore R.C., Mathew R., Paquin P.R., DiToro D.M.. 2002. Application of the biotic ligand model to predicting zinc toxicity to rainbow trout, fathead minnow, and *Daphnia magna*. Aquatic Toxicology 133:271-285. [https://doi.org/10.1016/S1532-0456(02)00106-0](https://doi.org/10.1016/S1532-0456(02)00106-0){.uri}
 
-Paquin P.R., Gorsuch J.W., Apte S., Batley G.E., Bowles K.C., Campbell P.G.C., Delos C.G., DiToro D.M., Dwyer R.L., Galvez F., Gensemer R.W., Goss G.G., Hogstrand C., Janssen C.R., McGeer J.C., Naddy R.B., Playle R.C., Santore R.C., Schneider U., Stubblefield W.A., Wood C.M., Wu K.B. 2002. The biotic ligand model: a historical overview. Comparative Biochemistry & Physiology Part C 133:3-35. <https://doi.org/10.1016/S1532-0456(02)00112-6>
+Paquin P.R., Gorsuch J.W., Apte S., Batley G.E., Bowles K.C., Campbell P.G.C., Delos C.G., DiToro D.M., Dwyer R.L., Galvez F., Gensemer R.W., Goss G.G., Hogstrand C., Janssen C.R., McGeer J.C., Naddy R.B., Playle R.C., Santore R.C., Schneider U., Stubblefield W.A., Wood C.M., Wu K.B. 2002. The biotic ligand model: a historical overview. Comparative Biochemistry & Physiology Part C 133:3-35. [https://doi.org/10.1016/S1532-0456(02)00112-6](https://doi.org/10.1016/S1532-0456(02)00112-6){.uri}
 
 DiToro D.M., Allen H.E., Bergman H.L., Meyer J.S., Paquin P.R., Santore R.C. 2001. Biotic ligand model of the acute toxicity of metals. 1. Technical basis. Environmental Toxicology & Chemistry 20:2383-2396. <https://doi.org/10.1002/etc.5620201034>
 

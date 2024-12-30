@@ -103,7 +103,8 @@ void SimpleAdjustComp(int iComp,
                       Rcpp::NumericVector SpecActivityCoef,
                       Rcpp::NumericVector SpecCtoMAdj,
                       Rcpp::IntegerVector SpecCharge,
-                      Rcpp::NumericVector WHAMSpecCharge);
+                      Rcpp::NumericVector WHAMSpecCharge,
+                      bool DoWHAM);
 
 Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
                                  Rcpp::NumericVector SpecCtoM, 
@@ -166,7 +167,7 @@ Rcpp::NumericVector TempCorrection(double SysTempKelvin,
                                    Rcpp::NumericVector SpecDeltaH);
 
 double CalcIonicStrength(int NSpec,
-                         Rcpp::NumericVector SpecMoles,
+                         Rcpp::NumericVector SpecConc,
                          Rcpp::IntegerVector SpecCharge,
                          Rcpp::IntegerVector SpecMC,
                          int AqueousMC, 

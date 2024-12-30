@@ -150,6 +150,7 @@ AddSpecies = function(ThisProblem,
                                     SpecCompNames = SpecCompNames,
                                     SpecCompStoichs = SpecCompStoichs)
     if (HasStoichMatrix) {
+      SpecStoich = SpecStoich[, ThisProblem$Comp$Name, drop = FALSE]
       stopifnot(all(tmp == SpecStoich))
     } else {
       SpecStoich = tmp
@@ -172,8 +173,9 @@ AddSpecies = function(ThisProblem,
     }
     if (HasStoichCompsNames) {
       for (i in 1:length(SpecCompNames)) {
-        SpecCompsAgg = stats::aggregate(SpecCompStoichs[[i]], by = list(SpecCompNames[[i]]), FUN = sum)
-        NewOrder = stats::na.omit(match(SpecCompsAgg$Group.1, ThisProblem$Comp$Name))
+        SpecCompsAgg = stats::aggregate(SpecCompStoichs[[i]],
+                                        by = list(SpecCompNames[[i]]), FUN = sum)
+        NewOrder = stats::na.omit(match(ThisProblem$Comp$Name, SpecCompsAgg$Group.1))
         SpecCompNames[[i]] = SpecCompsAgg$Group.1[NewOrder]
         SpecCompStoichs[[i]] = SpecCompsAgg$x[NewOrder]
         stopifnot(SpecCompNames[[i]] == tmp$SpecCompNames[[i]],

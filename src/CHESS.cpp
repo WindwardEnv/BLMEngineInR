@@ -82,6 +82,8 @@
 //' @param MetalCompR integer, the position of the metal in the component arrays
 //'   (i.e., which is the toxic metal component) Note: this is base-1 indexed on
 //'   input then converted.
+//' @param BLCompR integer, the position of the biotic ligand in the component 
+//'   arrays. Note: this is base-1 indexed on input, then converted.
 //' @param NBLMetal integer, the number of biotic ligand-bound metal species 
 //'   that are associated with toxic effects.
 //' @param BLMetalSpecsR integer vector, the positions of the species in the
@@ -90,6 +92,22 @@
 //'   on input then converted.
 //' @param CATarget numeric, the target critical accumulation in units of mol /
 //'   kg (only used when DoTox == TRUE)
+//' @param DodVidCj boolean, should the Jacobian matrix include the change in
+//'   the main water solution (excluding Donnan layer volume)?
+//' @param DodVidCjDonnan boolean, should the Jacobian matrix include the change
+//'   in the Donnan layer volume?
+//' @param DodKidCj boolean, should the Jacobian matrix include the change in
+//'   the DOC equilibrium constants?
+//' @param DoGammai boolean, should the Jacobian matrix include the change in 
+//'   the activity coefficients?
+//' @param DoJacDonnan boolean, should the Jacobian matrix be used to solve the
+//'   Donnan layer concentrations?
+//' @param DoJacWHAM boolean, should the Jacobian matrix be used to solve the
+//'   WHAM component concentrations?
+//' @param DoWHAMSimpleAdjust boolean, should SimpleAdjust be used to solve the
+//'   WHAM component concentrations?
+//' @param DoDonnanSimpleAdjust boolean, should SimpleAdjust be used to solve
+//'   the Donnan layer concentrations?
 //'
 //' @return list with the following elements:
 //' \describe{
@@ -303,11 +321,25 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
       }
       if (RelaxOn) {
         if (SlowCount > 2) {
-          SimpleAdjustComp(WhichMax, ConvergenceCriteria, MaxIter, TotMoles(WhichMax), 
+          if (DoTox && (WhichMax == MetalComp)) {
+            // Sum toxic BL-bound metal species
+            double CACalculated = 0;
+            int iSpec;
+            for (int i = 0; i < NBLMetal; i++){
+              iSpec = BLMetalSpecs[i];
+              CACalculated += SpecConc[iSpec];
+            }
+            CompConc(MetalComp) = CompConc(MetalComp) * (CATarget / CACalculated);
+            SpecConc(MetalComp) = CompConc(MetalComp);
+            TotConc(MetalComp) = TotConc(MetalComp) * (CATarget / CACalculated);
+            TotMoles(MetalComp) = TotMoles(MetalComp) * (CATarget / CACalculated);
+          } else {
+            SimpleAdjustComp(WhichMax, ConvergenceCriteria, MaxIter, TotMoles(WhichMax), 
                 NComp, CompConc,
                 NSpec, SpecConc, SpecKISTempAdj, SpecStoich, SpecName,
                 SpecType, SpecActivityCoef, SpecCtoMAdj, SpecCharge,
-                WHAMSpecCharge);
+                WHAMSpecCharge, DoWHAM);
+          }          
           CompConcStep(WhichMax) = 0.0;
           //SlowCount = 0;
           GoodCount = 0;
@@ -490,9 +522,9 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                          ConvergenceCriteria, MaxIter);
     CompConc = SpecConc[CompPosInSpec];
     SpecMoles = SpecConc * SpecCtoMAdj;
-    //CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
+    CompCtoMAdj = SpecCtoMAdj[CompPosInSpec];
     //TotMoles = TotConc * CompCtoMAdj;
-    CalcTotConc = CalcTotMoles / CompCtoM;//Adj;
+    CalcTotConc = CalcTotMoles / CompCtoMAdj;
 
   } // while ((MaxError > ConvergenceCriteria) & (Iter <= MaxIter))
 
@@ -519,6 +551,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
       Rcpp::Named("ChargeBalance") = ChargeBalance,
       Rcpp::Named("SpecConc") = SpecConc,
       Rcpp::Named("SpecAct") = SpecAct,
+      Rcpp::Named("SpecActivityCoef") = SpecActivityCoef,
       Rcpp::Named("SpecMoles") = SpecMoles,
       Rcpp::Named("CalcTotConc") = CalcTotConc,
       Rcpp::Named("CalcTotMoles") = CalcTotMoles,

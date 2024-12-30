@@ -192,7 +192,7 @@ test_that("AddSpecies works", {
                                SpecLogK = 1.23,
                                SpecDeltaH = -1234,
                                SpecTempKelvin = 298)$Spec$Equation,1),
-               "H3CO3 = 1 * CO3 + 3 * H")
+               "H3CO3 = 3 * H + 1 * CO3")
   expect_equal(tail(AddSpecies(ThisProblem = carbonate_system_problem,
                                SpecEquation = "H3CO3 = 1 * CO3 + 3 * H ",
                                SpecMCName = "Water",
@@ -200,7 +200,7 @@ test_that("AddSpecies works", {
                                SpecLogK = 1.23,
                                SpecDeltaH = -1234,
                                SpecTempKelvin = 298)$Spec$Equation,1),
-               "H3CO3 = 1 * CO3 + 3 * H")
+               "H3CO3 = 3 * H + 1 * CO3")
 
   # missing stoichiometry and name
   expect_error(AddSpecies(ThisProblem = carbonate_system_problem,

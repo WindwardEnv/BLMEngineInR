@@ -144,20 +144,24 @@ double CHESSIter(
   CompConc = SpecConc[CompPosInSpec];
   CompUpdate(NComp, CompConcStep, CompType, CompConc);
   SpecConc[CompPosInSpec] = clone(CompConc);
-  
-  // Calculate the ionic strength and activity coefficients
-  ChargeBalance = CalcChargeBalance(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC);
-  IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC, SpecType, false);
-  SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
-                                      IonicStrength, SysTempKelvin);
   UpdateFixedComps(NComp, CompType, TotConc, SpecActivityCoef, 
                   SpecConc, CompConc);
+  
+  // Calculate the ionic strength and activity coefficients
+  SpecMoles = SpecConc * SpecCtoMAdj;
+  ChargeBalance = CalcChargeBalance(NSpec, SpecMoles, SpecCharge, 
+                                    SpecMC, AqueousMC);
+  IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, 
+                                    SpecMC, AqueousMC, SpecType, false);
+  WHAMIonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, 
+                                    SpecMC, AqueousMC, SpecType, true);
+  SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
+                                      WHAMIonicStrength, SysTempKelvin);
+  UpdateFixedComps(NComp, CompType, TotConc, SpecActivityCoef, 
+                  SpecConc, CompConc);
+  SpecMoles = SpecConc * SpecCtoMAdj;
 
   if (DoWHAM) {
-    WHAMIonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC, SpecType, true);
     AdjustForWHAMBeforeCalcSpecies(NMass, MassAmt, MassAmtAdj, NSpec, SpecType,
       SpecMC, SpecCharge, SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,
       WHAMIonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC, 
@@ -186,8 +190,8 @@ double CHESSIter(
   }       
 
   // Calculate the total moles & conc from species concentrations
-  CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, 
-                                         SpecStoich);
+  SpecMoles = SpecConc * SpecCtoMAdj;
+  CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecMoles, SpecStoich);
   CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoMAdj, SpecStoich,
                       CalcTotMoles, CalcTotConc);
 

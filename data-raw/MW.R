@@ -23,7 +23,7 @@
 #   94(5), 573-600. https://doi.org/10.1515/pac-2019-0603
 
 # abridged atomic weights from IUPAC
-MW = list(
+MW = c(
   H = 1.008,
   He = 4.0026,
   Li = 6.94,
