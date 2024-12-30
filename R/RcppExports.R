@@ -50,13 +50,13 @@
 #'   at the beginning of the function)
 #' @param HumicSubstGramsPerLiter NumericVector, length of 2, grams per liter 
 #'   of each organic matter component (HA and FA) in solution
-#' @param wMolWt numeric (2), WHAM's molecular weight parameter for organic
+#' @param WHAMMolWt numeric (2), WHAM's molecular weight parameter for organic
 #'   matter
-#' @param wRadius numeric (2), WHAM's molecular radius parameter for organic
+#' @param WHAMRadius numeric (2), WHAM's molecular radius parameter for organic
 #'   matter
-#' @param wP numeric (2), WHAM's P parameter...
-#' @param wDLF numeric (2), WHAM's Double layer overlap factor
-#' @param wKZED numeric (2), WHAM's Constant to control DDL at low ZED
+#' @param WHAMP numeric (2), WHAM's P parameter...
+#' @param WHAMDLF numeric (2), WHAM's Double layer overlap factor
+#' @param WHAMKZED numeric (2), WHAM's Constant to control DDL at low ZED
 #' @param SysTempKelvin double; input temperature for the current observation,
 #'   in Kelvin
 #' @param DoTox logical, TRUE for toxicity mode where the MetalName component
@@ -65,6 +65,8 @@
 #' @param MetalCompR integer, the position of the metal in the component arrays
 #'   (i.e., which is the toxic metal component) Note: this is base-1 indexed on
 #'   input then converted.
+#' @param BLCompR integer, the position of the biotic ligand in the component 
+#'   arrays. Note: this is base-1 indexed on input, then converted.
 #' @param NBLMetal integer, the number of biotic ligand-bound metal species 
 #'   that are associated with toxic effects.
 #' @param BLMetalSpecsR integer vector, the positions of the species in the
@@ -73,6 +75,22 @@
 #'   on input then converted.
 #' @param CATarget numeric, the target critical accumulation in units of mol /
 #'   kg (only used when DoTox == TRUE)
+#' @param DodVidCj boolean, should the Jacobian matrix include the change in
+#'   the main water solution (excluding Donnan layer volume)?
+#' @param DodVidCjDonnan boolean, should the Jacobian matrix include the change
+#'   in the Donnan layer volume?
+#' @param DodKidCj boolean, should the Jacobian matrix include the change in
+#'   the DOC equilibrium constants?
+#' @param DoGammai boolean, should the Jacobian matrix include the change in 
+#'   the activity coefficients?
+#' @param DoJacDonnan boolean, should the Jacobian matrix be used to solve the
+#'   Donnan layer concentrations?
+#' @param DoJacWHAM boolean, should the Jacobian matrix be used to solve the
+#'   WHAM component concentrations?
+#' @param DoWHAMSimpleAdjust boolean, should SimpleAdjust be used to solve the
+#'   WHAM component concentrations?
+#' @param DoDonnanSimpleAdjust boolean, should SimpleAdjust be used to solve
+#'   the Donnan layer concentrations?
 #'
 #' @return list with the following elements:
 #' \describe{
@@ -88,7 +106,7 @@
 #' }
 #' @export
 #'
-CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget) {
-    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, wMolWt, wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, NBLMetal, BLMetalSpecsR, CATarget)
+CHESS <- function(QuietFlag, ConvergenceCriteria, MaxIter, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, WHAMMolWt, WHAMRadius, WHAMP, WHAMDLF, WHAMKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, BLCompR, NBLMetal, BLMetalSpecsR, CATarget, DodVidCj, DodVidCjDonnan, DodKidCj, DoGammai, DoJacDonnan, DoJacWHAM, DoWHAMSimpleAdjust, DoDonnanSimpleAdjust) {
+    .Call(`_BLMEngineInR_CHESS`, QuietFlag, ConvergenceCriteria, MaxIter, NMass, MassName, MassAmt, NComp, CompName, CompType, TotConc, NSpec, SpecName, SpecType, SpecMCR, SpecK, SpecTempKelvin, SpecDeltaH, SpecStoich, SpecCharge, SpecActCorr, DoWHAM, AqueousMCR, WHAMDonnanMCR, HumicSubstGramsPerLiter, WHAMMolWt, WHAMRadius, WHAMP, WHAMDLF, WHAMKZED, SysTempKelvin, DoTox, MetalName, MetalCompR, BLCompR, NBLMetal, BLMetalSpecsR, CATarget, DodVidCj, DodVidCjDonnan, DodKidCj, DoGammai, DoJacDonnan, DoJacWHAM, DoWHAMSimpleAdjust, DoDonnanSimpleAdjust)
 }
 

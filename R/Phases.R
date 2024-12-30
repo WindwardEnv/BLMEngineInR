@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' @name Phases
 #'
 #' @title Add or remove phase reactions in a problem
@@ -98,12 +112,16 @@ AddPhases = function(ThisProblem,
     ))
   }
 
+  if (HasStoichMatrix) {
+    PhaseStoich = PhaseStoich[, ThisProblem$Comp$Name, drop = FALSE]
+  }
   if (HasStoichCompsNames) {
     tmp = StoichCompsToStoichMatrix(CompName = ThisProblem$Comp$Name,
                                     SpecName = PhaseName,
                                     SpecCompNames = PhaseCompNames,
                                     SpecCompStoichs = PhaseCompStoichs)
     if (HasStoichMatrix) {
+      PhaseStoich = PhaseStoich[, ThisProblem$Comp$Name, drop = FALSE]
       stopifnot(all(tmp == PhaseStoich))
     } else {
       PhaseStoich = tmp
@@ -120,8 +138,14 @@ AddPhases = function(ThisProblem,
     }
     if (HasStoichCompsNames) {
       for (i in 1:length(PhaseCompNames)) {
-        stopifnot(PhaseCompNames[[i]] == tmp$SpecCompNames[[i]],
-                  PhaseCompStoichs[[i]] == tmp$SpecCompStoichs[[i]])
+
+        PhaseCompsAgg = stats::aggregate(PhaseCompStoichs[[i]],
+                                        by = list(PhaseCompNames[[i]]), FUN = sum)
+        NewOrder = stats::na.omit(match(ThisProblem$Comp$Name, PhaseCompsAgg$Group.1))
+        PhaseCompNames[[i]] = PhaseCompsAgg$Group.1[NewOrder]
+        PhaseCompStoichs[[i]] = PhaseCompsAgg$x[NewOrder]
+        stopifnot(PhaseCompNames[[i]] == tmp$PhaseCompNames[[i]],
+                  PhaseCompStoichs[[i]] == tmp$PhaseCompStoichs[[i]])
       }
     } else {
       PhaseCompNames = tmp$SpecCompNames

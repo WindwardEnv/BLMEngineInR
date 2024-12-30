@@ -1,3 +1,17 @@
+// Copyright 2024 Windward Environmental LLC
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -14,11 +28,9 @@
 //' @param NComp integer, the number of components
 //' @param CompConcStep numeric vector (NComp) of adjustments to the component
 //'   concentrations
-//' @param CompName numeric vector (NComp) with the names of the components
+//' @param CompType character vector (NComp) with the types of each component
 //' @param CompConc (INPUT & OUTPUT) numeric vector (NComp) of component
 //'   concentrations, input values are from this iteration
-//'
-//' @return  numeric cector CompConc (NComp) modified for the next iteration
 //'
 void CompUpdate(int NComp, 
                 Rcpp::NumericVector CompConcStep,
@@ -26,24 +38,19 @@ void CompUpdate(int NComp,
                 Rcpp::NumericVector &CompConc){
 
   /* variables */
-  Rcpp::NumericVector oldCompConc(NComp); //oldCompConc = CompConc;
-  // Rcpp::LogicalVector ltzero(NComp);
+  Rcpp::NumericVector oldCompConc(NComp);
   int iComp;
 
-
-  // newCompConc = CompConc - CompConcStep;
-  // newCompConc[ltzero] = CompConc[ltzero] / 10;
-
-  for (iComp = 0; iComp < NComp; iComp++){
+  for (iComp = 0; iComp < NComp; iComp++) {
     oldCompConc[iComp] = CompConc[iComp];
     if (CompConcStep[iComp] >= oldCompConc[iComp]) {
       CompConc[iComp] = oldCompConc[iComp] / 10;
     } else {
       CompConc[iComp] = oldCompConc[iComp] - CompConcStep[iComp];
     }
-    //if (((CompType[iComp] == CTYPE_DONNANHA) || (CompType[iComp] == CTYPE_DONNANFA))) {
-    //  if (CompConc[iComp] < 1.0) { CompConc[iComp] = 1.0; }
-    //}
+    if (((CompType[iComp] == CTYPE_DONNANHA) || (CompType[iComp] == CTYPE_DONNANFA))) {
+      if (CompConc[iComp] < 1.0) { CompConc[iComp] = 1.0; }
+    }
   }//NEXT iComp
 
 }

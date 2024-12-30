@@ -6,7 +6,7 @@ test_that("AddSpecies works", {
                              SpecName = "H3CO3",
                              SpecCompNames = list(c("H", "CO3")),
                              SpecCompStoichs = list(c(3, 1)),
-                             SpecStoich = matrix(c(3, 1), nrow = 1, ncol = 2, dimnames = list("HCO3", c("H","CO3"))),
+                             SpecStoich = matrix(c(3, 0, 1), nrow = 1, ncol = 3, dimnames = list("H3CO3", c("H","OH","CO3"))),
                              SpecMCName = "Water",
                              SpecActCorr = "Debye",
                              SpecLogK = 1.23,
@@ -23,7 +23,7 @@ test_that("AddSpecies works", {
                              SpecTempKelvin = 298))
   expect_no_error(AddSpecies(ThisProblem = carbonate_system_problem,
                              SpecName = "H3CO3",
-                             SpecStoich = matrix(c(3, 1), nrow = 1, ncol = 2, dimnames = list("HCO3", c("H","CO3"))),
+                             SpecStoich = matrix(c(3, 0, 1), nrow = 1, ncol = 3, dimnames = list("H3CO3", c("H","OH","CO3"))),
                              SpecMCName = "Water",
                              SpecActCorr = "Debye",
                              SpecLogK = 1.23,
@@ -192,7 +192,7 @@ test_that("AddSpecies works", {
                                SpecLogK = 1.23,
                                SpecDeltaH = -1234,
                                SpecTempKelvin = 298)$Spec$Equation,1),
-               "H3CO3 = 1 * CO3 + 3 * H")
+               "H3CO3 = 3 * H + 1 * CO3")
   expect_equal(tail(AddSpecies(ThisProblem = carbonate_system_problem,
                                SpecEquation = "H3CO3 = 1 * CO3 + 3 * H ",
                                SpecMCName = "Water",
@@ -200,7 +200,7 @@ test_that("AddSpecies works", {
                                SpecLogK = 1.23,
                                SpecDeltaH = -1234,
                                SpecTempKelvin = 298)$Spec$Equation,1),
-               "H3CO3 = 1 * CO3 + 3 * H")
+               "H3CO3 = 3 * H + 1 * CO3")
 
   # missing stoichiometry and name
   expect_error(AddSpecies(ThisProblem = carbonate_system_problem,
@@ -238,7 +238,7 @@ test_that("AddSpecies works", {
                           SpecName = "H3CO3",
                           SpecCompNames = list(c("H", "CO3")),
                           SpecCompStoichs = list(c(3, 1)),
-                          SpecStoich = matrix(c(3, 1), nrow = 1, ncol = 2, dimnames = list("HCO3", c("H","CO3"))),
+                          SpecStoich = matrix(c(3, 0, 1), nrow = 1, ncol = 3, dimnames = list("HCO3", c("H", "OH","CO3"))),
                           SpecMCName = "Water",
                           SpecActCorr = "Debye",
                           SpecLogK = 1.23,
@@ -249,7 +249,7 @@ test_that("AddSpecies works", {
                              SpecName = "H3CO3",
                              SpecCompNames = list(c("H", "CO3")),
                              SpecCompStoichs = list(c(999, 1)),
-                             SpecStoich = matrix(c(3, 1), nrow = 1, ncol = 2, dimnames = list("HCO3", c("H","CO3"))),
+                             SpecStoich = matrix(c(3, 0, 1), nrow = 1, ncol = 3, dimnames = list("HCO3", c("H", "OH","CO3"))),
                              SpecMCName = "Water",
                              SpecActCorr = "Debye",
                              SpecLogK = 1.23,
@@ -260,7 +260,7 @@ test_that("AddSpecies works", {
                              SpecName = "H3CO3",
                              SpecCompNames = list(c("H", "CO3")),
                              SpecCompStoichs = list(c(3, 1)),
-                             SpecStoich = matrix(c(999, 1), nrow = 1, ncol = 2, dimnames = list("HCO3", c("H","CO3"))),
+                             SpecStoich = matrix(c(999, 0, 1), nrow = 1, ncol = 3, dimnames = list("HCO3", c("H","OH","CO3"))),
                              SpecMCName = "Water",
                              SpecActCorr = "Debye",
                              SpecLogK = 1.23,
@@ -271,7 +271,7 @@ test_that("AddSpecies works", {
                              SpecName = "H999CO3",
                              SpecCompNames = list(c("H", "CO3")),
                              SpecCompStoichs = list(c(3, 1)),
-                             SpecStoich = matrix(c(3, 1), nrow = 1, ncol = 2, dimnames = list("HCO3", c("H","CO3"))),
+                             SpecStoich = matrix(c(3, 0, 1), nrow = 1, ncol = 3, dimnames = list("HCO3", c("H","OH","CO3"))),
                              SpecMCName = "Water",
                              SpecActCorr = "Debye",
                              SpecLogK = 1.23,

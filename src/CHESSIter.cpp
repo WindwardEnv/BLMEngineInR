@@ -1,3 +1,17 @@
+// Copyright 2024 Windward Environmental LLC
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
@@ -50,7 +64,9 @@
 //'   total moles of each component in the simulation
 //' @param WhichMax (OUTPUT) integer, the position in the component
 //'   vectors of the component with the highest absolute error
-//' @param IonicStrength (OUTPU) double, the ionic strength of the solution
+//' @param IonicStrength (OUTPUT) double, the ionic strength of the solution
+//' @param WHAMIonicStrength (OUTPUT) double, the ionic strength of the 
+//'   solution, excluding organic matter contribtions
 //' @param Resid (OUTPUT) numeric vector (NComp), the residuals = 
 //'   calculated totals - known totals
 //' @param CompError (OUTPUT) numeric vector (NComp), the absolute error
@@ -103,8 +119,14 @@ double CHESSIter(
   Rcpp::NumericVector &WHAMSpecCharge,
   int &WhichMax,
   double &IonicStrength,
+  double &WHAMIonicStrength,
+  double &ChargeBalance,
   Rcpp::NumericVector &Resid,
-  Rcpp::NumericVector &CompError
+  Rcpp::NumericVector &CompError,
+  bool DoWHAMSimpleAdjust,
+  bool DoDonnanSimpleAdjust,
+  double ConvCrit,
+  int MaxIter
 ) {
   
   /*outputs*/
@@ -117,26 +139,29 @@ double CHESSIter(
   /*variables*/
   Rcpp::NumericVector CompConc(NComp);
   Rcpp::NumericVector CompCtoMAdj(NComp);
-  double WHAMIonicStrength;
   
   // Update the component free concentrations
   CompConc = SpecConc[CompPosInSpec];
   CompUpdate(NComp, CompConcStep, CompType, CompConc);
   SpecConc[CompPosInSpec] = clone(CompConc);
-  
-  // Calculate the ionic strength and activity coefficients
-  //ChargeBalance = CalcChargeBalance(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-  //                                  SpecMC, AqueousMC);
-  IonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC, SpecType, true);
-  SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
-                                      IonicStrength, SysTempKelvin);
   UpdateFixedComps(NComp, CompType, TotConc, SpecActivityCoef, 
                   SpecConc, CompConc);
+  
+  // Calculate the ionic strength and activity coefficients
+  SpecMoles = SpecConc * SpecCtoMAdj;
+  ChargeBalance = CalcChargeBalance(NSpec, SpecMoles, SpecCharge, 
+                                    SpecMC, AqueousMC);
+  IonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, 
+                                    SpecMC, AqueousMC, SpecType, false);
+  WHAMIonicStrength = CalcIonicStrength(NSpec, SpecConc, SpecCharge, 
+                                    SpecMC, AqueousMC, SpecType, true);
+  SpecActivityCoef = CalcActivityCoef(NSpec, SpecName, SpecActCorr, SpecCharge, 
+                                      WHAMIonicStrength, SysTempKelvin);
+  UpdateFixedComps(NComp, CompType, TotConc, SpecActivityCoef, 
+                  SpecConc, CompConc);
+  SpecMoles = SpecConc * SpecCtoMAdj;
 
   if (DoWHAM) {
-    WHAMIonicStrength = CalcIonicStrength(NSpec, SpecConc * SpecCtoMAdj, SpecCharge, 
-                                    SpecMC, AqueousMC, SpecType, true);
     AdjustForWHAMBeforeCalcSpecies(NMass, MassAmt, MassAmtAdj, NSpec, SpecType,
       SpecMC, SpecCharge, SpecKTempAdj, SpecKISTempAdj, SpecCtoMAdj,
       WHAMIonicStrength, WHAMSpecCharge, AqueousMC, WHAMDonnanMC, 
@@ -158,13 +183,15 @@ double CHESSIter(
     AdjustForWHAMAfterCalcSpecies(NComp, CompType, TotConc, TotMoles, NSpec, 
       SpecName, SpecType, SpecConc, SpecKISTempAdj, SpecStoich, SpecActivityCoef, SpecMC,
       SpecCharge, SpecCtoMAdj, WHAMSpecCharge, AqueousMC, 
-      HumicSubstGramsPerLiter, UpdateZED);
+      HumicSubstGramsPerLiter, UpdateZED,
+      DoWHAMSimpleAdjust, DoDonnanSimpleAdjust,
+      ConvCrit, MaxIter);
 
   }       
 
   // Calculate the total moles & conc from species concentrations
-  CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecConc * SpecCtoMAdj, 
-                                         SpecStoich);
+  SpecMoles = SpecConc * SpecCtoMAdj;
+  CalcTotMoles = CalcIterationTotalMoles(NComp, NSpec, SpecMoles, SpecStoich);
   CalcIterationTotals(NComp, NSpec, SpecConc, SpecCtoMAdj, SpecStoich,
                       CalcTotMoles, CalcTotConc);
 
@@ -172,11 +199,11 @@ double CHESSIter(
   CalcResidAndError(NComp, CalcTotMoles, TotMoles, CompType, 
                     SpecType, Resid, CompError);
 
-  /*// Adjust Resid and CompError for toxicity mode
+  // Adjust Resid and CompError for toxicity mode
   if (DoTox) {
     AdjustForToxMode(NBLMetal, BLMetalSpecs, MetalComp, CATarget, SpecConc,
                       Resid, CompError);
-  }*/
+  }
 
   // Determine which component has the highest error fraction
   MaxError = MaxCompError(NComp, CompError, WhichMax);

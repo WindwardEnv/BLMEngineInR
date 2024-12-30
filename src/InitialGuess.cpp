@@ -1,3 +1,17 @@
+// Copyright 2024 Windward Environmental LLC
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <Rcpp.h>
 #include <math.h>
 #include "CHESSFunctions.h"
@@ -55,12 +69,45 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
   Rcpp::NumericVector CalcTotConc(NComp);//calculated total component concentrations
   Rcpp::NumericVector CalcTotMoles(NComp);//calculated total component moles 
   Rcpp::NumericVector TotMoles(NComp);
-  double CalcCA;
+  double CACalculated;
   int i;
-  
+  /*int CompTotStoich;
+  double CompStoichMoles;
+  Rcpp::NumericVector MaxSpecConc(NSpec);
+
+  for (iSpec = 0; iSpec < NSpec; iSpec++) {    
+    MaxSpecConc(iSpec) = INFINITY;
+    for (iComp = 0; iComp < NComp; iComp++) {
+      if ((((CompType(iComp) == CTYPE_MASSBAL) || 
+            (CompType(iComp) == CTYPE_WHAMHA) ||
+            (CompType(iComp) == CTYPE_WHAMFA))) && 
+          (TotConc(iComp) < MaxSpecConc(iSpec))) {
+        MaxSpecConc(iSpec) = TotConc(iComp);
+      }
+    }
+  }*/
+
   /* Seed component concentrations with total concentrations */
-  for (iComp = 0; iComp < NComp; iComp++){
-	  CompConc(iComp) = TotConc(iComp);
+  for (iComp = 0; iComp < NComp; iComp++) {    
+    /*if ((CompType[iComp] == CTYPE_FIXEDACT) ||
+        (CompType[iComp] == CTYPE_FIXEDCONC)) {
+      CompConc(iComp) = TotConc(iComp);
+    } else if ((CompType(iComp) == CTYPE_MASSBAL) || 
+                 (CompType(iComp) == CTYPE_WHAMHA) ||
+                 (CompType(iComp) == CTYPE_WHAMFA)) {
+      CompTotStoich = 0;
+      CompStoichMoles = 0.0;
+      for (iSpec = 0; iSpec < NSpec; iSpec++) {
+        CompTotStoich += SpecStoich(iSpec, iComp);
+        CompStoichMoles += SpecStoich(iSpec, iComp) * SpecCtoM(iSpec);
+      }
+      CompConc(iComp) = TotConc(iComp) / CompStoichMoles;
+    } else */if ((CompType(iComp) == CTYPE_DONNANHA) ||
+               (CompType(iComp) == CTYPE_DONNANFA)) {
+      CompConc(iComp) = 10.0;
+    } else {
+      CompConc(iComp) = TotConc(iComp);
+    }
     TotMoles(iComp) = TotConc(iComp) * SpecCtoM(iComp);
   }
 
@@ -89,23 +136,25 @@ Rcpp::NumericVector InitialGuess(Rcpp::NumericVector &TotConc,
 
     if (DoTox) {
       // Sum toxic BL-bound metal species
-      CalcCA = 0;
+      CACalculated = 0;
       for (i = 0; i < NBLMetal; i++){
         iSpec = BLMetalSpecs[i];
-        CalcCA += SpecConc[iSpec];
+        CACalculated += SpecConc[iSpec];
       }
-      TotConc(MetalComp) = TotConc(MetalComp) * (CATarget / CalcCA);
-      TotMoles(MetalComp) = TotMoles(MetalComp) * (CATarget / CalcCA);
+      CompConc(MetalComp) = CompConc(MetalComp) * (CATarget / CACalculated);
+      TotConc(MetalComp) = TotConc(MetalComp) * (CATarget / CACalculated);
+      TotMoles(MetalComp) = TotMoles(MetalComp) * (CATarget / CACalculated);
     }
 
 	  /* Adjust component concentrations */
     for (iComp = 0; iComp < NComp; iComp++) {
-      if ((iRound == 1) && ((CompType(iComp) == CTYPE_DONNANHA) ||
+      /*if ((iRound == 1) && ((CompType(iComp) == CTYPE_DONNANHA) ||
                                    (CompType(iComp) == CTYPE_DONNANFA))) {
         CompConc(iComp) = 10.0;//CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp) + 1) / 2;//
-      } else if ((CompType(iComp) == CTYPE_MASSBAL) || 
-                 (CompType(iComp) == CTYPE_WHAMHA) ||
-                 (CompType(iComp) == CTYPE_WHAMFA)) {
+      } else */if ((!DoTox || (DoTox && (iComp != MetalComp))) && 
+                   ((CompType(iComp) == CTYPE_MASSBAL) || 
+                    (CompType(iComp) == CTYPE_WHAMHA) ||
+                    (CompType(iComp) == CTYPE_WHAMFA))) {
         //CompConc(iComp) = CompConc(iComp) * (TotConc(iComp) / CalcTotConc(iComp));
         CompConc(iComp) = CompConc(iComp) * (TotMoles(iComp) / CalcTotMoles(iComp));
       }

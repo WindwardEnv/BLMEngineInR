@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' @title Expand the DOC component into WHAM components
 #'
 #' @references
@@ -6,186 +20,83 @@
 #'     site/electrostatic model of ion-binding by humic substances. Computers &
 #'     Geosciences, vol. 20, iss. 6, pp. 973-1023.
 #'
-#' @param ThisProblem a list object following the template of BlankProblem
-#' @param WHAMVer a character string specifying the WHAM version to use, must be
-#'   one of `"V"` (default), `"VI"`, or `"VII"`. Ignored if `WdatFile` is not
-#'   `NULL`.
-#' @param WdatFile (optional) a character string specifying the file path of a
-#'   WHAM parameter file
+#' @param ThisProblem a list object following the template of `BlankProblem()`
+#' @param ThisWHAM a list object following the template of `BlankWHAM()`
 #'
 #' @keywords internal
 #'
 #' @noRd
 ExpandWHAM = function(ThisProblem,
-                      WHAMVer = c("V", "VI", "VII"),
-                      WdatFile = NA) {
+                      ThisWHAM = ThisProblem$WHAM) {
 
-  # error catching and input cleanup
-  if (is.na(WdatFile)) {
-    WHAMVer = match.arg(WHAMVer, choices =  c("V", "VI", "VII"))
-    if (WHAMVer == "V") {
-      WdatFile = system.file(file.path("extdata","WHAM","WHAM_V.wdat"),
-                             package = "BLMEngineInR",
-                             mustWork = TRUE)
-    } else if (WHAMVer == "VI") {
-      WdatFile = system.file(file.path("extdata","WHAM","WHAM_VI.wdat"),
-                             package = "BLMEngineInR",
-                             mustWork = TRUE)
-    } else if (WHAMVer  == "VII") {
-      WdatFile = system.file(file.path("extdata","WHAM","WHAM_VII.wdat"),
-                             package = "BLMEngineInR",
-                             mustWork = TRUE)
-    }
+  # Pull out variables from This WHAM --------------------------
+  nMS = nrow(ThisWHAM$MonodentTable)
+  nBP = nrow(ThisWHAM$BidentTable)
+  nTG = nrow(ThisWHAM$TridentTable)
+  nMP_file = nrow(ThisWHAM$MetalsTable)
+  nKsel_file = nrow(ThisWHAM$SpecKselTable)
+  nCOOH = ThisWHAM$nA
+  pKA = ThisWHAM$pKA
+  pKB = ThisWHAM$pKB
+  dpKA = ThisWHAM$dpKA
+  dpKB = ThisWHAM$dpKB
+  fprB = ThisWHAM$fprB
+  fprT = ThisWHAM$fprT
+  dLK1A = ThisWHAM$dLK1A
+  dLK1B = ThisWHAM$dLK1B
+  wP = ThisWHAM$P
+  wRadius = ThisWHAM$Radius
+  wMolWt = ThisWHAM$MolWt
+
+  #Monodentate sites
+  if (nMS > 0) {
+    MonodentTable = ThisWHAM$MonodentTable
+    MonodentTable$FullyProt = paste0(MonodentTable$S, "H")
+    MonodentTable$FullyDeprot = paste0(MonodentTable$S)
+    MonodentTable$Strong1Weak2 =
+      match(x = tolower(substr(trimws(MonodentTable$StrongWeak), 1, 1)),
+            table = c("s", "w"))
+    nStrong = (MonodentTable$Strong1Weak2 == 1L)
   } else {
-    WdatFile = normalizePath(WdatFile)
-    stopifnot(file.exists(WdatFile))
+    MonodentTable = data.frame()
   }
 
-
-  # read WHAM data file-------------------------------------
-  # header info
-  SkipRows = 2L
-  Tmp = read.delim(
-    file = WdatFile,
-    header = FALSE,
-    sep = ",",
-    skip = SkipRows,
-    nrows = 7L
-  )
-  nMS = as.integer(Tmp[1, 2])#Number of monodentate sites#nolint: object_name_linter, line_length_linter.
-  nBP = as.integer(Tmp[2, 2])#Number of bidentate pairs#nolint: object_name_linter, line_length_linter.
-  nTG = as.integer(Tmp[3, 2])#Number of tridentate groups#nolint: object_name_linter, line_length_linter.
-  nMP_file = as.integer(Tmp[4, 2])#Number of metals-OM parameters#nolint: object_name_linter, line_length_linter.
-  nKsel_file = as.integer(Tmp[5, 2])#Number of non-standard selectivity coefficients#nolint: object_name_linter, line_length_linter.
-  wDLF = as.numeric(Tmp[6, 2])#Double layer overlap factor#nolint: object_name_linter, line_length_linter.
-  wKZED = as.numeric(Tmp[7, 2])#Constant to control DDL at low ZED#nolint: object_name_linter, line_length_linter.
-
-  # Parameters
-  SkipRows = SkipRows + 7L + 1L
-  Tmp = read.delim(
-    file = WdatFile,
-    header = TRUE,
-    sep = ",",
-    skip = SkipRows,
-    nrows = 12L
-  )
-  nCOOH = array(as.numeric(Tmp[1, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  pKHA = array(as.numeric(Tmp[2, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  pKHB = array(as.numeric(Tmp[3, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  dpKHA = array(as.numeric(Tmp[4, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  dpKHB = array(as.numeric(Tmp[5, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  fprB = array(as.numeric(Tmp[6, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  fprT = array(as.numeric(Tmp[7, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  dLK1A = array(as.numeric(Tmp[8, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  dLK1B = array(as.numeric(Tmp[9, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  wP = array(as.numeric(Tmp[10, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  wRadius = array(as.numeric(Tmp[11, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-  wMolWt = array(as.numeric(Tmp[12, 3:4]), dimnames = list(c("HA", "FA"))) # nolint: object_name_linter, line_length_linter.
-
-  # Monodentate Sites - these should always be the same, but we'll set things
-  # up like this so we can add in this section if it's ever needed.
-  # MonodentTable = data.frame(S=1:8, AbundDenom = c(rep(4,4),rep(8,4)))
-  SkipRows = SkipRows + 12L + 3L
-  MonodentTable = read.delim(
-    file = WdatFile,
-    header = TRUE,
-    sep = ",",
-    skip = SkipRows,
-    nrows = nMS
-  )
-  names(MonodentTable) = c("S","AbundDenom")
-  MonodentTable$FullyProt = paste0(MonodentTable$S, "H")
-  MonodentTable$FullyDeprot = paste0(MonodentTable$S)
-  nStrong = nMS / 2
-  MonodentTable$Strong1Weak2 = rep(c(1L, 2L), each = nStrong)#c(rep(1L, 4), rep(2L, 4))
-
   # Bidentate Pairs
-  SkipRows = SkipRows + nMS + 3L
   if (nBP > 0) {
-    BidentTable = read.delim(
-      file = WdatFile,
-      header = TRUE,
-      sep = ",",
-      skip = SkipRows,
-      nrows = nBP
-    )
-    names(BidentTable) = c("S1", "S2", "AbundDenom")
+    BidentTable = ThisWHAM$BidentTable
     BidentTable$FullyProt = paste0(BidentTable$S1, BidentTable$S2, "H")
     BidentTable$S1Deprot = paste0(BidentTable$S1, "-", BidentTable$S2, "H")
     BidentTable$S2Deprot = paste0(BidentTable$S2, "-", BidentTable$S1, "H")
     BidentTable$FullyDeprot = paste0(BidentTable$S1, BidentTable$S2)
-    BidentTable$S1Strong1Weak2 = ifelse(BidentTable$S1 <= nStrong, 1L, 2L)
-    BidentTable$S2Strong1Weak2 = ifelse(BidentTable$S2 <= nStrong, 1L, 2L)
+    BidentTable$S1Strong1Weak2 = MonodentTable$Strong1Weak2[match(BidentTable$S1, MonodentTable$S)]
+    BidentTable$S2Strong1Weak2 = MonodentTable$Strong1Weak2[match(BidentTable$S2, MonodentTable$S)]
   } else {
     BidentTable = data.frame()
   }
 
-
   # Tridentate Groups
-  SkipRows = SkipRows + nBP + 3L
   if (nTG > 0) {
-    TridentTable = read.delim(
-      file = WdatFile,
-      header = TRUE,
-      sep = ",",
-      skip = SkipRows,
-      nrows = nTG
-    )
-    names(TridentTable) = c("S1", "S2", "S3", "AbundDenom")
-    TridentTable$FullyProt = paste0(TridentTable$S1, TridentTable$S2,
-                                    TridentTable$S3, "H")
-    TridentTable$S1Deprot = paste0(TridentTable$S1,
-                                   "-",
-                                   TridentTable$S2,
-                                   TridentTable$S3,
-                                   "H")
-    TridentTable$S2Deprot = paste0(TridentTable$S2,
-                                   "-",
-                                   TridentTable$S1,
-                                   TridentTable$S3,
-                                   "H")
-    TridentTable$S3Deprot = paste0(TridentTable$S3,
-                                   "-",
-                                   TridentTable$S1,
-                                   TridentTable$S2,
-                                   "H")
-    TridentTable$S12Deprot = paste0(TridentTable$S1,
-                                    TridentTable$S2,
-                                    "-",
-                                    TridentTable$S3,
-                                    "H")
-    TridentTable$S13Deprot = paste0(TridentTable$S1,
-                                    TridentTable$S3,
-                                    "-",
-                                    TridentTable$S2,
-                                    "H")
-    TridentTable$S23Deprot = paste0(TridentTable$S2,
-                                    TridentTable$S3,
-                                    "-",
-                                    TridentTable$S1,
-                                    "H")
-    TridentTable$FullyDeprot = paste0(TridentTable$S1, TridentTable$S2,
-                                      TridentTable$S3)
-    TridentTable$S1Strong1Weak2 = ifelse(TridentTable$S1 <= nStrong, 1L, 2L)
-    TridentTable$S2Strong1Weak2 = ifelse(TridentTable$S2 <= nStrong, 1L, 2L)
-    TridentTable$S3Strong1Weak2 = ifelse(TridentTable$S3 <= nStrong, 1L, 2L)
+    TridentTable = ThisWHAM$TridentTable
+    TridentTable$FullyProt = paste0(TridentTable$S1, TridentTable$S2, TridentTable$S3, "H")
+    TridentTable$S1Deprot = paste0(TridentTable$S1, "-", TridentTable$S2, TridentTable$S3, "H")
+    TridentTable$S2Deprot = paste0(TridentTable$S2, "-", TridentTable$S1, TridentTable$S3, "H")
+    TridentTable$S3Deprot = paste0(TridentTable$S3, "-", TridentTable$S1, TridentTable$S2, "H")
+    TridentTable$S12Deprot = paste0(TridentTable$S1, TridentTable$S2, "-", TridentTable$S3, "H")
+    TridentTable$S13Deprot = paste0(TridentTable$S1, TridentTable$S3, "-", TridentTable$S2, "H")
+    TridentTable$S23Deprot = paste0(TridentTable$S2, TridentTable$S3, "-", TridentTable$S1, "H")
+    TridentTable$FullyDeprot = paste0(TridentTable$S1, TridentTable$S2, TridentTable$S3)
+    TridentTable$S1Strong1Weak2 = MonodentTable$Strong1Weak2[match(TridentTable$S1, MonodentTable$S)]
+    TridentTable$S2Strong1Weak2 = MonodentTable$Strong1Weak2[match(TridentTable$S2, MonodentTable$S)]
+    TridentTable$S3Strong1Weak2 = MonodentTable$Strong1Weak2[match(TridentTable$S3, MonodentTable$S)]
   } else {
     TridentTable = data.frame()
   }
 
   # Metals Parameters Table
-  SkipRows = SkipRows + nTG + 3L
   if (nMP_file > 0) {
-    MetalsTable = read.delim(
-      file = WdatFile,
-      header = TRUE,
-      sep = ",",
-      skip = SkipRows,
-      nrows = nMP_file
-    )
-    names(MetalsTable) = c("Metal", "pKMAHA", "pKMAFA", "dLK2")
+    MetalsTable = ThisWHAM$MetalsTable
     MetalsTable = MetalsTable[MetalsTable$Metal %in% c(ThisProblem$Comp$Name, ThisProblem$Spec$Name), ]
-    nMP = nrow(MetalsTable) # nolint: object_name_linter.
+    nMP = nrow(MetalsTable)
     MetalsTable$pKMBHA = 3 * MetalsTable$pKMAHA - 3
     MetalsTable$pKMBFA = 3.96 * MetalsTable$pKMAFA
   } else {
@@ -194,25 +105,14 @@ ExpandWHAM = function(ThisProblem,
   }
 
   # Non-standard selectivity coefficients
-  SkipRows = SkipRows + nMP_file + 3L
   if (nKsel_file > 0) {
-    SpecKselTable = read.delim(
-      file = WdatFile,
-      header = TRUE,
-      sep = ",",
-      skip = SkipRows,
-      nrows = nKsel_file
-    )
-    names(SpecKselTable) = c("Spec", "KselHA", "KselFA")
+    SpecKselTable = ThisWHAM$SpecKselTable
     SpecKselTable = SpecKselTable[SpecKselTable$Spec %in% ThisProblem$Spec$Name, ]
     nKsel = nrow(SpecKselTable)
   } else {
     SpecKselTable = data.frame()
     nKsel = 0L
   }
-
-
-
 
   # Save original copies of arrays -------------------------
   NewProblem = ThisProblem
@@ -306,24 +206,25 @@ ExpandWHAM = function(ThisProblem,
     MonodentAbundance = numeric(nMS)
     BidentAbundance = numeric(nBP)
     TridentAbundance = numeric(nTG)
-    for (OMType in 1:NWHAMFracAdd) {
+    for (OMi in 1:NWHAMFracAdd) {
 
-      ColspKM = paste0("pKM", c("A", "B"), WHAMFracAdd[OMType])
-      OMSpecType = paste0("WHAM", WHAMFracAdd[OMType])
+      OMType = WHAMFracAdd[OMi]
+      ColspKM = paste0("pKM", c("A", "B"), OMType)
+      OMSpecType = paste0("WHAM", OMType)
 
       # Donnan Species
       for (iSpec in match(ChargedSpecName, ThisProblem$Spec$Name)){
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
-          SpecName = paste0(DonnanCompName[OMType],"-",ThisProblem$Spec$Name[iSpec]),
-          SpecMCName = DonnanMCName[OMType],
-          SpecType = DonnanCompName[OMType],
+          SpecName = paste0(DonnanCompName[OMi],"-",ThisProblem$Spec$Name[iSpec]),
+          SpecMCName = DonnanMCName[OMi],
+          SpecType = DonnanCompName[OMi],
           SpecActCorr = ThisProblem$Spec$ActCorr[iSpec],
-          SpecCompNames = list(c(DonnanCompName[OMType],
+          SpecCompNames = list(c(DonnanCompName[OMi],
                                  ThisProblem$Comp$Name[ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
           SpecCompStoichs = list(c(abs(ThisProblem$Spec$Charge[iSpec]),
                                    ThisProblem$SpecStoich[iSpec, ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
-          SpecLogK = SpecKsel[ThisProblem$Spec$Name[iSpec], OMType],
+          SpecLogK = ChargedSpecDonnanLogK[ThisProblem$Spec$Name[iSpec], OMType],
           SpecDeltaH = ThisProblem$Spec$DeltaH[iSpec],
           SpecTempKelvin = ThisProblem$Spec$TempKelvin[iSpec],
           InSpec = FALSE
@@ -331,18 +232,18 @@ ExpandWHAM = function(ThisProblem,
       }
 
       # Monodentate sites
-      MonodentpKH[1:nStrong] = pKHA[OMType] + dpKHA[OMType] *
-        (2 * MonodentTable$S[1:nStrong] - 5) / 6
-      MonodentpKH[(nStrong + 1):nMS] = pKHB[OMType] + dpKHB[OMType] *
-        (2 * MonodentTable$S[(nStrong + 1):nMS] - 13) / 6
+      MonodentpKH[MonodentTable$Strong1Weak2 == 1L] = pKA[OMType] + dpKA[OMType] *
+        (2 * MonodentTable$S[MonodentTable$Strong1Weak2 == 1L] - 5) / 6
+      MonodentpKH[MonodentTable$Strong1Weak2 == 2L] = pKB[OMType] + dpKB[OMType] *
+        (2 * MonodentTable$S[MonodentTable$Strong1Weak2 == 2L] - 13) / 6
       MonodentAbundance = (1 - fprB[OMType] - fprT[OMType]) *
         nCOOH[OMType] / MonodentTable$AbundDenom
 
       # Components - fully protonated
       NewProblem = AddDefComps(
         ThisProblem = NewProblem,
-        DefCompName = paste0(WHAMprefix[OMType], MonodentTable$FullyProt),
-        DefCompFromVar = WHAMprefix[OMType],
+        DefCompName = paste0(WHAMprefix[OMi], MonodentTable$FullyProt),
+        DefCompFromVar = WHAMprefix[OMi],
         DefCompCharge = 0L,
         DefCompMCName = ThisProblem$Mass$Name[iMass],
         DefCompType = OMSpecType,
@@ -354,12 +255,12 @@ ExpandWHAM = function(ThisProblem,
       # - fully deprotonated
       NewProblem = AddSpecies(
         ThisProblem = NewProblem,
-        SpecName = paste0(WHAMprefix[OMType], MonodentTable$FullyDeprot),
+        SpecName = paste0(WHAMprefix[OMi], MonodentTable$FullyDeprot),
         SpecMCName = ThisProblem$Mass$Name[iMass],
         SpecType = OMSpecType,
         SpecActCorr = "None",
         SpecCompNames = as.list(as.data.frame(rbind(
-          paste0(WHAMprefix[OMType], MonodentTable$FullyProt),
+          paste0(WHAMprefix[OMi], MonodentTable$FullyProt),
           rep(ThisProblem$Comp$Name[iH], nMS)
         ))),
         SpecCompStoichs = as.list(as.data.frame(rbind(
@@ -378,9 +279,9 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], MonodentTable$FullyDeprot, "-",
+            WHAMprefix[OMi], MonodentTable$FullyDeprot, "-",
             ThisProblem$Spec$Equation[iMetalSpec],
-            " -1 * H + 1 * ", WHAMprefix[OMType], MonodentTable$FullyProt),
+            " -1 * H + 1 * ", WHAMprefix[OMi], MonodentTable$FullyProt),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
           SpecActCorr = "None",
@@ -401,8 +302,8 @@ ExpandWHAM = function(ThisProblem,
         # Components - fully protonated
         NewProblem = AddDefComps(
           ThisProblem = NewProblem,
-          DefCompName = paste0(WHAMprefix[OMType], BidentTable$FullyProt),
-          DefCompFromVar = WHAMprefix[OMType],
+          DefCompName = paste0(WHAMprefix[OMi], BidentTable$FullyProt),
+          DefCompFromVar = WHAMprefix[OMi],
           DefCompCharge = 0L,
           DefCompMCName = ThisProblem$Mass$Name[iMass],
           DefCompType = OMSpecType,
@@ -415,8 +316,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], BidentTable$S1Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], BidentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], BidentTable$S1Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], BidentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -431,8 +332,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], BidentTable$S2Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], BidentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], BidentTable$S2Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], BidentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -447,8 +348,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], BidentTable$FullyDeprot, " = ",
-            "1 * ", WHAMprefix[OMType], BidentTable$FullyProt, " -2 * H"
+            WHAMprefix[OMi], BidentTable$FullyDeprot, " = ",
+            "1 * ", WHAMprefix[OMi], BidentTable$FullyProt, " -2 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -465,9 +366,9 @@ ExpandWHAM = function(ThisProblem,
           NewProblem = AddSpecies(
             ThisProblem = NewProblem,
             SpecEquation = paste0(
-              WHAMprefix[OMType], BidentTable$FullyDeprot, "-",
+              WHAMprefix[OMi], BidentTable$FullyDeprot, "-",
               ThisProblem$Spec$Equation[iMetalSpec],
-              " -2 * H + 1 * ", WHAMprefix[OMType], BidentTable$FullyProt),
+              " -2 * H + 1 * ", WHAMprefix[OMi], BidentTable$FullyProt),
             SpecMCName = ThisProblem$Mass$Name[iMass],
             SpecType = OMSpecType,
             SpecActCorr = "None",
@@ -490,8 +391,8 @@ ExpandWHAM = function(ThisProblem,
         # Components - fully protonated
         NewProblem = AddDefComps(
           ThisProblem = NewProblem,
-          DefCompName = paste0(WHAMprefix[OMType], TridentTable$FullyProt),
-          DefCompFromVar = WHAMprefix[OMType],
+          DefCompName = paste0(WHAMprefix[OMi], TridentTable$FullyProt),
+          DefCompFromVar = WHAMprefix[OMi],
           DefCompCharge = 0L,
           DefCompMCName = ThisProblem$Mass$Name[iMass],
           DefCompType = OMSpecType,
@@ -504,8 +405,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S1Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], TridentTable$S1Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -520,8 +421,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S2Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], TridentTable$S2Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -536,8 +437,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S3Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -1 * H"
+            WHAMprefix[OMi], TridentTable$S3Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -1 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -552,8 +453,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S12Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
+            WHAMprefix[OMi], TridentTable$S12Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -2 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -568,8 +469,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S13Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
+            WHAMprefix[OMi], TridentTable$S13Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -2 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -584,8 +485,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$S23Deprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -2 * H"
+            WHAMprefix[OMi], TridentTable$S23Deprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -2 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -600,8 +501,8 @@ ExpandWHAM = function(ThisProblem,
         NewProblem = AddSpecies(
           ThisProblem = NewProblem,
           SpecEquation = paste0(
-            WHAMprefix[OMType], TridentTable$FullyDeprot, " = ",
-            "1 * ", WHAMprefix[OMType], TridentTable$FullyProt, " -3 * H"
+            WHAMprefix[OMi], TridentTable$FullyDeprot, " = ",
+            "1 * ", WHAMprefix[OMi], TridentTable$FullyProt, " -3 * H"
           ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
@@ -620,9 +521,9 @@ ExpandWHAM = function(ThisProblem,
           NewProblem = AddSpecies(
             ThisProblem = NewProblem,
             SpecEquation = paste0(
-              WHAMprefix[OMType], TridentTable$FullyDeprot, "-",
+              WHAMprefix[OMi], TridentTable$FullyDeprot, "-",
               ThisProblem$Spec$Equation[iMetalSpec],
-              " -3 * H + 1 * ", WHAMprefix[OMType], TridentTable$FullyProt),
+              " -3 * H + 1 * ", WHAMprefix[OMi], TridentTable$FullyProt),
             SpecMCName = ThisProblem$Mass$Name[iMass],
             SpecType = OMSpecType,
             SpecActCorr = "None",
@@ -643,14 +544,8 @@ ExpandWHAM = function(ThisProblem,
   }
 
   # WHAM parameters - to be used later
-  NewProblem$WHAM$DoWHAM = TRUE
-  NewProblem$WHAM$WHAMVer = WHAMVer
-  NewProblem$WHAM$WdatFile = WdatFile
-  NewProblem$WHAM$wDLF = wDLF
-  NewProblem$WHAM$wKZED = wKZED
-  NewProblem$WHAM$wP = wP
-  NewProblem$WHAM$wRadius = wRadius
-  NewProblem$WHAM$wMolWt = wMolWt
+  NewProblem$DoWHAM = any(grepl("WHAM", NewProblem$Spec$Type))
+  NewProblem$WHAM = ThisWHAM
 
   return(NewProblem)
 

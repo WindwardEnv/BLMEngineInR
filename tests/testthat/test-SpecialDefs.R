@@ -41,10 +41,12 @@ test_that("AddSpecialDefs works", {
   expect_no_error(AddSpecialDefs(ThisProblem = myproblem,
                                  Value = "V",
                                  SpecialDef = "WHAM"))
-  expect_error(AddSpecialDefs(ThisProblem = carbonate_system_problem,
+  expect_no_error(AddSpecialDefs(ThisProblem = carbonate_system_problem,
                               Value = "V",
-                              SpecialDef = "WHAM"),
-               regexp = "without a WHAM input variable")
+                              SpecialDef = "WHAM"))
+  expect_no_error(AddSpecialDefs(ThisProblem = carbonate_system_problem,
+                              Value = "WHAM_V.wdat",
+                              SpecialDef = "WHAM"))
   expect_error(AddSpecialDefs(ThisProblem = Cu_full_organic_problem,
                               Value = "VII",
                               SpecialDef = "WHAM"),
@@ -63,7 +65,7 @@ test_that("RemoveSpecialDefs works", {
   expect_equal(RemoveSpecialDefs(ThisProblem = Cu_full_organic_problem,
                                  SpecialDefToRemove = "WHAM")$N,
                c(Mass=2L, InLab = 3L, InVar = 4L, InMass = 2L, InComp = 8L,
-                 InDefComp = 2L, InSpec = 22L, DefComp = 2L, Comp = 10L,
+                 InDefComp = 3L, InSpec = 21L, DefComp = 3L, Comp = 11L,
                  Spec = 32L, Phase = 0L, BL = 1L, Metal = 1L, BLMetal = 2L,
                  CAT = 2L))
   expect_error(RemoveSpecialDefs(ThisProblem = Cu_full_organic_problem,

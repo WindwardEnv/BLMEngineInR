@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' @title Write a BLM Parameter File
 #'
 #' @description This function will take a BLM chemical problem list object and
@@ -8,6 +22,10 @@
 #'   `BlankProblem()`.
 #' @param ParamFile a character value, indicating the file path and name of the
 #'   parameter file to write.
+#' @param Notes A character vector of additional notes to include at the bottom
+#'   of the parameter file. The text "written by USERNAME from R: YYYY-MM-DD
+#'   HH:MM:SS" will always be written, regardless of the value of this argument.
+#'   This will be filled in with a "Notes" item in `ThisProblem`, if available.
 #'
 #' @return ThisProblem, with the ParamFile element  changed to the ParamFile
 #'   argument.
@@ -18,7 +36,10 @@
 #' DefineProblem(ParamFile = tf)
 #'
 #' @export
-WriteParamFile = function(ThisProblem, ParamFile) {
+WriteParamFile = function(ThisProblem,
+                          ParamFile,
+                          Notes = if ("Notes" %in% names(ThisProblem)) {
+                            ThisProblem$Notes} else {NULL}) {
 
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
 
@@ -36,7 +57,8 @@ WriteParamFile = function(ThisProblem, ParamFile) {
 
   Tmp = c(
     ThisProblem$N[c("InMass","InLab","InVar","InComp","InDefComp","InSpec","Phase")],
-    sum(ThisProblem$N[c("BL","Metal","BLMetal")]) + ThisProblem$WHAM$DoWHAM,
+    sum(ThisProblem$N[c("BL","Metal","BLMetal")]) +
+      ((!is.na(ThisProblem$WHAM$Ver) | !is.na(ThisProblem$WHAM$File))),
     ThisProblem$N["CAT"]
   )
   Tmp = MakeUniformTXTColumn(paste0(Tmp, ", "))
@@ -172,14 +194,32 @@ WriteParamFile = function(ThisProblem, ParamFile) {
                        B = ThisProblem$BLMetal$Name
                      ))
   }
-  if (ThisProblem$WHAM$DoWHAM) {
-    TmpTable = rbind(TmpTable,
-                     data.frame(
-                       A = "WHAM",
-                       B = ifelse(is.na(ThisProblem$WHAM$WHAMVer),
-                                      ThisProblem$WHAM$WdatFile,
-                                      ThisProblem$WHAM$WHAMVer)
-                     ))
+  # if (ThisProblem$DoWHAM) {
+  if (!is.na(ThisProblem$WHAM$Ver) | !is.na(ThisProblem$WHAM$File)) {
+    if (is.na(ThisProblem$WHAM$File)) {
+      TmpTable = rbind(TmpTable,
+                       data.frame(
+                         A = "WHAM",
+                         B = ThisProblem$WHAM$Ver
+                       ))
+    } else {
+      Tmp = system.file(file.path("extdata","WHAM", basename(ThisProblem$WHAM$File)),
+                        package = "BLMEngineInR")
+      if (file.exists(Tmp) & (basename(ThisProblem$WHAM$File) %in% paste0("WHAM_",c("V","VI","VII")))) {
+        TmpTable = rbind(TmpTable,
+                         data.frame(
+                           A = "WHAM",
+                           B = ThisProblem$WHAM$Ver
+                         ))
+      } else {
+        TmpTable = rbind(TmpTable,
+                         data.frame(
+                           A = "WHAM",
+                           B = basename(ThisProblem$WHAM$File)
+                         ))
+      }
+    }
+
   }
   Tmp = MakeUniformTXTColumn(paste0(TmpTable$A, ", "))
   Tmp = paste0(Tmp, TmpTable$B)
@@ -201,6 +241,7 @@ WriteParamFile = function(ThisProblem, ParamFile) {
 
   write("-------Notes--------", file = ParamFile, append = TRUE)
   write(paste0("written by ", Sys.info()["user"], " from R: ", Sys.time()), file = ParamFile, append = TRUE)
+  if (!is.null(Notes)) { write(Notes, file = ParamFile, append = TRUE) }
 
   ThisProblem$ParamFile = ParamFile
   return(invisible(ThisProblem))

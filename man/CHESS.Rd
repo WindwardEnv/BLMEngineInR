@@ -29,18 +29,27 @@ CHESS(
   AqueousMCR,
   WHAMDonnanMCR,
   HumicSubstGramsPerLiter,
-  wMolWt,
-  wRadius,
-  wP,
-  wDLF,
-  wKZED,
+  WHAMMolWt,
+  WHAMRadius,
+  WHAMP,
+  WHAMDLF,
+  WHAMKZED,
   SysTempKelvin,
   DoTox,
   MetalName,
   MetalCompR,
+  BLCompR,
   NBLMetal,
   BLMetalSpecsR,
-  CATarget
+  CATarget,
+  DodVidCj,
+  DodVidCjDonnan,
+  DodKidCj,
+  DoGammai,
+  DoJacDonnan,
+  DoJacWHAM,
+  DoWHAMSimpleAdjust,
+  DoDonnanSimpleAdjust
 )
 }
 \arguments{
@@ -111,17 +120,17 @@ at the beginning of the function)}
 \item{HumicSubstGramsPerLiter}{NumericVector, length of 2, grams per liter 
 of each organic matter component (HA and FA) in solution}
 
-\item{wMolWt}{numeric (2), WHAM's molecular weight parameter for organic
+\item{WHAMMolWt}{numeric (2), WHAM's molecular weight parameter for organic
 matter}
 
-\item{wRadius}{numeric (2), WHAM's molecular radius parameter for organic
+\item{WHAMRadius}{numeric (2), WHAM's molecular radius parameter for organic
 matter}
 
-\item{wP}{numeric (2), WHAM's P parameter...}
+\item{WHAMP}{numeric (2), WHAM's P parameter...}
 
-\item{wDLF}{numeric (2), WHAM's Double layer overlap factor}
+\item{WHAMDLF}{numeric (2), WHAM's Double layer overlap factor}
 
-\item{wKZED}{numeric (2), WHAM's Constant to control DDL at low ZED}
+\item{WHAMKZED}{numeric (2), WHAM's Constant to control DDL at low ZED}
 
 \item{SysTempKelvin}{double; input temperature for the current observation,
 in Kelvin}
@@ -135,6 +144,9 @@ concentration is adjusted to try to match the CATarget with BLMetalSpecs}
 (i.e., which is the toxic metal component) Note: this is base-1 indexed on
 input then converted.}
 
+\item{BLCompR}{integer, the position of the biotic ligand in the component 
+arrays. Note: this is base-1 indexed on input, then converted.}
+
 \item{NBLMetal}{integer, the number of biotic ligand-bound metal species 
 that are associated with toxic effects.}
 
@@ -145,6 +157,30 @@ on input then converted.}
 
 \item{CATarget}{numeric, the target critical accumulation in units of mol /
 kg (only used when DoTox == TRUE)}
+
+\item{DodVidCj}{boolean, should the Jacobian matrix include the change in
+the main water solution (excluding Donnan layer volume)?}
+
+\item{DodVidCjDonnan}{boolean, should the Jacobian matrix include the change
+in the Donnan layer volume?}
+
+\item{DodKidCj}{boolean, should the Jacobian matrix include the change in
+the DOC equilibrium constants?}
+
+\item{DoGammai}{boolean, should the Jacobian matrix include the change in 
+the activity coefficients?}
+
+\item{DoJacDonnan}{boolean, should the Jacobian matrix be used to solve the
+Donnan layer concentrations?}
+
+\item{DoJacWHAM}{boolean, should the Jacobian matrix be used to solve the
+WHAM component concentrations?}
+
+\item{DoWHAMSimpleAdjust}{boolean, should SimpleAdjust be used to solve the
+WHAM component concentrations?}
+
+\item{DoDonnanSimpleAdjust}{boolean, should SimpleAdjust be used to solve
+the Donnan layer concentrations?}
 }
 \value{
 list with the following elements:

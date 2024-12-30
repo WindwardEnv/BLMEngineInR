@@ -1,301 +1,316 @@
 Column model parameter file, Ver 4.00
 --------------------------------------------------------------------------------
-2,  Number of Mass Compartments
-3,  Input Labels
-4,  Input Variables
-8,  Input Components 
-2,  Defined Components
-21, Species
-0,  Phases
-5,  Number of Special Definitions
-196,Number of Critical Values     
+2,   Number of Mass Compartments
+2,   Number of Input Labels
+4,   Number of Input Variables
+8,   Number of Input Components
+3,   Number of Defined Components
+20,  Number of Species
+0,   Number of Phases
+5,   Number of Special Definitions
+196, Number of Critical Values
 --------------------------------------------------------------------------------
 Mass Compartment List
-Compartment,   C to M,     Units label
-Water,         1,          L             
-BL,            1,          kg wet
+Compartment, C to M, Unit Label
+Water,       1,      L
+BL,          1,      kg wet
 --------------------------------------------------------------------------------
 Input Labels
-ObsNum
-ID
-ID2
+Site Label
+Sample Label
 --------------------------------------------------------------------------------
 Input Variables
-Variable,  Compartment, Type
-Temp,      Water,       Temperature 
-pH,        Water,       pH
-DOC,       Water,       WHAM-HAFA
-HA,        Water,       PercHA
+Variable, Compartment, Type
+Temp,     Water,       Temperature
+pH,       Water,       pH
+DOC,      Water,       WHAM-HAFA
+HA,       Water,       PercHA
 --------------------------------------------------------------------------------
 Input Components
-Component, Charge, Compartment, Type,     Activity
-Ni,         2,     Water,       MassBal,  Debye
-Ca,         2,     Water,       MassBal,  Debye
-Mg,         2,     Water,       MassBal,  Debye
-Na,         1,     Water,       MassBal,  Debye
-K,          1,     Water,       MassBal,  Debye
-SO4,       -2,     Water,       MassBal,  Debye
-Cl,        -1,     Water,       MassBal,  Debye
-CO3,       -2,     Water,       MassBal,  Debye
+Component, Charge, Compartment, Type,    Activity
+Na,        1,      Water,       MassBal, Debye
+Mg,        2,      Water,       MassBal, Debye
+K,         1,      Water,       MassBal, Debye
+Ca,        2,      Water,       MassBal, Debye
+Ni,        2,      Water,       MassBal, Debye
+Cl,        -1,     Water,       MassBal, Debye
+SO4,       -2,     Water,       MassBal, Debye
+CO3,       -2,     Water,       MassBal, Debye
 --------------------------------------------------------------------------------
-Defined components                                    
-Component,  From,     Charge,   Compartment, Type,      Activity,   Site Den 
-H,          pH,       1,        Water,       FixedConc, Debye,      1.0
-BL1,        1.78E-05, -1,       BL,          MassBal,   None,       3E-5
---------------------------------------------------------------------------------      
+Defined Components
+Component, From,     Charge, Compartment, Type,     Activity, Site Den
+H,         pH,       1,      Water,       FixedAct, Debye,    1
+OH,        KW/H,     -1,     Water,       FixedAct, Debye,    1
+BL,        1.78e-05, -1,     BL,          MassBal,  None,     0.001
+--------------------------------------------------------------------------------
 Formation Reactions
-Species, Compart., Act.,  NC, C1,  S1,  C2, S2,  C3,  S3,  Log K,  Delta H,   Temp
-BL1-Ni,  BL,       None,  2,  BL1, 1,   Ni,  1,            4.000,    0.000, 298.15
-BL1-NiOH,BL,       None,  3,  BL1, 1,   Ni,  1,   H, -1,  -5.500,    0.000, 298.15
-BL1-Ca,  BL,       None,  2,  BL1, 1,   Ca,  1,            4.250,    0.000, 298.15
-BL1-Mg,  BL,       None,  2,  BL1, 1,   Mg,  1,            3.600,    0.000, 298.15
-BL1-H,   BL,       None,  2,  BL1, 1,    H,  1,            4.700,    0.000, 298.15
-BL1-Na,  BL,       None,  2,  BL1, 1,   Na,  1,            1.000,    0.000, 298.15
-OH,      Water,    Debye, 1,  H,  -1,                    -14.000,    56186, 298.15
-HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,   -14998, 298.15
-H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,   -24166, 298.15
-MgHCO3,  Water,    Debye, 3,  CO3, 1,   Mg,  1,  H,   1,  11.400,   -11666, 298.15
-MgCO3,   Water,    Debye, 2,  CO3, 1,   Mg,  1,            2.980,    11413, 298.15
-MgSO4,   Water,    Debye, 2,  Mg,  1,  SO4,  1,            2.370,    19163, 298.15
-CaHCO3,  Water,    Debye, 3,  Ca,  1,  CO3,  1,  H,   1,  11.440,  -3664.1, 298.15
-CaCO3,   Water,    Debye, 2,  Ca,  1,  CO3,  1,            3.220,    14951, 298.15
-CaSO4,   Water,    Debye, 2,  Ca,  1,  SO4,  1,            2.300,   6949.2, 298.15
-NiOH,    Water,    Debye, 2,  Ni,  1,    H, -1,           -9.900,    56186, 298.15
-Ni(OH)2, Water,    Debye, 2,  Ni,  1,    H, -2,          -19.000,   112373, 298.15
-NiSO4,   Water,    Debye, 2,  Ni,  1,  SO4,  1,            2.300,   6317.4, 298.15
-NiCO3,   Water,    Debye, 2,  Ni,  1,  CO3,  1,            3.570,      0.0, 298.15
-NiCl,    Water,    Debye, 2,  Ni,  1,   Cl,  1,           -0.430,   2105.8, 298.15
-NiHCO3,  Water,    Debye, 3,  Ni,  1,  CO3,  1,  H,   1,  11.919,      0.0, 298.15
+Species, Compartment, Activity, NC, C1, S1, C2,  S2, C3,  S3, Log K,  Delta H,           TempK
+HCO3,    Water,       Debye,    2,  H,  1,  CO3, 1,           10.329, -14997.5515494829, 298.151460942159
+H2CO3,   Water,       Debye,    2,  H,  2,  CO3, 1,           16.681, -24166.2316177852, 298.151460942159
+MgHCO3,  Water,       Debye,    3,  H,  1,  Mg,  1,  CO3, 1,  11.339, -11666.1661870451, 298.151460942159
+MgCO3,   Water,       Debye,    2,  Mg, 1,  CO3, 1,           2.92,   11413.4694465315,  298.151460942159
+MgSO4,   Water,       Debye,    2,  Mg, 1,  SO4, 1,           2.26,   19162.8361556157,  298.151460942159
+CaHCO3,  Water,       Debye,    3,  H,  1,  Ca,  1,  CO3, 1,  11.529, -3664.10273744739, 298.151460942159
+CaCO3,   Water,       Debye,    2,  Ca, 1,  CO3, 1,           3.22,   14951.2238137221,  298.151460942159
+CaSO4,   Water,       Debye,    2,  Ca, 1,  SO4, 1,           2.36,   6949.16036412436,  298.151460942159
+NiOH,    Water,       Debye,    2,  OH, 1,  Ni,  1,           4.1,    0,                 298.151460942159
+Ni(OH)2, Water,       Debye,    2,  OH, 2,  Ni,  1,           9,      0,                 298.151460942159
+NiSO4,   Water,       Debye,    2,  Ni, 1,  SO4, 1,           2.3,    6317.41851284032,  298.151460942159
+NiCO3,   Water,       Debye,    2,  Ni, 1,  CO3, 1,           3.57,   0,                 298.151460942159
+NiCl,    Water,       Debye,    2,  Ni, 1,  Cl,  1,           -0.43,  2105.80617094677,  298.151460942159
+NiHCO3,  Water,       Debye,    3,  H,  1,  Ni,  1,  CO3, 1,  11.919, 0,                 298.151460942159
+BL-Ni,   BL,          None,     2,  Ni, 1,  BL,  1,           4,      0,                 0
+BL-NiOH, BL,          None,     3,  H,  -1, Ni,  1,  BL,  1,  -5.5,   0,                 0
+BL-Ca,   BL,          None,     2,  Ca, 1,  BL,  1,           4.25,   0,                 0
+BL-Mg,   BL,          None,     2,  Mg, 1,  BL,  1,           3.6,    0,                 0
+BL-Na,   BL,          None,     2,  Na, 1,  BL,  1,           1,      0,                 0
+BL-H,    BL,          None,     2,  H,  1,  BL,  1,           4.7,    0,                 0
 --------------------------------------------------------------------------------
 Phase List
-Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles
+Phase, NC, C1, S1, C2, S2, C3, S3, Log K, Delta H, Temp, Moles
 --------------------------------------------------------------------------------
 Special Definitions
-Definition, Species
+Definition, Value
+BL,         BL
 Metal,      Ni
-BL,         BL1
-BL-Metal,   BL1-Ni
-BL-Metal,   BL1-NiOH
-WHAM,       V
+BL-Metal,   BL-Ni
+BL-Metal,   BL-NiOH
+WHAM,       NIST_20170203.wdat
 --------------------------------------------------------------------------------
 Critical Accumulation Table
-#,   CA,          Species,                         Test Type, Duration,           Lifestage,                                                Endpoint,                Quantifier, References,                   Miscellaneous
-1,   113.4108059, Alona affinis,                   Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,      geomean of 2 values
-2,   0.546480898, Alona affinis,                   Chronic,   16 days,            2d,                                                       Survival,                LC50,       Deleebeeck et al. 2007a,      geomean of 2 values
-3,   1.571537285, Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,geomean of 2 values
-4,   17.35394426, Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,geomean of 2 values
-5,   3.757186584, Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,geomean of 2 values
-6,   2.608039935, Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,geomean of 2 values
-7,   1.811188175, Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,geomean of 2 values
-8,   7.184679711, Anodonta imbecillis,             Acute,     48 hours,           "juvenile,  1-2d",                                        Survival,                LC50,       Keller & Zam 1991,            geomean of 2 values
-9,   4.672563207, Anodonta imbecillis,             Acute,     96 hours,           "juvenile,  1-2d",                                        Survival,                LC50,       Keller & Zam 1991,            geomean of 2 values
-10,  17.29926337, Bosmina coregoni,                Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,      geomean of 2 values
-11,  4.0106,      Brachionus calyciflorus,         Chronic,   48 hours,           2-h old,                                                  Population Growth Rate,  EC10,       Schlekat et al. 2010,         median of 5 values
-12,  6.0199,      Brachionus calyciflorus,         Chronic,   48 hours,           2-h old,                                                  Population Growth Rate,  EC20,       Schlekat et al. 2010,         geomean of 5 values
-13,  11.7243,     Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Growth,                  LOEC,       Fort et al. 2006,             median of 2 values
-14,  9.8732,      Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Growth,                  MATC,       Fort et al. 2006,             median of 2 values
-15,  8.3116,      Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Growth,                  NOEC,       Fort et al. 2006,             median of 2 values
-16,  15.35002554, Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            EC10,       Fort et al. 2006,             geomean of 2 values
-17,  17.0572046,  Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            EC20,       Fort et al. 2006,             geomean of 2 values
-18,  50.24564694, Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            EC50,       Fort et al. 2006,             geomean of 2 values
-19,  11.7243,     Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            LOEC,       Fort et al. 2006,             median of 2 values
-20,  9.8732,      Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            MATC,       Fort et al. 2006,             median of 2 values
-21,  8.3116,      Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            NOEC,       Fort et al. 2006,             median of 2 values
-22,  14.25788469, Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                LC10,       Fort et al. 2006,             geomean of 2 values
-23,  15.45836876, Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                LC20,       Fort et al. 2006,             geomean of 2 values
-24,  38.53909168, Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                LC50,       Fort et al. 2006,             geomean of 2 values
-25,  30.2552,     Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                LOEC,       Fort et al. 2006,             median of 2 values
-26,  18.8867,     Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                MATC,       Fort et al. 2006,             median of 2 values
-27,  11.7243,     Bufo terrestris,                 Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                NOEC,       Fort et al. 2006,             median of 2 values
-28,  22.83463905, Camptocercus lilljeborgi,        Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,      geomean of 2 values
-29,  0.747205,    Ceriodaphnia dubia,              Acute,     48 hours,           <48h,                                                     Survival,                LC50,       Schubauer-Berigan et al. 1993,median of 3 values
-30,  0.418408352, Ceriodaphnia dubia,              Acute,     48 hours,           "juveniles, 2-8h",                                        Survival,                LC50,       De Schamphelaere et al. 2006, geomean of 6 values
-31,  1.004498034, Ceriodaphnia dubia,              Acute,     48 hours,           neonates (<24h),                                          Survival,                LC50,       AECOM Technical Services Inc. 2011a; Keithly et al. 2004; Parametrix 2005b,      geomean of 8 values
-32,  0.286829365, Ceriodaphnia dubia,              Acute,     48 hours,           neonates (<24h),                                          Survival,                LOEC,       Parametrix 2005b,             geomean of 3 values
-33,  0.194129167, Ceriodaphnia dubia,              Acute,     48 hours,           neonates (<24h),                                          Survival,                MATC,       Parametrix 2005b,             geomean of 3 values
-34,  0.13151529,  Ceriodaphnia dubia,              Acute,     48 hours,           neonates (<24h),                                          Survival,                NOEC,       Parametrix 2005b,             geomean of 3 values
-35,  0.04058422,  Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile, 16-24h",                                       Reproduction,            EC10,       De Schamphelaere et al. 2006, geomean of 6 values
-36,  0.053499656, Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile, 16-24h",                                       Reproduction,            EC20,       De Schamphelaere et al. 2006, geomean of 6 values
-37,  0.086809382, Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile, 16-24h",                                       Reproduction,            EC50,       De Schamphelaere et al. 2006, geomean of 6 values
-38,  0.426792656, Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile, 16-24h",                                       Reproduction,            LOEC,       De Schamphelaere et al. 2006, geomean of 3 values
-39,  0.332682375, Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile, 16-24h",                                       Reproduction,            MATC,       De Schamphelaere et al. 2006, geomean of 3 values
-40,  0.070777795, Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile, 16-24h",                                       Reproduction,            NOEC,       De Schamphelaere et al. 2006, geomean of 6 values
-41,  0.032090356, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                          Reproduction,            EC20,       Keithly et al. 2004,          geomean of 3 values
-42,  0.052034523, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                          Reproduction,            LOEC,       Keithly et al. 2004,          geomean of 4 values
-43,  0.038676938, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                          Reproduction,            MATC,       Keithly et al. 2004,          geomean of 3 values
-44,  0.035085347, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                          Reproduction,            NOEC,       Keithly et al. 2004,          geomean of 4 values
-45,  0.046546171, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                          Survival & Reproduction, IC25,       Parametrix unpublished,       geomean of 19 values
-46,  0.053342932, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                          Survival,                LC20,       Keithly et al. 2004,          geomean of 3 values
-47,  0.101088743, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                          Survival,                LOEC,       Kszos et al. 1992; Keithly et al. 2004, geomean of 7 values
-48,  0.080401721, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                          Survival,                MATC,       Keithly et al. 2004; Kszos et al. 1992, geomean of 6 values
-49,  0.058076575, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                          Survival,                NOEC,       Kszos et al. 1992; Keithly et al. 2004, geomean of 7 values
-50,  0.069814016, Ceriodaphnia dubia,              Chronic,   8 days or 3 broods, neonates (<24h),                                          Reproduction,            IC50,       Puttaswamy & Liber 2012,      geomean of 9 values
-51,  0.085388006, Ceriodaphnia dubia,              Chronic,   8 days or 3 broods, neonates (<24h),                                          Survival,                LC50,       Puttaswamy & Liber 2012,      geomean of 6 values
-52,  27.38782502, Ceriodaphnia pulchella,          Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,       geomean of 2 values
-53,  0.418397308, Ceriodaphnia pulchella,          Chronic,   17 days,            <2d,                                                      Reproduction,            EC10,       Deleebeeck et al. 2007a,      geomean of 2 values
-54,  0.677584559, Ceriodaphnia pulchella,          Chronic,   17 days,            <2d,                                                      Reproduction,            EC50,       Deleebeeck et al. 2007a,      geomean of 2 values
-55,  0.850476633, Ceriodaphnia pulchella,          Chronic,   17 days,            <2d,                                                      Survival,                LC50,       Deleebeeck et al. 2007a,      geomean of 2 values
-56,  9.571379606, Ceriodaphnia quadrangula,        Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,       geomean of 4 values
-57,  0.347860318, Ceriodaphnia quadrangula,        Chronic,   17 days,            <2d,                                                      Reproduction,            EC10,       Deleebeeck et al. 2007a,      geomean of 4 values
-58,  0.587686479, Ceriodaphnia quadrangula,        Chronic,   17 days,            <2d,                                                      Reproduction,            EC50,       Deleebeeck et al. 2007a,      geomean of 4 values
-59,  0.511172498, Ceriodaphnia quadrangula,        Chronic,   17 days,            <2d,                                                      Survival,                LC50,       Deleebeeck et al. 2007a,      geomean of 4 values
-60,  2.43047,     Chironomus dilutus,              Chronic,   10 days,            2nd instar larvae,                                        Ash-free Dry Weight,     EC10,       Schlekat et al. 2010,     median of 5 values
-61,  3.51819,     Chironomus dilutus,              Chronic,   10 days,            2nd instar larvae,                                        Ash-free Dry Weight,     EC20,       Schlekat et al. 2010,     median of 5 values
-62,  878.7082807, Chironomus riparius,             Acute,     96 hours,           larva, 3rd and 4th instar,                                Survival,                LC50,       Leonard & Wood 2013,      geomean of 2 values
-63,  1.920384927, Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-64,  5.219643007, Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-65,  1.445186306, Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-66,  1.100510037, Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-67,  0.838149308, Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-68,  4.292337464, Chlorella sp.,                   Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-69,  60.49445614, Chlorella sp.,                   Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-70,  7.241638122, Chlorella sp.,                   Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-71,  5.51343315,  Chlorella sp.,                   Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-72,  105.4322072, Chydorus ovalis,                 Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,          geomean of 2 values
-73,  1.845703591, Coelastrum microporum,           Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,        geomean of 4 values
-74,  8.180958441, Coelastrum microporum,           Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,        geomean of 4 values
-75,  1.870815675, Coelastrum microporum,           Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,        geomean of 4 values
-76,  1.870815675, Coelastrum microporum,           Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,        geomean of 4 values
-77,  34.8492,     Danio rerio,                     Acute,     96 hours,           larva,                                                    Survival,                LC50,       Alsop & Wood 2011,         geomean of 5 values
-78,  14.6345986,  Daphnia longispina,              Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,         geomean of 2 values
-79,  1.233904531, Daphnia longispina,              Chronic,   21 days,            <2d,                                                      Reproduction,            EC10,       Deleebeeck et al. 2007a,        geomean of 2 values
-80,  2.587570839, Daphnia longispina,              Chronic,   21 days,            <2d,                                                      Reproduction,            EC50,       Deleebeeck et al. 2007a,        geomean of 2 values
-81,  2.281434428, Daphnia longispina,              Chronic,   21 days,            <2d,                                                      Survival,                LC50,       Deleebeeck et al. 2007a,        geomean of 2 values
-82,  48.73470172, Daphnia magna,                   Acute,     48 hours,           neonate (<24h),                                           Immobilization,          EC50,       Deleebeeck et al. 2008a; Ferreira et al. 2010; Xie et al. 2007,      geomean of 58 values
-83,  24.97533848, Daphnia magna,                   Acute,     48 hours,           neonate (<24h),                                           Survival,                LC50,       Chapman et al. 1980; Pane et al. 2003b,        geomean of 5 values
-84,  0.541336076, Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Reproduction,            EC10,       Deleebeeck et al. 2008b,        geomean of 22 values
-85,  0.679935168, Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Reproduction,            EC20,       Deleebeeck et al. 2008b,        geomean of 22 values
-86,  1.035474457, Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Reproduction,            EC50,       Deleebeeck et al. 2008b; Pavlaki et al. 2011,       geomean of 23 values
-87,  0.673473865, Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Reproduction,            LOEC,       Deleebeeck et al. 2008b; Chapman et al. 1980; Pavlaki et al. 2011; Kszos et al. 1992; Pane et al. 2004,  geomean of 28 values
-88,  0.563997576, Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Reproduction,            MATC,       Deleebeeck et al. 2008b; Pane et al. 2004; Pavlaki et al. 2011; Chapman et al. 1980; Kszos et al. 1992,  geomean of 20 values
-89,  0.435831025, Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Reproduction,            NOEC,       Chapman et al. 1980; Deleebeeck et al. 2008b; Kszos et al. 1992; Pane et al. 2004; Pavlaki et al. 2011,  geomean of 28 values
-90,  1.322828914, Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Survival,                LC50,       Deleebeeck et al. 2008b; Pane et al. 2004,        geomean of 23 values
-91,  1.825086516, Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Survival,                LOEC,       Deleebeeck et al. 2008b; Kszos et al. 1992; Pane et al. 2004,        geomean of 24 values
-92,  1.40659878,  Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Survival,                MATC,       Deleebeeck et al. 2008b; Kszos et al. 1992; Pane et al. 2004,        geomean of 23 values
-93,  1.03605857,  Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                           Survival,                NOEC,       Deleebeeck et al. 2008b; Pane et al. 2004; Kszos et al. 1992,        geomean of 24 values
-94,  52.4499596,  Daphnia pulex,                   Acute,     48 hours,           <1d,                                                      Survival,                LC50,       Kozlova et al. 2009,       geomean of 44 values
-95,  9.342780909, Daphnia pulex,                   Acute,     48 hours,           6-8 days old,                                             Survival,                LC50,       Leonard & Wood 2013,       geomean of 2 values
-96,  18.35555652, Daphnia pulicaria,               Acute,     48 hours,           n/r,                                                      Survival,                LC50,       Lind et al. 1978,        geomean of 16 values
-97,  2.387547854, Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,       geomean of 4 values
-98,  8.333693461, Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,       geomean of 4 values
-99,  2.72514058,  Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 4 values
-100, 1.985208107, Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,       geomean of 4 values
-101, 1.446704062, Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 4 values
-102, 0.699213841, Desmodesmus spinosus,            Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-103, 6.914465383, Desmodesmus spinosus,            Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-104, 0.941603089, Desmodesmus spinosus,            Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-105, 0.688423853, Desmodesmus spinosus,            Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-106, 11.8563,     Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Growth,                  LOEC,       Fort et al. 2006,     geomean of 2 values
-107, 8.3106,      Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Growth,                  MATC,       Fort et al. 2006,     median of 2 values
-108, 5.81745,     Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Growth,                  NOEC,       Fort et al. 2006,     median of 2 values
-109, 2.539956392, Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            EC10,       Fort et al. 2006,     geomean of 2 values
-110, 2.800710856, Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            EC20,       Fort et al. 2006,     geomean of 2 values
-111, 7.912592008, Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            EC50,       Fort et al. 2006,     geomean of 2 values
-112, 1.828104489, Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            LOEC,       Fort et al. 2006,     geomean of 2 values
-113, 1.351575575, Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            MATC,       Fort et al. 2006,     geomean of 2 values
-114, 1.000199924, Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Malformation,            NOEC,       Fort et al. 2006,     geomean of 2 values
-115, 2.357697348, Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                LC10,       Fort et al. 2006,     geomean of 2 values
-116, 2.616854733, Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                LC20,       Fort et al. 2006,     geomean of 2 values
-117, 14.99157304, Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                LC50,       Fort et al. 2006,     geomean of 2 values
-118, 11.8563,     Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                LOEC,       Fort et al. 2006,     geomean of 2 values
-119, 8.3106,      Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                MATC,       Fort et al. 2006,     median of 2 values
-120, 5.81745,     Gastrophryne carolinensis,       Chronic,   7 days,             "embryo, late blastula/early gastrula (Gasner stage 12)", Survival,                NOEC,       Fort et al. 2006,     median of 2 values
-121, 138.4105265, Hyalella azteca,                 Acute,     48 hours,           7-14d,                                                    Survival,                LC50,       Doig & Liber 2006,       geomean of 20 values
-122, 0.336377268, Hyalella azteca,                 Chronic,   28 days,            2-10 d,                                                   Survival,                LC50,       Schroeder et al. 2010,      geomean of 10 values
-123, 3.069028808, Hyalella azteca,                 Chronic,   7 days,             2-10 d,                                                   Survival,                LC50,       Schroeder et al. 2010,     geomean of 21 values
-124, 1.774717146, Hyalella azteca,                 Chronic,   7 days,             n/r,                                                      Survival,                LC50,       Borgmann et al. 2005,     geomean of 2 values
-125, 1.371590338, Lemna gibba,                     Chronic,   7 days,             n/r,                                                      Growth (Dry Wt),         EC10,       Klaine & Knuteson 2003,     geomean of 2 values
-126, 0.199335262, Lemna minor,                     Chronic,   7 days,             6 fronds,                                                 Growth Rate,             EC10,       Schlekat et al. 2010,     geomean of 6 values
-127, 2.398425349, Lemna minor,                     Chronic,   7 days,             6 fronds,                                                 Growth Rate,             EC50,       Schlekat et al. 2010,     geomean of 6 values
-128, 0.119139359, Lemna minor,                     Chronic,   7 days,             n/r,                                                      Frond Count,             IC25,       Gopalapillai et al. 2013,    geomean of 17 values
-129, 0.57146392,  Lemna minor,                     Chronic,   7 days,             n/r,                                                      Frond Count,             IC50,       Gopalapillai et al. 2013,    geomean of 17 values
-130, 0.122090558, Lemna minor,                     Chronic,   7 days,             n/r,                                                      Root Length,             IC25,       Gopalapillai et al. 2013,    geomean of 17 values
-131, 0.239475597, Lemna minor,                     Chronic,   7 days,             n/r,                                                      Root Length,             IC50,       Gopalapillai et al. 2013,    geomean of 17 values
-132, 181.7892425, Lepomis macrochirus,             Acute,     96 hours,           "1.5-2.5 in, 1-2 g",                                      Survival,                LC50,       Pickering & Henderson 1966,      geomean of 2 values
-133, 92.99724389, Lumbriculus variegatus,          Acute,     96 hours,           n/r,                                                      Survival,                LC50,       Leonard & Wood 2013,     geomean of 2 values
-134, 0.021880089, Lymnaea stagnalis,               Chronic,   30 days,            <1d,                                                      Wet Weight,              EC10,       Schlekat et al. 2010,    geomean of 5 values
-135, 0.045828865, Lymnaea stagnalis,               Chronic,   30 days,            <1d,                                                      Wet Weight,              EC20,       Schlekat et al. 2010,    geomean of 5 values
-136, 0.165857128, Lymnaea stagnalis,               Chronic,   30 days,            <1d,                                                      Wet Weight,              EC50,       Schlekat et al. 2010,    geomean of 5 values
-137, 26.27912323, Oncorhynchus mykiss,             Chronic,   17-26 days,         juvenile,                                                 Survival,                LC50,       Deleebeeck et al. 2007b,    geomean of 17 values
-138, 8.965416548, Oncorhynchus mykiss,             Chronic,   17-26 days,         juvenile,                                                 Survival,                NOEC,       Deleebeeck et al. 2007b,    geomean of 17 values
-139, 0.69193789,  Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,      geomean of 2 values
-140, 1.897460146, Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,      geomean of 2 values
-141, 1.640147787, Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,      geomean of 2 values
-142, 1.226860077, Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,      geomean of 2 values
-143, 0.917348716, Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,      geomean of 2 values
-144, 128.2949613, Peracantha truncata,             Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,        geomean of 2 values
-145, 0.615229591, Peracantha truncata,             Chronic,   17 days,            <2d,                                                      Reproduction,            EC10,       Deleebeeck et al. 2007a,       geomean of 2 values
-146, 1.504355443, Peracantha truncata,             Chronic,   17 days,            <2d,                                                      Reproduction,            EC50,       Deleebeeck et al. 2007a,       geomean of 2 values
-147, 1.388667313, Peracantha truncata,             Chronic,   17 days,            <2d,                                                      Survival,                LC50,       Deleebeeck et al. 2007a,       geomean of 2 values
-148, 23.21512411, Pimephales promelas,             Acute,     96 hours,           <24h,                                                     Survival,                LC50,       Hoang et al. 2004; Pyle et al. 2002; Schubauer-Berigan et al. 1993; Hoang et al. unpublished,        geomean of 25 values
-149, 170.2141897, Pimephales promelas,             Acute,     96 hours,           100d,                                                     Survival,                LC50,       Pickering & Henderson 1966,         geomean of 2 values
-150, 191.7765819, Pimephales promelas,             Acute,     96 hours,           28d,                                                      Survival,                LC50,       Hoang et al. 2004; Hoang et al. unpublished,       geomean of 18 values
-151, 91.08399655, Pimephales promelas,             Acute,     96 hours,           n/r,                                                      Survival,                LC50,       Lind et al. 1978; Pickering 1974,   geomean of 12 values
-152, 245.6381615, Pimephales promelas,             Acute,     96 hours,           subadult,                                                 Survival,                LC50,       Meyer et al. 1999,        geomean of 3 values
-153, 0.238960817, Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,        geomean of 2 values
-154, 2.968914603, Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,        geomean of 2 values
-155, 0.41915074,  Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,        geomean of 2 values
-156, 0.2557324,   Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,        geomean of 2 values
-157, 0.155994169, Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,        geomean of 2 values
-158, 1.351811036, Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                   Growth Rate,             EC10,       Deleebeeck et al. 2009b,         geomean of 32 values
-159, 5.306183229, Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                   Growth Rate,             EC50,       Deleebeeck et al. 2009b,         geomean of 32 values
-160, 1.456305692, Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                   Growth Rate,             LOEC,       Deleebeeck et al. 2009b,         geomean of 32 values
-161, 1.289485973, Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                   Growth Rate,             MATC,       Deleebeeck et al. 2009b,         geomean of 23 values
-162, 0.947661703, Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                   Growth Rate,             NOEC,       Deleebeeck et al. 2009b,         geomean of 23 values
-163, 137.735943,  Rhinella arenarum,               Acute,     96 hours,           embryo (S.25 stage),                                      Survival,                LC50,       Sztrum et al. 2011,         geomean of 2 values
-164, 58.5013279,  Rhinella arenarum,               Chronic,   7 days,             embryo (S.25 stage),                                      Survival,                LC50,       Sztrum et al. 2011,       geomean of 2 values
-165, 0.630831995, Scenedesmus accuminatus,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,        geomean of 2 values
-166, 7.067617063, Scenedesmus accuminatus,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,        geomean of 2 values
-167, 0.695941784, Scenedesmus accuminatus,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,        geomean of 2 values
-168, 0.483894501, Scenedesmus accuminatus,         Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,        geomean of 2 values
-169, 53.79328274, Simocephalus serrulatus,         Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,        geomean of 2 values
-170, 0.98497334,  Simocephalus serrulatus,         Chronic,   17 days,            <2d,                                                      Reproduction,            EC10,       Deleebeeck et al. 2007a,       geomean of 2 values
-171, 1.139810419, Simocephalus serrulatus,         Chronic,   17 days,            <2d,                                                      Reproduction,            EC50,       Deleebeeck et al. 2007a,       geomean of 2 values
-172, 1.177154706, Simocephalus serrulatus,         Chronic,   17 days,            <2d,                                                      Survival,                LC50,       Deleebeeck et al. 2007a,       geomean of 2 values
-173, 25.52910048, Simocephalus vetulus,            Acute,     48 hours,           <2d,                                                      Immobilization,          EC50,       Deleebeeck et al. 2007a,        geomean of 2 values
-174, 0.435266783, Simocephalus vetulus,            Chronic,   17 days,            <2d,                                                      Reproduction,            EC10,       Deleebeeck et al. 2007a,       geomean of 2 values
-175, 0.542082388, Simocephalus vetulus,            Chronic,   17 days,            <2d,                                                      Reproduction,            EC50,       Deleebeeck et al. 2007a,       geomean of 2 values
-176, 0.689755576, Simocephalus vetulus,            Chronic,   17 days,            <2d,                                                      Survival,                LC50,       Deleebeeck et al. 2007a,       geomean of 2 values
-177, 0.665544073, Spermatozopsis exsultans,        Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-178, 5.338269993, Spermatozopsis exsultans,        Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-179, 0.932858929, Spermatozopsis exsultans,        Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-180, 0.932858929, Spermatozopsis exsultans,        Chronic,   72 hours,           n/r,                                                      Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,       geomean of 2 values
-181, 5.600150991, Utterbackia imbecillis,          Acute,     96 hours,           juvenile (4-6d),                                          Survival,                LC50,       Keller 2000,        geomean of 2 values
-182, 3.19826,     Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Growth,                  LOEC,       Fort et al. 2006,       median of 2 values
-183, 1.90392,     Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Growth,                  MATC,       Fort et al. 2006,       median of 2 values
-184, 1.13383,     Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Growth,                  NOEC,       Fort et al. 2006,       median of 2 values
-185, 3.127699184, Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Malformation,            EC10,       Fort et al. 2006,       geomean of 2 values
-186, 3.257449714, Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Malformation,            EC20,       Fort et al. 2006,       geomean of 2 values
-187, 5.342092645, Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Malformation,            EC50,       Fort et al. 2006,       geomean of 2 values
-188, 3.19826,     Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Malformation,            LOEC,       Fort et al. 2006,       median of 2 values
-189, 1.90392,     Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Malformation,            MATC,       Fort et al. 2006,       median of 2 values
-190, 1.13383,     Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Malformation,            NOEC,       Fort et al. 2006,       median of 2 values
-191, 59.72980358, Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Survival,                LC10,       Fort et al. 2006,       geomean of 2 values
-192, 68.39222239, Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Survival,                LC20,       Fort et al. 2006,       geomean of 2 values
-193, 97.28839327, Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Survival,                LC50,       Fort et al. 2006,       geomean of 2 values
-194, 113.073,     Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Survival,                LOEC,       Fort et al. 2006,       geomean of 2 values
-195, 98.394,      Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Survival,                MATC,       Fort et al. 2006,       geomean of 2 values
-196, 85.441,      Xenopus laevis,                  Chronic,   96 hours,           "embryo, late blastula/early gastrula (NF stage 10)",     Survival,                NOEC,       Fort et al. 2006,    geomean of 2 values
+Num, CA,                 Species,                         Test Type, Duration,           Lifestage,                                                 Endpoint,                Quantifier, References,                                                                                             Miscellaneous
+1,   113.41080594282,    Alona affinis,                   Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+2,   0.546480898280992,  Alona affinis,                   Chronic,   16 days,            <2d,                                                       Survival,                LC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+3,   1.57153728471456,   Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+4,   17.353944263769,    Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+5,   3.75718658429416,   Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+6,   2.60803993468275,   Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+7,   1.81118817486864,   Ankistrodesmus falcatus,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+8,   7.18467971148332,   Anodonta imbecillis,             Acute,     48 hours,           "juvenile,  1-2d",                                         Survival,                LC50,       Keller & Zam 1991,                                                                                      geomean of 2 values
+9,   4.67256320706312,   Anodonta imbecillis,             Acute,     96 hours,           "juvenile,  1-2d",                                         Survival,                LC50,       Keller & Zam 1991,                                                                                      geomean of 2 values
+10,  17.2992633662535,   Bosmina coregoni,                Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+11,  4.0106,             Brachionus calyciflorus,         Chronic,   48 hours,           2-h old,                                                   Population Growth Rate,  EC10,       Schlekat et al. 2010,                                                                                   median of 5 values
+12,  6.0199,             Brachionus calyciflorus,         Chronic,   48 hours,           2-h old,                                                   Population Growth Rate,  EC20,       Schlekat et al. 2010,                                                                                   geomean of 5 values
+13,  11.7243,            Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Growth,                  LOEC,       Fort et al. 2006,                                                                                       median of 2 values
+14,  9.8732,             Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Growth,                  MATC,       Fort et al. 2006,                                                                                       median of 2 values
+15,  8.3116,             Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Growth,                  NOEC,       Fort et al. 2006,                                                                                       median of 2 values
+16,  15.3500255406954,   Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            EC10,       Fort et al. 2006,                                                                                       geomean of 2 values
+17,  17.0572046021615,   Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            EC20,       Fort et al. 2006,                                                                                       geomean of 2 values
+18,  50.245646943591,    Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            EC50,       Fort et al. 2006,                                                                                       geomean of 2 values
+19,  11.7243,            Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            LOEC,       Fort et al. 2006,                                                                                       median of 2 values
+20,  9.8732,             Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            MATC,       Fort et al. 2006,                                                                                       median of 2 values
+21,  8.3116,             Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            NOEC,       Fort et al. 2006,                                                                                       median of 2 values
+22,  14.2578846912857,   Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                LC10,       Fort et al. 2006,                                                                                       geomean of 2 values
+23,  15.4583687616126,   Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                LC20,       Fort et al. 2006,                                                                                       geomean of 2 values
+24,  38.5390916768935,   Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                LC50,       Fort et al. 2006,                                                                                       geomean of 2 values
+25,  30.2552,            Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                LOEC,       Fort et al. 2006,                                                                                       median of 2 values
+26,  18.8867,            Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                MATC,       Fort et al. 2006,                                                                                       median of 2 values
+27,  11.7243,            Bufo terrestris,                 Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                NOEC,       Fort et al. 2006,                                                                                       median of 2 values
+28,  22.8346390523258,   Camptocercus lilljeborgi,        Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+29,  0.747205,           Ceriodaphnia dubia,              Acute,     48 hours,           <48h,                                                      Survival,                LC50,       Schubauer-Berigan et al. 1993,                                                                          median of 3 values
+30,  0.41840835241975,   Ceriodaphnia dubia,              Acute,     48 hours,           "juveniles,  2-8h",                                        Survival,                LC50,       De Schamphelaere et al. 2006,                                                                           geomean of 6 values
+31,  1.00449803436105,   Ceriodaphnia dubia,              Acute,     48 hours,           neonates (<24h),                                           Survival,                LC50,       "AECOM Technical Services, Inc. 2011a; Keithly et al. 2004; Parametrix 2005b",                          geomean of 8 values
+32,  0.28682936491725,   Ceriodaphnia dubia,              Acute,     48 hours,           neonates (<24h),                                           Survival,                LOEC,       Parametrix 2005b,                                                                                       geomean of 3 values
+33,  0.1941291672618,    Ceriodaphnia dubia,              Acute,     48 hours,           neonates (<24h),                                           Survival,                MATC,       Parametrix 2005b,                                                                                       geomean of 3 values
+34,  0.131515290278309,  Ceriodaphnia dubia,              Acute,     48 hours,           neonates (<24h),                                           Survival,                NOEC,       Parametrix 2005b,                                                                                       geomean of 3 values
+35,  0.0405842199961625, Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile,  16-24h",                                       Reproduction,            EC10,       De Schamphelaere et al. 2006,                                                                           geomean of 6 values
+36,  0.0534996559139617, Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile,  16-24h",                                       Reproduction,            EC20,       De Schamphelaere et al. 2006,                                                                           geomean of 6 values
+37,  0.0868093821442819, Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile,  16-24h",                                       Reproduction,            EC50,       De Schamphelaere et al. 2006,                                                                           geomean of 6 values
+38,  0.426792656156951,  Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile,  16-24h",                                       Reproduction,            LOEC,       De Schamphelaere et al. 2006,                                                                           geomean of 3 values
+39,  0.332682374994853,  Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile,  16-24h",                                       Reproduction,            MATC,       De Schamphelaere et al. 2006,                                                                           geomean of 3 values
+40,  0.0707777950925103, Ceriodaphnia dubia,              Chronic,   10 days,            "juvenile,  16-24h",                                       Reproduction,            NOEC,       De Schamphelaere et al. 2006,                                                                           geomean of 6 values
+41,  0.0320903562448769, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                           Reproduction,            EC20,       Keithly et al. 2004,                                                                                    geomean of 3 values
+42,  0.05203452297571,   Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                           Reproduction,            LOEC,       Keithly et al. 2004,                                                                                    geomean of 4 values
+43,  0.0386769381293135, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                           Reproduction,            MATC,       Keithly et al. 2004,                                                                                    geomean of 3 values
+44,  0.0350853474588369, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                           Reproduction,            NOEC,       Keithly et al. 2004,                                                                                    geomean of 4 values
+45,  0.0465461707513978, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                           Survival & Reproduction, IC25,       Parametrix unpublished,                                                                                 geomean of 19 values
+46,  0.0533429323765765, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                           Survival,                LC20,       Keithly et al. 2004,                                                                                    geomean of 3 values
+47,  0.101088742504776,  Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                           Survival,                LOEC,       Kszos et al. 1992; Keithly et al. 2004,                                                                 geomean of 7 values
+48,  0.0804017212047007, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                           Survival,                MATC,       Keithly et al. 2004; Kszos et al. 1992,                                                                 geomean of 6 values
+49,  0.0580765748198388, Ceriodaphnia dubia,              Chronic,   7 days,             neonates (<24h),                                           Survival,                NOEC,       Kszos et al. 1992; Keithly et al. 2004,                                                                 geomean of 7 values
+50,  0.0698140164850388, Ceriodaphnia dubia,              Chronic,   8 days or 3 broods, neonates (<24h),                                           Reproduction,            IC50,       Puttaswamy & Liber 2012,                                                                                geomean of 9 values
+51,  0.0853880056150093, Ceriodaphnia dubia,              Chronic,   8 days or 3 broods, neonates (<24h),                                           Survival,                LC50,       Puttaswamy & Liber 2012,                                                                                geomean of 6 values
+52,  27.387825023101,    Ceriodaphnia pulchella,          Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+53,  0.418397307549893,  Ceriodaphnia pulchella,          Chronic,   17 days,            <2d,                                                       Reproduction,            EC10,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+54,  0.677584558879554,  Ceriodaphnia pulchella,          Chronic,   17 days,            <2d,                                                       Reproduction,            EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+55,  0.850476632823618,  Ceriodaphnia pulchella,          Chronic,   17 days,            <2d,                                                       Survival,                LC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+56,  9.57137960563111,   Ceriodaphnia quadrangula,        Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 4 values
+57,  0.347860318025296,  Ceriodaphnia quadrangula,        Chronic,   17 days,            <2d,                                                       Reproduction,            EC10,       Deleebeeck et al. 2007a,                                                                                geomean of 4 values
+58,  0.587686479121593,  Ceriodaphnia quadrangula,        Chronic,   17 days,            <2d,                                                       Reproduction,            EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 4 values
+59,  0.511172498486282,  Ceriodaphnia quadrangula,        Chronic,   17 days,            <2d,                                                       Survival,                LC50,       Deleebeeck et al. 2007a,                                                                                geomean of 4 values
+60,  2.43047,            Chironomus dilutus,              Chronic,   10 days,            2nd instar larvae,                                         Ash-free Dry Weight,     EC10,       Schlekat et al. 2010,                                                                                   median of 5 values
+61,  3.51819,            Chironomus dilutus,              Chronic,   10 days,            2nd instar larvae,                                         Ash-free Dry Weight,     EC20,       Schlekat et al. 2010,                                                                                   median of 5 values
+62,  878.708280659743,   Chironomus riparius,             Acute,     96 hours,           "larva,  3rd and 4th instar",                              Survival,                LC50,       Leonard & Wood 2013,                                                                                    geomean of 2 values
+63,  1.92038492702895,   Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+64,  5.21964300748624,   Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+65,  1.44518630558831,   Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+66,  1.1005100366998,    Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+67,  0.8381493083932,    Chlamydomonas sp.,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+68,  4.29233746388841,   Chlorella sp.,                   Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+69,  60.4944561363271,   Chlorella sp.,                   Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+70,  7.24163812197213,   Chlorella sp.,                   Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+71,  5.51343315044265,   Chlorella sp.,                   Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+72,  105.43220723261,    Chydorus ovalis,                 Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+73,  1.84570359110019,   Coelastrum microporum,           Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 4 values
+74,  8.18095844128645,   Coelastrum microporum,           Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 4 values
+75,  1.87081567532995,   Coelastrum microporum,           Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 4 values
+76,  1.87081567532995,   Coelastrum microporum,           Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 4 values
+77,  34.8492,            Danio rerio,                     Acute,     96 hours,           larva,                                                     Survival,                LC50,       Alsop & Wood 2011,                                                                                      geomean of 5 values
+78,  14.6345986042904,   Daphnia longispina,              Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+79,  1.2339045310882,    Daphnia longispina,              Chronic,   21 days,            <2d,                                                       Reproduction,            EC10,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+80,  2.58757083895301,   Daphnia longispina,              Chronic,   21 days,            <2d,                                                       Reproduction,            EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+81,  2.28143442840245,   Daphnia longispina,              Chronic,   21 days,            <2d,                                                       Survival,                LC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+82,  48.7347017209089,   Daphnia magna,                   Acute,     48 hours,           neonate (<24h),                                            Immobilization,          EC50,       Deleebeeck et al. 2008a; Ferreira et al. 2010; Xie et al. 2007,                                         geomean of 58 values
+83,  24.9753384764808,   Daphnia magna,                   Acute,     48 hours,           neonate (<24h),                                            Survival,                LC50,       Chapman et al. 1980; Pane et al. 2003b,                                                                 geomean of 5 values
+84,  0.541336075500354,  Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Reproduction,            EC10,       Deleebeeck et al. 2008b,                                                                                geomean of 22 values
+85,  0.679935168435925,  Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Reproduction,            EC20,       Deleebeeck et al. 2008b,                                                                                geomean of 22 values
+86,  1.03547445659446,   Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Reproduction,            EC50,       Deleebeeck et al. 2008b; Pavlaki et al. 2011,                                                           geomean of 23 values
+87,  0.673473865362445,  Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Reproduction,            LOEC,       Deleebeeck et al. 2008b; Chapman et al. 1980; Pavlaki et al. 2011; Kszos et al. 1992; Pane et al. 2004, geomean of 28 values
+88,  0.563997575672613,  Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Reproduction,            MATC,       Deleebeeck et al. 2008b; Pane et al. 2004; Pavlaki et al. 2011; Chapman et al. 1980; Kszos et al. 1992, geomean of 20 values
+89,  0.435831024886045,  Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Reproduction,            NOEC,       Chapman et al. 1980; Deleebeeck et al. 2008b; Kszos et al. 1992; Pane et al. 2004; Pavlaki et al. 2011, geomean of 28 values
+90,  1.32282891384566,   Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Survival,                LC50,       Deleebeeck et al. 2008b; Pane et al. 2004,                                                              geomean of 23 values
+91,  1.82508651563288,   Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Survival,                LOEC,       Deleebeeck et al. 2008b; Kszos et al. 1992; Pane et al. 2004,                                           geomean of 24 values
+92,  1.40659877978177,   Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Survival,                MATC,       Deleebeeck et al. 2008b; Kszos et al. 1992; Pane et al. 2004,                                           geomean of 23 values
+93,  1.03605857022908,   Daphnia magna,                   Chronic,   21 days,            neonate (<24h),                                            Survival,                NOEC,       Deleebeeck et al. 2008b; Pane et al. 2004; Kszos et al. 1992,                                           geomean of 24 values
+94,  52.4499595955688,   Daphnia pulex,                   Acute,     48 hours,           <1d,                                                       Survival,                LC50,       Kozlova et al. 2009,                                                                                    geomean of 44 values
+95,  9.34278090945089,   Daphnia pulex,                   Acute,     48 hours,           6-8 days old,                                              Survival,                LC50,       Leonard & Wood 2013,                                                                                    geomean of 2 values
+96,  18.3555565180685,   Daphnia pulicaria,               Acute,     48 hours,           n/r,                                                       Survival,                LC50,       Lind et al. 1978,                                                                                       geomean of 16 values
+97,  2.38754785401319,   Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 4 values
+98,  8.33369346135374,   Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 4 values
+99,  2.72514058048677,   Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 4 values
+100, 1.98520810695614,   Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 4 values
+101, 1.44670406220361,   Desmodesmus sp.,                 Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 4 values
+102, 0.699213840944957,  Desmodesmus spinosus,            Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+103, 6.91446538323824,   Desmodesmus spinosus,            Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+104, 0.941603089029024,  Desmodesmus spinosus,            Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+105, 0.688423852742625,  Desmodesmus spinosus,            Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+106, 11.8563,            Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Growth,                  LOEC,       Fort et al. 2006,                                                                                       geomean of 2 values
+107, 8.3106,             Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Growth,                  MATC,       Fort et al. 2006,                                                                                       median of 2 values
+108, 5.81745,            Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Growth,                  NOEC,       Fort et al. 2006,                                                                                       median of 2 values
+109, 2.53995639186975,   Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            EC10,       Fort et al. 2006,                                                                                       geomean of 2 values
+110, 2.80071085601495,   Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            EC20,       Fort et al. 2006,                                                                                       geomean of 2 values
+111, 7.91259200767991,   Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            EC50,       Fort et al. 2006,                                                                                       geomean of 2 values
+112, 1.8281044885345,    Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            LOEC,       Fort et al. 2006,                                                                                       geomean of 2 values
+113, 1.3515755748015,    Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            MATC,       Fort et al. 2006,                                                                                       geomean of 2 values
+114, 1.00019992376524,   Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Malformation,            NOEC,       Fort et al. 2006,                                                                                       geomean of 2 values
+115, 2.35769734826165,   Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                LC10,       Fort et al. 2006,                                                                                       geomean of 2 values
+116, 2.61685473270872,   Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                LC20,       Fort et al. 2006,                                                                                       geomean of 2 values
+117, 14.9915730412122,   Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                LC50,       Fort et al. 2006,                                                                                       geomean of 2 values
+118, 11.8563,            Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                LOEC,       Fort et al. 2006,                                                                                       geomean of 2 values
+119, 8.3106,             Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                MATC,       Fort et al. 2006,                                                                                       median of 2 values
+120, 5.81745,            Gastrophryne carolinensis,       Chronic,   7 days,             "embryo,  late blastula/early gastrula (Gasner stage 12)", Survival,                NOEC,       Fort et al. 2006,                                                                                       median of 2 values
+121, 138.410526473317,   Hyalella azteca,                 Acute,     48 hours,           7-14d,                                                     Survival,                LC50,       Doig & Liber 2006,                                                                                      geomean of 20 values
+122, 0.33637726847653,   Hyalella azteca,                 Chronic,   28 days,            2-10 d,                                                    Survival,                LC50,       Schroeder et al. 2010,                                                                                  geomean of 10 values
+123, 3.06902880814321,   Hyalella azteca,                 Chronic,   7 days,             2-10 d,                                                    Survival,                LC50,       Schroeder et al. 2010,                                                                                  geomean of 21 values
+124, 1.77471714605455,   Hyalella azteca,                 Chronic,   7 days,             n/r,                                                       Survival,                LC50,       Borgmann et al. 2005,                                                                                   geomean of 2 values
+125, 1.37159033839919,   Lemna gibba,                     Chronic,   7 days,             n/r,                                                       Growth (Dry Wt),         EC10,       Klaine & Knuteson 2003,                                                                                 geomean of 2 values
+126, 0.199335262459386,  Lemna minor,                     Chronic,   7 days,             6 fronds,                                                  Growth Rate,             EC10,       Schlekat et al. 2010,                                                                                   geomean of 6 values
+127, 2.39842534903243,   Lemna minor,                     Chronic,   7 days,             6 fronds,                                                  Growth Rate,             EC50,       Schlekat et al. 2010,                                                                                   geomean of 6 values
+128, 0.119139358625808,  Lemna minor,                     Chronic,   7 days,             n/r,                                                       Frond Count,             IC25,       Gopalapillai et al. 2013,                                                                               geomean of 17 values
+129, 0.571463920493347,  Lemna minor,                     Chronic,   7 days,             n/r,                                                       Frond Count,             IC50,       Gopalapillai et al. 2013,                                                                               geomean of 17 values
+130, 0.122090558320125,  Lemna minor,                     Chronic,   7 days,             n/r,                                                       Root Length,             IC25,       Gopalapillai et al. 2013,                                                                               geomean of 17 values
+131, 0.239475597092964,  Lemna minor,                     Chronic,   7 days,             n/r,                                                       Root Length,             IC50,       Gopalapillai et al. 2013,                                                                               geomean of 17 values
+132, 181.789242542016,   Lepomis macrochirus,             Acute,     96 hours,           "1.5-2.5 in,  1-2 g",                                      Survival,                LC50,       Pickering & Henderson 1966,                                                                             geomean of 2 values
+133, 92.9972438903433,   Lumbriculus variegatus,          Acute,     96 hours,           n/r,                                                       Survival,                LC50,       Leonard & Wood 2013,                                                                                    geomean of 2 values
+134, 0.0218800887458749, Lymnaea stagnalis,               Chronic,   30 days,            <1d,                                                       Wet Weight,              EC10,       Schlekat et al. 2010,                                                                                   geomean of 5 values
+135, 0.0458288649280706, Lymnaea stagnalis,               Chronic,   30 days,            <1d,                                                       Wet Weight,              EC20,       Schlekat et al. 2010,                                                                                   geomean of 5 values
+136, 0.165857128097628,  Lymnaea stagnalis,               Chronic,   30 days,            <1d,                                                       Wet Weight,              EC50,       Schlekat et al. 2010,                                                                                   geomean of 5 values
+137, 26.2791232338216,   Oncorhynchus mykiss,             Chronic,   17-26 days,         juvenile,                                                  Survival,                LC50,       Deleebeeck et al. 2007b,                                                                                geomean of 17 values
+138, 8.96541654800072,   Oncorhynchus mykiss,             Chronic,   17-26 days,         juvenile,                                                  Survival,                NOEC,       Deleebeeck et al. 2007b,                                                                                geomean of 17 values
+139, 0.691937890386124,  Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+140, 1.89746014575537,   Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+141, 1.64014778655096,   Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+142, 1.22686007729896,   Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+143, 0.917348715613098,  Pediastrum duplex,               Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+144, 128.2949612585,     Peracantha truncata,             Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+145, 0.615229590722033,  Peracantha truncata,             Chronic,   17 days,            <2d,                                                       Reproduction,            EC10,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+146, 1.50435544280931,   Peracantha truncata,             Chronic,   17 days,            <2d,                                                       Reproduction,            EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+147, 1.38866731301633,   Peracantha truncata,             Chronic,   17 days,            <2d,                                                       Survival,                LC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+148, 23.2151241140539,   Pimephales promelas,             Acute,     96 hours,           <24h,                                                      Survival,                LC50,       Hoang et al. 2004; Pyle et al. 2002; Schubauer-Berigan et al. 1993; Hoang et al. unpublished,           geomean of 25 values
+149, 170.214189716956,   Pimephales promelas,             Acute,     96 hours,           100d,                                                      Survival,                LC50,       Pickering & Henderson 1966,                                                                             geomean of 2 values
+150, 191.776581889655,   Pimephales promelas,             Acute,     96 hours,           28d,                                                       Survival,                LC50,       Hoang et al. 2004; Hoang et al. unpublished,                                                            geomean of 18 values
+151, 91.0839965534586,   Pimephales promelas,             Acute,     96 hours,           n/r,                                                       Survival,                LC50,       Lind et al. 1978; Pickering 1974,                                                                       geomean of 12 values
+152, 245.638161472672,   Pimephales promelas,             Acute,     96 hours,           subadult,                                                  Survival,                LC50,       Meyer et al. 1999,                                                                                      geomean of 3 values
+153, 0.23896081688846,   Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+154, 2.96891460318413,   Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+155, 0.419150739939702,  Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+156, 0.255732399609435,  Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       MATC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+157, 0.155994168871692,  Pseudokirchneriella sp.,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+158, 1.35181103566626,   Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                    Growth Rate,             EC10,       Deleebeeck et al. 2009b,                                                                                geomean of 32 values
+159, 5.30618322861727,   Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                    Growth Rate,             EC50,       Deleebeeck et al. 2009b,                                                                                geomean of 32 values
+160, 1.45630569177619,   Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                    Growth Rate,             LOEC,       Deleebeeck et al. 2009b,                                                                                geomean of 32 values
+161, 1.28948597295255,   Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                    Growth Rate,             MATC,       Deleebeeck et al. 2009b,                                                                                geomean of 23 values
+162, 0.947661702599843,  Pseudokirchneriella subcapitata, Chronic,   72 hours,           5 days,                                                    Growth Rate,             NOEC,       Deleebeeck et al. 2009b,                                                                                geomean of 23 values
+163, 137.735942963501,   Rhinella arenarum,               Acute,     96 hours,           embryo (S.25 stage),                                       Survival,                LC50,       Sztrum et al. 2011,                                                                                     geomean of 2 values
+164, 58.501327898652,    Rhinella arenarum,               Chronic,   7 days,             embryo (S.25 stage),                                       Survival,                LC50,       Sztrum et al. 2011,                                                                                     geomean of 2 values
+165, 0.630831995418749,  Scenedesmus accuminatus,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+166, 7.06761706345215,   Scenedesmus accuminatus,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+167, 0.695941784440337,  Scenedesmus accuminatus,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+168, 0.483894501348176,  Scenedesmus accuminatus,         Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+169, 53.7932827386469,   Simocephalus serrulatus,         Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+170, 0.98497333987677,   Simocephalus serrulatus,         Chronic,   17 days,            <2d,                                                       Reproduction,            EC10,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+171, 1.13981041867497,   Simocephalus serrulatus,         Chronic,   17 days,            <2d,                                                       Reproduction,            EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+172, 1.17715470597539,   Simocephalus serrulatus,         Chronic,   17 days,            <2d,                                                       Survival,                LC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+173, 25.5291004831741,   Simocephalus vetulus,            Acute,     48 hours,           <2d,                                                       Immobilization,          EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+174, 0.435266782927436,  Simocephalus vetulus,            Chronic,   17 days,            <2d,                                                       Reproduction,            EC10,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+175, 0.54208238842449,   Simocephalus vetulus,            Chronic,   17 days,            <2d,                                                       Reproduction,            EC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+176, 0.689755576325411,  Simocephalus vetulus,            Chronic,   17 days,            <2d,                                                       Survival,                LC50,       Deleebeeck et al. 2007a,                                                                                geomean of 2 values
+177, 0.665544073284407,  Spermatozopsis exsultans,        Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC10,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+178, 5.33826999349977,   Spermatozopsis exsultans,        Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       EC50,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+179, 0.932858928659634,  Spermatozopsis exsultans,        Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       LOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+180, 0.932858928659634,  Spermatozopsis exsultans,        Chronic,   72 hours,           n/r,                                                       Growth Inhibition,       NOEC,       Deleebeeck et al. 2006; 2009a,                                                                          geomean of 2 values
+181, 5.60015099135729,   Utterbackia imbecillis,          Acute,     96 hours,           juvenile (4-6d),                                           Survival,                LC50,       Keller 2000,                                                                                            geomean of 2 values
+182, 3.19826,            Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Growth,                  LOEC,       Fort et al. 2006,                                                                                       median of 2 values
+183, 1.90392,            Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Growth,                  MATC,       Fort et al. 2006,                                                                                       median of 2 values
+184, 1.13383,            Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Growth,                  NOEC,       Fort et al. 2006,                                                                                       median of 2 values
+185, 3.12769918403289,   Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Malformation,            EC10,       Fort et al. 2006,                                                                                       geomean of 2 values
+186, 3.25744971365638,   Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Malformation,            EC20,       Fort et al. 2006,                                                                                       geomean of 2 values
+187, 5.3420926452468,    Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Malformation,            EC50,       Fort et al. 2006,                                                                                       geomean of 2 values
+188, 3.19826,            Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Malformation,            LOEC,       Fort et al. 2006,                                                                                       median of 2 values
+189, 1.90392,            Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Malformation,            MATC,       Fort et al. 2006,                                                                                       median of 2 values
+190, 1.13383,            Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Malformation,            NOEC,       Fort et al. 2006,                                                                                       median of 2 values
+191, 59.7298035803735,   Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Survival,                LC10,       Fort et al. 2006,                                                                                       geomean of 2 values
+192, 68.3922223867598,   Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Survival,                LC20,       Fort et al. 2006,                                                                                       geomean of 2 values
+193, 97.2883932748403,   Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Survival,                LC50,       Fort et al. 2006,                                                                                       geomean of 2 values
+194, 113.073,            Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Survival,                LOEC,       Fort et al. 2006,                                                                                       geomean of 2 values
+195, 98.394,             Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Survival,                MATC,       Fort et al. 2006,                                                                                       geomean of 2 values
+196, 85.441,             Xenopus laevis,                  Chronic,   96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Survival,                NOEC,       Fort et al. 2006,                                                                                       geomean of 2 values
 --------------------------------------------------------------------------------
 -------Notes--------
-Types: 
-  PB  C++  R/PFile      Comment
-  1   1    MassBal     (Float previously)
-  2   2    FixedConc
-  3   3    Substituted 
-  4   4    ChargeBal   (not useful in BLM)
-  15  15   SurfPot     (keep for now - double layer stuff)
-  -   5    WHAMV
-  -   6    WHAMVI
-  -   7    WHAMVII
-  -   -    WHAMFile=Filename.wdat
-Activity Correction Methods: 
-  PB  C++   R/PFile  
-  1   1     None
-  2   2     Davies
-  3   3     Debye
-  4   4     MoleFraction
-  5   5     ChargeFraction
-  6   6     WHAMHA (usually internal use only)
-  7   7     WHAMFA (usually internal use only)
-  
+written by kellyc from R: 2024-12-19 16:11:54.263582
+---------------------------------------------------------------------------------------------------
+Notes:
+---------------------------------------------------------------------------------------------------
+Metal: Nickel (Ni)
+Medium: Freshwater
+Test Type: Acute/Chronic
+Organism: n/a
+Endpoint: n/a
+Effect: n/a
+2015-01-07: Name changed from "Ni_Daphnia_pulex-2014-10-14.dat" to 
+   "Ni_all_studies_calibration_2015-01-07.dat".  Gill-Ca and Gill-Mg logK values were calibrated 
+   with multiple species, using data from multiple studies.  
+    
+2016-01-28: Name changed to "Ni_all_studies_calibration_2015-10-31.dat", based on the parameters 
+   being calibrated in "Ni_calib_write.dat" on Oct 31, 2015.  
+2021-03-03: Updated the thermo database to NIST_20170203.dbs, which includes the 
+   calibrated Ni-FA binding constant and binding constants for carbonate complexes 
+   have been corrected to the NIST/IUPAC values rather than WHAM V defaults.
+   
+2021-04-06: Updated the critical accumulation table from "NiPERA/FW 
+   Reconciliation/Data/R_Scripting/Data_Files/02_PFile_Critical_Table.csv", dated 2021-03-22 4:22PM.
+   These are the as-submitted values from the Ni BLM manuscript. Also changed the biotic ligand
+   component name from "Gill" to "BL", since "Gill" is kinda outdated.
+   
+2022-03-23: (KEC) Added quotes where appropriate in the critical table. (e.g. "juvenile, 16-24h" 
+   needs quotes to parse correctly b/c it's comma-delimited), and removed duplicated references. 
+   I also changed the version number in the header to 3.01, since we have a critical table.
+   Note: this parameter file has >100 rows in the critical table, which is too many for versions 
+   2.48 and prior. I fixed this in version 2.49 build 2022-03-23.
+   
+2024-04-10: (KEC) Removed S as a component - it's reactions are not in the thermo database and it
+   was causing confusion for BC and CCME software users. 
+   
+2024-12-18: (KEC) added more quotes in the critical table - "AECOM Technical Services, Inc. 2011a"
+   
+---------------------------------------------------------------------------------------------------

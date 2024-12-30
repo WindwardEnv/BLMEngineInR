@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' @name InVars
 #'
 #' @title Add or remove a input variables in a problem
@@ -24,8 +38,8 @@
 #'   only checked once at the end.
 #'
 #' @return `ThisProblem`, with the changed input variables. If the input
-#'   variable being added is pH, an "H" component will also be added as a fixed
-#'   activity component.
+#'   variable being added is pH, "H" and "OH" components will also be added as
+#'   fixed activity components.
 #'
 #' @family problem manipulation functions
 #'
@@ -104,10 +118,10 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
   for (i in 1:NInVarAdd) {
     if (InVarType[i] == "pH") {
       NewProblem = AddDefComps(ThisProblem = NewProblem,
-                              DefCompName = "H",
-                              DefCompFromVar = InVarName[i],
+                              DefCompName = c("H", "OH"),
+                              DefCompFromVar = c(InVarName[i], "KW/H"),
                               DefCompFromNum = NA,
-                              DefCompCharge = 1L,
+                              DefCompCharge = c(1L, -1L),
                               DefCompMCName = InVarMCName[i],
                               DefCompType = "FixedAct",
                               DefCompActCorr = "Debye",
@@ -118,6 +132,10 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
       # warning(paste("Defined component added for pH as a fixed activity",
       #               "component. Change manually if you wish to represent",
       #               "pH as a fixed concentration."))
+    }
+    if (grepl("WHAM", InVarType[i]) &
+        (!is.na(NewProblem$WHAM$Ver) | !is.na(NewProblem$WHAM$File))) {
+      NewProblem = ExpandWHAM(ThisProblem = NewProblem)
     }
   }
 

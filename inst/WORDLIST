@@ -16,6 +16,7 @@ Bielmyer
 Biotic
 BlankProblem
 BlankProblemList
+BlankWHAM
 Bosse
 Bowles
 BreakOnError
@@ -48,6 +49,7 @@ DefComp
 DefCompMCName
 DefCompMCR
 DefineProblem
+DefineWHAM
 Delos
 DeltaH
 DiToro
@@ -58,6 +60,7 @@ DonnanHA
 Duarte
 Dwyer
 Earley
+ECCC
 EquationToStoich
 Equilibria
 ExpandWHAM
@@ -76,6 +79,7 @@ Gröning
 HAFA
 HC
 HCO
+HH
 Hogstrand
 Humic
 IUPAC
@@ -111,6 +115,7 @@ NBL
 NBLMetal
 NComp
 NDefComp
+NIST
 NInComp
 NInLab
 NInVar
@@ -139,6 +144,8 @@ Playle
 Possolo
 PowerBasic
 Prohaska
+RParamFile
+RWHAMFile
 Raphson
 ReadInputsFromFile
 RemoveCriticalValues
@@ -160,6 +167,7 @@ Stubblefield
 TIEs
 Takahashi
 ThisProblem
+ThisWHAM
 Tomasso
 TotMoles
 USEPA
@@ -175,12 +183,16 @@ XLSX
 XToEquation
 XToStoichComps
 XToStoichMatrix
+YYYY
 Yoneda
 Zhu
 bioavailability
 bioavailable
 biotic
 carbonic
+complexation
+dat
+dbs
 doi
 enthalpy
 equilibria

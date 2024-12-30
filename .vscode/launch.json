@@ -8,14 +8,14 @@
             "name": "(lldb) Launch",
             "type": "lldb",
             "request": "launch",
-            "program": "C:/Program Files/R/R-4.4.1/bin/x64/Rscript",
+            "program": "C:/Program Files/R/R-4.3.1/bin/x64/Rscript",
             "args": [
                 "--vanilla",
                 "-e",
                 "source('tools/debug.R')"
             ],
             "env": {
-                "R_HOME" : "C:/Program Files/R/R-4.4.1"
+                "R_HOME" : "C:/Program Files/R/R-4.3.1"
             },
             "terminal" : "console",
             "stopOnEntry": false
@@ -31,7 +31,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "C:/Program Files/R/R-4.4.1/bin/x64/Rscript.exe",
+            "program": "C:/Program Files/R/R-4.3.1/bin/x64/Rscript.exe",
             "args": [
                 "--vanilla",
                 "-e",

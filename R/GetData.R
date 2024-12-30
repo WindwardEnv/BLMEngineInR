@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' @title Read a BLM Input File
 #'
 #' @description `ReadInputsFromFile` will read a BLM input file, assuming it
@@ -184,6 +198,7 @@ MatchInputsToProblem = function(
 
   # -get temperatures
   SysTempCelsiusObs = as.numeric(InVarObs[, InVarName[InVarType == "Temperature"]])
+  SysTempKelvinObs = SysTempCelsiusObs + 273.15
 
   # -get pHObs - from InVarObs or InCompObs
   if (any(InVarType == "pH")) {
@@ -269,6 +284,9 @@ MatchInputsToProblem = function(
     for (i in which(DefCompName %in% VarDefCompName)){
       if (DefCompFromVar[i] == "pH") {
         TotConcObs[, DefCompName[i]] = 10^-pHObs
+      } else if (gsub(" ", "", DefCompFromVar[i]) == "KW/H") {
+        LKW = -14 + (2935 * (.003354 - (1 / SysTempKelvinObs)))
+        TotConcObs[, DefCompName[i]] = (10 ^ LKW) / (10 ^ -pHObs)
       } else if (DefCompFromVar[i] %in% CompName) {
         TotConcObs[, DefCompName[i]] =
           TotConcObs[, DefCompFromVar[i], drop = FALSE] *
@@ -280,7 +298,8 @@ MatchInputsToProblem = function(
           matrix(DefCompSiteDens[i], byrow = TRUE, nrow = NObs, ncol = 1,
                  dimnames = list(1:NObs, DefCompName[i]))
       } else {
-        stop("Unknown component or variable given in Defined Components 'From' column.") # nolint: line_length_linter.
+        stop("Unknown component or variable given in Defined Components ",
+             "'From' column.")
       }
     }
   }
@@ -301,7 +320,7 @@ MatchInputsToProblem = function(
     InVarObs = as.matrix(InVarObs),
     InCompObs = as.matrix(InCompObs),
     SysTempCelsiusObs = SysTempCelsiusObs,
-    SysTempKelvinObs = SysTempCelsiusObs + 273.15,
+    SysTempKelvinObs = SysTempKelvinObs,
     pHObs = pHObs,
     TotConcObs = TotConcObs,
     HumicSubstGramsPerLiterObs = HumicSubstGramsPerLiterObs

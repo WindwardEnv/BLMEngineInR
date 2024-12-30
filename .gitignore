@@ -55,3 +55,4 @@ src/*.o
 
 # VSCode files
 .vscode/
+/scrap/old BLM/test ground BLM/backup

@@ -48,8 +48,8 @@ variable(s) to remove from `ThisProblem`.}
 }
 \value{
 `ThisProblem`, with the changed input variables. If the input
-  variable being added is pH, an "H" component will also be added as a fixed
-  activity component.
+  variable being added is pH, "H" and "OH" components will also be added as
+  fixed activity components.
 }
 \description{
 Add or remove a input variables in a problem

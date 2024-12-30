@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' @name ProblemConversionFunctions
 #'
 #' @title Problem Conversion functions
@@ -24,10 +38,10 @@ ConvertToList = function(ThisProblemDF) {
   ThisProblemList = list()
 
   CompositeNames = c("N", "Mass", "InLab", "InVar", "InComp", "DefComp", "Comp",
-                     "Spec", "Phase", "BL", "Metal", "BLMetal")
-  OrganizedNames = c("Index", "WHAM")
+                     "Spec", "Phase", "BL", "Metal", "BLMetal", "WHAM")
+  OrganizedNames = c("Index")#, "WHAM")
   AsIsNames = setdiff(names(ThisProblemDF), c(CompositeNames, OrganizedNames))
-  NoZeroLengthNames = c("MetalName","MetalCompR")
+  NoZeroLengthNames = c("MetalName","MetalCompR","BLName","BLCompR")
 
   for (i in CompositeNames) {
     if (is.data.frame(ThisProblemDF[[i]])) {
@@ -37,7 +51,11 @@ ConvertToList = function(ThisProblemDF) {
           names(ThisProblemList[[paste0(i, j)]]) = ThisProblemDF[[i]]$Name
         }
       }
-    } else if (is.vector(ThisProblemDF[[i]]) || is.list(ThisProblemDF[[i]])) {
+    } else if (is.list(ThisProblemDF[[i]])) {
+      for (j in names(ThisProblemDF[[i]])) {
+        ThisProblemList[[paste0(i, j)]] = ThisProblemDF[[i]][[j]]
+      }
+    } else if (is.vector(ThisProblemDF[[i]])) {
       for (j in names(ThisProblemDF[[i]])) {
         ThisProblemList[[paste0(i, j)]] = unname(ThisProblemDF[[i]][j])
       }
@@ -86,13 +104,13 @@ ConvertToDF = function(ThisProblemList) {
 
   ListNames = names(ThisProblemList)
   CompositeNames = c("N", "Mass", "InLab", "InVar", "InComp", "DefComp", "Comp",
-                     "Spec", "Phase", "BL", "Metal", "BLMetal")
+                     "Spec", "Phase", "BL", "Metal", "BLMetal", "WHAM")
   OrganizedNames = list(
-    Index = c("AqueousMCR", "BioticLigMCR", "WHAMDonnanMCR"),
-    WHAM = c("DoWHAM", "WHAMVer", "WdatFile", "wDLF", "wKZED",
-             "wP", "wRadius", "wMolWt")
+    Index = c("AqueousMCR", "BioticLigMCR", "WHAMDonnanMCR")#,
+    #WHAM = c("DoWHAM", "WHAMVer", "WHAMFile", "wDLF", "wKZED",
+             #"wP", "wRadius", "wMolWt")
   )
-  NoZeroLengthNames = c("MetalName","MetalCompR")
+  NoZeroLengthNames = c("MetalName","MetalCompR","BLName","BLCompR")
 
   for (i in NoZeroLengthNames) {
     if (typeof(ThisProblemList[[i]]) == "character") {
@@ -138,6 +156,10 @@ ConvertToDF = function(ThisProblemList) {
       # if (all(sapply(ThisProblemList[VectorNames], FUN = length) == 1)) {
       if (i %in% "N") {
         ThisProblemDF[[i]] = unlist(ThisProblemList[VectorNames])
+      } else if (i %in% "WHAM") {
+        VectorNames = paste0("WHAM", names(BlankWHAM()))
+        OtherNames = OtherNames[OtherNames %in% c(VectorNames, "WHAMDonnanMCR") == FALSE]
+        ThisProblemDF[[i]] = as.list(ThisProblemList[VectorNames])
       } else {
         ThisProblemDF[[i]] = as.data.frame(ThisProblemList[VectorNames])
         rownames(ThisProblemDF[[i]]) = NULL

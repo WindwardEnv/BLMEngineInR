@@ -45,23 +45,22 @@ ThisProblem = AddInComps(
 )
 
 # Add reactions (using SpecCompNames and SpecCompStoichs for arguments):
-# OH = -H            logK = -14
 # HCO3 = H + CO3     logK = 10.329
 # H2CO3 = 2*H + CO3  logK = 10.329 + 6.352 = 16.681
 ThisProblem = AddSpecies(
   ThisProblem,
-  SpecName = c("OH", "HCO3", "H2CO3"),
+  SpecName = c("HCO3", "H2CO3"),
   SpecMCName = "Water",
   SpecActCorr = "Debye",
-  SpecCompNames = list(c("H"), c("H", "CO3"), c("H", "CO3")),
-  SpecCompStoichs = list(c(-1), c(1, 1), c(1, 2)),
-  SpecLogK = c(-14, 10.329, 16.681),
-  SpecDeltaH = c(56186.73738, -14997.55155, -24166.23162),
+  SpecCompNames = list(c("H", "CO3"), c("H", "CO3")),
+  SpecCompStoichs = list(c(1, 1), c(1, 2)),
+  SpecLogK = c(10.329, 16.681),
+  SpecDeltaH = c(-14997.55155, -24166.23162),
   SpecTempKelvin = 298.1514609
 )
 # ...ThisProblem now simulates carbonate reactions.
 
-# Add major ions and a copper as components
+# Add major ions and copper as components
 ThisProblem = AddInComps(
   ThisProblem,
   InCompName = c("Cu", "Ca", "Mg", "Na", "K", "SO4", "Cl", "S"),
@@ -75,8 +74,8 @@ ThisProblem = AddInComps(
 ThisProblem = AddSpecies(
   ThisProblem,
   SpecEquation = c(
-    "CuOH = 1 * Cu - 1 * H",
-    "Cu(OH)2 = 1 * Cu - 2 * H",
+    "CuOH = 1 * Cu + 1 * OH",
+    "Cu(OH)2 = 1 * Cu + 2 * OH",
     "CuSO4 = 1 * Cu + 1 * SO4",
     "CuCl = 1 * Cu + 1 * Cl",
     "CuCO3 = 1 * Cu + 1 * CO3",
@@ -91,9 +90,9 @@ ThisProblem = AddSpecies(
   ),
   SpecMCName = "Water",
   SpecActCorr = "Debye",
-  SpecLogK = c(-7.520, -16.22, 2.360, 0.400, 6.750, 9.920, 14.620,
+  SpecLogK = c(6.48, 11.78, 2.360, 0.400, 6.750, 9.920, 14.620,
                11.44, 3.22, 2.30, 11.4, 2.98, 2.37),
-  SpecDeltaH = c(56186.73738, 112373.47476, 8844.385918, 6738.57975, 0, 0, 0,
+  SpecDeltaH = c(0, 0, 8844.385918, 6738.57975, 0, 0, 0,
                  -3664.102737, 14951.22381, 6949.160364, -11666.16619,
                  11413.46945, 19163.83616),
   SpecTempKelvin = 298.15
@@ -120,7 +119,9 @@ ThisProblem = AddDefComps(ThisProblem,
 # Add biotic ligand reactions (using SpecStoich):
 spec_that_bind = c("Cu", "CuOH", "Ca", "Mg", "H", "Na")
 temp_stoich_mat = ThisProblem$SpecStoich[spec_that_bind, ]
+rownames(temp_stoich_mat) = paste0("BL1-", spec_that_bind)
 temp_stoich_mat[, "BL1"] = 1L
+temp_stoich_mat["BL1-CuOH", c("H","OH")] = c(-1L, 0L)
 ThisProblem = AddSpecies(
   ThisProblem,
   SpecName = paste0("BL1-", spec_that_bind),
@@ -140,14 +141,7 @@ ThisProblem = AddSpecialDefs(
 )
 # ...ThisProblem now simulates copper toxicity in the absence of organic matter.
 
-# Add DOC:
-
-## NOT RUN: AddSpecialDefs(ThisProblem, "V", "WHAM")
-# This would give an error message because ThisProblem does not have an organic
-# matter input variable yet, so ExpandWHAM would fail to parse out into all of
-# the WHAM components into defined components.
-
-# So, first we add DOC and HA input variables...
+# Add DOC: first we add DOC and HA input variables...
 ThisProblem = AddInVars(
   ThisProblem,
   InVarName = c("DOC", "HA"),

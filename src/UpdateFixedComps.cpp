@@ -34,10 +34,10 @@ void UpdateFixedComps(int NComp,
   int iComp;
 
   for(iComp = 0; iComp < NComp; iComp++) {
-    if (CompType[iComp] == "FixedAct") {
+    if (CompType[iComp] == CTYPE_FIXEDACT) {
       SpecConc[iComp] = InCompConc[iComp] / SpecActivityCoef[iComp];
       CompConc[iComp] = SpecConc[iComp];
-    } else if (CompType[iComp] == "FixedConc"){
+    } else if (CompType[iComp] == CTYPE_FIXEDCONC){
       SpecConc[iComp] = InCompConc[iComp];
       CompConc[iComp] = SpecConc[iComp];
     }

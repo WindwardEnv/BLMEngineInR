@@ -30,7 +30,7 @@ test_that("ReadInputsFromFile works", {
 
 test_that("MatchInputsToProblem works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)

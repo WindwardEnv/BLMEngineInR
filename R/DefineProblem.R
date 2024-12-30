@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' Define the speciation problem
 #'
 #' `DefineProblem` reads in a parameter file, and sets up the required vectors
@@ -32,6 +46,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   # -get component information
 
   NewProblem = BlankProblem()
+  NewProblem$ParamFile = ParamFile
 
   # read the dimensions of the various elements of the reaction list
   SkipRows = 2
@@ -103,6 +118,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   if (NDefComp > 0) {
     Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                    nrows = NDefComp, strip.white = TRUE)
+    DefCompName = as.character(trimws(Tmp[, 1]))
     NumericDefComp = grepl("^[[:digit:].]+[eE]?[+-]?[[:digit:]]?", Tmp[, 2])
     DefCompFromNum = as.numeric(array(NA, dim = NDefComp))
     DefCompFromNum[NumericDefComp] = as.numeric(Tmp[NumericDefComp, 2])
@@ -110,21 +126,44 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompFromVar[!NumericDefComp] = trimws(Tmp[!NumericDefComp, 2])
     DefCompFromVar[!is.na(DefCompFromNum)] = NA
     DefCompFromNum[!is.na(DefCompFromVar)] = NA
-    if (any(NewProblem$Comp$Name %in% "H")) {
-      NewProblem = RemoveDefComps(ThisProblem = NewProblem,
-                                  DefCompToRemove = "H",
-                                  DoCheck = FALSE)
+    if (any((c("H", "OH") %in% NewProblem$Comp$Name) &
+            (c("H", "OH") %in% DefCompName))) {
+      iComp = match(c("H", "OH"), NewProblem$Comp$Name)
+      iNewDefComp = match(c("H", "OH"), DefCompName)
+      iOldDefComp = match(c("H", "OH"), NewProblem$DefComp$Name)
+      NewProblem$Comp$Charge[iComp] = as.integer(trimws(Tmp$Charge[iNewDefComp]))
+      NewProblem$Comp$MCName[iComp] = as.character(trimws(Tmp$Compartment[iNewDefComp]))
+      NewProblem$Comp$MCR[iComp] = match(NewProblem$Comp$MCName[iComp], NewProblem$Mass$Name)
+      NewProblem$Comp$Type[iComp] = as.character(trimws(Tmp$Type[iNewDefComp]))
+      NewProblem$Comp$ActCorr[iComp] = as.character(trimws(Tmp$Activity[iNewDefComp]))
+      NewProblem$Comp$SiteDens[iComp] = as.numeric(trimws(Tmp$Site.Den[iNewDefComp]))
+      NewProblem$DefComp$FromNum[iOldDefComp] = DefCompFromNum[iNewDefComp]
+      NewProblem$DefComp$FromVar[iOldDefComp] = DefCompFromVar[iNewDefComp]
+      NewProblem$DefComp$Charge[iOldDefComp] = NewProblem$Comp$Charge[iComp]
+      NewProblem$DefComp$MCName[iOldDefComp] = NewProblem$Comp$MCName[iComp]
+      NewProblem$DefComp$MCR[iOldDefComp] = NewProblem$Comp$MCR[iComp]
+      NewProblem$DefComp$Type[iOldDefComp] = NewProblem$Comp$Type[iComp]
+      NewProblem$DefComp$ActCorr[iOldDefComp] = NewProblem$Comp$ActCorr[iComp]
+      NewProblem$DefComp$SiteDens[iOldDefComp] = NewProblem$Comp$SiteDens[iComp]
+      Tmp = Tmp[-iNewDefComp, ]
+      DefCompName = DefCompName[-iNewDefComp]
+      DefCompFromNum = DefCompFromNum[-iNewDefComp]
+      DefCompFromVar = DefCompFromVar[-iNewDefComp]
     }
-    NewProblem = AddDefComps(ThisProblem = NewProblem,
-                            DefCompName = as.character(trimws(Tmp[, 1])),
-                            DefCompFromNum = DefCompFromNum,
-                            DefCompFromVar = DefCompFromVar,
-                            DefCompCharge = as.integer(Tmp[, 3]),
-                            DefCompMCName = as.character(trimws(Tmp[, 4])),
-                            DefCompType = as.character(trimws(Tmp[, 5])),
-                            DefCompActCorr = as.character(trimws(Tmp[, 6])),
-                            DefCompSiteDens = as.numeric(Tmp[, 7]),
-                            DoCheck = FALSE)
+    if (length(DefCompName) > 0) {
+      NewProblem = AddDefComps(
+        ThisProblem = NewProblem,
+        DefCompName = DefCompName,
+        DefCompFromNum = DefCompFromNum,
+        DefCompFromVar = DefCompFromVar,
+        DefCompCharge = as.integer(Tmp[, 3]),
+        DefCompMCName = as.character(trimws(Tmp[, 4])),
+        DefCompType = as.character(trimws(Tmp[, 5])),
+        DefCompActCorr = as.character(trimws(Tmp[, 6])),
+        DefCompSiteDens = as.numeric(Tmp[, 7]),
+        DoCheck = FALSE
+      )
+    }
   }
 
   # Check that pH is in the component list
@@ -133,8 +172,8 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
       if (!xor(("H" %in% NewProblem$InCompName),
                     ("pH" %in% NewProblem$InVar$Type[NewProblem$InVar$MCR == iMass]) &
                       ("H" %in% NewProblem$DefComp$Name[NewProblem$DefComp$MCR == iMass]))) {
-        stop("Must specify either H as an input component, or pH with a
-             corresponding H defined component.")
+        stop("Must specify either H as an input component, or pH with a",
+             "corresponding H defined component.")
       }
     } else {
       if (("H" %in% NewProblem$Comp$Name[NewProblem$Comp$MCR == iMass]) ||
@@ -164,6 +203,17 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
       SpecTempKelvin = as.numeric(trimws(TmpSplit[[i]][7 + SpecNC_i * 2])),
       DoCheck = FALSE
     )
+  }
+
+  # Check that OH is either a component, defined component, or species
+  for (iMass in 1:NMass) {
+    if (grepl("Water", NewProblem$Mass$Name[iMass], ignore.case = TRUE)) {
+      if (sum("OH" %in% c(NewProblem$InCompName, NewProblem$InSpecName,
+                          NewProblem$InDefCompName)) != 1L) {
+        stop("Must specify OH as either an input component, a defined",
+             "component, or a formation reaction species.")
+      }
+    }
   }
 
   # -Get Phase information
@@ -216,8 +266,6 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   }
 
   CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
-
-  NewProblem$ParamFile = ParamFile
 
   if (WriteLog) {
     CHESSLog(ThisProblem = NewProblem)

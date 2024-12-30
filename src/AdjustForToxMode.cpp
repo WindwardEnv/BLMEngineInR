@@ -1,3 +1,17 @@
+// Copyright 2024 Windward Environmental LLC
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <math.h>
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
@@ -43,41 +57,31 @@ void AdjustForToxMode(int NBLMetal,
                       Rcpp::NumericVector &CompError) {
 
   /* variables */
-   double CalcCA;
-  int i, iSpec;
+  double CACalculated;
   
   // Adjust Resid and CompError for toxicity mode
-  CalcCA = 0;
-  
-  // Sum toxic BL-bound metal species
-  for (i = 0; i < NBLMetal; i++) {
-    iSpec = BLMetalSpecs[i];
-    CalcCA += SpecConc[iSpec];
-  }
+  CACalculated = CalcCA(NBLMetal, BLMetalSpecs, SpecConc);
 
   // Resid and CompError for the metal component are based on these species
-  Resid[MetalComp] = CalcCA - CATarget;
+  Resid[MetalComp] = CACalculated - CATarget;
   CompError[MetalComp] = std::fabs(Resid[MetalComp] / CATarget);
 
 }
 
-void CalcToxError (int NBLMetal, 
-                   Rcpp::IntegerVector BLMetalSpecs, 
-                   int MetalComp,
-                   double CATarget,
-                   Rcpp::NumericVector SpecConc,
-                   double &ToxResid,
-                   double &ToxError) {
+double CalcCA(int NBLMetal, 
+              Rcpp::IntegerVector BLMetalSpecs, 
+              Rcpp::NumericVector SpecConc) {
+
   /* variables */
-  double CalcCA;
+  double CACalculated;
   int i, iSpec;
 
   // Sum toxic BL-bound metal species
-  CalcCA = 0;
+  CACalculated = 0;
   for (i = 0; i < NBLMetal; i++) {
     iSpec = BLMetalSpecs[i];
-    CalcCA += SpecConc[iSpec];
+    CACalculated += SpecConc[iSpec];
   }
-  ToxResid = CalcCA - CATarget;
-  ToxError = std::fabs(ToxResid) / CATarget;
+
+  return CACalculated;
 }

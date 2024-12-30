@@ -1,10 +1,10 @@
 test_that("WriteInputFile works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file(file.path("extdata","InputFiles","Cu_full_organic.blm4"),
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
@@ -15,5 +15,7 @@ test_that("WriteInputFile works", {
 
   expect_equal(scan(mytestinputfile, what = character(), quiet = TRUE, sep = ",", strip.white = TRUE)[1:13],
                scan(myinputfile, what = character(), quiet = TRUE, sep = ",", strip.white = TRUE)[1:13])
+
+
 
 })

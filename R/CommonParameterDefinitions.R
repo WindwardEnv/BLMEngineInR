@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' @name CommonParameterDefinitions
 #'
 #' @title Common Parameter Definitions
@@ -176,14 +190,14 @@
 #'   species in the arrays which contribute to toxicity (i.e., which species are
 #'   the toxic metal bound to the relevant biotic ligand)
 #' @param DoWHAM logical, TRUE = there are WHAM species, FALSE = no WHAM species
-#' @param wDLF numeric (2), WHAM's Double layer overlap factor
-#' @param wKZED numeric (2), WHAM's Constant to control DDL at low ZED
+#' @param WHAMDLF numeric (2), WHAM's Double layer overlap factor
+#' @param WHAMKZED numeric (2), WHAM's Constant to control DDL at low ZED
 #' @param SpecKsel numeric (NSpec, 2), WHAM's Selectivity coefficient Ksel for
 #'   diffuse layer binding
-#' @param wP numeric (2), WHAM's P parameter...
-#' @param wRadius numeric (2), WHAM's molecular radius parameter for organic
+#' @param WHAMP numeric (2), WHAM's P parameter...
+#' @param WHAMRadius numeric (2), WHAM's molecular radius parameter for organic
 #'   matter
-#' @param wMolWt numeric (2), WHAM's molecular weight parameter for organic
+#' @param WHAMMolWt numeric (2), WHAM's molecular weight parameter for organic
 #'   matter
 #' @param HumicSubstGramsPerLiter numeric (2), grams per liter of each organic
 #'   matter component (HA and FA) in solution

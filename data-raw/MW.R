@@ -1,3 +1,17 @@
+# Copyright 2024 Windward Environmental LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # Molecular and atomic weights
 #
 # source:
@@ -9,7 +23,7 @@
 #   94(5), 573-600. https://doi.org/10.1515/pac-2019-0603
 
 # abridged atomic weights from IUPAC
-MW = list(
+MW = c(
   H = 1.008,
   He = 4.0026,
   Li = 6.94,

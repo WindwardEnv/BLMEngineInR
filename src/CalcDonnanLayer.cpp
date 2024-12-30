@@ -1,11 +1,22 @@
+// Copyright 2024 Windward Environmental LLC
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include <Rcpp.h>
 #include "CHESSFunctions.h"
 
-
-
-
 void CalcDonnanLayerParams(int NSpec,
-                           double IonicStrength,
+                           double WHAMIonicStrength,
                            Rcpp::NumericVector wMolWt,
                            Rcpp::NumericVector wRadius,
                            double wDLF,
@@ -27,7 +38,7 @@ void CalcDonnanLayerParams(int NSpec,
   double Denom;
   
   // calculate the max diffuse layer volumes  
-  VTerm1 = wRadius + (3.04E-10 / sqrt(IonicStrength));
+  VTerm1 = wRadius + (3.04E-10 / sqrt(WHAMIonicStrength));
   VTerm2 = pow(VTerm1, 3) - pow(wRadius, 3);
   VTerm3 = (4 * pi / 3) * VTerm2;
   MaxVolDiffusePerGramHS = Avogadro * VTerm3 * (1000 / wMolWt);
@@ -64,7 +75,7 @@ void CalcDonnanLayerParams(int NSpec,
 //' @author Kelly Croteau (kellyc@windwardenv.com)
 //' 
 //' @param NSpec integer, number of species
-//' @param IonicStrength double, {text}
+//' @param WHAMIonicStrength double, {text}
 //' @param SpecCtoM numeric vector, {text}
 //' @param SpecMC integer vector, {text}
 //' @param AqueousMC integer, {text}
@@ -80,7 +91,7 @@ void CalcDonnanLayerParams(int NSpec,
 //' 
 Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
                                           int NSpec,
-                                          double IonicStrength,
+                                          double WHAMIonicStrength,
                                           Rcpp::NumericVector MassAmt,
                                           int AqueousMC,
                                           Rcpp::IntegerVector WHAMDonnanMC,
@@ -102,7 +113,7 @@ Rcpp::NumericVector CalcDonnanLayerVolume(int NMass,
   Rcpp::NumericVector VolDiffuse(2);
   double VolSolution;  
 
-  CalcDonnanLayerParams(NSpec, IonicStrength, wMolWt, wRadius, wDLF, wKZED, 
+  CalcDonnanLayerParams(NSpec, WHAMIonicStrength, wMolWt, wRadius, wDLF, wKZED, 
                         WHAMSpecCharge, HumicSubstGramsPerLiter, 
                         MaxVolDiffusePerGramHS, MaxVolDiffuse, VolDiffuse);
   

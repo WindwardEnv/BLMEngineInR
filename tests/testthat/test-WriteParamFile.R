@@ -1,11 +1,12 @@
 test_that("WriteParamFile works", {
+
   mypfile = system.file(
-    file.path("extdata","ParameterFiles","Cu_full_organic_WATER23dH.dat4"),
+    file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
     package = "BLMEngineInR",
     mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
   myproblem = AddPhases(ThisProblem = myproblem,
-                        PhaseEquation = "CO2(g) = 1 * CO3 + 2 * H",
+                        PhaseEquation = "CO2(g) = 2 * H + 1 * CO3",
                         PhaseLogK = -1.5,
                         PhaseDeltaH = 0,
                         PhaseTempKelvin = 298,
@@ -15,6 +16,10 @@ test_that("WriteParamFile works", {
   expect_no_error(WriteParamFile(ThisProblem = myproblem, ParamFile = mytemppfile))
 
   mytempproblem = DefineProblem(ParamFile = mytemppfile)
-  expect_equal(mytempproblem[names(mytempproblem) != "ParamFile"],
-               myproblem[names(myproblem) != "ParamFile"])
+  compare.names = setdiff(names(myproblem), c("ParamFile", "WHAM"))
+  expect_equal(mytempproblem[compare.names], myproblem[compare.names])
+  compare.names = setdiff(names(myproblem$WHAM), c("Ver", "File"))
+  expect_equal(mytempproblem$WHAM[compare.names], myproblem$WHAM[compare.names])
+
 })
+
