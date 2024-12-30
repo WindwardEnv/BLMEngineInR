@@ -29,11 +29,11 @@ CHESS(
   AqueousMCR,
   WHAMDonnanMCR,
   HumicSubstGramsPerLiter,
-  wMolWt,
-  wRadius,
-  wP,
-  wDLF,
-  wKZED,
+  WHAMMolWt,
+  WHAMRadius,
+  WHAMP,
+  WHAMDLF,
+  WHAMKZED,
   SysTempKelvin,
   DoTox,
   MetalName,
@@ -120,17 +120,17 @@ at the beginning of the function)}
 \item{HumicSubstGramsPerLiter}{NumericVector, length of 2, grams per liter 
 of each organic matter component (HA and FA) in solution}
 
-\item{wMolWt}{numeric (2), WHAM's molecular weight parameter for organic
+\item{WHAMMolWt}{numeric (2), WHAM's molecular weight parameter for organic
 matter}
 
-\item{wRadius}{numeric (2), WHAM's molecular radius parameter for organic
+\item{WHAMRadius}{numeric (2), WHAM's molecular radius parameter for organic
 matter}
 
-\item{wP}{numeric (2), WHAM's P parameter...}
+\item{WHAMP}{numeric (2), WHAM's P parameter...}
 
-\item{wDLF}{numeric (2), WHAM's Double layer overlap factor}
+\item{WHAMDLF}{numeric (2), WHAM's Double layer overlap factor}
 
-\item{wKZED}{numeric (2), WHAM's Constant to control DDL at low ZED}
+\item{WHAMKZED}{numeric (2), WHAM's Constant to control DDL at low ZED}
 
 \item{SysTempKelvin}{double; input temperature for the current observation,
 in Kelvin}

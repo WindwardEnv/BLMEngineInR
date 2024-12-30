@@ -121,14 +121,7 @@ ThisProblem = AddSpecialDefs(
 )
 # ...ThisProblem now simulates copper toxicity in the absence of organic matter.
 
-# Add DOC:
-
-## NOT RUN: AddSpecialDefs(ThisProblem, "V", "WHAM")
-# This would give an error message because ThisProblem does not have an organic
-# matter input variable yet, so ExpandWHAM would fail to parse out into all of
-# the WHAM components into defined components.
-
-# So, first we add DOC and HA input variables...
+# Add DOC: first we add DOC and HA input variables...
 ThisProblem = AddInVars(
   ThisProblem,
   InVarName = c("DOC", "HA"),

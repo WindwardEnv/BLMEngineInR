@@ -160,16 +160,8 @@ BlankProblem = function() {
     ),
 
     # WHAM parameters
-    WHAM = list(
-      DoWHAM = FALSE,
-      WHAMVer = NA_character_,
-      WdatFile = NA_character_,
-      wDLF = as.numeric(NA),
-      wKZED = as.numeric(NA),
-      wP = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
-      wRadius = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
-      wMolWt = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA")))
-    ),
+    DoWHAM = FALSE,
+    WHAM = BlankWHAM(),
 
     Index = list(
       AqueousMCR = NA_integer_,
@@ -200,6 +192,8 @@ BlankProblemList = function() {
   names(named.integer.vector) =
     names(named.numeric.vector) =
     names(named.character.vector) = character()
+
+  WHAM_NA_vec = c(HA = NA_real_, FA = NA_real_)
 
   Out = list(
 
@@ -306,15 +300,50 @@ BlankProblemList = function() {
 
     # WHAM parameters
     DoWHAM = FALSE,
-    WHAMVer = NA_character_,
-    WdatFile = NA_character_,
     WHAMDonnanMCR = array(-1L, dim =2, dimnames = list(c("HA","FA"))),
-    wDLF = as.numeric(NA),
-    wKZED = as.numeric(NA),
-    wP = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
-    wRadius = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA"))),
-    wMolWt = array(as.numeric(NA), dim = 2, dimnames = list(c("HA","FA")))
-
+    WHAMVer = NA_character_,
+    WHAMFile = NA_character_,
+    WHAMDLF = NA_real_,
+    WHAMKZED = NA_real_,
+    WHAMnA = WHAM_NA_vec,
+    WHAMpKA = WHAM_NA_vec,
+    WHAMpKB = WHAM_NA_vec,
+    WHAMdpKA = WHAM_NA_vec,
+    WHAMdpKB = WHAM_NA_vec,
+    WHAMfprB = WHAM_NA_vec,
+    WHAMfprT = WHAM_NA_vec,
+    WHAMdLK1A = WHAM_NA_vec,
+    WHAMdLK1B = WHAM_NA_vec,
+    WHAMP = WHAM_NA_vec,
+    WHAMRadius = WHAM_NA_vec,
+    WHAMMolWt = WHAM_NA_vec,
+    WHAMMonodentTable = data.frame(
+      S = integer(),
+      AbundDenom = integer(),
+      StrongWeak = character()
+    ),
+    WHAMBidentTable = data.frame(
+      S1 = integer(),
+      S2 = integer(),
+      AbundDenom = integer()
+    ),
+    WHAMTridentTable = data.frame(
+      S1 = integer(),
+      S2 = integer(),
+      S3 = integer(),
+      AbundDenom = integer()
+    ),
+    WHAMMetalsTable = data.frame(
+      Metal = character(),
+      pKMAHA = numeric(),
+      pKMAFA = numeric(),
+      dLK2 = numeric()
+    ),
+    WHAMSpecKselTable = data.frame(
+      Spec = character(),
+      KselHA = numeric(),
+      KselFA = numeric()
+    )
   )
 
 

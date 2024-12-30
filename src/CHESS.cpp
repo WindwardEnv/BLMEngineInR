@@ -67,13 +67,13 @@
 //'   at the beginning of the function)
 //' @param HumicSubstGramsPerLiter NumericVector, length of 2, grams per liter 
 //'   of each organic matter component (HA and FA) in solution
-//' @param wMolWt numeric (2), WHAM's molecular weight parameter for organic
+//' @param WHAMMolWt numeric (2), WHAM's molecular weight parameter for organic
 //'   matter
-//' @param wRadius numeric (2), WHAM's molecular radius parameter for organic
+//' @param WHAMRadius numeric (2), WHAM's molecular radius parameter for organic
 //'   matter
-//' @param wP numeric (2), WHAM's P parameter...
-//' @param wDLF numeric (2), WHAM's Double layer overlap factor
-//' @param wKZED numeric (2), WHAM's Constant to control DDL at low ZED
+//' @param WHAMP numeric (2), WHAM's P parameter...
+//' @param WHAMDLF numeric (2), WHAM's Double layer overlap factor
+//' @param WHAMKZED numeric (2), WHAM's Constant to control DDL at low ZED
 //' @param SysTempKelvin double; input temperature for the current observation,
 //'   in Kelvin
 //' @param DoTox logical, TRUE for toxicity mode where the MetalName component
@@ -130,11 +130,11 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                  int AqueousMCR,
                  Rcpp::IntegerVector WHAMDonnanMCR,
                  Rcpp::NumericVector HumicSubstGramsPerLiter,
-                 Rcpp::NumericVector wMolWt,
-                 Rcpp::NumericVector wRadius,
-                 Rcpp::NumericVector wP,
-                 double wDLF,
-                 double wKZED,
+                 Rcpp::NumericVector WHAMMolWt,
+                 Rcpp::NumericVector WHAMRadius,
+                 Rcpp::NumericVector WHAMP,
+                 double WHAMDLF,
+                 double WHAMKZED,
                  double SysTempKelvin,
                  bool DoTox,
                  Rcpp::String MetalName,
@@ -241,8 +241,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
   MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, CompType,
                       CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, SpecActCorr,
                       SpecStoich, SpecCharge, SpecKTempAdj, DoWHAM, false, AqueousMC, 
-                      WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, wRadius, 
-                      wP, wDLF, wKZED, SysTempKelvin, DoTox, MetalName,
+                      WHAMDonnanMC, HumicSubstGramsPerLiter, WHAMMolWt, WHAMRadius, 
+                      WHAMP, WHAMDLF, WHAMKZED, SysTempKelvin, DoTox, MetalName,
                       MetalComp, NBLMetal, BLMetalSpecs, CATarget, MassAmtAdj,
                       TotConc, TotMoles, SpecKISTempAdj, SpecCtoMAdj, SpecConc,
                       SpecActivityCoef, CalcTotMoles, WHAMSpecCharge,
@@ -275,7 +275,7 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
                                 SpecMC, SpecCtoMAdj, SpecType, SpecCharge, 
                                 SpecKISTempAdj, SpecActivityCoef, WHAMIonicStrength, DoWHAM, 
                                 HumicSubstGramsPerLiter, WHAMSpecCharge, 
-                                wP, wMolWt, wRadius, wDLF, wKZED, 
+                                WHAMP, WHAMMolWt, WHAMRadius, WHAMDLF, WHAMKZED, 
                                 AqueousMC, MetalComp, BLComp, NBLMetal, BLMetalSpecs, 
                                 DoTox, 
                                 DodVidCj, DodVidCjDonnan, DodKidCj, DoGammai, 
@@ -421,8 +421,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
         MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, 
                          CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, 
                          SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
-                         DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
-                         wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
+                         DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, WHAMMolWt, 
+                         WHAMRadius, WHAMP, WHAMDLF, WHAMKZED, SysTempKelvin, DoTox, 
                          MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
                          //parameters that are modified and returned:
                          MassAmtAdj, TotConc, TotMoles, SpecKISTempAdj, 
@@ -478,8 +478,8 @@ Rcpp::List CHESS(Rcpp::String QuietFlag,
     MaxError = CHESSIter(CompConcStep, NMass, MassAmt, NComp, CompName, 
                          CompType, CompPosInSpec, NSpec, SpecName, SpecType, SpecMC, 
                          SpecActCorr, SpecStoich, SpecCharge, SpecKTempAdj, 
-                         DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, wMolWt, 
-                         wRadius, wP, wDLF, wKZED, SysTempKelvin, DoTox, 
+                         DoWHAM, UpdateZED, AqueousMC, WHAMDonnanMC, HumicSubstGramsPerLiter, WHAMMolWt, 
+                         WHAMRadius, WHAMP, WHAMDLF, WHAMKZED, SysTempKelvin, DoTox, 
                          MetalName, MetalComp, NBLMetal, BLMetalSpecs, CATarget, 
                          //parameters that are modified and returned:
                          MassAmtAdj, TotConc, TotMoles, SpecKISTempAdj, 

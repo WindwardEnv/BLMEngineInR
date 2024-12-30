@@ -243,19 +243,19 @@ the toxic metal bound to the relevant biotic ligand)}
 
 \item{DoWHAM}{logical, TRUE = there are WHAM species, FALSE = no WHAM species}
 
-\item{wDLF}{numeric (2), WHAM's Double layer overlap factor}
+\item{WHAMDLF}{numeric (2), WHAM's Double layer overlap factor}
 
-\item{wKZED}{numeric (2), WHAM's Constant to control DDL at low ZED}
+\item{WHAMKZED}{numeric (2), WHAM's Constant to control DDL at low ZED}
 
 \item{SpecKsel}{numeric (NSpec, 2), WHAM's Selectivity coefficient Ksel for
 diffuse layer binding}
 
-\item{wP}{numeric (2), WHAM's P parameter...}
+\item{WHAMP}{numeric (2), WHAM's P parameter...}
 
-\item{wRadius}{numeric (2), WHAM's molecular radius parameter for organic
+\item{WHAMRadius}{numeric (2), WHAM's molecular radius parameter for organic
 matter}
 
-\item{wMolWt}{numeric (2), WHAM's molecular weight parameter for organic
+\item{WHAMMolWt}{numeric (2), WHAM's molecular weight parameter for organic
 matter}
 
 \item{HumicSubstGramsPerLiter}{numeric (2), grams per liter of each organic

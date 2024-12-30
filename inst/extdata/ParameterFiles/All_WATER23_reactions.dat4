@@ -1,0 +1,279 @@
+Column model parameter file, Ver 4.00
+--------------------------------------------------------------------------------
+1,   Number of Mass Compartments
+1,   Number of Input Labels
+2,   Number of Input Variables
+42,  Number of Input Components
+2,   Number of Defined Components
+190, Number of Species
+0,   Number of Phases
+1,   Number of Special Definitions
+0,   Number of Critical Values
+--------------------------------------------------------------------------------
+Mass Compartment List
+Compartment, C to M, Unit Label
+Water,       1,      L
+--------------------------------------------------------------------------------
+Input Labels
+ID
+--------------------------------------------------------------------------------
+Input Variables
+Variable, Compartment, Type
+Temp,     Water,       Temperature
+pH,       Water,       pH
+--------------------------------------------------------------------------------
+Input Components
+Component, Charge, Compartment, Type,    Activity
+Be,        2,      Water,       MassBal, Debye
+Na,        1,      Water,       MassBal, Debye
+Mg,        2,      Water,       MassBal, Debye
+Al,        3,      Water,       MassBal, Debye
+K,         1,      Water,       MassBal, Debye
+Ca,        2,      Water,       MassBal, Debye
+CrIII,     3,      Water,       MassBal, Debye
+Mn,        2,      Water,       MassBal, Debye
+FeII,      2,      Water,       MassBal, Debye
+FeIII,     3,      Water,       MassBal, Debye
+Co,        2,      Water,       MassBal, Debye
+Ni,        2,      Water,       MassBal, Debye
+Cu,        2,      Water,       MassBal, Debye
+Zn,        2,      Water,       MassBal, Debye
+Sr,        2,      Water,       MassBal, Debye
+Cd,        2,      Water,       MassBal, Debye
+Cs,        1,      Water,       MassBal, Debye
+Ba,        2,      Water,       MassBal, Debye
+Hg,        2,      Water,       MassBal, Debye
+Pb,        2,      Water,       MassBal, Debye
+UO2,       2,      Water,       MassBal, Debye
+UIV,       4,      Water,       MassBal, Debye
+PuIII,     3,      Water,       MassBal, Debye
+PuIV,      4,      Water,       MassBal, Debye
+PuO2,      2,      Water,       MassBal, Debye
+Th,        4,      Water,       MassBal, Debye
+Am,        3,      Water,       MassBal, Debye
+NH4,       1,      Water,       MassBal, Debye
+Cm,        3,      Water,       MassBal, Debye
+Li,        1,      Water,       MassBal, Debye
+Eu,        3,      Water,       MassBal, Debye
+CeIII,     3,      Water,       MassBal, Debye
+Ag,        1,      Water,       MassBal, Debye
+Cl,        -1,     Water,       MassBal, Debye
+NO3,       -1,     Water,       MassBal, Debye
+SO4,       -2,     Water,       MassBal, Debye
+CO3,       -2,     Water,       MassBal, Debye
+F,         -1,     Water,       MassBal, Debye
+PO4,       -3,     Water,       MassBal, Debye
+SHA,       -1,     Water,       MassBal, Debye
+SFA,       -1,     Water,       MassBal, Debye
+S,         -2,     Water,       MassBal, Debye
+--------------------------------------------------------------------------------
+Defined Components
+Component, From, Charge, Compartment, Type,     Activity, Site Den
+H,         pH,   1,      Water,       FixedAct, Debye,    1
+OH,        KW/H, -1,     Water,       FixedAct, Debye,    1
+--------------------------------------------------------------------------------
+Formation Reactions
+Species,     Compartment, Activity, NC, C1,    S1, C2,    S2, C3,  S3, Log K,  Delta H,           TempK
+HCO3,        Water,       Debye,    2,  H,     1,  CO3,   1,           10.329, -14997.5515494829, 298.151460942159
+H2CO3,       Water,       Debye,    2,  H,     2,  CO3,   1,           16.681, -24166.2316177852, 298.151460942159
+HF,          Water,       Debye,    2,  H,     1,  F,     1,           3.18,   13392.9272472215,  298.151460942159
+HPO4,        Water,       Debye,    2,  H,     1,  PO4,   1,           12.35,  -14740.6431966274, 298.151460942159
+H2PO4,       Water,       Debye,    2,  H,     2,  PO4,   1,           19.55,  -18109.9330701423, 298.151460942159
+H3PO4,       Water,       Debye,    2,  H,     3,  PO4,   1,           21.7,   -10107.8696205445, 298.151460942159
+HS,          Water,       Debye,    2,  H,     1,  S,     1,           13.9,   0,                 298.151460942159
+H2S,         Water,       Debye,    2,  H,     2,  S,     1,           20.9,   0,                 298.151460942159
+BeOH,        Water,       Debye,    2,  OH,    1,  Be,    1,           8.6,    0,                 298.151460942159
+Be(OH)2,     Water,       Debye,    2,  OH,    2,  Be,    1,           14.35,  0,                 298.151460942159
+Be(OH)3,     Water,       Debye,    2,  OH,    3,  Be,    1,           18.75,  0,                 298.151460942159
+Be(OH)4,     Water,       Debye,    2,  OH,    4,  Be,    1,           18.59,  0,                 298.151460942159
+BeSO4,       Water,       Debye,    2,  Be,    1,  SO4,   1,           1.95,   0,                 298.151460942159
+BeF,         Water,       Debye,    2,  Be,    1,  F,     1,           5.2,    0,                 298.151460942159
+MgHCO3,      Water,       Debye,    3,  H,     1,  Mg,    1,  CO3, 1,  11.4,   -11666.1661870451, 298.151460942159
+MgCO3,       Water,       Debye,    2,  Mg,    1,  CO3,   1,           2.98,   11413.4694465315,  298.151460942159
+MgSO4,       Water,       Debye,    2,  Mg,    1,  SO4,   1,           2.37,   19162.8361556157,  298.151460942159
+MgHPO4,      Water,       Debye,    3,  H,     1,  Mg,    1,  PO4, 1,  15.26,  -2105.80617094677, 298.151460942159
+AlOH,        Water,       Debye,    2,  OH,    1,  Al,    1,           9.01,   -6485.88300651607, 298.151460942159
+Al(OH)2,     Water,       Debye,    2,  OH,    2,  Al,    1,           17.87,  -15498.7334181683, 298.151460942159
+Al(OH)4,     Water,       Debye,    2,  OH,    4,  Al,    1,           33.84,  -45738.1100329639, 298.151460942159
+AlSO4,       Water,       Debye,    2,  Al,    1,  SO4,   1,           3.2,    9686.70838635516,  298.151460942159
+AlF,         Water,       Debye,    2,  Al,    1,  F,     1,           6.98,   2948.12863932548,  298.151460942159
+AlF2,        Water,       Debye,    2,  Al,    1,  F,     2,           12.6,   8423.2246837871,   298.151460942159
+AlF3,        Water,       Debye,    2,  Al,    1,  F,     3,           16.65,  9265.54715216581,  298.151460942159
+CaHCO3,      Water,       Debye,    3,  H,     1,  Ca,    1,  CO3, 1,  11.44,  -3664.10273744739, 298.151460942159
+CaCO3,       Water,       Debye,    2,  Ca,    1,  CO3,   1,           3.22,   14951.2238137221,  298.151460942159
+CaSO4,       Water,       Debye,    2,  Ca,    1,  SO4,   1,           2.3,    6949.16036412436,  298.151460942159
+CaHPO4,      Water,       Debye,    3,  H,     1,  Ca,    1,  PO4, 1,  15.09,  -2105.80617094677, 298.151460942159
+CrOH,        Water,       Debye,    2,  OH,    1,  CrIII, 1,           10,     0,                 298.151460942159
+Cr(OH)2,     Water,       Debye,    2,  OH,    2,  CrIII, 1,           18.3,   0,                 298.151460942159
+Cr(OH)3,     Water,       Debye,    2,  OH,    3,  CrIII, 1,           24,     0,                 298.151460942159
+Cr(OH)4,     Water,       Debye,    2,  OH,    4,  CrIII, 1,           28.6,   0,                 298.151460942159
+CrSO4,       Water,       Debye,    2,  CrIII, 1,  SO4,   1,           2,      8423.2246837871,   298.151460942159
+CrF,         Water,       Debye,    2,  CrIII, 1,  F,     1,           5.2,    8423.2246837871,   298.151460942159
+MnOH,        Water,       Debye,    2,  OH,    1,  Mn,    1,           3.41,   4380.07683556929,  298.151460942159
+MnSO4,       Water,       Debye,    2,  Mn,    1,  SO4,   1,           2.25,   14193.1335921813,  298.151460942159
+MnCO3,       Water,       Debye,    2,  Mn,    1,  CO3,   1,           4.52,   0,                 298.151460942159
+MnCl,        Water,       Debye,    2,  Mn,    1,  Cl,    1,           0.61,   0,                 298.151460942159
+MnHPO4,      Water,       Debye,    3,  H,     1,  Mn,    1,  PO4, 1,  15.93,  0,                 298.151460942159
+MnHCO3,      Water,       Debye,    3,  H,     1,  Mn,    1,  CO3, 1,  12.28,  0,                 298.151460942159
+FeIIOH,      Water,       Debye,    2,  OH,    1,  FeII,  1,           4.5,    -842.32246837871,  298.151460942159
+FeIISO4,     Water,       Debye,    2,  FeII,  1,  SO4,   1,           2.25,   13603.5078643162,  298.151460942159
+FeCO3,       Water,       Debye,    2,  FeII,  1,  CO3,   1,           5.31,   0,                 298.151460942159
+FeIIHPO4,    Water,       Debye,    3,  H,     1,  FeII,  1,  PO4, 1,  15.95,  0,                 298.151460942159
+FeIICl,      Water,       Debye,    2,  FeII,  1,  Cl,    1,           0.14,   0,                 298.151460942159
+FeHCO3,      Water,       Debye,    3,  H,     1,  FeII,  1,  CO3, 1,  12.33,  0,                 298.151460942159
+FeIIIOH,     Water,       Debye,    2,  OH,    1,  FeIII, 1,           11.81,  -12466.3725320049, 298.151460942159
+Fe(OH)2,     Water,       Debye,    2,  OH,    2,  FeIII, 1,           22.33,  -40515.7107290159, 298.151460942159
+Fe(OH)3,     Water,       Debye,    2,  OH,    3,  FeIII, 1,           29.44,  -64395.5527075524, 298.151460942159
+Fe(OH)4,     Water,       Debye,    2,  OH,    4,  FeIII, 1,           34.4,   -90760.245967806,  298.151460942159
+FeIIISO4,    Water,       Debye,    2,  FeIII, 1,  SO4,   1,           4.04,   16467.4042568038,  298.151460942159
+FeF,         Water,       Debye,    2,  FeIII, 1,  F,     1,           6.2,    11371.3533231126,  298.151460942159
+FeF2,        Water,       Debye,    2,  FeIII, 1,  F,     2,           10.8,   20215.739241089,   298.151460942159
+FeIIIHPO4,   Water,       Debye,    3,  H,     1,  FeIII, 1,  PO4, 1,  21.55,  0,                 298.151460942159
+FeIIICl,     Water,       Debye,    2,  FeIII, 1,  Cl,    1,           1.48,   23585.0291146039,  298.151460942159
+FeCl2,       Water,       Debye,    2,  FeIII, 1,  Cl,    2,           2.13,   0,                 298.151460942159
+CoOH,        Water,       Debye,    2,  OH,    1,  Co,    1,           4.35,   0,                 298.151460942159
+Co(OH)2,     Water,       Debye,    2,  OH,    2,  Co,    1,           9.2,    0,                 298.151460942159
+CoSO4,       Water,       Debye,    2,  Co,    1,  SO4,   1,           2.36,   5896.25727865097,  298.151460942159
+CoCO3,       Water,       Debye,    2,  Co,    1,  CO3,   1,           5.53,   0,                 298.151460942159
+CoCl,        Water,       Debye,    2,  Co,    1,  Cl,    1,           0.3,    2105.80617094677,  298.151460942159
+CoHCO3,      Water,       Debye,    3,  H,     1,  Co,    1,  CO3, 1,  13.22,  0,                 298.151460942159
+NiOH,        Water,       Debye,    2,  OH,    1,  Ni,    1,           4.14,   0,                 298.151460942159
+Ni(OH)2,     Water,       Debye,    2,  OH,    2,  Ni,    1,           9,      0,                 298.151460942159
+NiSO4,       Water,       Debye,    2,  Ni,    1,  SO4,   1,           2.32,   6317.41851284032,  298.151460942159
+NiCO3,       Water,       Debye,    2,  Ni,    1,  CO3,   1,           5.78,   0,                 298.151460942159
+NiCl,        Water,       Debye,    2,  Ni,    1,  Cl,    1,           0.4,    2105.80617094677,  298.151460942159
+NiHCO3,      Water,       Debye,    3,  H,     1,  Ni,    1,  CO3, 1,  13.41,  0,                 298.151460942159
+CuOH,        Water,       Debye,    2,  OH,    1,  Cu,    1,           6.48,   0,                 298.151460942159
+Cu(OH)2,     Water,       Debye,    2,  OH,    2,  Cu,    1,           11.78,  0,                 298.151460942159
+CuSO4,       Water,       Debye,    2,  Cu,    1,  SO4,   1,           2.36,   8844.38591797645,  298.151460942159
+CuCO3,       Water,       Debye,    2,  Cu,    1,  CO3,   1,           6.75,   0,                 298.151460942159
+Cu(CO3)2,    Water,       Debye,    2,  Cu,    1,  CO3,   2,           9.92,   0,                 298.151460942159
+CuCl,        Water,       Debye,    2,  Cu,    1,  Cl,    1,           0.4,    6738.57974702968,  298.151460942159
+CuHCO3,      Water,       Debye,    3,  H,     1,  Cu,    1,  CO3, 1,  14.62,  0,                 298.151460942159
+ZnOH,        Water,       Debye,    2,  OH,    1,  Zn,    1,           5.04,   0,                 298.151460942159
+Zn(OH)2,     Water,       Debye,    2,  OH,    2,  Zn,    1,           11.1,   0,                 298.151460942159
+ZnSO4,       Water,       Debye,    2,  Zn,    1,  SO4,   1,           2.38,   6317.41851284032,  298.151460942159
+ZnCO3,       Water,       Debye,    2,  Zn,    1,  CO3,   1,           4.76,   0,                 298.151460942159
+ZnCl,        Water,       Debye,    2,  Zn,    1,  Cl,    1,           0.4,    5475.09604446161,  298.151460942159
+ZnHCO3,      Water,       Debye,    3,  H,     1,  Zn,    1,  CO3, 1,  13.12,  0,                 298.151460942159
+SrSO4,       Water,       Debye,    2,  Sr,    1,  SO4,   1,           2.29,   8760.15367113858,  298.151460942159
+SrCO3,       Water,       Debye,    2,  Sr,    1,  CO3,   1,           2.81,   21984.6164246843,  298.151460942159
+SrHCO3,      Water,       Debye,    3,  H,     1,  Sr,    1,  CO3, 1,  11.51,  10486.9147313149,  298.151460942159
+CdOH,        Water,       Debye,    2,  OH,    1,  Cd,    1,           3.92,   0,                 298.151460942159
+Cd(OH)2,     Water,       Debye,    2,  OH,    2,  Cd,    1,           7.65,   0,                 298.151460942159
+CdSO4,       Water,       Debye,    2,  Cd,    1,  SO4,   1,           2.46,   9686.70838635516,  298.151460942159
+CdCl,        Water,       Debye,    2,  Cd,    1,  Cl,    1,           1.98,   1263.48370256806,  298.151460942159
+CdCl2,       Water,       Debye,    2,  Cd,    1,  Cl,    2,           2.6,    3790.45110770419,  298.151460942159
+BaSO4,       Water,       Debye,    2,  Ba,    1,  SO4,   1,           2.7,    0,                 298.151460942159
+BaCO3,       Water,       Debye,    2,  Ba,    1,  CO3,   1,           2.71,   14951.2238137221,  298.151460942159
+BaHCO3,      Water,       Debye,    3,  H,     1,  Ba,    1,  CO3, 1,  11.31,  8423.2246837871,   298.151460942159
+HgOH,        Water,       Debye,    2,  OH,    1,  Hg,    1,           10.6,   -24427.3515829826, 298.151460942159
+Hg(OH)2,     Water,       Debye,    2,  OH,    2,  Hg,    1,           21.83,  -68228.1199386755, 298.151460942159
+Hg(OH)3,     Water,       Debye,    2,  OH,    3,  Hg,    1,           20.9,   -84232.246837871,  298.151460942159
+HgSO4,       Water,       Debye,    2,  Hg,    1,  SO4,   1,           2,      0,                 298.151460942159
+HgCl,        Water,       Debye,    2,  Hg,    1,  Cl,    1,           7.21,   -20215.739241089,  298.151460942159
+HgCl2,       Water,       Debye,    2,  Hg,    1,  Cl,    2,           13.98,  -53908.6379762374, 298.151460942159
+HgCl3,       Water,       Debye,    2,  Hg,    1,  Cl,    3,           15.06,  -63174.1851284032, 298.151460942159
+HgCl4,       Water,       Debye,    2,  Hg,    1,  Cl,    4,           15.42,  -62753.0238942139, 298.151460942159
+PbOH,        Water,       Debye,    2,  OH,    1,  Pb,    1,           6.29,   0,                 298.151460942159
+Pb(OH)2,     Water,       Debye,    2,  OH,    2,  Pb,    1,           10.88,  0,                 298.151460942159
+Pb(OH)3,     Water,       Debye,    2,  OH,    3,  Pb,    1,           13.94,  0,                 298.151460942159
+PbSO4,       Water,       Debye,    2,  Pb,    1,  SO4,   1,           2.75,   0,                 298.151460942159
+PbCO3,       Water,       Debye,    2,  Pb,    1,  CO3,   1,           7.2,    0,                 298.151460942159
+Pb(CO3)2,    Water,       Debye,    2,  Pb,    1,  CO3,   2,           10.5,   0,                 298.151460942159
+PbCl,        Water,       Debye,    2,  Pb,    1,  Cl,    1,           1.59,   18531.0943043316,  298.151460942159
+PbCl2,       Water,       Debye,    2,  Pb,    1,  Cl,    2,           1.8,    0,                 298.151460942159
+UO2OH,       Water,       Debye,    2,  OH,    1,  UO2,   1,           8.8,    -10950.1920889232, 298.151460942159
+UO2(OH)2,    Water,       Debye,    2,  OH,    2,  UO2,   1,           16.1,   0,                 298.151460942159
+UO2(OH)3,    Water,       Debye,    2,  OH,    3,  UO2,   1,           21,     0,                 298.151460942159
+(UO2)2(OH)2, Water,       Debye,    2,  OH,    2,  UO2,   2,           22.4,   -72018.5710463797, 298.151460942159
+(UO2)3(OH)5, Water,       Debye,    2,  OH,    5,  UO2,   3,           54.3,   -179835.846998855, 298.151460942159
+UO2SO4,      Water,       Debye,    2,  UO2,   1,  SO4,   1,           3,      0,                 298.151460942159
+UO2CO3,      Water,       Debye,    2,  UO2,   1,  CO3,   1,           9.4,    4632.77357608291,  298.151460942159
+UO2(CO3)2,   Water,       Debye,    2,  UO2,   1,  CO3,   2,           16.4,   14740.6431966274,  298.151460942159
+UOH,         Water,       Debye,    2,  OH,    1,  UIV,   1,           13.3,   -29481.2863932548, 298.151460942159
+U(OH)2,      Water,       Debye,    2,  OH,    2,  UIV,   1,           24.7,   -58962.5727865097, 298.151460942159
+U(OH)3,      Water,       Debye,    2,  OH,    3,  UIV,   1,           34.2,   -88443.8591797645, 298.151460942159
+U(OH)4,      Water,       Debye,    2,  OH,    4,  UIV,   1,           41.7,   -120873.274212345, 298.151460942159
+U(OH)5,      Water,       Debye,    2,  OH,    5,  UIV,   1,           47.3,   -165095.203802227, 298.151460942159
+UF,          Water,       Debye,    2,  UIV,   1,  F,     1,           8.65,   0,                 298.151460942159
+UF2,         Water,       Debye,    2,  UIV,   1,  F,     2,           14.47,  0,                 298.151460942159
+USO4,        Water,       Debye,    2,  UIV,   1,  SO4,   1,           6.11,   0,                 298.151460942159
+UCl,         Water,       Debye,    2,  UIV,   1,  Cl,    1,           1.16,   0,                 298.151460942159
+PuIIIOH,     Water,       Debye,    2,  OH,    1,  PuIII, 1,           6.8,    0,                 298.151460942159
+PuIII(OH)2,  Water,       Debye,    2,  OH,    2,  PuIII, 1,           12.12,  0,                 298.151460942159
+PuIIICO3,    Water,       Debye,    2,  PuIII, 1,  CO3,   1,           9.6,    0,                 298.151460942159
+PuIII(CO3)2, Water,       Debye,    2,  PuIII, 1,  CO3,   2,           12.9,   0,                 298.151460942159
+PuIIISO4,    Water,       Debye,    2,  PuIII, 1,  SO4,   1,           3.34,   0,                 298.151460942159
+PuIIICl,     Water,       Debye,    2,  PuIII, 1,  Cl,    1,           1.12,   0,                 298.151460942159
+PuIVOH,      Water,       Debye,    2,  OH,    1,  PuIV,  1,           13.3,   0,                 298.151460942159
+PuIV(OH)2,   Water,       Debye,    2,  OH,    2,  PuIV,  1,           28.14,  0,                 298.151460942159
+Pu(OH)3,     Water,       Debye,    2,  OH,    3,  PuIV,  1,           39.11,  0,                 298.151460942159
+Pu(OH)4,     Water,       Debye,    2,  OH,    4,  PuIV,  1,           46.81,  0,                 298.151460942159
+PuIVSO4,     Water,       Debye,    2,  PuIV,  1,  SO4,   1,           6.42,   0,                 298.151460942159
+Pu(SO4)2,    Water,       Debye,    2,  PuIV,  1,  SO4,   2,           10.78,  0,                 298.151460942159
+PuIVCl,      Water,       Debye,    2,  PuIV,  1,  Cl,    1,           1.22,   0,                 298.151460942159
+PuIVCO3,     Water,       Debye,    2,  PuIV,  1,  CO3,   1,           19.14,  0,                 298.151460942159
+PuIV(CO3)2,  Water,       Debye,    2,  PuIV,  1,  CO3,   2,           33.12,  0,                 298.151460942159
+PuO2OH,      Water,       Debye,    2,  OH,    1,  PuO2,  1,           8.3,    0,                 298.151460942159
+PuO2(OH)2,   Water,       Debye,    2,  OH,    2,  PuO2,  1,           16.85,  0,                 298.151460942159
+PuO2(OH)3,   Water,       Debye,    2,  OH,    3,  PuO2,  1,           20.88,  0,                 298.151460942159
+PuO2CO3,     Water,       Debye,    2,  PuO2,  1,  CO3,   1,           12,     0,                 298.151460942159
+PuO2(CO3)2,  Water,       Debye,    2,  PuO2,  1,  CO3,   2,           14.9,   0,                 298.151460942159
+PuO2Cl,      Water,       Debye,    2,  PuO2,  1,  Cl,    1,           0.63,   0,                 298.151460942159
+PuO2SO4,     Water,       Debye,    2,  PuO2,  1,  Cl,    2,           4.68,   0,                 298.151460942159
+ThOH,        Water,       Debye,    2,  OH,    1,  Th,    1,           11.66,  -31165.9313300123, 298.151460942159
+Th(OH)2,     Water,       Debye,    2,  OH,    2,  Th,    1,           21.64,  -53698.0573591428, 298.151460942159
+Th(OH)3,     Water,       Debye,    2,  OH,    3,  Th,    1,           30.3,   -82842.4147650461, 298.151460942159
+Th(OH)4,     Water,       Debye,    2,  OH,    4,  Th,    1,           40.1,   -146142.948263706, 298.151460942159
+ThF,         Water,       Debye,    2,  Th,    1,  F,     1,           8.44,   0,                 298.151460942159
+ThF2,        Water,       Debye,    2,  Th,    1,  F,     2,           15.06,  0,                 298.151460942159
+ThCO3,       Water,       Debye,    2,  Th,    1,  CO3,   1,           11.03,  0,                 298.151460942159
+ThCl,        Water,       Debye,    2,  Th,    1,  Cl,    1,           1.18,   0,                 298.151460942159
+AmOH,        Water,       Debye,    2,  OH,    1,  Am,    1,           6.73,   0,                 298.151460942159
+Am(OH)2,     Water,       Debye,    2,  OH,    2,  Am,    1,           12.04,  0,                 298.151460942159
+Am(OH)3,     Water,       Debye,    2,  OH,    3,  Am,    1,           17.84,  0,                 298.151460942159
+Am(OH)4,     Water,       Debye,    2,  OH,    4,  Am,    1,           16,     0,                 298.151460942159
+AmCO3,       Water,       Debye,    2,  Am,    1,  CO3,   1,           7.42,   0,                 298.151460942159
+Am(CO3)2,    Water,       Debye,    2,  Am,    1,  CO3,   2,           11.86,  0,                 298.151460942159
+EuOH,        Water,       Debye,    2,  OH,    1,  Eu,    1,           6.2,    0,                 298.151460942159
+Eu(OH)2,     Water,       Debye,    2,  OH,    2,  Eu,    1,           11.8,   0,                 298.151460942159
+Eu(OH)3,     Water,       Debye,    2,  OH,    3,  Eu,    1,           17,     0,                 298.151460942159
+Eu(OH)4,     Water,       Debye,    2,  OH,    4,  Eu,    1,           19,     0,                 298.151460942159
+EuCO3,       Water,       Debye,    2,  Eu,    1,  CO3,   1,           8.26,   0,                 298.151460942159
+Eu(CO3)2,    Water,       Debye,    2,  Eu,    1,  CO3,   2,           14.18,  0,                 298.151460942159
+EuSO4,       Water,       Debye,    2,  Eu,    1,  SO4,   1,           3.67,   20636.9004752784,  298.151460942159
+CeOH,        Water,       Debye,    2,  OH,    1,  CeIII, 1,           5.7,    0,                 298.151460942159
+Ce(OH)2,     Water,       Debye,    2,  OH,    2,  CeIII, 1,           11.8,   0,                 298.151460942159
+Ce(OH)3,     Water,       Debye,    2,  OH,    3,  CeIII, 1,           17,     0,                 298.151460942159
+Ce(OH)4,     Water,       Debye,    2,  OH,    4,  CeIII, 1,           19,     0,                 298.151460942159
+CeCO3,       Water,       Debye,    2,  CeIII, 1,  CO3,   1,           8.26,   0,                 298.151460942159
+Ce(CO3)2,    Water,       Debye,    2,  CeIII, 1,  CO3,   2,           14.18,  0,                 298.151460942159
+CeSO4,       Water,       Debye,    2,  CeIII, 1,  SO4,   1,           3.59,   19373.4167727103,  298.151460942159
+Ag(OH),      Water,       Debye,    2,  OH,    1,  Ag,    1,           2,      0,                 298.151460942159
+Ag(OH)2,     Water,       Debye,    2,  OH,    2,  Ag,    1,           3.99,   0,                 298.151460942159
+Ag(Cl),      Water,       Debye,    2,  Ag,    1,  Cl,    1,           3.31,   -12634.8370256806, 298.151460942159
+Ag(Cl)2,     Water,       Debye,    2,  Ag,    1,  Cl,    2,           5.25,   -16846.4493675742, 298.151460942159
+Ag(Cl)3,     Water,       Debye,    2,  Ag,    1,  Cl,    3,           5.2,    -39167.99477961,   298.151460942159
+Ag(Cl)4,     Water,       Debye,    2,  Ag,    1,  Cl,    4,           5.51,   0,                 298.151460942159
+Ag(NO3),     Water,       Debye,    2,  Ag,    1,  NO3,   1,           -0.1,   0,                 298.151460942159
+Ag(SHA),     Water,       Debye,    2,  Ag,    1,  SHA,   1,           12,     0,                 298.151460942159
+Ag(SFA),     Water,       Debye,    2,  Ag,    1,  SFA,   1,           12,     0,                 298.151460942159
+AgHS,        Water,       Debye,    3,  H,     1,  Ag,    1,  S,   1,  27.28,  0,                 298.151460942159
+ZnS,         Water,       Debye,    2,  Zn,    1,  S,     1,           18.29,  0,                 298.151460942159
+Cu(SHA),     Water,       Debye,    2,  Cu,    1,  SHA,   1,           12.3,   0,                 298.151460942159
+Cu(SFA),     Water,       Debye,    2,  Cu,    1,  SFA,   1,           12.3,   0,                 298.151460942159
+Ag(HS)2,     Water,       Debye,    3,  H,     2,  Ag,    1,  S,   2,  47.27,  0,                 298.151460942159
+--------------------------------------------------------------------------------
+Phase List
+Phase, NC, C1, S1, C2, S2, C3, S3, Log K, Delta H, Temp, Moles
+--------------------------------------------------------------------------------
+Special Definitions
+Definition, Value
+WHAM,       WATER23.wdat
+--------------------------------------------------------------------------------
+Critical Accumulation Table
+Num, CA, Species, Test Type, Duration, Lifestage, Endpoint, Quantifier, References, Miscellaneous
+--------------------------------------------------------------------------------
+-------Notes--------
+written by kellyc from R: 2024-12-19 16:11:48.093517

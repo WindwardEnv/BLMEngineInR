@@ -41,10 +41,12 @@ test_that("AddSpecialDefs works", {
   expect_no_error(AddSpecialDefs(ThisProblem = myproblem,
                                  Value = "V",
                                  SpecialDef = "WHAM"))
-  expect_error(AddSpecialDefs(ThisProblem = carbonate_system_problem,
+  expect_no_error(AddSpecialDefs(ThisProblem = carbonate_system_problem,
                               Value = "V",
-                              SpecialDef = "WHAM"),
-               regexp = "without a WHAM input variable")
+                              SpecialDef = "WHAM"))
+  expect_no_error(AddSpecialDefs(ThisProblem = carbonate_system_problem,
+                              Value = "WHAM_V.wdat",
+                              SpecialDef = "WHAM"))
   expect_error(AddSpecialDefs(ThisProblem = Cu_full_organic_problem,
                               Value = "VII",
                               SpecialDef = "WHAM"),

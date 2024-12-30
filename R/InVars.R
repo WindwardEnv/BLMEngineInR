@@ -133,6 +133,10 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
       #               "component. Change manually if you wish to represent",
       #               "pH as a fixed concentration."))
     }
+    if (grepl("WHAM", InVarType[i]) &
+        (!is.na(NewProblem$WHAM$Ver) | !is.na(NewProblem$WHAM$File))) {
+      NewProblem = ExpandWHAM(ThisProblem = NewProblem)
+    }
   }
 
   if (DoCheck) {

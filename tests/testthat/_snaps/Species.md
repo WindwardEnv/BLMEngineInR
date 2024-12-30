@@ -110,33 +110,89 @@
        [6] Lifestage     Endpoint      Quantifier    References    Miscellaneous
       <0 rows> (or 0-length row.names)
       
-      $WHAM
-      $WHAM$DoWHAM
+      $DoWHAM
       [1] FALSE
       
-      $WHAM$WHAMVer
+      $WHAM
+      $WHAM$Ver
       [1] NA
       
-      $WHAM$WdatFile
+      $WHAM$File
       [1] NA
       
-      $WHAM$wDLF
+      $WHAM$DLF
       [1] NA
       
-      $WHAM$wKZED
+      $WHAM$KZED
       [1] NA
       
-      $WHAM$wP
+      $WHAM$nA
       HA FA 
       NA NA 
       
-      $WHAM$wRadius
+      $WHAM$pKA
       HA FA 
       NA NA 
       
-      $WHAM$wMolWt
+      $WHAM$pKB
       HA FA 
       NA NA 
+      
+      $WHAM$dpKA
+      HA FA 
+      NA NA 
+      
+      $WHAM$dpKB
+      HA FA 
+      NA NA 
+      
+      $WHAM$fprB
+      HA FA 
+      NA NA 
+      
+      $WHAM$fprT
+      HA FA 
+      NA NA 
+      
+      $WHAM$dLK1A
+      HA FA 
+      NA NA 
+      
+      $WHAM$dLK1B
+      HA FA 
+      NA NA 
+      
+      $WHAM$P
+      HA FA 
+      NA NA 
+      
+      $WHAM$Radius
+      HA FA 
+      NA NA 
+      
+      $WHAM$MolWt
+      HA FA 
+      NA NA 
+      
+      $WHAM$MonodentTable
+      [1] S          AbundDenom StrongWeak
+      <0 rows> (or 0-length row.names)
+      
+      $WHAM$BidentTable
+      [1] S1         S2         AbundDenom
+      <0 rows> (or 0-length row.names)
+      
+      $WHAM$TridentTable
+      [1] S1         S2         S3         AbundDenom
+      <0 rows> (or 0-length row.names)
+      
+      $WHAM$MetalsTable
+      [1] Metal  pKMAHA pKMAFA dLK2  
+      <0 rows> (or 0-length row.names)
+      
+      $WHAM$SpecKselTable
+      [1] Spec   KselHA KselFA
+      <0 rows> (or 0-length row.names)
       
       
       $Index
@@ -254,33 +310,89 @@
        [6] Lifestage     Endpoint      Quantifier    References    Miscellaneous
       <0 rows> (or 0-length row.names)
       
-      $WHAM
-      $WHAM$DoWHAM
+      $DoWHAM
       [1] FALSE
       
-      $WHAM$WHAMVer
+      $WHAM
+      $WHAM$Ver
       [1] NA
       
-      $WHAM$WdatFile
+      $WHAM$File
       [1] NA
       
-      $WHAM$wDLF
+      $WHAM$DLF
       [1] NA
       
-      $WHAM$wKZED
+      $WHAM$KZED
       [1] NA
       
-      $WHAM$wP
+      $WHAM$nA
       HA FA 
       NA NA 
       
-      $WHAM$wRadius
+      $WHAM$pKA
       HA FA 
       NA NA 
       
-      $WHAM$wMolWt
+      $WHAM$pKB
       HA FA 
       NA NA 
+      
+      $WHAM$dpKA
+      HA FA 
+      NA NA 
+      
+      $WHAM$dpKB
+      HA FA 
+      NA NA 
+      
+      $WHAM$fprB
+      HA FA 
+      NA NA 
+      
+      $WHAM$fprT
+      HA FA 
+      NA NA 
+      
+      $WHAM$dLK1A
+      HA FA 
+      NA NA 
+      
+      $WHAM$dLK1B
+      HA FA 
+      NA NA 
+      
+      $WHAM$P
+      HA FA 
+      NA NA 
+      
+      $WHAM$Radius
+      HA FA 
+      NA NA 
+      
+      $WHAM$MolWt
+      HA FA 
+      NA NA 
+      
+      $WHAM$MonodentTable
+      [1] S          AbundDenom StrongWeak
+      <0 rows> (or 0-length row.names)
+      
+      $WHAM$BidentTable
+      [1] S1         S2         AbundDenom
+      <0 rows> (or 0-length row.names)
+      
+      $WHAM$TridentTable
+      [1] S1         S2         S3         AbundDenom
+      <0 rows> (or 0-length row.names)
+      
+      $WHAM$MetalsTable
+      [1] Metal  pKMAHA pKMAFA dLK2  
+      <0 rows> (or 0-length row.names)
+      
+      $WHAM$SpecKselTable
+      [1] Spec   KselHA KselFA
+      <0 rows> (or 0-length row.names)
       
       
       $Index

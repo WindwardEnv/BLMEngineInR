@@ -46,6 +46,7 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   # -get component information
 
   NewProblem = BlankProblem()
+  NewProblem$ParamFile = ParamFile
 
   # read the dimensions of the various elements of the reaction list
   SkipRows = 2
@@ -247,8 +248,6 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   }
 
   CheckBLMObject(NewProblem, BlankProblem(), BreakOnError = TRUE)
-
-  NewProblem$ParamFile = ParamFile
 
   if (WriteLog) {
     CHESSLog(ThisProblem = NewProblem)

@@ -4,7 +4,16 @@
 \alias{WriteParamFile}
 \title{Write a BLM Parameter File}
 \usage{
-WriteParamFile(ThisProblem, ParamFile)
+WriteParamFile(
+  ThisProblem,
+  ParamFile,
+  Notes = if ("Notes" \%in\% names(ThisProblem)) {
+     ThisProblem$Notes
+ } else {
+    
+    NULL
+ }
+)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by
@@ -12,6 +21,11 @@ WriteParamFile(ThisProblem, ParamFile)
 
 \item{ParamFile}{a character value, indicating the file path and name of the
 parameter file to write.}
+
+\item{Notes}{A character vector of additional notes to include at the bottom
+of the parameter file. The text "written by USERNAME from R: YYYY-MM-DD
+HH:MM:SS" will always be written, regardless of the value of this argument.
+This will be filled in with a "Notes" item in `ThisProblem`, if available.}
 }
 \value{
 ThisProblem, with the ParamFile element  changed to the ParamFile

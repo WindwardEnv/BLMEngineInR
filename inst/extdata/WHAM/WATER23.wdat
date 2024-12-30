@@ -1,0 +1,112 @@
+...WHAMV...
+--------------------------------------------------------
+Number of monodentate sites,8
+Number of bidentate pairs,12
+Number of tridentate groups,0
+Number of metals-OM parameters,50
+Number of non-standard selectivity coefficients,0
+Double layer overlap factor,0.25
+Constant to control DDL at low ZED,1000
+--------------------------------------------------------
+Param,  units,    HA,       FA
+nA,     eq/g OM,  0.00329,  0.00473
+pKA,    n/a,      4.02,     3.26
+pKB,    n/a,      8.55,     9.64
+dpKA,   n/a,      1.78,     3.34
+dpKB,   n/a,      3.43,     5.52
+fprB,   fraction, 0.5,      0.4
+fprT,   fraction, 0,        0
+dLK1A,  n/a,      1.78,     3.34
+dLK1B,  n/a,      3.43,     5.52
+P,      n/a,      -374,     -103
+Radius, m,        1.72e-09, 8e-10
+MolWt,  g OM/mol, 15000,    1500
+--------------------------------------------------------
+Monodentate Sites
+S, AbundDenom, StrongWeak
+1, 4,          S
+2, 4,          S
+3, 4,          S
+4, 4,          S
+5, 8,          W
+6, 8,          W
+7, 8,          W
+8, 8,          W
+--------------------------------------------------------
+Bidentate Sites
+S1, S2, AbundDenom
+1,  2,  16
+1,  4,  16
+1,  6,  16
+1,  8,  16
+2,  3,  16
+2,  5,  16
+2,  7,  16
+3,  4,  16
+3,  6,  16
+3,  8,  16
+4,  5,  16
+4,  7,  16
+--------------------------------------------------------
+Tridentate Sites
+S1, S2, S3, AbundDenom
+--------------------------------------------------------
+Metals Parameters
+Metal,   pKMAHA, pKMAFA, dLK2
+Ag,      2.4,    1.7,    0.13
+Al,      1.3,    0.4,    0.13
+AlOH,    1.3,    0.4,    0.13
+Am,      1.2,    0.3,    0.13
+AmOH,    1.2,    0.3,    0.13
+Ba,      3.6,    2.6,    0.13
+Be,      1.7,    0.4,    0.13
+BeOH,    1.7,    0.4,    0.13
+Ca,      3.2,    2.2,    0.13
+Cd,      2.7,    1.5,    0.13
+CdOH,    2.7,    1.5,    0.13
+CeIII,   1.8,    0.8,    0.13
+CeOH,    1.8,    0.8,    0.13
+Cm,      2,      1.6,    0.13
+Co,      2.7,    1.7,    0.13
+CoOH,    2.7,    1.7,    0.13
+CrIII,   0.5,    0.1,    0.13
+CrOH,    0.5,    0.1,    0.13
+Cu,      1.5,    0.8,    0.13
+CuOH,    1.5,    0.8,    0.13
+Eu,      1.3,    0.2,    0.13
+EuOH,    1.3,    0.2,    0.13
+FeII,    2.1,    1.3,    0.13
+FeIII,   0.8,    -0.2,   0.13
+FeIIIOH, 0.8,    -0.2,   0.13
+FeIIOH,  2.1,    1.3,    0.13
+Hg,      0.2,    -0.3,   0.13
+HgOH,    0.2,    -0.3,   0.13
+Mg,      3.3,    2.2,    0.13
+Mn,      3.4,    1.7,    0.13
+MnOH,    3.4,    1.7,    0.13
+Ni,      2.7,    1.4,    0.13
+NiOH,    2.7,    1.4,    0.13
+Pb,      1.7,    0.9,    0.13
+PbOH,    1.7,    0.9,    0.13
+PuIII,   1.7,    0.8,    0.13
+PuIIIOH, 1.7,    0.8,    0.13
+PuIV,    0,      -0.7,   0.13
+PuIVOH,  0,      -0.7,   0.13
+PuO2,    1.6,    0.5,    0.13
+PuO2OH,  1.6,    0.5,    0.13
+Sr,      2.8,    2.3,    0.13
+Th,      0.6,    -0.4,   0.13
+ThOH,    0.6,    -0.4,   0.13
+UIV,     0,      -0.7,   0.13
+UO2,     1.3,    0.9,    0.13
+UO2OH,   1.3,    0.9,    0.13
+UOH,     0,      -0.7,   0.13
+Zn,      2.3,    1.3,    0.13
+ZnOH,    2.3,    1.3,    0.13
+--------------------------------------------------------
+Selectivity Coefficients for Non-specific binding
+Spec, KselHA, KselFA
+--------------------------------------------------------
+Notes
+written by kellyc from R: 2024-12-19 16:11:47.055732
+/*

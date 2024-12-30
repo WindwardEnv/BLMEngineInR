@@ -97,25 +97,30 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) {
     SpecialDef[i] = gsub("-", "", SpecialDef[i])
     if (SpecialDef[i] == "WHAM") {
       #--Name of WHAM file or WHAM version
-      if (any(grepl("WHAM", ThisProblem$InVar$Type))) {
-        if (!is.na(ThisProblem$WHAM$WHAMVer) ||
-            !is.na(ThisProblem$WHAM$WdatFile)) {
-          stop("Only one WHAM version or file can be specified.")
-        }
+      if (any(grepl("WHAM", ThisProblem$DefComp$Type)) ||
+          !is.na(ThisProblem$WHAM$File) || !is.na(ThisProblem$WHAM$Ver)) {
+        stop("Only one WHAM version or file can be specified.")
+      }
 
-
-        if (Value[i] %in% c("V", "VI", "VII")) {
-          WHAMVer = Value[i]
-          WdatFile = NA_character_
-        } else {
-          WHAMVer = NA_character_
-          WdatFile = Value[i]
-        }
-        NewProblem = ExpandWHAM(ThisProblem = NewProblem,
-                                WHAMVer = WHAMVer,
-                                WdatFile = WdatFile)
+      if (Value[i] %in% c("V", "VI", "VII")) {
+        WHAMVer = Value[i]
+        WHAMFile = NA_character_
       } else {
-        stop("WHAM version or file specified without a WHAM input variable.")
+        WHAMVer = NA_character_
+        WHAMFile = Value[i]
+        if (!file.exists(WHAMFile)) {
+          if (file.exists(file.path(dirname(NewProblem$ParamFile), WHAMFile))) {
+            WHAMFile = file.path(dirname(NewProblem$ParamFile), WHAMFile)
+          } else if (file.exists(system.file(file.path("extdata","WHAM",WHAMFile),package = "BLMEngineInR"))) {
+            WHAMFile = system.file(file.path("extdata","WHAM",WHAMFile),package = "BLMEngineInR")
+          } else {
+            stop("Cannot find \"", WHAMFile, "\".")
+          }
+        }
+      }
+      NewProblem$WHAM = DefineWHAM(WHAMVer = WHAMVer, WHAMFile = WHAMFile)
+      if (any(grepl("WHAM", ThisProblem$InVar$Type))) {
+        NewProblem = ExpandWHAM(ThisProblem = NewProblem)
       }
     } else if (SpecialDef[i] %in% c("BL", "Metal")) {
       if (Value[i] %in% ThisProblem$Comp$Name) {

@@ -280,7 +280,7 @@ BLM = function(ParamFile = character(),
 
     if (is.na(ThisInput$SysTempKelvin) |
         any(is.na(ThisInput$TotConc)) |
-        (ThisProblem$WHAM$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[ThisProblem$Index$WHAMDonnanMCR > 0])))) {
+        (ThisProblem$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[ThisProblem$Index$WHAMDonnanMCR > 0])))) {
       # Incomplete chemistry, so skip calling CHESS
       OutList$Miscellaneous$Status[iObs] = "Incomplete Chemistry"
     } else if ((ThisInput$SysTempKelvin <= 263) |
@@ -321,14 +321,13 @@ BLM = function(ParamFile = character(),
   }
 
   # Make summary columns for organically-bound components
-  if (ThisProblem$WHAM$DoWHAM) {
+  if (ThisProblem$DoWHAM) {
     for (iComp in ThisProblem$InCompName){
       OrgCols = SpecMolesCols[grepl(iComp, SpecMolesCols) &
                                 (grepl("DOC", SpecMolesCols) |
                                    grepl("Donnan", SpecMolesCols))]
       OutList$Concentrations[, paste0("TOrg.",iComp," (mol/L)")] =
         rowSums(OutList$Moles[, OrgCols, drop = FALSE])
-
     }
   }
 

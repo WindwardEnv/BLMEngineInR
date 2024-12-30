@@ -1,3 +1,6 @@
+rm(list = ls())
+devtools::load_all()
+sapply(list.files("data-raw", full.names = TRUE), FUN = source)
 
 files_with_tests = c(
   "BLM",
@@ -6,8 +9,11 @@ files_with_tests = c(
   "CheckBLMObject",
   "CHESSLog",
   "Components",
+  "ConvertWHAMVThermoFile",
+  "ConvertWindowsParamFile",
   "CriticalValues",
   "DefineProblem",
+  "DefineWHAM",
   "ExpandWHAM",
   "GetData",
   "InLabs",
@@ -21,7 +27,8 @@ files_with_tests = c(
   "StoichConversionFunctions",
   "WriteDetailedFile",
   "WriteInputFile",
-  "WriteParamFile"
+  "WriteParamFile",
+  "WriteWHAMFile"
 )
 
 for (i in 1:length(files_with_tests)) {
