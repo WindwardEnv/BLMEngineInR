@@ -1,7 +1,0 @@
-PowerBASIC 6 Console Compiler
-Copyright (c) 1998-2011 PowerBasic Inc.
-Englewood, Florida USA
-All Rights Reserved
-
-Error 516 in C:\Users\kellyc\Documents\BLM Development\engine\BLMEngineInR\scrap\old BLM\test ground BLM\chess.bas(64:012):  DefType, Type id (?%&!#$), or AS... required: NCOMP
-  Line 64: DIM X(1 TO NComp) AS DOUBLE'  Iterative improvement to component concen.  

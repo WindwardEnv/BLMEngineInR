@@ -1,4 +1,0 @@
-Ver 3.41.2.45, build 2018-11-20
-C:\Program Files (x86)\BLM 3.41.2.45 - Research Mode\Model\CuOH5%le_10-11-07.DAT
-C:\Users\roberts\Dropbox\TmpShare\BLM_in_R\BLMEngineInR\benchmarking\11_Cu_Cali_WQC.blm
-/S ZN_CALI_WQC.SCR, /W /Q /VER3.41 /O3 /K1 /L
