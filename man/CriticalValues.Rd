@@ -9,9 +9,9 @@
 AddCriticalValues(
   ThisProblem,
   CATab = data.frame(),
-  CA = CATab$CA,
+  CA = CATab[, which(colnames(CATab) \%in\% c("CA", "CA (nmol/gw)"))[1]],
   Species = CATab$Species,
-  Test.Type = CATab$Test.Type,
+  Test.Type = CATab[, which(colnames(CATab) \%in\% c("Test.Type", "Test Type"))[1]],
   Duration = CATab$Duration,
   Lifestage = CATab$Lifestage,
   Endpoint = CATab$Endpoint,
@@ -27,10 +27,11 @@ RemoveCriticalValues(ThisProblem, CAToRemove, DoCheck = TRUE)
 \item{ThisProblem}{A list object with a structure like that returned by
 `BlankProblem()`.}
 
-\item{CATab}{a data.frame object with, at a minimum, columns named `CA`,
-`Species`, `Test.Type`, `Duration`, `Lifestage`, `Endpoint`, `Quantifier`,
-`References`, `Miscellaneous`. See optional parameter descriptions for
-further descriptions of each of those columns.}
+\item{CATab}{a data.frame object with, at a minimum, columns named
+`CA`/`CA (nmol/gw)`, `Species`, `Test.Type`/`Test Type`, `Duration`,
+`Lifestage`, `Endpoint`, `Quantifier`, `References`, `Miscellaneous`.
+See optional parameter descriptions for further descriptions of each of
+those columns.}
 
 \item{CA}{(optional) a numeric vector of the critical accumulation value(s)
 in nmol/gw.}

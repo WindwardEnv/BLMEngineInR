@@ -22,10 +22,11 @@
 #'
 #' @param ThisProblem A list object with a structure like that returned by
 #'   `BlankProblem()`.
-#' @param CATab a data.frame object with, at a minimum, columns named `CA`,
-#'   `Species`, `Test.Type`, `Duration`, `Lifestage`, `Endpoint`, `Quantifier`,
-#'   `References`, `Miscellaneous`. See optional parameter descriptions for
-#'   further descriptions of each of those columns.
+#' @param CATab a data.frame object with, at a minimum, columns named
+#'   `CA`/`CA (nmol/gw)`, `Species`, `Test.Type`/`Test Type`, `Duration`,
+#'   `Lifestage`, `Endpoint`, `Quantifier`, `References`, `Miscellaneous`.
+#'   See optional parameter descriptions for further descriptions of each of
+#'   those columns.
 #' @param CA (optional) a numeric vector of the critical accumulation value(s)
 #'   in nmol/gw.
 #' @param Species (optional) a character vector of the species names to include
@@ -108,9 +109,9 @@ NULL
 #' @rdname CriticalValues
 #' @export
 AddCriticalValues = function(ThisProblem, CATab = data.frame(),
-                             CA = CATab$CA,
+                             CA = CATab[, which(colnames(CATab) %in% c("CA","CA (nmol/gw)"))[1]],
                              Species = CATab$Species,
-                             Test.Type = CATab$Test.Type,
+                             Test.Type = CATab[, which(colnames(CATab) %in% c("Test.Type","Test Type"))[1]],
                              Duration = CATab$Duration,
                              Lifestage = CATab$Lifestage,
                              Endpoint = CATab$Endpoint,
@@ -129,13 +130,26 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
-  if (is.null(Duration)) { Duration = NA_character_ }
-  if (is.null(Lifestage)) { Lifestage = NA_character_ }
-  if (is.null(Quantifier)) { Quantifier = NA_character_ }
-  if (is.null(Miscellaneous)) { Miscellaneous = NA_character_ }
+  NumNewCA = length(CA)
+  if (is.null(Species)) { Species = rep(NA_character_, NumNewCA) }
+  if (is.null(Test.Type)) { Test.Type = rep(NA_character_, NumNewCA) }
+  if (is.null(Duration)) { Duration = rep(NA_character_, NumNewCA) }
+  if (is.null(Lifestage)) { Lifestage = rep(NA_character_, NumNewCA) }
+  if (is.null(Endpoint)) { Endpoint = rep(NA_character_, NumNewCA) }
+  if (is.null(Quantifier)) { Quantifier = rep(NA_character_, NumNewCA) }
+  if (is.null(References)) { References = rep(NA_character_, NumNewCA) }
+  if (is.null(Miscellaneous)) { Miscellaneous = rep(NA_character_, NumNewCA) }
+
+  NoIDInfo = is.na(Species) & is.na(Test.Type) & is.na(Duration) &
+    is.na(Lifestage) & is.na(Endpoint) & is.na(Quantifier) &
+    is.na(References) & is.na(Miscellaneous)
+  if (any(NoIDInfo)) {
+    warning("Some of the new critical values do not have any identifying information.")
+  }
 
   CA = as.numeric(CA)
   Species = as.character(Species)
+  Test.Type = as.character(Test.Type)
   Duration = as.character(Duration)
   Lifestage = as.character(Lifestage)
   Endpoint = as.character(Endpoint)
@@ -155,7 +169,6 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
     References = References,
     Miscellaneous = Miscellaneous
   )
-  NumNewCA = nrow(NewCATab)
   NewCATab$Num = ThisProblem$N["CAT"] + seq(1L, NumNewCA)
   NewProblem$N["CAT"] = NewProblem$N["CAT"] + NumNewCA
 

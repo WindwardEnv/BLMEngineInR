@@ -29,8 +29,12 @@
 #'   to the biotic ligand is calculated. In a toxicity run, the critical
 #'   accumulation is input and the free and total metal concentrations that
 #'   would result in that amount bound to the biotic ligand is calculated.
-#' @param iCA (integer) The index of the critical accumulation value in the
-#'   parameter file critical accumulation table.
+#' @param iCA (unecessary unless DoTox = TRUE) Either the index of the critical
+#'   accumulation value in the parameter file critical accumulation table, or
+#'   the critical accumuation to use in nmol/gw. If this is a single value, then
+#'   it will be applied to all observations. If it is a vector with the same
+#'   length as the inputs, then each value given will be used for the
+#'   corresponding observation.
 #' @param QuietFlag Either "Quiet", "Very Quiet", or "Debug". With "Very Quiet",
 #'   the simulation will run silently. With "Quiet", the simulation will print
 #'   "Obs=1", "Obs=2", etc... to the console. With "Debug", intermediate
@@ -54,17 +58,17 @@ BLM = function(ParamFile = character(),
                DoTox = logical(),
                iCA = 1L,
                QuietFlag = c("Very Quiet", "Quiet", "Debug"),
-               # criticalSource = c("ParamFile","InputFile"),
                ConvergenceCriteria = 0.0001,
-               MaxIter = 100L,
-               DodVidCj = TRUE,
-               DodVidCjDonnan = FALSE,
-               DodKidCj = FALSE,
-               DoGammai = TRUE,
-               DoJacDonnan = FALSE,
-               DoJacWHAM = TRUE,
-               DoWHAMSimpleAdjust = TRUE,
-               DoDonnanSimpleAdjust = TRUE) {
+               MaxIter = 100L) {
+
+  DodVidCj = TRUE
+  DodVidCjDonnan = FALSE
+  DodKidCj = FALSE
+  DoGammai = TRUE
+  DoJacDonnan = FALSE
+  DoJacWHAM = TRUE
+  DoWHAMSimpleAdjust = TRUE
+  DoDonnanSimpleAdjust = TRUE
 
   StartTime = Sys.time()
 
@@ -117,10 +121,22 @@ BLM = function(ParamFile = character(),
       stop("Cannot do tox mode without at least one each of BL, Metal, and BLMetal defined.")
     }
 
-    CATargetDefault = ThisProblem$CATab$CA[iCA] * (10^-6) /
+    if (is.integer(iCA) || all(as.integer(iCA) == iCA)) {
+      CATargetDefault = ThisProblem$CATab$CA[iCA]
+    } else if (is.double(iCA)) {
+      CATargetDefault = iCA
+    } else {
+      stop("Unknown type of critical value iCA.")
+    }
+    if (length(iCA) == 1) {
+      CATargetDefault = rep(CATargetDefault, NObs)
+    } else if (length(iCA) != NObs) {
+      stop("Critical value iCA should be either 1 or NObs in length.")
+    }
+    CATargetDefault = CATargetDefault * (10^-6) /
       ThisProblem$Comp$SiteDens[BLComp]
   } else {
-    CATargetDefault = NA
+    CATargetDefault = rep(NA, NObs)
   }
 
   # Initialize ThisInput as ThisProblem, with one observation's worth of
@@ -157,14 +173,24 @@ BLM = function(ParamFile = character(),
     data.frame(Obs = 1:NObs),
     AllInput$InLabObs
   )
-  MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength", "WHAMIonicStrength", "ChargeBalance")
+  MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength",
+                     "WHAMIonicStrength", "ChargeBalance")
   ZCols = paste0("Z_", c("HA","FA"))
+  if (ThisProblem$N["BLMetal"] > 0) {
+    BLMetalCols = paste0(ThisProblem$BLMetal$Name, " (nmol/gw)")
+    TotBLMetalCol = paste0("Total ", ThisProblem$BL$Name, "-",
+                           ThisProblem$Metal$Name, " (nmol/gw)")
+  } else {
+    BLMetalCols = character()
+    TotBLMetalCol = character()
+  }
   MassAmtCols = paste0(MassName, " (",ThisProblem$Mass$Unit,")")
   SpecConcCols = paste0(SpecName," (mol/",ThisProblem$Mass$Unit[ThisProblem$Spec$MCR],")")
   TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$Mass$Unit[ThisProblem$Comp$MCR],")")
   SpecMolesCols = paste0(SpecName," (mol)")
   TotMolesCols = paste0("T.", CompName, " (mol)")
   SpecActCols = paste0("Act.", SpecName)
+  SpecActCoefCols = paste0("Gamma.", SpecName)
   OutList = list(
     Inputs = cbind(
       OutputLabels,
@@ -173,8 +199,11 @@ BLM = function(ParamFile = character(),
     ),
     Miscellaneous = cbind(
       OutputLabels,
-      matrix(NA, nrow = NObs, ncol = length(MiscOutputCols) + length(ZCols) + length(MassAmtCols) + 2,
-             dimnames = list(NULL, c(MiscOutputCols, ZCols, MassAmtCols, "Status", "Message")))
+      matrix(NA, nrow = NObs,
+             ncol = length(MiscOutputCols) + length(ZCols) +
+               length(MassAmtCols) + length(BLMetalCols) + 2,
+             dimnames = list(NULL, c(MiscOutputCols, ZCols, MassAmtCols,
+                                     BLMetalCols, "Status", "Message")))
     ),
     Concentrations = cbind(
       OutputLabels,
@@ -190,12 +219,25 @@ BLM = function(ParamFile = character(),
       OutputLabels,
       matrix(NA, nrow = NObs, ncol = NSpec,
              dimnames = list(NULL, c(SpecActCols)))
+    ),
+    ActivityCoefficients = cbind(
+      OutputLabels,
+      matrix(NA, nrow = NObs, ncol = NSpec,
+             dimnames = list(NULL, c(SpecActCoefCols)))
     )
   )
+  if (DoTox) {
+    OutList$Inputs = cbind(
+      OutList$Inputs,
+      data.frame(`Target Critical Accumulation (nmol/gw)` =
+                   CATargetDefault / (10^-6) *
+                   ThisProblem$Comp$SiteDens[BLComp])
+    )
+  }
 
   # For tox mode, fill in missing values and add WQC tab
   DoStandards = FALSE
-  if (DoTox) {
+  if (DoTox & (length(iCA) == 1)) {
     if (ThisProblem$CAT$Endpoint[iCA] %in% c("FAV","FCV","HC5","WQS","CMC","CCC")) {
       DoStandards = TRUE
 
@@ -270,7 +312,7 @@ BLM = function(ParamFile = character(),
     ThisInput$HumicSubstGramsPerLiter = AllInput$HumicSubstGramsPerLiterObs[iObs, c("HA", "FA")]
 
     if (DoTox) {
-      FunctionInputs$CATarget = CATargetDefault * ThisInput$TotConc[BLComp]
+      FunctionInputs$CATarget = CATargetDefault[iObs] * ThisInput$TotConc[BLComp]
     }
 
     # 3. Run the speciation problem
@@ -302,6 +344,7 @@ BLM = function(ParamFile = character(),
         OutList$Moles[iObs, SpecMolesCols] = Tmp$SpecMoles
         OutList$Moles[iObs, TotMolesCols] = Tmp$CalcTotMoles
         OutList$Activities[iObs, SpecActCols] = Tmp$SpecAct
+        OutList$ActivityCoefficients[iObs, SpecActCoefCols] = Tmp$SpecActivityCoef
 
         if (is.na(OutList$Miscellaneous$FinalMaxError[iObs]) |
             (OutList$Miscellaneous$FinalMaxError[iObs] > ConvergenceCriteria)) {
@@ -329,6 +372,20 @@ BLM = function(ParamFile = character(),
       OutList$Concentrations[, paste0("TOrg.",iComp," (mol/L)")] =
         rowSums(OutList$Moles[, OrgCols, drop = FALSE])
     }
+  }
+
+  # Make summary columns for BL-Metal components
+  if (ThisProblem$N["BLMetal"] > 0) {
+    BLMetalCPPCols = paste0(ThisProblem$BLMetal$Name,
+                            " (mol/",
+                            ThisProblem$Mass$Unit[ThisProblem$Index$BioticLigMCR],
+                            ")")
+    OutList$Miscellaneous[, BLMetalCols] =
+      OutList$Concentrations[, BLMetalCPPCols] *
+      ThisProblem$Comp$SiteDens[BLComp] / (10 ^ -6) /
+      AllInput$TotConcObs[, BLComp]
+    OutList$Miscellaneous[, TotBLMetalCol] =
+      rowSums(OutList$Miscellaneous[, BLMetalCols, drop = FALSE])
   }
 
   if (DoStandards) {
