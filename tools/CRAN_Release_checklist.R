@@ -3,6 +3,7 @@ release()
 
 # Update documentation
 devtools::document()
+devtools::build_manual()
 
 # Have you checked for spelling errors (with `spell_check()`)?
 devtools::spell_check()

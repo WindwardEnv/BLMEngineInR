@@ -22,7 +22,7 @@ An example BLMEngineInR problem object, which describes a system
 }
 \references{
 Santore, Robert C., Kelly Croteau, Adam C. Ryan, Christian Schlekat,
-Elizabeth Middleton, Emily Garmin, and Tham Hoang (2021). A Review of Water
+Elizabeth Middleton, Emily Garman, and Tham Hoang (2021). A Review of Water
 Quality Factors that Affect Nickel Bioavailability to Aquatic Organisms:
 Refinement of the Biotic Ligand Model for Nickel in Acute and Chronic
 Exposures. Environmental Toxicology and Chemistry, col 40, iss. 8, pp

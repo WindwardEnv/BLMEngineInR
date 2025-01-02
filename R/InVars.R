@@ -25,7 +25,7 @@
 #'   be specified if `InVarMCR` is specified instead.
 #' @param InVarType A character vector with the types of the new input
 #'   variables. Must be one of "Temp", "pH", "WHAM-HA", "WHAM-FA", "WHAM-HAFA",
-#'   "PercHA", and "PercAFA".
+#'   "PercHA", "PercAFA", and "Misc".
 #' @param InVarMCR (optional) A character vector with the indices of the mass
 #'   compartments the new input variables are associated with. Only needs to be
 #'   specified if `InVarMCName` is not specified.
@@ -60,7 +60,7 @@ NULL
 #' @export
 AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
                     InVarType = c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
-                                  "WHAM-HAFA", "PercHA", "PercAFA"),
+                                  "WHAM-HAFA", "PercHA", "PercAFA", "Misc"),
                     InVarMCR = match(InVarMCName, ThisProblem$Mass$Name, nomatch = -1L),
                     DoCheck = TRUE) {
 
@@ -97,10 +97,10 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
   }
   if (!all(InVarType %in%
                   c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
-                    "WHAM-HAFA", "PercHA", "PercAFA"))) {
+                    "WHAM-HAFA", "PercHA", "PercAFA", "Misc"))) {
     stop("Invalid InVarType specified (",
          InVarType[InVarType %in% c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
-                                    "WHAM-HAFA", "PercHA", "PercAFA") == FALSE],")")
+                                    "WHAM-HAFA", "PercHA", "PercAFA", "Misc") == FALSE],")")
   }
   NInVarAdd = length(InVarName)
   if (length(InVarMCName) == 1) { InVarMCName = rep(InVarMCName, NInVarAdd)}

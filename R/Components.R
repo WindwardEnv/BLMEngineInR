@@ -263,11 +263,8 @@ RemoveComponents = function(ThisProblem, ComponentToRemove, DoCheck = TRUE) {
 
   # Remove Phases that depend on the component
   if (ThisProblem$N["Phase"] > 0) {
-    PhasesToRemove = unique(c(
-      ComponentToRemove,
-      which(apply(NewProblem$PhaseStoich[, ComponentToRemove, drop = FALSE],
-                  MARGIN = 1, FUN = function(X){any(X != 0L)}))
-    ))
+    PhasesToRemove = which(apply(NewProblem$PhaseStoich[, ComponentToRemove, drop = FALSE],
+                                 MARGIN = 1, FUN = function(X){any(X != 0L)}))
     if (length(PhasesToRemove) >= 1) {
       NewProblem = RemovePhases(NewProblem, PhasesToRemove, DoCheck = FALSE)
     }

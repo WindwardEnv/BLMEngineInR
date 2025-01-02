@@ -13,6 +13,7 @@ BLMs
 Batley
 Benefield
 Bielmyer
+Bioavailability
 Biotic
 BlankProblem
 BlankProblemList
@@ -31,6 +32,7 @@ CMC
 CaCl
 CalcTotMoles
 Cardwell
+Ceriodaphnia
 CharacterVector
 Chesson
 Chowdhury
@@ -59,8 +61,8 @@ DonnanFA
 DonnanHA
 Duarte
 Dwyer
-Earley
 ECCC
+Earley
 EquationToStoich
 Equilibria
 ExpandWHAM
@@ -69,6 +71,7 @@ FCV
 FixedAct
 FixedConc
 Galvez
+Garman
 Genderen
 Gensemer
 GetData
@@ -80,6 +83,7 @@ HAFA
 HC
 HCO
 HH
+Hoang
 Hogstrand
 Humic
 IUPAC
@@ -126,6 +130,7 @@ NObs
 NPhase
 NSpec
 Naddy
+NiHCO
 Nordheim
 NumericVector
 Paquin
@@ -151,6 +156,8 @@ ReadInputsFromFile
 RemoveCriticalValues
 Resid
 Rosen
+Schlekat
+SimpleAdjust
 SpecCompNames
 SpecCompStoichs
 SpecDeltaH
@@ -162,10 +169,12 @@ SpecName
 SpecStoich
 SpecType
 SpecialDef
+Speciation
 Stoichiometry
 Stubblefield
 TIEs
 Takahashi
+Tham
 ThisProblem
 ThisWHAM
 Tomasso
@@ -174,6 +183,7 @@ USEPA
 Vogl
 WHAM's
 WHAMFA
+WHAMFile
 WHAMHA
 WQS
 Walczyk
@@ -186,6 +196,7 @@ XToStoichMatrix
 YYYY
 Yoneda
 Zhu
+al
 bioavailability
 bioavailable
 biotic
@@ -194,9 +205,11 @@ complexation
 dat
 dbs
 doi
+dubia
 enthalpy
 equilibria
 estuarine
+et
 extdata
 fulvic
 fulvics
@@ -206,6 +219,7 @@ https
 humic
 humics
 iObs
+iss
 ligand
 ligands
 logK
@@ -219,4 +233,5 @@ stoichiometric
 stoichiometries
 stoichiometry
 str
+uri
 wdat

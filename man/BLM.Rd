@@ -34,11 +34,11 @@ to the biotic ligand is calculated. In a toxicity run, the critical
 accumulation is input and the free and total metal concentrations that
 would result in that amount bound to the biotic ligand is calculated.}
 
-\item{iCA}{(unecessary unless DoTox = TRUE) Either the index of the critical
+\item{iCA}{(unnecessary unless DoTox = TRUE) Either the index of the critical
 accumulation value in the parameter file critical accumulation table, or
-the critical accumuation to use in nmol/gw. If this is a single value, then
-it will be applied to all observations. If it is a vector with the same
-length as the inputs, then each value given will be used for the
+the critical accumulation to use in nmol/gw. If this is a single value,
+then it will be applied to all observations. If it is a vector with the
+same length as the inputs, then each value given will be used for the
 corresponding observation.}
 
 \item{QuietFlag}{Either "Quiet", "Very Quiet", or "Debug". With "Very Quiet",

@@ -181,18 +181,38 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
     )
   }
 
+  # make non-extra components consistent with parameter file
+  CompsToUpdate = which((CompDF$Name %in% NewProblem$Comp$Name) &
+                          (CompDF$Name %in% c("DOC") == FALSE) &
+                          !grepl("BL", CompDF$Name))
+  if (length(CompsToUpdate) > 0L) {
+    for (i in CompsToUpdate) {
+      iR = which(NewProblem$Comp$Name == CompDF$Name[i])
+      if (NewProblem$Comp$ActCorr[iR] != CompDF$Activity[i]) {
+        NewProblem$Comp$ActCorr[iR] = CompDF$Activity[i]
+        NewProblem$Spec$ActCorr[iR] = CompDF$Activity[i]
+
+        iR = which(NewProblem$DefComp$Name == CompDF$Name[i])
+        if (length(iR) == 1) {
+          NewProblem$DefComp$ActCorr[iR] = CompDF$Activity[i]
+        }
+      }
+    }
+  }
+
+
   # Add extra components not in thermodynamic database
   CompsToAdd = which((CompDF$Name %in% NewProblem$Comp$Name == FALSE) &
                        (CompDF$Name %in% c("DOC") == FALSE) &
                        !grepl("BL", CompDF$Name))
   if (length(CompsToAdd) > 0L) {
-    NewProblem = AddComponents(
+    NewProblem = AddInComps(
       ThisProblem = NewProblem,
-      CompName = CompDF$Name[CompsToAdd],
-      CompCharge = CompDF$Charge[CompsToAdd],
-      CompMCName = CompDF$MCName[CompsToAdd],
-      CompType = CompDF$Type[CompsToAdd],
-      CompActCorr = CompDF$Activity[CompsToAdd]
+      InCompName = CompDF$Name[CompsToAdd],
+      InCompCharge = CompDF$Charge[CompsToAdd],
+      InCompMCName = CompDF$MCName[CompsToAdd],
+      InCompType = CompDF$Type[CompsToAdd],
+      InCompActCorr = CompDF$Activity[CompsToAdd]
     )
     if (any(CompDF$SiteDen[CompsToAdd] != 1)) {
       NewProblem$Comp$SiteDens[match(CompDF$Name[CompsToAdd],
@@ -201,6 +221,7 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
       CheckBLMObject(Object = NewProblem, Reference = BlankProblem())
     }
   }
+
 
   # Add DefComps
   DefCompsToAdd = which(grepl("BL", CompDF$Name))
@@ -278,14 +299,53 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
 
   # DOC input variables
   if (!is.null(DOCComp)) {
-    NewProblem = AddInVars(
-      ThisProblem = NewProblem,
-      InVarName = c(DOCComp, "HA"),
-      InVarMCName = "Water",
-      InVarType = c("WHAM-HAFA", "PercHA")
-    )
-    # NewProblem = ExpandWHAM(ThisProblem = NewProblem,
-    #                         ThisWHAM = NewProblem$WHAM)
+    if (DOCComp %in% CompDF$Name) {
+      # We have a WHAM DOC component
+      NewProblem = AddInVars(
+        ThisProblem = NewProblem,
+        InVarName = c(DOCComp, "HA"),
+        InVarMCName = "Water",
+        InVarType = c("WHAM-HAFA", "PercHA")
+      )
+    } else if (any(grepl("^DOC[[:digit:]]", CompDF$Name) |
+                   grepl("^L[[:digit:]]", CompDF$Name))) {
+      # Marine DOC is a mix of ligands, usually named "L1, L2, L3, ..." or
+      # "DOC1, DOC2, DOC3, ...". For these we need an input variable that we
+      # split into the ligands based on the provided site density.
+      NewProblem = AddInVars(
+        ThisProblem = NewProblem,
+        InVarName = DOCComp,
+        InVarMCName = "Water",
+        InVarType = "Misc"
+      )
+      DOCDefComp = NewProblem$Comp[grepl("^DOC[[:digit:]]", NewProblem$Comp$Name) |
+                                     grepl("^L[[:digit:]]", NewProblem$Comp$Name), ]
+      DOCSpec = NewProblem$Spec[(rowSums(NewProblem$SpecStoich[, DOCDefComp$Name]) != 0L) &
+                                  ((1:NewProblem$N["Spec"]) > NewProblem$N["Comp"]), ]
+      NewProblem = RemoveInComps(
+        ThisProblem = NewProblem,
+        InCompToRemove = DOCDefComp$Name
+      )
+      NewProblem = AddDefComps(
+        ThisProblem = NewProblem,
+        DefCompName = DOCDefComp$Name,
+        DefCompFromVar = DOCComp,
+        DefCompCharge = DOCDefComp$Charge,
+        DefCompMCName = DOCDefComp$MCName,
+        DefCompType = DOCDefComp$Type,
+        DefCompActCorr = DOCDefComp$ActCorr,
+        DefCompSiteDens = DOCDefComp$SiteDens
+      )
+      NewProblem = AddSpecies(
+        ThisProblem = NewProblem,
+        SpecEquation = DOCSpec$Equation,
+        SpecMCName = DOCSpec$MCName,
+        SpecActCorr = DOCSpec$ActCorr,
+        SpecLogK = DOCSpec$LogK,
+        SpecDeltaH = DOCSpec$DeltaH,
+        SpecTempKelvin = DOCSpec$TempKelvin
+      )
+    }
   }
 
   # Special Defs

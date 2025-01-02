@@ -11,7 +11,7 @@ AddInVars(
   InVarName,
   InVarMCName = NULL,
   InVarType = c("Temperature", "pH", "WHAM-FA", "WHAM-HA", "WHAM-HAFA", "PercHA",
-    "PercAFA"),
+    "PercAFA", "Misc"),
   InVarMCR = match(InVarMCName, ThisProblem$Mass$Name, nomatch = -1L),
   DoCheck = TRUE
 )
@@ -31,7 +31,7 @@ be specified if `InVarMCR` is specified instead.}
 
 \item{InVarType}{A character vector with the types of the new input
 variables. Must be one of "Temp", "pH", "WHAM-HA", "WHAM-FA", "WHAM-HAFA",
-"PercHA", and "PercAFA".}
+"PercHA", "PercAFA", and "Misc".}
 
 \item{InVarMCR}{(optional) A character vector with the indices of the mass
 compartments the new input variables are associated with. Only needs to be
