@@ -19,7 +19,7 @@ devtools::release_checks()
 # These should all say "OK"
 
 # Have you checked on R-hub (with `check_rhub()`)?
-check_rhub()
+# check_rhub()
 # This function is deprecated and defunct since rhub v2.
 # Please see `?rhubv2` on transitioning to the new rhub functions.
 rhub::rhub_check()
