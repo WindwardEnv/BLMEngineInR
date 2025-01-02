@@ -391,7 +391,9 @@ test_that("ConvertWindowsParamFile marine works", {
   write(x = Marine_text, file = Marine_file)
   ex_Rfile = withr::local_tempfile(fileext = ".dat4")
 
-  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Marine_file, MarineFile = TRUE))
+  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Marine_file, RParamFile = ex_Rfile, MarineFile = TRUE))
+
+expect_no_error(DefineProblem(ex_Rfile))
 
 })
 test_that("ConvertWindowsParamFile unknown dbs file works", {
@@ -400,6 +402,8 @@ test_that("ConvertWindowsParamFile unknown dbs file works", {
   testthat::skip_if_not(file.exists(Zn_file))
   ex_Rfile = withr::local_tempfile(fileext = ".dat4")
 
-  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Zn_file))
+  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Zn_file, RParamFile = ex_Rfile))
+
+expect_no_error(DefineProblem(ex_Rfile))
 
 })
