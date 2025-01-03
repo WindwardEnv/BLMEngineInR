@@ -23,25 +23,25 @@
 #' @export
 BlankWHAM = function() {
 
-  NA_vec = c(HA = NA_real_, FA = NA_real_)
+  NAVec = c(HA = NA_real_, FA = NA_real_)
 
   Out = list(
     Ver = NA_character_,
     File = NA_character_,
     DLF = NA_real_,
     KZED = NA_real_,
-    nA = NA_vec,
-    pKA = NA_vec,
-    pKB = NA_vec,
-    dpKA = NA_vec,
-    dpKB = NA_vec,
-    fprB = NA_vec,
-    fprT = NA_vec,
-    dLK1A = NA_vec,
-    dLK1B = NA_vec,
-    P = NA_vec,
-    Radius = NA_vec,
-    MolWt = NA_vec,
+    nA = NAVec,
+    pKA = NAVec,
+    pKB = NAVec,
+    dpKA = NAVec,
+    dpKB = NAVec,
+    fprB = NAVec,
+    fprT = NAVec,
+    dLK1A = NAVec,
+    dLK1B = NAVec,
+    P = NAVec,
+    Radius = NAVec,
+    MolWt = NAVec,
     # Constants = c(
     #   DLF = 0.0,
     #   KZED = 0.0

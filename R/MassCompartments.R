@@ -75,7 +75,7 @@ AddMassCompartments = function(ThisProblem,
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
@@ -83,7 +83,10 @@ AddMassCompartments = function(ThisProblem,
   if (any((MassName %in% ThisProblem$Mass$Name))) {
     stop(paste0(
       "Mass Compartment(s) (",
-      paste(paste0("\"", MassName[MassName %in% ThisProblem$Mass$Name], "\""), collapse = ", "),
+      paste(
+        paste0("\"", MassName[MassName %in% ThisProblem$Mass$Name], "\""),
+        collapse = ", "
+      ),
       ") already exist."
     ))
   }
@@ -105,7 +108,8 @@ AddMassCompartments = function(ThisProblem,
   }
 
   # Update MCR indices
-  NewProblem$Index$AqueousMCR = which(tolower(NewProblem$Mass$Name) %in% c("water", "aqueous"))
+  NewProblem$Index$AqueousMCR =
+    which(tolower(NewProblem$Mass$Name) %in% c("water", "aqueous"))
   if (length(NewProblem$Index$AqueousMCR) == 0) {
     NewProblem$Index$AqueousMCR = as.integer(NA)
   }
@@ -117,12 +121,14 @@ AddMassCompartments = function(ThisProblem,
     NewProblem$Index$BioticLigMCR = as.integer(NA)
   }
   if (any(NewProblem$Mass$Name %in% "Water_DonnanHA")) {
-    NewProblem$Index$WHAMDonnanMCR[1] = which(NewProblem$Mass$Name == "Water_DonnanHA")
+    NewProblem$Index$WHAMDonnanMCR[1] =
+      which(NewProblem$Mass$Name == "Water_DonnanHA")
   } else {
     NewProblem$Index$WHAMDonnanMCR[1] = -1L
   }
   if (any(NewProblem$Mass$Name %in% "Water_DonnanFA")) {
-    NewProblem$Index$WHAMDonnanMCR[2] = which(NewProblem$Mass$Name == "Water_DonnanFA")
+    NewProblem$Index$WHAMDonnanMCR[2] =
+      which(NewProblem$Mass$Name == "Water_DonnanFA")
   } else {
     NewProblem$Index$WHAMDonnanMCR[2] = -1L
   }
@@ -146,7 +152,7 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove, DoCheck = TRUE) {
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
@@ -155,11 +161,15 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove, DoCheck = TRUE) {
     MCToRemove = match(MCToRemove, ThisProblem$Mass$Name)
   }
   if (any(is.na(MCToRemove))) {
-    stop(paste0("Mass Compartment (", paste(MCToRemoveOrig[is.na(MCToRemove)], collapse = ", "), ") does not exist."))
+    stop(
+      "Mass Compartment (",
+      paste(MCToRemoveOrig[is.na(MCToRemove)], collapse = ", "),
+      ") does not exist."
+    )
   }
   if (any(MCToRemove <= 0L)) {
     stop("Invalid index in MCToRemove (",
-         MCToRemove[MCToRemove <= 0L],").")
+         MCToRemove[MCToRemove <= 0L], ").")
   }
   if (any(MCToRemove > ThisProblem$N["Mass"])) {
     stop(paste0("There are ", ThisProblem$N["Mass"], " Mass Compartments, ",
@@ -188,7 +198,8 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove, DoCheck = TRUE) {
   # Remove Components that depend on the mass compartment
   ComponentToRemove = which(NewProblem$Comp$MCR %in% MCToRemove)
   if (length(ComponentToRemove) >= 1) {
-    NewProblem = RemoveComponents(NewProblem, ComponentToRemove, DoCheck = FALSE)
+    NewProblem =
+      RemoveComponents(NewProblem, ComponentToRemove, DoCheck = FALSE)
   }
 
   # Remove Species that depend on the mass compartment
@@ -215,7 +226,8 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove, DoCheck = TRUE) {
   # Update mass compartment indices
   NewProblem$InVar$MCR = match(NewProblem$InVar$MCName, NewProblem$Mass$Name)
   NewProblem$Comp$MCR = match(NewProblem$Comp$MCName, NewProblem$Mass$Name)
-  NewProblem$DefComp$MCR = match(NewProblem$DefComp$MCName, NewProblem$Mass$Name)
+  NewProblem$DefComp$MCR =
+    match(NewProblem$DefComp$MCName, NewProblem$Mass$Name)
   NewProblem$Spec$MCR = match(NewProblem$Spec$MCName, NewProblem$Mass$Name)
   NewProblem$Index$AqueousMCR =
     which(tolower(NewProblem$Mass$Name) %in% c("water", "aqueous"))[1]
@@ -223,12 +235,14 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove, DoCheck = TRUE) {
     which(grepl("BL", NewProblem$Mass$Name, ignore.case = TRUE) |
             grepl("gill", NewProblem$Mass$Name, ignore.case = TRUE))[1]
   if (any(NewProblem$Mass$Name %in% "Water_DonnanHA")) {
-    NewProblem$Index$WHAMDonnanMCR[1] = which(NewProblem$Mass$Name == "Water_DonnanHA")
+    NewProblem$Index$WHAMDonnanMCR[1] =
+      which(NewProblem$Mass$Name == "Water_DonnanHA")
   } else {
     NewProblem$Index$WHAMDonnanMCR[1] = -1L
   }
   if (any(NewProblem$Mass$Name %in% "Water_DonnanFA")) {
-    NewProblem$Index$WHAMDonnanMCR[2] = which(NewProblem$Mass$Name == "Water_DonnanFA")
+    NewProblem$Index$WHAMDonnanMCR[2] =
+      which(NewProblem$Mass$Name == "Water_DonnanFA")
   } else {
     NewProblem$Index$WHAMDonnanMCR[2] = -1L
   }

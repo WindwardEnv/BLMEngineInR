@@ -104,7 +104,7 @@ GlobalTest = list(
   ParamFile = "scrap/parameter file format/full_organic.dat4",
   InputFile = "scrap/parameter file format/full_organic.blm4",
   DoTox = T,
-  iCA = 1L,
+  CritAccumIndex = 1L,
   QuietFlag ="Quiet",
   ConvergenceCriteria = 0.001,
   MaxIter = 30L
@@ -118,7 +118,7 @@ GlobalTest$iObs = 1L
 GlobalTest$InLab = GlobalTest$InLabObs[GlobalTest$iObs, ]
 GlobalTest$SysTempKelvin = GlobalTest$SysTempKelvinObs[GlobalTest$iObs]
 GlobalTest$TotConc = GlobalTest$TotConcObs[GlobalTest$iObs, ]
-GlobalTest$CATargetDefault = GlobalTest$CATab$CA[GlobalTest$iCA] * (10^-6) /
+GlobalTest$CATargetDefault = GlobalTest$CATab$CA[GlobalTest$CritAccumIndex] * (10^-6) /
   GlobalTest$CompSiteDens[GlobalTest$BLComp]
 GlobalTest$CATarget = CATargetDefault * GlobalTest$TotConc[GlobalTest$BLComp]
 

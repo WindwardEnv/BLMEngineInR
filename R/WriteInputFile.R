@@ -25,11 +25,14 @@
 #'
 #' @examples
 #' tf = tempfile()
-#' myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+#' myinputfile = system.file(file.path("extdata", "InputFiles",
+#'                                     "carbonate_system_test.blm4"),
 #'                           package = "BLMEngineInR",
 #'                           mustWork = TRUE)
-#' myinputs = GetData(InputFile = myinputfile, ThisProblem = carbonate_system_problem)
-#' WriteInputFile(AllInput = myinputs, ThisProblem = carbonate_system_problem, InputFile = tf)
+#' myinputs = GetData(InputFile = myinputfile,
+#'                    ThisProblem = carbonate_system_problem)
+#' WriteInputFile(AllInput = myinputs, ThisProblem = carbonate_system_problem,
+#'                InputFile = tf)
 #' scan(tf, what = character(), sep = "\n")
 #' scan(myinputfile, what = character(), sep = "\n")
 #' file.remove(tf)
@@ -52,7 +55,7 @@ WriteInputFile = function(AllInput, ThisProblem, InputFile) {
   TextToWrite = character(AllInput$NObs + 2)
 
   # Input labels
-  if (ThisProblem$N["InLab"] > 0){
+  if (ThisProblem$N["InLab"] > 0) {
     for (i in 1:ThisProblem$N["InLab"]) {
       TextToWrite = MakeUniformTXTColumn(
         paste0(TextToWrite,
@@ -71,9 +74,10 @@ WriteInputFile = function(AllInput, ThisProblem, InputFile) {
       ThisColumn[2] = "SU"
     } else if (ThisProblem$InVar$Type[i] == "Temperature") {
       ThisColumn[2] = "deg C"
-    } else if (ThisProblem$InVar$Type[i] %in% c("WHAM-HA", "WHAM-FA", "WHAM-HAFA")) {
+    } else if (ThisProblem$InVar$Type[i] %in%
+                 c("WHAM-HA", "WHAM-FA", "WHAM-HAFA")) {
       ThisColumn[2] = "mg C/L"
-    } else if (ThisProblem$InVar$Type[i] %in% c("PercHA","PercAFA")) {
+    } else if (ThisProblem$InVar$Type[i] %in% c("PercHA", "PercAFA")) {
       ThisColumn[2] = "%"
     }
     TextToWrite = MakeUniformTXTColumn(
@@ -93,12 +97,12 @@ WriteInputFile = function(AllInput, ThisProblem, InputFile) {
     )
   }
 
-  TextToWrite = gsub(",$","", trimws(TextToWrite))
+  TextToWrite = gsub(",$", "", trimws(TextToWrite))
 
   write(TextToWrite, file = InputFile, append = TRUE)
   write("\nNotes:\n------------", file = InputFile, append = TRUE)
   write(paste0("ParameterFile = \"", ThisProblem$ParamFile, "\""),
-               file = InputFile, append = TRUE)
+        file = InputFile, append = TRUE)
 
   return(invisible(TRUE))
 }

@@ -37,7 +37,7 @@
 #' print(carbonate_system_problem$InLabName) # ID only
 #'
 #' my_new_problem = AddInLabs(ThisProblem = my_new_problem, InLabName = "ID2")
-#' my_new_problem = RemoveInLabs(ThisProblem = my_new_problem, InLabToRemove = "ID")
+#' my_new_problem = RemoveInLabs(my_new_problem, InLabToRemove = "ID")
 #'
 #' print(my_new_problem$InLabName) # ID2 only
 #'
@@ -53,17 +53,20 @@ AddInLabs = function(ThisProblem, InLabName, DoCheck = TRUE) {
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
   # error checking
   if (any((InLabName %in% ThisProblem$InLabName))) {
-    stop(paste0(
+    stop(
       "Input Label(s) (",
-      paste(paste0("\"", InLabName[InLabName %in% ThisProblem$InLabName], "\""), collapse = ", "),
+      paste(
+        paste0("\"", InLabName[InLabName %in% ThisProblem$InLabName], "\""),
+        collapse = ", "
+      ),
       ") already exist."
-    ))
+    )
   }
   if (any(is.na(InLabName))) {
     stop("NA arguments not allowed.")
@@ -91,7 +94,7 @@ RemoveInLabs = function(ThisProblem, InLabToRemove, DoCheck = TRUE) {
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
@@ -105,7 +108,7 @@ RemoveInLabs = function(ThisProblem, InLabToRemove, DoCheck = TRUE) {
   }
   if (any(InLabToRemove <= 0L)) {
     stop("Invalid index in InLabToRemove (",
-         InLabToRemove[InLabToRemove <= 0L],").")
+         InLabToRemove[InLabToRemove <= 0L], ").")
   }
   if (any(InLabToRemove > ThisProblem$N["InLab"])) {
     stop("There are ", ThisProblem$N["InLab"], " input labels, ",
@@ -124,4 +127,3 @@ RemoveInLabs = function(ThisProblem, InLabToRemove, DoCheck = TRUE) {
   return(NewProblem)
 
 }
-

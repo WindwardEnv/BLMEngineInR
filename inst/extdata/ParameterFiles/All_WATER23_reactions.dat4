@@ -273,7 +273,7 @@ Definition, Value
 WHAM,       WATER23.wdat
 --------------------------------------------------------------------------------
 Critical Accumulation Table
-Num, CA, Species, Test Type, Duration, Lifestage, Endpoint, Quantifier, References, Miscellaneous
+Num, CA, Species, TestType, Duration, Lifestage, Endpoint, Quantifier, References, Miscellaneous
 --------------------------------------------------------------------------------
 -------Notes--------
-written by kellyc from R: 2024-12-19 16:11:48.093517
+written by kellyc from R: 2025-01-03 13:27:25.519386

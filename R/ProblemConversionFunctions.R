@@ -32,22 +32,22 @@
 
 #' @rdname ProblemConversionFunctions
 #' @keywords internal
-ConvertToList = function(ThisProblemDF) {
+ConvertToList = function(ThisProblemDF) { #nolint: cyclocomp_linter
 
   CheckBLMObject(ThisProblemDF, BlankProblem(), BreakOnError = TRUE)
   ThisProblemList = list()
 
   CompositeNames = c("N", "Mass", "InLab", "InVar", "InComp", "DefComp", "Comp",
                      "Spec", "Phase", "BL", "Metal", "BLMetal", "WHAM")
-  OrganizedNames = c("Index")#, "WHAM")
+  OrganizedNames = c("Index")
   AsIsNames = setdiff(names(ThisProblemDF), c(CompositeNames, OrganizedNames))
-  NoZeroLengthNames = c("MetalName","MetalCompR","BLName","BLCompR")
+  NoZeroLengthNames = c("MetalName", "MetalCompR", "BLName", "BLCompR")
 
   for (i in CompositeNames) {
     if (is.data.frame(ThisProblemDF[[i]])) {
       for (j in names(ThisProblemDF[[i]])) {
         ThisProblemList[[paste0(i, j)]] = ThisProblemDF[[i]][, j]
-        if (any(names(ThisProblemDF[[i]]) %in% "Name") & (j != "Name")) {
+        if (any(names(ThisProblemDF[[i]]) %in% "Name") && (j != "Name")) {
           names(ThisProblemList[[paste0(i, j)]]) = ThisProblemDF[[i]]$Name
         }
       }
@@ -106,15 +106,13 @@ ConvertToDF = function(ThisProblemList) {
   CompositeNames = c("N", "Mass", "InLab", "InVar", "InComp", "DefComp", "Comp",
                      "Spec", "Phase", "BL", "Metal", "BLMetal", "WHAM")
   OrganizedNames = list(
-    Index = c("AqueousMCR", "BioticLigMCR", "WHAMDonnanMCR")#,
-    #WHAM = c("DoWHAM", "WHAMVer", "WHAMFile", "wDLF", "wKZED",
-             #"wP", "wRadius", "wMolWt")
+    Index = c("AqueousMCR", "BioticLigMCR", "WHAMDonnanMCR")
   )
-  NoZeroLengthNames = c("MetalName","MetalCompR","BLName","BLCompR")
+  NoZeroLengthNames = c("MetalName", "MetalCompR", "BLName", "BLCompR")
 
   for (i in NoZeroLengthNames) {
     if (typeof(ThisProblemList[[i]]) == "character") {
-      if (ThisProblemList[[i]] == ""){
+      if (ThisProblemList[[i]] == "") {
         ThisProblemList[[i]] = character()
       }
     } else if (typeof(ThisProblemList[[i]]) == "integer") {
@@ -132,22 +130,26 @@ ConvertToDF = function(ThisProblemList) {
 
   ConvertedNames = c()
 
-  MatchedByMultipleCompositeNames = ListNames[rowSums(sapply(
-    CompositeNames,
-    FUN = function(X){
-      grepl(paste0("^", X), ListNames)
-    })) > 1]
+  MatchedByMultCompositeNames = ListNames[
+    rowSums(sapply(
+      CompositeNames,
+      FUN = function(X) {
+        grepl(paste0("^", X), ListNames)
+      }
+    )) > 1
+  ]
 
   for (i in CompositeNames) {
 
     MatchedByI = ListNames[grepl(paste0("^", i), ListNames)]
-    MatchedByINotMultiple = setdiff(MatchedByI, MatchedByMultipleCompositeNames)
+    MatchedByINotMultiple = setdiff(MatchedByI, MatchedByMultCompositeNames)
     if (length(MatchedByINotMultiple) > 0) {
       MemberNames = MatchedByINotMultiple
     } else {
       MemberNames = MatchedByI
     }
-    VectorNames = MemberNames[sapply(ThisProblemList[MemberNames], FUN = is.vector)]
+    VectorNames =
+      MemberNames[sapply(ThisProblemList[MemberNames], FUN = is.vector)]
     OtherNames = setdiff(MemberNames, VectorNames)
 
     if (length(VectorNames) == 1) {
@@ -158,7 +160,8 @@ ConvertToDF = function(ThisProblemList) {
         ThisProblemDF[[i]] = unlist(ThisProblemList[VectorNames])
       } else if (i %in% "WHAM") {
         VectorNames = paste0("WHAM", names(BlankWHAM()))
-        OtherNames = OtherNames[OtherNames %in% c(VectorNames, "WHAMDonnanMCR") == FALSE]
+        OtherNames =
+          OtherNames[OtherNames %in% c(VectorNames, "WHAMDonnanMCR") == FALSE]
         ThisProblemDF[[i]] = as.list(ThisProblemList[VectorNames])
       } else {
         ThisProblemDF[[i]] = as.data.frame(ThisProblemList[VectorNames])
@@ -177,7 +180,8 @@ ConvertToDF = function(ThisProblemList) {
 
   for (i in names(OrganizedNames)) {
     ThisProblemDF[[i]] = list()
-    ThisProblemDF[[i]][OrganizedNames[[i]]] = ThisProblemList[OrganizedNames[[i]]]
+    ThisProblemDF[[i]][OrganizedNames[[i]]] =
+      ThisProblemList[OrganizedNames[[i]]]
     ConvertedNames = c(ConvertedNames, OrganizedNames[[i]])
   }
 
@@ -190,7 +194,8 @@ ConvertToDF = function(ThisProblemList) {
   ThisProblemDF$Spec$Equation = StoichMatrixToEquation(
     ThisProblemList$SpecStoich,
     ThisProblemList$SpecName,
-    ThisProblemList$CompName)
+    ThisProblemList$CompName
+  )
 
   # Re-organize list elements so they're grouped nicer
   BlankProblemNames = names(BlankProblem())

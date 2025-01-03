@@ -92,13 +92,13 @@ test_that("BLM function works - toxicity mode works", {
     ThisProblem = myproblem
   )
   tmp = BLM(ThisProblem = myproblem,
-            AllInput = testinputs, DoTox = TRUE, iCA = 2L)
+            AllInput = testinputs, DoTox = TRUE, CritAccumIndex = 2L)
 
   expect_equal(tmp$Concentrations$`T.Cu (mol/L)`, 7.62202e-10)
 
   # for CRAN submission, we do not want any output by default
   expect_silent(BLM(ThisProblem = myproblem,
-                    AllInput = testinputs, DoTox = TRUE, iCA = 2L))
+                    AllInput = testinputs, DoTox = TRUE, CritAccumIndex = 2L))
 
 
 })

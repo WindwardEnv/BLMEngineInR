@@ -44,20 +44,22 @@
 #' @export
 #'
 #' @examples
-#' myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+#' myinputfile = system.file(file.path("extdata", "InputFiles",
+#'                                     "carbonate_system_test.blm4"),
 #'                           package = "BLMEngineInR", mustWork = TRUE)
 #' ReadInputsFromFile(InputFile = myinputfile,
 #'                    ThisProblem = carbonate_system_problem)
 #'
 ReadInputsFromFile = function(
-    InputFile,
-    ThisProblem = NULL,
-    NInLab = ThisProblem$N["InLab"],
-    InLabName = ThisProblem$InLabName,
-    NInVar = ThisProblem$N["InVar"],
-    InVarName = ThisProblem$InVar$Name,
-    NInComp = ThisProblem$N["InComp"],
-    InCompName = ThisProblem$InCompName) {
+  InputFile,
+  ThisProblem = NULL,
+  NInLab = ThisProblem$N["InLab"],
+  InLabName = ThisProblem$InLabName,
+  NInVar = ThisProblem$N["InVar"],
+  InVarName = ThisProblem$InVar$Name,
+  NInComp = ThisProblem$N["InComp"],
+  InCompName = ThisProblem$InCompName
+) {
 
   stopifnot(file.exists(InputFile))
 
@@ -169,27 +171,28 @@ ReadInputsFromFile = function(
 #' @export
 #'
 MatchInputsToProblem = function(
-    #inputs from file
-    DFInputs = data.frame(),
-    NObs = nrow(DFInputs),
-    InLabObs = DFInputs[, ThisProblem$InLabName, drop = FALSE],
-    InVarObs = DFInputs[, ThisProblem$InVar$Name, drop = FALSE],
-    InCompObs = DFInputs[, ThisProblem$InCompName, drop = FALSE],
-    #information from DefineProblem:
-    ThisProblem = NULL,
-    NInVar = ThisProblem$N["InVar"],
-    InVarName = ThisProblem$InVar$Name,
-    InVarMCR = ThisProblem$InVar$MCR,
-    InVarType = ThisProblem$InVar$Type,
-    NInComp = ThisProblem$N["InComp"],
-    InCompName = ThisProblem$InCompName,
-    NComp = ThisProblem$N["Comp"],
-    CompName = ThisProblem$Comp$Name,
-    NDefComp = ThisProblem$N["DefComp"],
-    DefCompName = ThisProblem$DefComp$Name,
-    DefCompFromNum = ThisProblem$DefComp$FromNum,
-    DefCompFromVar = ThisProblem$DefComp$FromVar,
-    DefCompSiteDens = ThisProblem$DefComp$SiteDens) {
+  #inputs from file
+  DFInputs = data.frame(),
+  NObs = nrow(DFInputs),
+  InLabObs = DFInputs[, ThisProblem$InLabName, drop = FALSE],
+  InVarObs = DFInputs[, ThisProblem$InVar$Name, drop = FALSE],
+  InCompObs = DFInputs[, ThisProblem$InCompName, drop = FALSE],
+  #information from DefineProblem:
+  ThisProblem = NULL,
+  NInVar = ThisProblem$N["InVar"],
+  InVarName = ThisProblem$InVar$Name,
+  InVarMCR = ThisProblem$InVar$MCR,
+  InVarType = ThisProblem$InVar$Type,
+  NInComp = ThisProblem$N["InComp"],
+  InCompName = ThisProblem$InCompName,
+  NComp = ThisProblem$N["Comp"],
+  CompName = ThisProblem$Comp$Name,
+  NDefComp = ThisProblem$N["DefComp"],
+  DefCompName = ThisProblem$DefComp$Name,
+  DefCompFromNum = ThisProblem$DefComp$FromNum,
+  DefCompFromVar = ThisProblem$DefComp$FromVar,
+  DefCompSiteDens = ThisProblem$DefComp$SiteDens
+) {
 
   # -get table of input concentrations
   TotConcObs = matrix(numeric(), nrow = NObs, ncol = NComp,
@@ -197,7 +200,8 @@ MatchInputsToProblem = function(
   TotConcObs[, InCompName] = as.matrix(InCompObs)
 
   # -get temperatures
-  SysTempCelsiusObs = as.numeric(InVarObs[, InVarName[InVarType == "Temperature"]])
+  SysTempCelsiusObs =
+    as.numeric(InVarObs[, InVarName[InVarType == "Temperature"]])
   SysTempKelvinObs = SysTempCelsiusObs + 273.15
 
   # -get pHObs - from InVarObs or InCompObs
@@ -208,8 +212,8 @@ MatchInputsToProblem = function(
   }
 
   # -get organic matter and parse into components
-  HumicSubstGramsPerLiterObs = array(0.0, dim = c(NObs, 2),
-                   dimnames = list(Obs = 1:NObs, c("HA", "FA")))
+  HumicSubstGramsPerLiterObs =
+    array(0.0, dim = c(NObs, 2), dimnames = list(Obs = 1:NObs, c("HA", "FA")))
   if (any(grepl("WHAM", InVarType))) {
     OM = as.matrix(InVarObs[, InVarName[InVarType %in% c("Temperature", "pH") == FALSE], drop = FALSE]) # nolint: line_length_linter.
     for (i in which(grepl("WHAM", InVarType))) {
@@ -237,8 +241,9 @@ MatchInputsToProblem = function(
       HACompName = DefCompName[HAComps]
       HACompSiteDens = DefCompSiteDens[HAComps] #mol / mg C
 
-      HumicSubstGramsPerLiterObs = array(0.0, dim = c(NObs, 2),
-                       dimnames = list(Obs = 1:NObs, c("HA", "FA")))
+      HumicSubstGramsPerLiterObs =
+        array(0.0, dim = c(NObs, 2),
+              dimnames = list(Obs = 1:NObs, c("HA", "FA")))
 
       # Calculate the component concentrations
       if (InVarType[i] == "WHAM-FA") {
@@ -257,28 +262,19 @@ MatchInputsToProblem = function(
         TotConcObs[, FACompName] =
           (OMColI * (1 - FracHACol) * FracAFACol) %*% FACompSiteDens
         # TotConcObs[, c("DonnanHA", "DonnanFA")] = 1E-4
-        HumicSubstGramsPerLiterObs[, "FA"] = (OMColI * (1 - FracHACol) * FracAFACol) / 1000 * 2
+        HumicSubstGramsPerLiterObs[, "FA"] =
+          (OMColI * (1 - FracHACol) * FracAFACol) / 1000 * 2
         HumicSubstGramsPerLiterObs[, "HA"] = (OMColI * FracHACol) / 1000 * 2
       }
-      # TotConcObs[, HACompName] = SolHAObs %*% HACompSiteDens
-      # TotConcObs[, FACompName] = SolFAObs %*% FACompSiteDens
-
-      # # Calculate the moles of each OM component in solution...this doesn't
-      # # # make sense...why would we multiply by the site density AGAIN?
-      # # SolHAObs = TotConcObs[, HACompName] %*% HACompSiteDens
-      # # SolFAObs = TotConcObs[, FACompName] %*% FACompSiteDens
-      # HumicSubstGramsPerLiterObs = array(c(rowSums(TotConcObs[, HACompName, drop = FALSE]),
-      #                    rowSums(TotConcObs[, FACompName, drop = FALSE])),
-      #                  dim = c(NObs, 2),
-      #                  dimnames = list(Obs = 1:NObs, c("HA", "FA")))
 
     }
   }
 
   # Other Defined Components - based on variables
   VarDefComps = which(DefCompFromVar %in% c(
-    paste0(InVarName[InVarType %in% c("WHAM-HA","WHAM-FA","WHAM-HAFA")],
-           "-", c("HA","FA"),"_"), NA) == FALSE)
+    paste0(InVarName[InVarType %in% c("WHAM-HA", "WHAM-FA", "WHAM-HAFA")],
+           "-", c("HA", "FA"), "_"), NA
+  ) == FALSE)
   if (length(VarDefComps) > 0) {
     VarDefCompName = DefCompName[VarDefComps]
     for (i in which(DefCompName %in% VarDefCompName)){
@@ -390,7 +386,8 @@ MatchInputsToProblem = function(
 #' @export
 #'
 #' @examples
-#' myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+#' myinputfile = system.file(file.path("extdata", "InputFiles",
+#'                                     "carbonate_system_test.blm4"),
 #'                           package = "BLMEngineInR", mustWork = TRUE)
 #' GetData(InputFile = myinputfile, ThisProblem = carbonate_system_problem)#'
 #'
@@ -447,8 +444,8 @@ GetData = function(InputFile,
 #'
 #' @description This function is internal because the inputs can be specified in
 #'   a data.frame object then matched to ThisProblem with
-#'   `MatchInputsToProblem(DFInputs = , ThisProblem = )`. This function is useful
-#'   as a comparison to make sure the outputs of `GetData` or
+#'   `MatchInputsToProblem(DFInputs = , ThisProblem = )`. This function is
+#'   useful as a comparison to make sure the outputs of `GetData` or
 #'   `MatchInputsToProblem` and the inputs of `BLM` are acceptable.
 #'
 #' @param ThisProblem A list object with a structure like that returned by
@@ -476,11 +473,10 @@ BlankInputList = function(ThisProblem, NObs = 0L) {
     pHObs = numeric(NObs),
     TotConcObs = array(0.0, dim = c(NObs, ThisProblem$N["Comp"]),
                        dimnames = list(NULL, ThisProblem$Comp$Name)),
-    HumicSubstGramsPerLiterObs = array(0.0, dim = c(NObs,2),
-                                       dimnames = list(NULL,c("HA","FA")))
+    HumicSubstGramsPerLiterObs = array(0.0, dim = c(NObs, 2),
+                                       dimnames = list(NULL, c("HA", "FA")))
   )
 
   return(Out)
 
 }
-

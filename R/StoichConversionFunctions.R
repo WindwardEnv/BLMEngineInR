@@ -52,18 +52,20 @@ NULL
 #' @rdname StoichConversionFunctions
 #' @keywords internal
 StoichCompsToStoichMatrix = function(
-    SpecCompNames = list(),
-    SpecCompStoichs = list(),
-    CompName = unique(unlist(SpecCompNames)),
-    SpecName = names(SpecCompNames),
-    SpecNC = as.integer(sapply(SpecCompNames, function(X) {sum(X != "")}))) {
+  SpecCompNames = list(),
+  SpecCompStoichs = list(),
+  CompName = unique(unlist(SpecCompNames)),
+  SpecName = names(SpecCompNames),
+  SpecNC = as.integer(sapply(SpecCompNames, function(X) {sum(X != "")}))
+) {
 
   SpecStoich = matrix(
     0L,
     nrow = length(SpecName),
     ncol = length(CompName),
-    dimnames = list(SpecName, CompName))
-  for (i in 1:length(SpecName)){
+    dimnames = list(SpecName, CompName)
+  )
+  for (i in 1:length(SpecName)) {#nolint: seq_linter
     if (SpecNC[i] > 0) {
       for (j in 1:SpecNC[i]) {
         SpecStoich[i, SpecCompNames[[i]][j]] =
@@ -81,11 +83,12 @@ StoichCompsToStoichMatrix = function(
 #' @rdname StoichConversionFunctions
 #' @keywords internal
 StoichCompsToEquation = function(
-    SpecCompNames = list(),
-    SpecCompStoichs = list(),
-    CompName = unique(unlist(SpecCompNames)),
-    SpecName = names(SpecCompNames),
-    SpecNC = as.integer(sapply(SpecCompNames, function(X) {sum(X != "")}))) {
+  SpecCompNames = list(),
+  SpecCompStoichs = list(),
+  CompName = unique(unlist(SpecCompNames)),
+  SpecName = names(SpecCompNames),
+  SpecNC = as.integer(sapply(SpecCompNames, function(X) {sum(X != "")}))
+) {
 
   StoichMatrixToEquation(
     SpecStoich = StoichCompsToStoichMatrix(
@@ -105,14 +108,14 @@ StoichCompsToEquation = function(
 #' @rdname StoichConversionFunctions
 #' @keywords internal
 StoichMatrixToEquation = function(SpecStoich = matrix(),
-                            SpecName = rownames(SpecStoich),
-                            CompName = colnames(SpecStoich)) {
+                                  SpecName = rownames(SpecStoich),
+                                  CompName = colnames(SpecStoich)) {
   paste(SpecName,
-        apply(SpecStoich, MARGIN = 1, FUN = function(X){
-          X.nonzero = X[X != 0]
-          X.react = names(X.nonzero)
+        apply(SpecStoich, MARGIN = 1, FUN = function(X) {
+          XNonzero = X[X != 0]
+          XReact = names(XNonzero)
           return(gsub(" [+] -", " -",
-                      paste(paste(X.nonzero, X.react, sep = " * "),
+                      paste(paste(XNonzero, XReact, sep = " * "),
                             collapse = " + ")))
         }),
         sep = " = "
@@ -165,8 +168,8 @@ EquationToStoichComps = function(SpecEquation = character(), CompName) {
 
   SpecEquation = gsub(" -([[:digit:]])", " - \\1", SpecEquation)
   FormedSpecName = trimws(gsub("=.*", "", SpecEquation))
-  ReactionText = gsub("([-+*]) ","\\1",
-                      gsub("^([[:digit:]])","+\\1",
+  ReactionText = gsub("([-+*]) ", "\\1",
+                      gsub("^([[:digit:]])", "+\\1",
                            trimws(gsub("^.*=", "", SpecEquation))))
 
   ReactionList = strsplit(ReactionText, split = " ")
@@ -187,8 +190,8 @@ EquationToStoichComps = function(SpecEquation = character(), CompName) {
   })
 
   AllReactantsAreComps =
-    sapply(ReactantCompNames, FUN = function(X){all(X %in% c("",CompName))})
-  if(!all(AllReactantsAreComps)) {
+    sapply(ReactantCompNames, FUN = function(X) {all(X %in% c("", CompName))})
+  if (!all(AllReactantsAreComps)) {
     stop(paste0(
       "Reactants from equation(s) [",
       paste(which(!AllReactantsAreComps), collapse = ", "),
@@ -202,8 +205,8 @@ EquationToStoichComps = function(SpecEquation = character(), CompName) {
   # aggregate CompNames and CompStoichs lists to eliminate duplicates
   for (i in FormedSpecName) {
     tmp = stats::aggregate(x = ReactantCompStoichs[[i]],
-                    by = list(Names = ReactantCompNames[[i]]),
-                    FUN = sum)
+                           by = list(Names = ReactantCompNames[[i]]),
+                           FUN = sum)
     tmp = tmp[stats::na.omit(match(CompName, tmp$Names)), ]
     tmp = tmp[tmp$x != 0, ]
     ReactantCompStoichs[[i]] = as.integer(tmp$x)
@@ -243,5 +246,3 @@ EquationToStoich = function(SpecEquation = character(), CompName) {
               SpecCompStoichs = ReactantCompStoichs))
 
 }
-
-

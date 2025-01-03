@@ -225,17 +225,17 @@ ligand component(s) in the component arrays}
 \item{BLComp}{integer vector (NBL), the (0-based) position of the biotic
 ligand component(s) in the component arrays}
 
-\item{MetalCompR}{integer vector (NMetal), the (1-based) position of the metal
-component(s) in the component arrays (i.e., which is the toxic metal
+\item{MetalCompR}{integer vector (NMetal), the (1-based) position of the
+metal component(s) in the component arrays (i.e., which is the toxic metal
 component)}
 
 \item{MetalComp}{integer vector (NMetal), the (0-based) position of the metal
 component(s) in the component arrays (i.e., which is the toxic metal
 component)}
 
-\item{BLMetalSpecsR}{integer vector (NBLMetal), the (1-based) positions of the
-species in the arrays which contribute to toxicity (i.e., which species are
-the toxic metal bound to the relevant biotic ligand)}
+\item{BLMetalSpecsR}{integer vector (NBLMetal), the (1-based) positions of
+the species in the arrays which contribute to toxicity (i.e., which species
+are the toxic metal bound to the relevant biotic ligand)}
 
 \item{BLMetalSpecs}{integer vector (NBLMetal), the (0-based) positions of the
 species in the arrays which contribute to toxicity (i.e., which species are
@@ -272,8 +272,8 @@ kg (only used when DoTox == TRUE)}
 
 \item{NObs}{integer; the number of chemistry observations}
 
-\item{InLabObs}{character matrix with NObs rows and InLab columns; the input labels for
-each observation}
+\item{InLabObs}{character matrix with NObs rows and InLab columns; the input
+labels for each observation}
 
 \item{InVarObs}{matrix with NObs rows and InVar columns; the input variables
 for each observation}

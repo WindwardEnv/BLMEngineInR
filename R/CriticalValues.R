@@ -23,16 +23,16 @@
 #' @param ThisProblem A list object with a structure like that returned by
 #'   `BlankProblem()`.
 #' @param CATab a data.frame object with, at a minimum, columns named
-#'   `CA`/`CA (nmol/gw)`, `Species`, `Test.Type`/`Test Type`, `Duration`,
-#'   `Lifestage`, `Endpoint`, `Quantifier`, `References`, `Miscellaneous`.
-#'   See optional parameter descriptions for further descriptions of each of
-#'   those columns.
+#'   `CA`/`CA (nmol/gw)`, `Species`, `TestType`/`Test.Type`/`Test Type`,
+#'   `Duration`, `Lifestage`, `Endpoint`, `Quantifier`, `References`,
+#'   `Miscellaneous`. See optional parameter descriptions for further
+#'   descriptions of each of those columns.
 #' @param CA (optional) a numeric vector of the critical accumulation value(s)
 #'   in nmol/gw.
 #' @param Species (optional) a character vector of the species names to include
 #'   for the corresponding `CA` value.
-#' @param Test.Type (optional) a character vector of the test type (e.g.,
-#'   "Acute" or "Chronic") to include for the corresponding `CA` value.
+#' @param TestType (optional) a character vector of the test type (e.g., "Acute"
+#'   or "Chronic") to include for the corresponding `CA` value.
 #' @param Duration (optional) a character vector of the Duration to include for
 #'   the corresponding `CA` value. Can also be `"DIV=#.##"` for FAV, FCV, WQS,
 #'   and HC5 critical values.
@@ -73,7 +73,7 @@
 #'   ThisProblem = my_new_problem,
 #'   CA = 12345,
 #'   Species = "A. species",
-#'   Test.Type = "Acute",
+#'   TestType = "Acute",
 #'   Duration = "24h",
 #'   Lifestage = "adult",
 #'   Endpoint = "survival",
@@ -84,7 +84,7 @@
 #'
 #' lots_of_data = data.frame(CA = runif(26),
 #'                           Species = paste0(LETTERS,". species"),
-#'                           Test.Type = "Acute",
+#'                           TestType = "Acute",
 #'                           Duration = "24h",
 #'                           Lifestage = "adult",
 #'                           Endpoint = "survival",
@@ -108,17 +108,20 @@ NULL
 
 #' @rdname CriticalValues
 #' @export
-AddCriticalValues = function(ThisProblem, CATab = data.frame(),
-                             CA = CATab[, which(colnames(CATab) %in% c("CA","CA (nmol/gw)"))[1]],
-                             Species = CATab$Species,
-                             Test.Type = CATab[, which(colnames(CATab) %in% c("Test.Type","Test Type"))[1]],
-                             Duration = CATab$Duration,
-                             Lifestage = CATab$Lifestage,
-                             Endpoint = CATab$Endpoint,
-                             Quantifier = CATab$Quantifier,
-                             References = CATab$References,
-                             Miscellaneous = CATab$Miscellaneous,
-                             DoCheck = TRUE) {
+AddCriticalValues = function(
+  ThisProblem,
+  CATab = data.frame(),
+  CA = CATab[, which(colnames(CATab) %in% c("CA", "CA (nmol/gw)"))[1]],
+  Species = CATab$Species,
+  TestType = CATab[, which(colnames(CATab) %in% c("TestType", "Test.Type", "Test Type"))[1]], #nolint: line_length_linter
+  Duration = CATab$Duration,
+  Lifestage = CATab$Lifestage,
+  Endpoint = CATab$Endpoint,
+  Quantifier = CATab$Quantifier,
+  References = CATab$References,
+  Miscellaneous = CATab$Miscellaneous,
+  DoCheck = TRUE
+) {
 
   if (DoCheck) {
     CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
@@ -126,13 +129,13 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
   NumNewCA = length(CA)
   if (is.null(Species)) { Species = rep(NA_character_, NumNewCA) }
-  if (is.null(Test.Type)) { Test.Type = rep(NA_character_, NumNewCA) }
+  if (is.null(TestType)) { TestType = rep(NA_character_, NumNewCA) }
   if (is.null(Duration)) { Duration = rep(NA_character_, NumNewCA) }
   if (is.null(Lifestage)) { Lifestage = rep(NA_character_, NumNewCA) }
   if (is.null(Endpoint)) { Endpoint = rep(NA_character_, NumNewCA) }
@@ -140,16 +143,18 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
   if (is.null(References)) { References = rep(NA_character_, NumNewCA) }
   if (is.null(Miscellaneous)) { Miscellaneous = rep(NA_character_, NumNewCA) }
 
-  NoIDInfo = is.na(Species) & is.na(Test.Type) & is.na(Duration) &
+  NoIDInfo = is.na(Species) & is.na(TestType) & is.na(Duration) &
     is.na(Lifestage) & is.na(Endpoint) & is.na(Quantifier) &
     is.na(References) & is.na(Miscellaneous)
   if (any(NoIDInfo)) {
-    warning("Some of the new critical values do not have any identifying information.")
+    warning(
+      "Some of the new critical values do not have any identifying information."
+    )
   }
 
   CA = as.numeric(CA)
   Species = as.character(Species)
-  Test.Type = as.character(Test.Type)
+  TestType = as.character(TestType)
   Duration = as.character(Duration)
   Lifestage = as.character(Lifestage)
   Endpoint = as.character(Endpoint)
@@ -161,7 +166,7 @@ AddCriticalValues = function(ThisProblem, CATab = data.frame(),
     Num = NA_integer_,
     CA = CA,
     Species = Species,
-    Test.Type = Test.Type,
+    TestType = TestType,
     Duration = Duration,
     Lifestage = Lifestage,
     Endpoint = Endpoint,
@@ -196,14 +201,13 @@ RemoveCriticalValues = function(ThisProblem, CAToRemove, DoCheck = TRUE) {
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
   CAToRemove = unique(CAToRemove)
   if (any(CAToRemove <= 0L)) {
-    stop("Invalid index in CAToRemove (",
-         CAToRemove[CAToRemove <= 0L],").")
+    stop("Invalid index in CAToRemove (", CAToRemove[CAToRemove <= 0L], ").")
   }
   if (any(CAToRemove > ThisProblem$N["CAT"])) {
     stop(paste0("There are ", ThisProblem$N["CAT"], " CAs, ",

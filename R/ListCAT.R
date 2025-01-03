@@ -44,11 +44,12 @@
 #' @export
 #'
 #' @examples
-#' mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
+#' mypfile = system.file(file.path("extdata", "ParameterFiles",
+#'                                 "Cu_full_organic.dat4"),
 #'                       package = "BLMEngineInR",
 #'                       mustWork = TRUE)
 #' ListCAT(ParamFile = mypfile)
-ListCAT = function(ParamFile){
+ListCAT = function(ParamFile) {
 
   # error catching
   stopifnot(file.exists(ParamFile))
@@ -81,10 +82,10 @@ ListCAT = function(ParamFile){
 
     # Read in CAT table from parameter file
     CATab = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
-                     nrows = NCAT, strip.white = T)
-    colnames(CATab) = c("Num","CA (nmol/gw)","Species","Test Type","Duration",
-                        "Lifestage","Endpoint","Quantifier","References",
-                        "Miscellaneous")
+                     nrows = NCAT, strip.white = TRUE)
+    colnames(CATab) = c("Num", "CA (nmol/gw)", "Species", "Test Type",
+                        "Duration", "Lifestage", "Endpoint", "Quantifier",
+                        "References", "Miscellaneous")
   } else {
     CATab = BlankProblem()$CATab
   }

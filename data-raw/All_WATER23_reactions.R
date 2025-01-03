@@ -260,7 +260,7 @@ write(c(
 
 All_WATER23_reactions = ConvertWHAMVThermoFile(
   ThermoDBSName = tf,
-  RWHAMFile = file.path("inst","extdata", "WHAM", "WATER23.wdat"),
+  RWHAMFile = file.path("inst", "extdata", "WHAM", "WATER23.wdat"),
   RParamFile = file.path("inst", "extdata", "ParameterFiles", "All_WATER23_reactions.dat4")
 )
 

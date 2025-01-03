@@ -36,8 +36,7 @@
 #' DefineWHAM(WHAMFile = tf)
 #'
 #' @export
-WriteWHAMFile = function(ThisWHAM, WHAMFile,
-                         Notes = if ("Notes" %in% names(ThisWHAM)) {ThisWHAM$Notes} else {NULL}) {
+WriteWHAMFile = function(ThisWHAM, WHAMFile, Notes = ThisWHAM$Notes) {
 
   SepLine = "--------------------------------------------------------"
 
@@ -51,11 +50,11 @@ WriteWHAMFile = function(ThisWHAM, WHAMFile,
   # Header Info
   Tmp = "...WHAM"
   if (!is.na(ThisWHAM$Ver)) {
-    Tmp = paste0(Tmp, ThisWHAM$Ver)
+    Tmp = paste(Tmp, ThisWHAM$Ver)
   } else {
     Tmp = paste0(Tmp, " - CUSTOM")
   }
-  Tmp = paste0(Tmp,"...")
+  Tmp = paste0(Tmp, "...")
   write(Tmp, file = WHAMFile)
   write(SepLine, file = WHAMFile, append = TRUE)
 
@@ -92,7 +91,7 @@ WriteWHAMFile = function(ThisWHAM, WHAMFile,
   ParamNames = c("nA", "pKA", "pKB", "dpKA", "dpKB", "fprB", "fprT", "dLK1A",
                  "dLK1B", "P", "Radius", "MolWt")
   Tmp = MakeUniformTXTColumn(paste0(
-    c("Param",ParamNames),
+    c("Param", ParamNames),
     ", "
   ))
   Tmp = MakeUniformTXTColumn(paste0(
@@ -103,28 +102,31 @@ WriteWHAMFile = function(ThisWHAM, WHAMFile,
   ))
   Tmp = MakeUniformTXTColumn(paste0(
     Tmp,
-    c("HA", sapply(ThisWHAM[ParamNames], FUN = function(X){X["HA"]})),
+    c("HA", sapply(ThisWHAM[ParamNames], FUN = function(X) {X["HA"]})),
     ", "
   ))
   Tmp = paste0(
     Tmp,
-    c("FA", sapply(ThisWHAM[ParamNames], FUN = function(X){X["FA"]}))
+    c("FA", sapply(ThisWHAM[ParamNames], FUN = function(X) {X["FA"]}))
   )
   write(Tmp, file = WHAMFile, append = TRUE)
   write(SepLine, file = WHAMFile, append = TRUE)
 
   # Monodentate Sites table
   write("Monodentate Sites", file = WHAMFile, append = TRUE)
-  Tmp = MakeUniformTXTColumn(paste0(c("S",ThisWHAM$MonodentTable$S), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("AbundDenom",ThisWHAM$MonodentTable$AbundDenom), ", "))
-  Tmp = paste0(Tmp, c("StrongWeak",ThisWHAM$MonodentTable$StrongWeak))
+  Tmp = MakeUniformTXTColumn(paste0(c("S", ThisWHAM$MonodentTable$S), ", "))
+  Tmp = MakeUniformTXTColumn(
+    paste0(Tmp, c("AbundDenom", ThisWHAM$MonodentTable$AbundDenom), ", ")
+  )
+  Tmp = paste0(Tmp, c("StrongWeak", ThisWHAM$MonodentTable$StrongWeak))
   write(Tmp, file = WHAMFile, append = TRUE)
   write(SepLine, file = WHAMFile, append = TRUE)
 
   # Bidentate Sites Table
   write("Bidentate Sites", file = WHAMFile, append = TRUE)
   Tmp = MakeUniformTXTColumn(paste0(c("S1", ThisWHAM$BidentTable$S1), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("S2", ThisWHAM$BidentTable$S2), ", "))
+  Tmp =
+    MakeUniformTXTColumn(paste0(Tmp, c("S2", ThisWHAM$BidentTable$S2), ", "))
   Tmp = paste0(Tmp, c("AbundDenom", ThisWHAM$BidentTable$AbundDenom))
   write(Tmp, file = WHAMFile, append = TRUE)
   write(SepLine, file = WHAMFile, append = TRUE)
@@ -132,32 +134,45 @@ WriteWHAMFile = function(ThisWHAM, WHAMFile,
   # Tridentate Sites Table
   write("Tridentate Sites", file = WHAMFile, append = TRUE)
   Tmp = MakeUniformTXTColumn(paste0(c("S1", ThisWHAM$TridentTable$S1), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("S2", ThisWHAM$TridentTable$S2), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("S3", ThisWHAM$TridentTable$S3), ", "))
+  Tmp =
+    MakeUniformTXTColumn(paste0(Tmp, c("S2", ThisWHAM$TridentTable$S2), ", "))
+  Tmp =
+    MakeUniformTXTColumn(paste0(Tmp, c("S3", ThisWHAM$TridentTable$S3), ", "))
   Tmp = paste0(Tmp, c("AbundDenom", ThisWHAM$TridentTable$AbundDenom))
   write(Tmp, file = WHAMFile, append = TRUE)
   write(SepLine, file = WHAMFile, append = TRUE)
 
   # Metals-OM Parameters Table
   write("Metals Parameters", file = WHAMFile, append = TRUE)
-  Tmp = MakeUniformTXTColumn(paste0(c("Metal", ThisWHAM$MetalsTable$Metal), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("pKMAHA", ThisWHAM$MetalsTable$pKMAHA), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("pKMAFA", ThisWHAM$MetalsTable$pKMAFA), ", "))
+  Tmp = MakeUniformTXTColumn(
+    paste0(c("Metal", ThisWHAM$MetalsTable$Metal), ", ")
+  )
+  Tmp = MakeUniformTXTColumn(
+    paste0(Tmp, c("pKMAHA", ThisWHAM$MetalsTable$pKMAHA), ", ")
+  )
+  Tmp = MakeUniformTXTColumn(
+    paste0(Tmp, c("pKMAFA", ThisWHAM$MetalsTable$pKMAFA), ", ")
+  )
   Tmp = paste0(Tmp, c("dLK2", ThisWHAM$MetalsTable$dLK2))
   write(Tmp, file = WHAMFile, append = TRUE)
   write(SepLine, file = WHAMFile, append = TRUE)
 
   # Selectivity Coefficients
-  write("Selectivity Coefficients for Non-specific binding", file = WHAMFile, append = TRUE)
-  Tmp = MakeUniformTXTColumn(paste0(c("Spec", ThisWHAM$SpecKselTable$Spec), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("KselHA", ThisWHAM$SpecKselTable$KselHA), ", "))
+  write("Selectivity Coefficients for Non-specific binding",
+        file = WHAMFile, append = TRUE)
+  Tmp =
+    MakeUniformTXTColumn(paste0(c("Spec", ThisWHAM$SpecKselTable$Spec), ", "))
+  Tmp = MakeUniformTXTColumn(
+    paste0(Tmp, c("KselHA", ThisWHAM$SpecKselTable$KselHA), ", ")
+  )
   Tmp = paste0(Tmp, c("KselFA", ThisWHAM$SpecKselTable$KselFA))
   write(Tmp, file = WHAMFile, append = TRUE)
   write(SepLine, file = WHAMFile, append = TRUE)
 
   # Notes
   write("Notes", file = WHAMFile, append = TRUE)
-  write(paste0("written by ", Sys.info()["user"], " from R: ", Sys.time()), file = WHAMFile, append = TRUE)
+  write(paste0("written by ", Sys.info()["user"], " from R: ", Sys.time()),
+        file = WHAMFile, append = TRUE)
   if (!is.null(Notes)) { write(Notes, file = WHAMFile, append = TRUE) }
 
   ThisWHAM$File = WHAMFile

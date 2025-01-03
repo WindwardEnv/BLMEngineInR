@@ -27,9 +27,9 @@
 #'
 #' @export
 WriteDetailedFile = function(
-    OutList,
-    FileName,
-    AdditionalInfo = paste0("Saved on: ", Sys.time())
+  OutList,
+  FileName,
+  AdditionalInfo = paste0("Saved on: ", Sys.time())
 ) {
 
   # wb = openxlsx::createWorkbook()

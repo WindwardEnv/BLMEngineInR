@@ -177,15 +177,15 @@
 #'   ligand component(s) in the component arrays
 #' @param BLComp integer vector (NBL), the (0-based) position of the biotic
 #'   ligand component(s) in the component arrays
-#' @param MetalCompR integer vector (NMetal), the (1-based) position of the metal
-#'   component(s) in the component arrays (i.e., which is the toxic metal
+#' @param MetalCompR integer vector (NMetal), the (1-based) position of the
+#'   metal component(s) in the component arrays (i.e., which is the toxic metal
 #'   component)
 #' @param MetalComp integer vector (NMetal), the (0-based) position of the metal
 #'   component(s) in the component arrays (i.e., which is the toxic metal
 #'   component)
-#' @param BLMetalSpecsR integer vector (NBLMetal), the (1-based) positions of the
-#'   species in the arrays which contribute to toxicity (i.e., which species are
-#'   the toxic metal bound to the relevant biotic ligand)
+#' @param BLMetalSpecsR integer vector (NBLMetal), the (1-based) positions of
+#'   the species in the arrays which contribute to toxicity (i.e., which species
+#'   are the toxic metal bound to the relevant biotic ligand)
 #' @param BLMetalSpecs integer vector (NBLMetal), the (0-based) positions of the
 #'   species in the arrays which contribute to toxicity (i.e., which species are
 #'   the toxic metal bound to the relevant biotic ligand)
@@ -210,8 +210,8 @@
 #'   kg (only used when DoTox == TRUE)
 #'
 #' @param NObs integer; the number of chemistry observations
-#' @param InLabObs character matrix with NObs rows and InLab columns; the input labels for
-#'   each observation
+#' @param InLabObs character matrix with NObs rows and InLab columns; the input
+#'   labels for each observation
 #' @param InVarObs matrix with NObs rows and InVar columns; the input variables
 #'   for each observation
 #' @param InCompObs matrix with NObs rows and InComp columns; the input

@@ -310,7 +310,7 @@ Definition, Value
 WHAM,       NIST_20170203.wdat
 --------------------------------------------------------------------------------
 Critical Accumulation Table
-Num, CA, Species, Test Type, Duration, Lifestage, Endpoint, Quantifier, References, Miscellaneous
+Num, CA, Species, TestType, Duration, Lifestage, Endpoint, Quantifier, References, Miscellaneous
 --------------------------------------------------------------------------------
 -------Notes--------
-written by kellyc from R: 2024-12-19 16:11:45.895748
+written by kellyc from R: 2025-01-03 13:27:24.3569

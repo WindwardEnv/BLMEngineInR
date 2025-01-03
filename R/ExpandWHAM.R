@@ -33,8 +33,8 @@ ExpandWHAM = function(ThisProblem,
   nMS = nrow(ThisWHAM$MonodentTable)
   nBP = nrow(ThisWHAM$BidentTable)
   nTG = nrow(ThisWHAM$TridentTable)
-  nMP_file = nrow(ThisWHAM$MetalsTable)
-  nKsel_file = nrow(ThisWHAM$SpecKselTable)
+  nMPFile = nrow(ThisWHAM$MetalsTable)
+  nKselFile = nrow(ThisWHAM$SpecKselTable)
   nCOOH = ThisWHAM$nA
   pKA = ThisWHAM$pKA
   pKB = ThisWHAM$pKB
@@ -42,11 +42,6 @@ ExpandWHAM = function(ThisProblem,
   dpKB = ThisWHAM$dpKB
   fprB = ThisWHAM$fprB
   fprT = ThisWHAM$fprT
-  dLK1A = ThisWHAM$dLK1A
-  dLK1B = ThisWHAM$dLK1B
-  wP = ThisWHAM$P
-  wRadius = ThisWHAM$Radius
-  wMolWt = ThisWHAM$MolWt
 
   #Monodentate sites
   if (nMS > 0) {
@@ -56,7 +51,6 @@ ExpandWHAM = function(ThisProblem,
     MonodentTable$Strong1Weak2 =
       match(x = tolower(substr(trimws(MonodentTable$StrongWeak), 1, 1)),
             table = c("s", "w"))
-    nStrong = (MonodentTable$Strong1Weak2 == 1L)
   } else {
     MonodentTable = data.frame()
   }
@@ -68,8 +62,10 @@ ExpandWHAM = function(ThisProblem,
     BidentTable$S1Deprot = paste0(BidentTable$S1, "-", BidentTable$S2, "H")
     BidentTable$S2Deprot = paste0(BidentTable$S2, "-", BidentTable$S1, "H")
     BidentTable$FullyDeprot = paste0(BidentTable$S1, BidentTable$S2)
-    BidentTable$S1Strong1Weak2 = MonodentTable$Strong1Weak2[match(BidentTable$S1, MonodentTable$S)]
-    BidentTable$S2Strong1Weak2 = MonodentTable$Strong1Weak2[match(BidentTable$S2, MonodentTable$S)]
+    BidentTable$S1Strong1Weak2 =
+      MonodentTable$Strong1Weak2[match(BidentTable$S1, MonodentTable$S)]
+    BidentTable$S2Strong1Weak2 =
+      MonodentTable$Strong1Weak2[match(BidentTable$S2, MonodentTable$S)]
   } else {
     BidentTable = data.frame()
   }
@@ -77,25 +73,38 @@ ExpandWHAM = function(ThisProblem,
   # Tridentate Groups
   if (nTG > 0) {
     TridentTable = ThisWHAM$TridentTable
-    TridentTable$FullyProt = paste0(TridentTable$S1, TridentTable$S2, TridentTable$S3, "H")
-    TridentTable$S1Deprot = paste0(TridentTable$S1, "-", TridentTable$S2, TridentTable$S3, "H")
-    TridentTable$S2Deprot = paste0(TridentTable$S2, "-", TridentTable$S1, TridentTable$S3, "H")
-    TridentTable$S3Deprot = paste0(TridentTable$S3, "-", TridentTable$S1, TridentTable$S2, "H")
-    TridentTable$S12Deprot = paste0(TridentTable$S1, TridentTable$S2, "-", TridentTable$S3, "H")
-    TridentTable$S13Deprot = paste0(TridentTable$S1, TridentTable$S3, "-", TridentTable$S2, "H")
-    TridentTable$S23Deprot = paste0(TridentTable$S2, TridentTable$S3, "-", TridentTable$S1, "H")
-    TridentTable$FullyDeprot = paste0(TridentTable$S1, TridentTable$S2, TridentTable$S3)
-    TridentTable$S1Strong1Weak2 = MonodentTable$Strong1Weak2[match(TridentTable$S1, MonodentTable$S)]
-    TridentTable$S2Strong1Weak2 = MonodentTable$Strong1Weak2[match(TridentTable$S2, MonodentTable$S)]
-    TridentTable$S3Strong1Weak2 = MonodentTable$Strong1Weak2[match(TridentTable$S3, MonodentTable$S)]
+    TridentTable$FullyProt = paste0(TridentTable$S1, TridentTable$S2,
+                                    TridentTable$S3, "H")
+    TridentTable$S1Deprot = paste0(TridentTable$S1, "-", TridentTable$S2,
+                                   TridentTable$S3, "H")
+    TridentTable$S2Deprot = paste0(TridentTable$S2, "-", TridentTable$S1,
+                                   TridentTable$S3, "H")
+    TridentTable$S3Deprot = paste0(TridentTable$S3, "-", TridentTable$S1,
+                                   TridentTable$S2, "H")
+    TridentTable$S12Deprot = paste0(TridentTable$S1, TridentTable$S2, "-",
+                                    TridentTable$S3, "H")
+    TridentTable$S13Deprot = paste0(TridentTable$S1, TridentTable$S3, "-",
+                                    TridentTable$S2, "H")
+    TridentTable$S23Deprot = paste0(TridentTable$S2, TridentTable$S3, "-",
+                                    TridentTable$S1, "H")
+    TridentTable$FullyDeprot = paste0(TridentTable$S1, TridentTable$S2,
+                                      TridentTable$S3)
+    TridentTable$S1Strong1Weak2 =
+      MonodentTable$Strong1Weak2[match(TridentTable$S1, MonodentTable$S)]
+    TridentTable$S2Strong1Weak2 =
+      MonodentTable$Strong1Weak2[match(TridentTable$S2, MonodentTable$S)]
+    TridentTable$S3Strong1Weak2 =
+      MonodentTable$Strong1Weak2[match(TridentTable$S3, MonodentTable$S)]
   } else {
     TridentTable = data.frame()
   }
 
   # Metals Parameters Table
-  if (nMP_file > 0) {
+  if (nMPFile > 0) {
     MetalsTable = ThisWHAM$MetalsTable
-    MetalsTable = MetalsTable[MetalsTable$Metal %in% c(ThisProblem$Comp$Name, ThisProblem$Spec$Name), ]
+    iBool = MetalsTable$Metal %in%
+      c(ThisProblem$Comp$Name, ThisProblem$Spec$Name)
+    MetalsTable = MetalsTable[iBool, ]
     nMP = nrow(MetalsTable)
     MetalsTable$pKMBHA = 3 * MetalsTable$pKMAHA - 3
     MetalsTable$pKMBFA = 3.96 * MetalsTable$pKMAFA
@@ -105,9 +114,10 @@ ExpandWHAM = function(ThisProblem,
   }
 
   # Non-standard selectivity coefficients
-  if (nKsel_file > 0) {
+  if (nKselFile > 0) {
     SpecKselTable = ThisWHAM$SpecKselTable
-    SpecKselTable = SpecKselTable[SpecKselTable$Spec %in% ThisProblem$Spec$Name, ]
+    SpecKselTable =
+      SpecKselTable[SpecKselTable$Spec %in% ThisProblem$Spec$Name, ]
     nKsel = nrow(SpecKselTable)
   } else {
     SpecKselTable = data.frame()
@@ -120,14 +130,21 @@ ExpandWHAM = function(ThisProblem,
   # Do the expansion ---------------------------------------
 
   # Initialize variables
-  iH = which(ThisProblem$Comp$Name == "H") # nolint: object_name_linter.
+  iH = which(ThisProblem$Comp$Name == "H")
 
   # Figure out the number of DOC components we're adding, and what fraction
   InVarWHAM = which(grepl("WHAM", ThisProblem$InVar$Type))
 
   for (iInVar in InVarWHAM) {
 
-    iMass = ThisProblem$InVar$MCR[iInVar] # nolint: object_name_linter.
+    iMass = ThisProblem$InVar$MCR[iInVar]
+    PercHAInMC = any((ThisProblem$InVar$Type == "PercHA") &
+                       (ThisProblem$InVar$MCR == iMass))
+    PercAFAInMC = any((ThisProblem$InVar$Type == "PercAFA") &
+                        (ThisProblem$InVar$MCR == iMass))
+
+
+    # Charged species for Donnan Layer reactions
     ChargedSpecName = ThisProblem$Spec$Name[(ThisProblem$Spec$Charge != 0) &
                                               (ThisProblem$Spec$MCR == iMass)]
     NChargedSpec = length(ChargedSpecName)
@@ -141,24 +158,28 @@ ExpandWHAM = function(ThisProblem,
     ChargedSpecDonnanLogK = log10(SpecKsel) +
       ThisProblem$Spec$LogK[match(ChargedSpecName, ThisProblem$Spec$Name)]
 
-    if (ThisProblem$InVar$Type[iInVar] == "WHAM-HA") {
-      WHAMFracAdd = c("HA")
-    } else if (ThisProblem$InVar$Type[iInVar] == "WHAM-FA") {
-      WHAMFracAdd = c("FA")
-    } else if (ThisProblem$InVar$Type[iInVar] == "WHAM-HAFA") {
+    if (ThisProblem$InVar$Type[iInVar] == "WHAM-HAFA") {
       WHAMFracAdd = c("HA", "FA")
-      if (!any(ThisProblem$InVar$Type[ThisProblem$InVar$MCR == ThisProblem$InVar$MCR[iInVar]] %in% "PercHA")) {
-        stop("Must have PercHA input variable in mass compartment if specifying a WHAM-HAFA input variable.") # nolint: line_length_linter.
+      if (!PercHAInMC) {
+        stop("Must have PercHA input variable in mass compartment if ",
+             "specifying a WHAM-HAFA input variable.")
+      }
+    } else {
+      if (PercHAInMC) {
+        stop("PercHA input variable specified in mass compartment with ",
+             "WHAM-HA or WHAM-FA input variable.")
+      }
+      if (ThisProblem$InVar$Type[iInVar] == "WHAM-HA") {
+        WHAMFracAdd = c("HA")
+        if (PercAFAInMC) {
+          stop("PercAFA input variable specified in mass compartment with ",
+               "WHAM-HA input variable.")
+        }
+      } else if (ThisProblem$InVar$Type[iInVar] == "WHAM-FA") {
+        WHAMFracAdd = c("FA")
       }
     }
-    if ((ThisProblem$InVar$Type[iInVar] %in% c("WHAM-FA", "WHAM-HA")) &&
-        any(ThisProblem$InVar$Type[ThisProblem$InVar$MCR == ThisProblem$InVar$MCR[iInVar]] %in% "PercHA")) {
-      stop("PercHA input variable specified in mass compartment with WHAM-HA or WHAM-FA input variable.") # nolint: line_length_linter.
-    }
-    if ((ThisProblem$InVar$Type[iInVar] %in% c("WHAM-HA")) &&
-        any(ThisProblem$InVar$Type[ThisProblem$InVar$MCR == ThisProblem$InVar$MCR[iInVar]] %in% "PercAFA")) {
-      stop("PercAFA input variable specified in mass compartment with WHAM-HA input variable.") # nolint: line_length_linter.
-    }
+
     NWHAMFracAdd = length(WHAMFracAdd)
 
     WHAMprefix = array(
@@ -185,7 +206,7 @@ ExpandWHAM = function(ThisProblem,
     #               FA12-3H, FA123, FA123-Mg, FA123-Ca, ...
 
     DonnanCompName = paste0("Donnan", WHAMFracAdd)
-    DonnanMCName = paste(ThisProblem$Mass$Name[iMass], DonnanCompName, sep = "_")
+    DonnanMCName = paste0(ThisProblem$Mass$Name[iMass], "_", DonnanCompName)
     NewProblem = AddMassCompartments(ThisProblem = NewProblem,
                                      MassName = DonnanMCName,
                                      MassAmt = 1E-5,
@@ -213,28 +234,31 @@ ExpandWHAM = function(ThisProblem,
       OMSpecType = paste0("WHAM", OMType)
 
       # Donnan Species
-      for (iSpec in match(ChargedSpecName, ThisProblem$Spec$Name)){
-        NewProblem = AddSpecies(
-          ThisProblem = NewProblem,
-          SpecName = paste0(DonnanCompName[OMi],"-",ThisProblem$Spec$Name[iSpec]),
-          SpecMCName = DonnanMCName[OMi],
-          SpecType = DonnanCompName[OMi],
-          SpecActCorr = ThisProblem$Spec$ActCorr[iSpec],
-          SpecCompNames = list(c(DonnanCompName[OMi],
-                                 ThisProblem$Comp$Name[ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
-          SpecCompStoichs = list(c(abs(ThisProblem$Spec$Charge[iSpec]),
-                                   ThisProblem$SpecStoich[iSpec, ThisProblem$SpecCompList[iSpec, 1:ThisProblem$Spec$NC[iSpec]]])),
-          SpecLogK = ChargedSpecDonnanLogK[ThisProblem$Spec$Name[iSpec], OMType],
-          SpecDeltaH = ThisProblem$Spec$DeltaH[iSpec],
-          SpecTempKelvin = ThisProblem$Spec$TempKelvin[iSpec],
-          InSpec = FALSE
-        )
-      }
+      ChargedSpecDF =
+        ThisProblem$Spec[match(ChargedSpecName, ThisProblem$Spec$Name), ]
+      NewProblem = AddSpecies(
+        ThisProblem = NewProblem,
+        SpecEquation = paste0(
+          DonnanCompName[OMi], "-",
+          ChargedSpecDF$Equation, " + ",
+          abs(ChargedSpecDF$Charge), " * ",
+          DonnanCompName[OMi]
+        ),
+        SpecMCName = DonnanMCName[OMi],
+        SpecType = DonnanCompName[OMi],
+        SpecActCorr = ChargedSpecDF$ActCorr,
+        SpecLogK = ChargedSpecDonnanLogK[ChargedSpecDF$Name, OMType],
+        SpecDeltaH = ChargedSpecDF$DeltaH,
+        SpecTempKelvin = ChargedSpecDF$TempKelvin,
+        InSpec = FALSE
+      )
 
       # Monodentate sites
-      MonodentpKH[MonodentTable$Strong1Weak2 == 1L] = pKA[OMType] + dpKA[OMType] *
+      MonodentpKH[MonodentTable$Strong1Weak2 == 1L] =
+        pKA[OMType] + dpKA[OMType] *
         (2 * MonodentTable$S[MonodentTable$Strong1Weak2 == 1L] - 5) / 6
-      MonodentpKH[MonodentTable$Strong1Weak2 == 2L] = pKB[OMType] + dpKB[OMType] *
+      MonodentpKH[MonodentTable$Strong1Weak2 == 2L] =
+        pKB[OMType] + dpKB[OMType] *
         (2 * MonodentTable$S[MonodentTable$Strong1Weak2 == 2L] - 13) / 6
       MonodentAbundance = (1 - fprB[OMType] - fprT[OMType]) *
         nCOOH[OMType] / MonodentTable$AbundDenom
@@ -281,12 +305,13 @@ ExpandWHAM = function(ThisProblem,
           SpecEquation = paste0(
             WHAMprefix[OMi], MonodentTable$FullyDeprot, "-",
             ThisProblem$Spec$Equation[iMetalSpec],
-            " -1 * H + 1 * ", WHAMprefix[OMi], MonodentTable$FullyProt),
+            " -1 * H + 1 * ", WHAMprefix[OMi], MonodentTable$FullyProt
+          ),
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
           SpecActCorr = "None",
           SpecLogK = ThisProblem$Spec$LogK[iMetalSpec] -
-            as.numeric(MetalsTable[iMetal, ColspKM[MonodentTable$Strong1Weak2]]),
+            MetalsTable[iMetal, ColspKM[MonodentTable$Strong1Weak2]],
           SpecDeltaH = ThisProblem$Spec$DeltaH[iMetalSpec],
           SpecTempKelvin = ThisProblem$Spec$TempKelvin[iMetalSpec],
           InSpec = FALSE
@@ -354,7 +379,8 @@ ExpandWHAM = function(ThisProblem,
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
           SpecActCorr = "None",
-          SpecLogK = -1 * (MonodentpKH[BidentTable$S1] + MonodentpKH[BidentTable$S2]),
+          SpecLogK = -1 * (MonodentpKH[BidentTable$S1] +
+                             MonodentpKH[BidentTable$S2]),
           SpecDeltaH = 0,
           SpecTempKelvin = 298.15,
           InSpec = FALSE
@@ -368,13 +394,14 @@ ExpandWHAM = function(ThisProblem,
             SpecEquation = paste0(
               WHAMprefix[OMi], BidentTable$FullyDeprot, "-",
               ThisProblem$Spec$Equation[iMetalSpec],
-              " -2 * H + 1 * ", WHAMprefix[OMi], BidentTable$FullyProt),
+              " -2 * H + 1 * ", WHAMprefix[OMi], BidentTable$FullyProt
+            ),
             SpecMCName = ThisProblem$Mass$Name[iMass],
             SpecType = OMSpecType,
             SpecActCorr = "None",
             SpecLogK = ThisProblem$Spec$LogK[iMetalSpec] -
-              as.numeric(MetalsTable[iMetal, ColspKM[BidentTable$S1Strong1Weak2]] +
-                           MetalsTable[iMetal, ColspKM[BidentTable$S2Strong1Weak2]]),
+              (MetalsTable[iMetal, ColspKM[BidentTable$S1Strong1Weak2]] +
+                 MetalsTable[iMetal, ColspKM[BidentTable$S2Strong1Weak2]]),
             SpecDeltaH = ThisProblem$Spec$DeltaH[iMetalSpec],
             SpecTempKelvin = ThisProblem$Spec$TempKelvin[iMetalSpec],
             InSpec = FALSE
@@ -386,7 +413,9 @@ ExpandWHAM = function(ThisProblem,
       # Tridentate sites
       if (nTG > 0) {
 
-        TridentAbundance = fprT[OMType] * nCOOH[OMType] / TridentTable$AbundDenom
+        # note: the input is in mg C/L, while nCOOH is mols/g HS
+        TridentAbundance = fprT[OMType] * nCOOH[OMType] /
+          TridentTable$AbundDenom * 2E-3
 
         # Components - fully protonated
         NewProblem = AddDefComps(
@@ -397,7 +426,7 @@ ExpandWHAM = function(ThisProblem,
           DefCompMCName = ThisProblem$Mass$Name[iMass],
           DefCompType = OMSpecType,
           DefCompActCorr = "None",
-          DefCompSiteDens = TridentAbundance * 2E-3,# the input is in mg C/L, while nCOOH is mols/g HS
+          DefCompSiteDens = TridentAbundance,
           InDefComp = FALSE
         )
 
@@ -459,7 +488,8 @@ ExpandWHAM = function(ThisProblem,
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
           SpecActCorr = "None",
-          SpecLogK = -1 * (MonodentpKH[TridentTable$S1] + MonodentpKH[TridentTable$S2]),
+          SpecLogK = -1 * (MonodentpKH[TridentTable$S1] +
+                             MonodentpKH[TridentTable$S2]),
           SpecDeltaH = 0,
           SpecTempKelvin = 298.15,
           InSpec = FALSE
@@ -475,7 +505,8 @@ ExpandWHAM = function(ThisProblem,
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
           SpecActCorr = "None",
-          SpecLogK = -1 * (MonodentpKH[TridentTable$S1] + MonodentpKH[TridentTable$S3]),
+          SpecLogK = -1 * (MonodentpKH[TridentTable$S1] +
+                             MonodentpKH[TridentTable$S3]),
           SpecDeltaH = 0,
           SpecTempKelvin = 298.15,
           InSpec = FALSE
@@ -491,7 +522,8 @@ ExpandWHAM = function(ThisProblem,
           SpecMCName = ThisProblem$Mass$Name[iMass],
           SpecType = OMSpecType,
           SpecActCorr = "None",
-          SpecLogK = -1 * (MonodentpKH[TridentTable$S2] + MonodentpKH[TridentTable$S2]),
+          SpecLogK = -1 * (MonodentpKH[TridentTable$S2] +
+                             MonodentpKH[TridentTable$S2]),
           SpecDeltaH = 0,
           SpecTempKelvin = 298.15,
           InSpec = FALSE
@@ -523,14 +555,15 @@ ExpandWHAM = function(ThisProblem,
             SpecEquation = paste0(
               WHAMprefix[OMi], TridentTable$FullyDeprot, "-",
               ThisProblem$Spec$Equation[iMetalSpec],
-              " -3 * H + 1 * ", WHAMprefix[OMi], TridentTable$FullyProt),
+              " -3 * H + 1 * ", WHAMprefix[OMi], TridentTable$FullyProt
+            ),
             SpecMCName = ThisProblem$Mass$Name[iMass],
             SpecType = OMSpecType,
             SpecActCorr = "None",
             SpecLogK = ThisProblem$Spec$LogK[iMetalSpec] -
-              as.numeric(MetalsTable[iMetal, ColspKM[TridentTable$S1Strong1Weak2]] +
-                           MetalsTable[iMetal, ColspKM[TridentTable$S2Strong1Weak2]] +
-                           MetalsTable[iMetal, ColspKM[TridentTable$S3Strong1Weak2]]),
+              (MetalsTable[iMetal, ColspKM[TridentTable$S1Strong1Weak2]] +
+                 MetalsTable[iMetal, ColspKM[TridentTable$S2Strong1Weak2]] +
+                 MetalsTable[iMetal, ColspKM[TridentTable$S3Strong1Weak2]]),
             SpecDeltaH = ThisProblem$Spec$DeltaH[iMetalSpec],
             SpecTempKelvin = ThisProblem$Spec$TempKelvin[iMetalSpec],
             InSpec = FALSE

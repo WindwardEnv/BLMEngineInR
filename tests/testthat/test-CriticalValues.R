@@ -3,7 +3,7 @@ test_that("AddCriticalValues works", {
     ThisProblem = carbonate_system_problem,
     CA = 12345,
     Species = "A. species",
-    Test.Type = "Acute",
+    TestType = "Acute",
     Duration = "24h",
     Lifestage = "adult",
     Endpoint = "survival",
@@ -16,7 +16,7 @@ test_that("AddCriticalValues works", {
     CATab = data.frame(
       CA = 12345,
       Species = "A. species",
-      Test.Type = "Acute",
+      TestType = "Acute",
       Duration = "24h",
       Lifestage = "adult",
       Endpoint = "survival",
@@ -29,7 +29,7 @@ test_that("AddCriticalValues works", {
     CATab = data.frame(
       CA = 12345,
       Species = "A. species",
-      Test.Type = "Acute",
+      TestType = "Acute",
       Endpoint = "survival",
       References = "thin air"
     )))

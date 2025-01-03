@@ -39,15 +39,15 @@ DefineWHAM = function(WHAMVer = "V", WHAMFile = NA) {
   WHAMVer = match.arg(WHAMVer, choices =  c("V", "VI", "VII", NA_character_))
   if (is.na(WHAMFile)) {
     if (WHAMVer == "V") {
-      WHAMFile = system.file(file.path("extdata","WHAM","WHAM_V.wdat"),
+      WHAMFile = system.file(file.path("extdata", "WHAM", "WHAM_V.wdat"),
                              package = "BLMEngineInR",
                              mustWork = TRUE)
     } else if (WHAMVer == "VI") {
-      WHAMFile = system.file(file.path("extdata","WHAM","WHAM_VI.wdat"),
+      WHAMFile = system.file(file.path("extdata", "WHAM", "WHAM_VI.wdat"),
                              package = "BLMEngineInR",
                              mustWork = TRUE)
     } else if (WHAMVer  == "VII") {
-      WHAMFile = system.file(file.path("extdata","WHAM","WHAM_VII.wdat"),
+      WHAMFile = system.file(file.path("extdata", "WHAM", "WHAM_VII.wdat"),
                              package = "BLMEngineInR",
                              mustWork = TRUE)
     }
@@ -80,8 +80,8 @@ DefineWHAM = function(WHAMVer = "V", WHAMFile = NA) {
 
   # Parameters
   SkipRows = SkipRows + 7L + 1L
-  ParamNames = c("nA","pKA","pKB","dpKA","dpKB","fprB","fprT","dLK1A","dLK1B",
-                 "P","Radius","MolWt")
+  ParamNames = c("nA", "pKA", "pKB", "dpKA", "dpKB", "fprB", "fprT", "dLK1A",
+                 "dLK1B", "P", "Radius", "MolWt")
   Tmp = read.delim(
     file = WHAMFile,
     header = TRUE,
@@ -90,7 +90,7 @@ DefineWHAM = function(WHAMVer = "V", WHAMFile = NA) {
     nrows = 12L,
     row.names = ParamNames
   )
-  for (i in 1:length(ParamNames)) {
+  for (i in 1:12) {
     NewWHAM[[ParamNames[i]]] = as.numeric(Tmp[i, 3:4])
     names(NewWHAM[[ParamNames[i]]]) = c("HA", "FA")
   }
@@ -99,7 +99,7 @@ DefineWHAM = function(WHAMVer = "V", WHAMFile = NA) {
   # up like this so we can add in this section if it's ever needed.
   # MonodentTable = data.frame(S=1:8, AbundDenom = c(rep(4,4),rep(8,4)))
   SkipRows = SkipRows + 12L + 3L
-  if (nMS > 0){
+  if (nMS > 0) {
     NewWHAM$MonodentTable = read.delim(
       file = WHAMFile,
       header = TRUE,
@@ -120,7 +120,7 @@ DefineWHAM = function(WHAMVer = "V", WHAMFile = NA) {
       sep = ",",
       skip = SkipRows,
       nrows = nBP,
-      col.names = colnames(NewWHAM$BidentTable),,
+      col.names = colnames(NewWHAM$BidentTable),
       strip.white = TRUE
     )
   }
@@ -149,9 +149,12 @@ DefineWHAM = function(WHAMVer = "V", WHAMFile = NA) {
       sep = ",",
       skip = SkipRows,
       nrows = nMP,
-      col.names = c("Metal", "pKMAHA", "pKMAFA", "dLK2"),
+      col.names = colnames(NewWHAM$MetalsTable),
       strip.white = TRUE
     )
+    NewWHAM$MetalsTable$pKMAHA = as.numeric(NewWHAM$MetalsTable$pKMAHA)
+    NewWHAM$MetalsTable$pKMAFA = as.numeric(NewWHAM$MetalsTable$pKMAFA)
+    NewWHAM$MetalsTable$dLK2 = as.numeric(NewWHAM$MetalsTable$dLK2)
     # MetalsTable$pKMBHA = 3 * MetalsTable$pKMAHA - 3
     # MetalsTable$pKMBFA = 3.96 * MetalsTable$pKMAFA
   }

@@ -88,14 +88,16 @@
 #'                             InCompMCName = "Water",
 #'                             InCompType = "MassBal",
 #'                             InCompActCorr = "Debye")
-#' my_new_problem = AddSpecies(ThisProblem = my_new_problem,
-#'                             SpecEquation = c("CaCO3 = 1 * Ca + 1 * CO3",
-#'                                              "CaHCO3 = 1 * Ca + 1 * H + 1 * CO3"),
-#'                             SpecMCName = "Water",
-#'                             SpecActCorr = "Debye",
-#'                             SpecLogK = c(3.22, 11.44),
-#'                             SpecDeltaH = c(14951, -3664),
-#'                             SpecTempKelvin = 298.15)
+#' my_new_problem = AddSpecies(
+#'   ThisProblem = my_new_problem,
+#'   SpecEquation = c("CaCO3 = 1 * Ca + 1 * CO3",
+#'                    "CaHCO3 = 1 * Ca + 1 * H + 1 * CO3"),
+#'   SpecMCName = "Water",
+#'   SpecActCorr = "Debye",
+#'   SpecLogK = c(3.22, 11.44),
+#'   SpecDeltaH = c(14951, -3664),
+#'   SpecTempKelvin = 298.15
+#' )
 #' print(my_new_problem$Spec)
 #' my_new_problem = RemoveSpecies(ThisProblem = my_new_problem,
 #'                                SpeciesToRemove = "CaCO3")
@@ -105,15 +107,17 @@ NULL
 
 #' @rdname Species
 #' @export
-AddSpecies = function(ThisProblem,
-                      SpecEquation = character(),
-                      SpecName = character(),
-                      SpecMCName = NULL, SpecType = "Normal", SpecActCorr,
-                      SpecCompNames = list(), SpecCompStoichs = list(),
-                      SpecStoich = NULL,
-                      SpecLogK, SpecDeltaH, SpecTempKelvin,
-                      SpecMCR = match(SpecMCName, ThisProblem$Mass$Name, nomatch = -1L),
-                      InSpec = TRUE, DoCheck = TRUE) {
+AddSpecies = function( #nolint: cyclocomp_linter
+  ThisProblem,
+  SpecEquation = character(),
+  SpecName = character(),
+  SpecMCName = NULL, SpecType = "Normal", SpecActCorr,
+  SpecCompNames = list(), SpecCompStoichs = list(),
+  SpecStoich = NULL,
+  SpecLogK, SpecDeltaH, SpecTempKelvin,
+  SpecMCR = match(SpecMCName, ThisProblem$Mass$Name, nomatch = -1L),
+  InSpec = TRUE, DoCheck = TRUE
+) {
 
   if (DoCheck) {
     CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
@@ -121,12 +125,13 @@ AddSpecies = function(ThisProblem,
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
   HasName = length(SpecName) > 0
-  HasStoichCompsNames = (length(SpecCompNames) > 0) && (length(SpecCompStoichs) > 0)
+  HasStoichCompsNames =
+    (length(SpecCompNames) > 0) && (length(SpecCompStoichs) > 0)
   HasStoichMatrix = !is.null(SpecStoich)
   HasEquation = length(SpecEquation) > 0
   if (!((HasName && (HasStoichMatrix || HasStoichCompsNames)) || HasEquation)) {
@@ -139,7 +144,7 @@ AddSpecies = function(ThisProblem,
 
   if (HasStoichMatrix) {
     mode(SpecStoich) = "integer"
-    if (!is.null(colnames(SpecStoich))){
+    if (!is.null(colnames(SpecStoich))) {
       SpecStoich = SpecStoich[, ThisProblem$Comp$Name, drop = FALSE]
       SpecStoich[is.na(SpecStoich)] = 0L
     }
@@ -160,8 +165,8 @@ AddSpecies = function(ThisProblem,
   if (HasEquation) {
 
     if (HasName && (all(grepl("^=", trimws(SpecEquation)) ||
-                        !grepl("=", SpecEquation)))) {
-      SpecEquation = paste(SpecName, "=", trimws(gsub("=","",SpecEquation)))
+                          !grepl("=", SpecEquation)))) {
+      SpecEquation = paste(SpecName, "=", trimws(gsub("=", "", SpecEquation)))
     }
 
     tmp = EquationToStoich(SpecEquation, CompName = ThisProblem$Comp$Name)
@@ -172,10 +177,12 @@ AddSpecies = function(ThisProblem,
       HasName = TRUE
     }
     if (HasStoichCompsNames) {
-      for (i in 1:length(SpecCompNames)) {
-        SpecCompsAgg = stats::aggregate(SpecCompStoichs[[i]],
-                                        by = list(SpecCompNames[[i]]), FUN = sum)
-        NewOrder = stats::na.omit(match(ThisProblem$Comp$Name, SpecCompsAgg$Group.1))
+      for (i in 1:length(SpecCompNames)) {#nolint: seq_linter
+        SpecCompsAgg =
+          stats::aggregate(SpecCompStoichs[[i]],
+                           by = list(SpecCompNames[[i]]), FUN = sum)
+        NewOrder =
+          stats::na.omit(match(ThisProblem$Comp$Name, SpecCompsAgg$Group.1))
         SpecCompNames[[i]] = SpecCompsAgg$Group.1[NewOrder]
         SpecCompStoichs[[i]] = SpecCompsAgg$x[NewOrder]
         stopifnot(SpecCompNames[[i]] == tmp$SpecCompNames[[i]],
@@ -214,28 +221,32 @@ AddSpecies = function(ThisProblem,
     ))
   }
   if (!all(SpecMCName %in% ThisProblem$Mass$Name) ||
-      !all(SpecMCR <= ThisProblem$N["Mass"])) {
-    stop("Mass compartment(s) specified in SpecMCName or SpecMCR does not exist.")
+        !all(SpecMCR <= ThisProblem$N["Mass"])) {
+    stop("Mass compartment(s) specified in SpecMCName or SpecMCR does not ",
+         "exist.")
   }
   if (any(is.na(c(SpecName, SpecMCName,
                   SpecLogK, SpecDeltaH, SpecTempKelvin,
                   SpecType, SpecActCorr, SpecMCR)))) {
     stop("NA arguments not allowed.")
   }
-  if(is.null(SpecMCName)) {
+  if (is.null(SpecMCName)) {
     SpecMCName = ThisProblem$Mass$Name[SpecMCR]
   }
-  if (!all(SpecActCorr %in% c("None","Debye","Davies"))) {
+  if (!all(SpecActCorr %in% c("None", "Debye", "Davies"))) {
     stop("SpecActCorr values must be either None, Debye, or Davies.")
   }
-  if (!all(SpecType %in% c("Normal","DonnanHA","DonnanFA","WHAMHA","WHAMFA"))) {
-    stop("SpecType values must be either Normal, DonnanHA, DonnanFA, WHAMHA, WHAMFA.")
+  if (!all(SpecType %in%
+             c("Normal", "DonnanHA", "DonnanFA", "WHAMHA", "WHAMFA"))) {
+    stop("SpecType values must be either Normal, DonnanHA, DonnanFA, ",
+         "WHAMHA, WHAMFA.")
   }
   if (!all(SpecMCName %in% ThisProblem$Mass$Name[SpecMCR])) {
     stop("SpecMCName does not match SpecMCR.")
   }
-  if (any(SpecNC != sapply(SpecCompNames, FUN = function(X){sum(X != "")}))) {
-    stop("Stoichiometric inputs differ in length. Specify a matching set of names and values in SpecCompNames and SpecCompStoichs.")
+  if (any(SpecNC != sapply(SpecCompNames, FUN = function(X) {sum(X != "")}))) {
+    stop("Stoichiometric inputs differ in length. Specify a matching set of ",
+         "names and values in SpecCompNames and SpecCompStoichs.")
   }
 
   # add Species
@@ -298,7 +309,8 @@ AddSpecies = function(ThisProblem,
   NewProblem$N["Spec"] = ThisProblem$N["Spec"] + NSpecAdd
 
   # These parts it's easier to just calculate again
-  NewProblem$Spec$Charge = as.integer(drop(NewProblem$SpecStoich %*% NewProblem$Comp$Charge))
+  NewProblem$Spec$Charge =
+    as.integer(drop(NewProblem$SpecStoich %*% NewProblem$Comp$Charge))
 
   # Put components at the beginning
   CompIndexes = match(NewProblem$Comp$Name, NewProblem$Spec$Name)
@@ -327,7 +339,7 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove, DoCheck = TRUE) {
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
@@ -340,7 +352,7 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove, DoCheck = TRUE) {
   }
   if (any(SpeciesToRemove <= 0L)) {
     stop("Invalid index in SpeciesToRemove (",
-         SpeciesToRemove[SpeciesToRemove <= 0L],").")
+         SpeciesToRemove[SpeciesToRemove <= 0L], ").")
   }
   if (any(SpeciesToRemove > ThisProblem$N["Spec"])) {
     stop(paste0("There are ", ThisProblem$N["Spec"], " Species, ",
@@ -353,8 +365,10 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove, DoCheck = TRUE) {
   # Remove Species
   NewProblem$Spec = ThisProblem$Spec[-SpeciesToRemove, , drop = FALSE]
   rownames(NewProblem$Spec) = NULL
-  NewProblem$SpecCompList = ThisProblem$SpecCompList[-SpeciesToRemove, , drop = FALSE]
-  NewProblem$SpecStoich = ThisProblem$SpecStoich[-SpeciesToRemove, , drop = FALSE]
+  NewProblem$SpecCompList =
+    ThisProblem$SpecCompList[-SpeciesToRemove, , drop = FALSE]
+  NewProblem$SpecStoich =
+    ThisProblem$SpecStoich[-SpeciesToRemove, , drop = FALSE]
   NewProblem$N["Spec"] = ThisProblem$N["Spec"] - length(SpeciesToRemove)
 
   # Remove InSpec's that are the Species to remove
@@ -366,8 +380,11 @@ RemoveSpecies = function(ThisProblem, SpeciesToRemove, DoCheck = TRUE) {
   }
 
   # Update Special Definitions
-  NewProblem$BLMetal = ThisProblem$BLMetal[ThisProblem$BLMetal$Name %in% ThisProblem$Spec$Name[SpeciesToRemove] == FALSE, , drop = FALSE]
-  NewProblem$BLMetal$SpecsR = match(NewProblem$BLMetal$Name, NewProblem$Spec$Name)
+  IndToKeep = ThisProblem$BLMetal$Name %in%
+    ThisProblem$Spec$Name[SpeciesToRemove] == FALSE
+  NewProblem$BLMetal = ThisProblem$BLMetal[IndToKeep, , drop = FALSE]
+  NewProblem$BLMetal$SpecsR =
+    match(NewProblem$BLMetal$Name, NewProblem$Spec$Name)
   NewProblem$N["BLMetal"] = length(NewProblem$BLMetal$Name)
 
   if (DoCheck) {

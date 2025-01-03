@@ -88,7 +88,9 @@ test_that("ConvertWindowsParamFile 3.00 works", {
   ex_Rfile = withr::local_tempfile(fileext = ".dat4")
 
   expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Y_3.00_file))
-  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Y_3.00_file, RParamFile = ex_Rfile))
+  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Y_3.00_file,
+                                          RParamFile = ex_Rfile))
+  expect_no_error(DefineProblem(ParamFile = ex_Rfile))
 
 })
 test_that("ConvertWindowsParamFile 3.01 works", {
@@ -213,7 +215,9 @@ test_that("ConvertWindowsParamFile 3.01 works", {
   ex_Rfile = withr::local_tempfile(fileext = ".dat4")
 
   expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Cu_3.01_file))
-  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Cu_3.01_file, RParamFile = ex_Rfile))
+  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Cu_3.01_file,
+                                          RParamFile = ex_Rfile))
+  expect_no_error(DefineProblem(ParamFile = ex_Rfile))
 
 })
 test_that("ConvertWindowsParamFile marine works", {
@@ -391,9 +395,11 @@ test_that("ConvertWindowsParamFile marine works", {
   write(x = Marine_text, file = Marine_file)
   ex_Rfile = withr::local_tempfile(fileext = ".dat4")
 
-  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Marine_file, RParamFile = ex_Rfile, MarineFile = TRUE))
+  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Marine_file,
+                                          RParamFile = ex_Rfile,
+                                          MarineFile = TRUE))
 
-expect_no_error(DefineProblem(ex_Rfile))
+  expect_no_error(DefineProblem(ParamFile = ex_Rfile))
 
 })
 test_that("ConvertWindowsParamFile unknown dbs file works", {
@@ -402,8 +408,9 @@ test_that("ConvertWindowsParamFile unknown dbs file works", {
   testthat::skip_if_not(file.exists(Zn_file))
   ex_Rfile = withr::local_tempfile(fileext = ".dat4")
 
-  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Zn_file, RParamFile = ex_Rfile))
+  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Zn_file,
+                                          RParamFile = ex_Rfile))
 
-expect_no_error(DefineProblem(ex_Rfile))
+expect_no_error(DefineProblem(ParamFile = ex_Rfile))
 
 })

@@ -71,7 +71,7 @@ NULL
 
 #' @rdname SpecialDefs
 #' @export
-AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) {
+AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) { #nolint: cyclocomp_linter
 
   if (DoCheck) {
     CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
@@ -79,11 +79,11 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) {
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
-  if (any(is.na(Value)) | any(is.na(SpecialDef))) {
+  if (any(is.na(Value)) || any(is.na(SpecialDef))) {
     stop("NA inputs not allowed.")
   }
   NSpecialDef = length(Value)
@@ -93,12 +93,13 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) {
   Value = trimws(as.character(Value))
 
   for (i in 1:NSpecialDef) {
-    SpecialDef[i] = match.arg(SpecialDef[i], c("BL", "Metal", "BLMetal","BL-Metal", "WHAM"))
+    SpecialDef[i] = match.arg(SpecialDef[i],
+                              c("BL", "Metal", "BLMetal", "BL-Metal", "WHAM"))
     SpecialDef[i] = gsub("-", "", SpecialDef[i])
     if (SpecialDef[i] == "WHAM") {
       #--Name of WHAM file or WHAM version
       if (any(grepl("WHAM", ThisProblem$DefComp$Type)) ||
-          !is.na(ThisProblem$WHAM$File) || !is.na(ThisProblem$WHAM$Ver)) {
+            !is.na(ThisProblem$WHAM$File) || !is.na(ThisProblem$WHAM$Ver)) {
         stop("Only one WHAM version or file can be specified.")
       }
 
@@ -109,10 +110,13 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) {
         WHAMVer = NA_character_
         WHAMFile = Value[i]
         if (!file.exists(WHAMFile)) {
-          if (file.exists(file.path(dirname(NewProblem$ParamFile), WHAMFile))) {
-            WHAMFile = file.path(dirname(NewProblem$ParamFile), WHAMFile)
-          } else if (file.exists(system.file(file.path("extdata","WHAM",WHAMFile),package = "BLMEngineInR"))) {
-            WHAMFile = system.file(file.path("extdata","WHAM",WHAMFile),package = "BLMEngineInR")
+          ParamFileDir = file.path(dirname(NewProblem$ParamFile), WHAMFile)
+          SysFileDir = system.file(file.path("extdata", "WHAM", WHAMFile),
+                                   package = "BLMEngineInR")
+          if (file.exists(ParamFileDir)) {
+            WHAMFile = ParamFileDir
+          } else if (file.exists(SysFileDir)) {
+            WHAMFile = SysFileDir
           } else {
             stop("Cannot find \"", WHAMFile, "\".")
           }
@@ -135,7 +139,7 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) {
       } else {
         stop("Unknown component specifed for ", SpecialDef[i])
       }
-    } else if (SpecialDef[i] %in% c("BL-Metal","BLMetal")) {
+    } else if (SpecialDef[i] %in% c("BL-Metal", "BLMetal")) {
       if (Value[i] %in% ThisProblem$Spec$Name) {
         NewProblem[[SpecialDef[i]]] = rbind(
           NewProblem[[SpecialDef[i]]],
@@ -161,22 +165,24 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) {
 
 #' @rdname SpecialDefs
 #' @export
-RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1, DoCheck = TRUE) {
+RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1,
+                             DoCheck = TRUE) {
   if (DoCheck) {
     CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
   }
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
-  if (any(SpecialDefToRemove %in% c("BL", "Metal", "BLMetal","BL-Metal", "WHAM") == FALSE)){
+  if (any(SpecialDefToRemove %in%
+            c("BL", "Metal", "BLMetal", "BL-Metal", "WHAM") == FALSE)) {
     stop("SpecialDefToRemove should be one of 'BL', 'Metal', 'BLMetal', ",
          "'BL-Metal', or 'WHAM'.")
   }
-  SpecialDefToRemove = gsub("[-]","", SpecialDefToRemove)
+  SpecialDefToRemove = gsub("[-]", "", SpecialDefToRemove)
   RemovalTable = data.frame(SpecialDef = SpecialDefToRemove, Index = Index)
   RemovalTable = RemovalTable[order(RemovalTable$SpecialDef,
                                     -RemovalTable$Index), ]
@@ -189,7 +195,8 @@ RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1, DoCheck
       # species along with it)
       NewProblem = RemoveDefComps(
         ThisProblem = NewProblem,
-        DefCompToRemove = which(ThisProblem$DefComp$Type %in% c("WHAMHA","WHAMFA")),
+        DefCompToRemove =
+          which(ThisProblem$DefComp$Type %in% c("WHAMHA", "WHAMFA")),
         DoCheck = DoCheck
       )
 
@@ -205,7 +212,8 @@ RemoveSpecialDefs = function(ThisProblem, SpecialDefToRemove, Index = 1, DoCheck
       NewProblem$WHAM = BlankProblem()$WHAM
 
     } else {
-      NewProblem[[i]] = NewProblem[[i]][-RemovalTable$Index[RemovalTable$SpecialDef %in% i], ]
+      NewProblem[[i]] =
+        NewProblem[[i]][-RemovalTable$Index[RemovalTable$SpecialDef %in% i], ]
       NewProblem$N[i] = NewProblem$N[i] - sum(RemovalTable$SpecialDef %in% i)
     }
   }

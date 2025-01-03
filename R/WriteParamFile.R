@@ -36,10 +36,8 @@
 #' DefineProblem(ParamFile = tf)
 #'
 #' @export
-WriteParamFile = function(ThisProblem,
-                          ParamFile,
-                          Notes = if ("Notes" %in% names(ThisProblem)) {
-                            ThisProblem$Notes} else {NULL}) {
+WriteParamFile = function(ThisProblem, ParamFile, Notes = ThisProblem$Notes) {
+
 
   CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
 
@@ -50,14 +48,16 @@ WriteParamFile = function(ThisProblem,
     return(X)
   }
 
-  SectionBreak = "--------------------------------------------------------------------------------"
+  SectionBreak = "--------------------------------------------------------------------------------"#nolint: line_length_linter
 
-  write("Column model parameter file, Ver 4.00", file = ParamFile, append = FALSE)
+  write("Column model parameter file, Ver 4.00",
+        file = ParamFile, append = FALSE)
   write(SectionBreak, file = ParamFile, append = TRUE)
 
   Tmp = c(
-    ThisProblem$N[c("InMass","InLab","InVar","InComp","InDefComp","InSpec","Phase")],
-    sum(ThisProblem$N[c("BL","Metal","BLMetal")]) +
+    ThisProblem$N[c("InMass", "InLab", "InVar", "InComp", "InDefComp",
+                    "InSpec", "Phase")],
+    sum(ThisProblem$N[c("BL", "Metal", "BLMetal")]) +
       ((!is.na(ThisProblem$WHAM$Ver) | !is.na(ThisProblem$WHAM$File))),
     ThisProblem$N["CAT"]
   )
@@ -75,7 +75,8 @@ WriteParamFile = function(ThisProblem,
   write(Tmp, file = ParamFile, append = TRUE)
   write(SectionBreak, file = ParamFile, append = TRUE)
 
-  TmpTable = ThisProblem$Mass[ThisProblem$Mass$Name %in% ThisProblem$InMassName, ]
+  TmpTable =
+    ThisProblem$Mass[ThisProblem$Mass$Name %in% ThisProblem$InMassName, ]
   write("Mass Compartment List", file = ParamFile, append = TRUE)
   Tmp = MakeUniformTXTColumn(paste0(c("Compartment", TmpTable$Name), ", "))
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("C to M", TmpTable$Amt), ", "))
@@ -88,52 +89,73 @@ WriteParamFile = function(ThisProblem,
   write(SectionBreak, file = ParamFile, append = TRUE)
 
   write("Input Variables", file = ParamFile, append = TRUE)
-  Tmp = MakeUniformTXTColumn(paste0(c("Variable", ThisProblem$InVar$Name), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Compartment", ThisProblem$InVar$MCName), ", "))
+  Tmp =
+    MakeUniformTXTColumn(paste0(c("Variable", ThisProblem$InVar$Name), ", "))
+  Tmp = MakeUniformTXTColumn(
+    paste0(Tmp, c("Compartment", ThisProblem$InVar$MCName), ", ")
+  )
   Tmp = paste0(Tmp, c("Type", ThisProblem$InVar$Type))
   write(Tmp, file = ParamFile, append = TRUE)
   write(SectionBreak, file = ParamFile, append = TRUE)
 
-  TmpTable = ThisProblem$Comp[ThisProblem$Comp$Name %in% ThisProblem$InCompName, ]
+  TmpTable =
+    ThisProblem$Comp[ThisProblem$Comp$Name %in% ThisProblem$InCompName, ]
   write("Input Components", file = ParamFile, append = TRUE)
   Tmp = MakeUniformTXTColumn(paste0(c("Component", TmpTable$Name), ", "))
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Charge", TmpTable$Charge), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Compartment", TmpTable$MCName), ", "))
+  Tmp =
+    MakeUniformTXTColumn(paste0(Tmp, c("Compartment", TmpTable$MCName), ", "))
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Type", TmpTable$Type), ", "))
   Tmp = paste0(Tmp, c("Activity", TmpTable$ActCorr))
   write(Tmp, file = ParamFile, append = TRUE)
   write(SectionBreak, file = ParamFile, append = TRUE)
 
-  TmpTable = ThisProblem$DefComp[ThisProblem$DefComp$Name %in% ThisProblem$InDefCompName, ]
+  TmpTable = ThisProblem$DefComp[ThisProblem$DefComp$Name %in% ThisProblem$InDefCompName, ] #nolint: line_length_linter
   TmpTable$From = TmpTable$FromNum
   TmpTable$From[is.na(TmpTable$From)] = TmpTable$FromVar[is.na(TmpTable$From)]
   write("Defined Components", file = ParamFile, append = TRUE)
   Tmp = MakeUniformTXTColumn(paste0(c("Component", TmpTable$Name), ", "))
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("From", TmpTable$From), ", "))
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Charge", TmpTable$Charge), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Compartment", TmpTable$MCName), ", "))
+  Tmp =
+    MakeUniformTXTColumn(paste0(Tmp, c("Compartment", TmpTable$MCName), ", "))
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Type", TmpTable$Type), ", "))
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Activity", TmpTable$ActCorr), ", "))
   Tmp = paste0(Tmp, c("Site Den", TmpTable$SiteDens))
   write(Tmp, file = ParamFile, append = TRUE)
   write(SectionBreak, file = ParamFile, append = TRUE)
 
-  TmpTable = ThisProblem$Spec[ThisProblem$Spec$Name %in% ThisProblem$InSpecName, ]
-  TmpList = EquationToStoich(SpecEquation = TmpTable$Equation, CompName = ThisProblem$Comp$Name)
+  TmpTable =
+    ThisProblem$Spec[ThisProblem$Spec$Name %in% ThisProblem$InSpecName, ]
+  TmpList = EquationToStoich(SpecEquation = TmpTable$Equation,
+                             CompName = ThisProblem$Comp$Name)
   write("Formation Reactions", file = ParamFile, append = TRUE)
   Tmp = MakeUniformTXTColumn(paste0(c("Species", TmpTable$Name), ", "))
-  Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Compartment", TmpTable$MCName), ", "))
+  Tmp =
+    MakeUniformTXTColumn(paste0(Tmp, c("Compartment", TmpTable$MCName), ", "))
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Activity", TmpTable$ActCorr), ", "))
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("NC", TmpTable$NC), ", "))
   for (i in 1:max(TmpTable$NC)) {
-    Tmp = MakeUniformTXTColumn(
-      paste0(Tmp,
-             c(paste0("C",i,", "),
-               sapply(TmpList$SpecCompNames, function(X){if(length(X)<i){""}else{paste0(X[i],", ")}}))))
-    Tmp = MakeUniformTXTColumn(
-      paste0(Tmp,
-             c(paste0("S", i,", "),
-               sapply(TmpList$SpecCompStoichs, function(X){if(length(X)<i){""}else{paste0(X[i],", ")}}))))
+    Tmp = MakeUniformTXTColumn(paste0(Tmp, c(
+      paste0("C", i, ", "),
+      sapply(TmpList$SpecCompNames, function(X) {
+        if (length(X) < i) {
+          ""
+        } else{
+          paste0(X[i], ", ")
+        }
+      })
+    )))
+    Tmp = MakeUniformTXTColumn(paste0(Tmp, c(
+      paste0("S", i, ", "),
+      sapply(TmpList$SpecCompStoichs, function(X) {
+        if (length(X) < i) {
+          ""
+        } else{
+          paste0(X[i], ", ")
+        }
+      })
+    )))
   }
 
   Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Log K", TmpTable$LogK), ", "))
@@ -151,19 +173,33 @@ WriteParamFile = function(ThisProblem,
     Tmp = MakeUniformTXTColumn(paste0(c("Phases", TmpTable$Name), ", "))
     Tmp = MakeUniformTXTColumn(paste0(Tmp, c("NC", TmpTable$NC), ", "))
     for (i in 1:max(TmpTable$NC)) {
-      Tmp = MakeUniformTXTColumn(
-        paste0(Tmp,
-               c(paste0("C",i,", "),
-                 sapply(TmpList$SpecCompNames, function(X){if(length(X)<i){""}else{paste0(X[i],", ")}}))))
-      Tmp = MakeUniformTXTColumn(
-        paste0(Tmp,
-               c(paste0("S", i,", "),
-                 sapply(TmpList$SpecCompStoichs, function(X){if(length(X)<i){""}else{paste0(X[i],", ")}}))))
+      Tmp = MakeUniformTXTColumn(paste0(Tmp, c(
+        paste0("C", i, ", "),
+        sapply(TmpList$SpecCompNames, function(X) {
+          if (length(X) < i) {
+            ""
+          } else{
+            paste0(X[i], ", ")
+          }
+        })
+      )))
+      Tmp = MakeUniformTXTColumn(paste0(Tmp, c(
+        paste0("S", i, ", "),
+        sapply(TmpList$SpecCompStoichs, function(X) {
+          if (length(X) < i) {
+            ""
+          } else {
+            paste0(X[i], ", ")
+          }
+        })
+      )))
     }
 
     Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Log K", TmpTable$LogK), ", "))
-    Tmp = MakeUniformTXTColumn(paste0(Tmp, c("Delta H", TmpTable$DeltaH), ", "))
-    Tmp = MakeUniformTXTColumn(paste0(Tmp, c("TempK", TmpTable$TempKelvin), ", "))
+    Tmp =
+      MakeUniformTXTColumn(paste0(Tmp, c("Delta H", TmpTable$DeltaH), ", "))
+    Tmp =
+      MakeUniformTXTColumn(paste0(Tmp, c("TempK", TmpTable$TempKelvin), ", "))
     Tmp = paste0(Tmp, c("Moles", TmpTable$Moles))
   } else {
     Tmp = "Phase, NC, C1, S1, C2, S2, C3, S3, Log K, Delta H, Temp, Moles"
@@ -195,7 +231,7 @@ WriteParamFile = function(ThisProblem,
                      ))
   }
   # if (ThisProblem$DoWHAM) {
-  if (!is.na(ThisProblem$WHAM$Ver) | !is.na(ThisProblem$WHAM$File)) {
+  if (!is.na(ThisProblem$WHAM$Ver) || !is.na(ThisProblem$WHAM$File)) {
     if (is.na(ThisProblem$WHAM$File)) {
       TmpTable = rbind(TmpTable,
                        data.frame(
@@ -203,9 +239,13 @@ WriteParamFile = function(ThisProblem,
                          B = ThisProblem$WHAM$Ver
                        ))
     } else {
-      Tmp = system.file(file.path("extdata","WHAM", basename(ThisProblem$WHAM$File)),
-                        package = "BLMEngineInR")
-      if (file.exists(Tmp) & (basename(ThisProblem$WHAM$File) %in% paste0("WHAM_",c("V","VI","VII")))) {
+      Tmp = system.file(
+        file.path("extdata", "WHAM", basename(ThisProblem$WHAM$File)),
+        package = "BLMEngineInR"
+      )
+      if (file.exists(Tmp) &&
+            (basename(ThisProblem$WHAM$File) %in%
+               paste0("WHAM_", c("V", "VI", "VII")))) {
         TmpTable = rbind(TmpTable,
                          data.frame(
                            A = "WHAM",
@@ -229,20 +269,24 @@ WriteParamFile = function(ThisProblem,
   TmpTable = ThisProblem$CATab
   write("Critical Accumulation Table", file = ParamFile, append = TRUE)
   Tmp = MakeUniformTXTColumn(paste0(c("Num", TmpTable$Num), ", "))
-  for (i in c("CA","Species","Test.Type","Duration","Lifestage","Endpoint",
-              "Quantifier","References")) {
-    i.bool = grepl(",", TmpTable[, i])
-    TmpTable[i.bool, i] = paste0("\"", TmpTable[i.bool, i], "\"")
-    Tmp = MakeUniformTXTColumn(paste0(Tmp, c(gsub("[.]"," ",i), TmpTable[, i]), ", "))
+  for (i in c("CA", "Species", "TestType", "Duration", "Lifestage", "Endpoint",
+              "Quantifier", "References")) {
+    iBool = grepl(",", TmpTable[, i])
+    TmpTable[iBool, i] = paste0("\"", TmpTable[iBool, i], "\"")
+    Tmp = MakeUniformTXTColumn(
+      paste0(Tmp, c(gsub("[.]", " ", i), TmpTable[, i]), ", ")
+    )
   }
   Tmp = paste0(Tmp, c("Miscellaneous", TmpTable$Miscellaneous))
   write(Tmp, file = ParamFile, append = TRUE)
   write(SectionBreak, file = ParamFile, append = TRUE)
 
   write("-------Notes--------", file = ParamFile, append = TRUE)
-  write(paste0("written by ", Sys.info()["user"], " from R: ", Sys.time()), file = ParamFile, append = TRUE)
+  write(paste0("written by ", Sys.info()["user"], " from R: ", Sys.time()),
+        file = ParamFile, append = TRUE)
   if (!is.null(Notes)) { write(Notes, file = ParamFile, append = TRUE) }
 
   ThisProblem$ParamFile = ParamFile
   return(invisible(ThisProblem))
+
 }

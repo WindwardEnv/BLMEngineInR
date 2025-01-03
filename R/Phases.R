@@ -81,7 +81,7 @@ NULL
 
 #' @rdname Phases
 #' @export
-AddPhases = function(ThisProblem,
+AddPhases = function(ThisProblem, #nolint: cyclocomp_linter
                      PhaseEquation = character(),
                      PhaseName = character(),
                      PhaseCompNames = list(), PhaseCompStoichs = list(),
@@ -95,15 +95,16 @@ AddPhases = function(ThisProblem,
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
   HasName = length(PhaseName) > 0
-  HasStoichCompsNames = (length(PhaseCompNames) > 0) && (length(PhaseCompStoichs) > 0)
+  HasStoichCompsNames =
+    (length(PhaseCompNames) > 0) && (length(PhaseCompStoichs) > 0)
   HasStoichMatrix = !is.null(PhaseStoich)
   HasEquation = length(PhaseEquation) > 0
-  if (!((HasName && (HasStoichMatrix || HasStoichCompsNames)) | HasEquation)) {
+  if (!((HasName && (HasStoichMatrix || HasStoichCompsNames)) || HasEquation)) {
     stop(c(
       "Inputs differ in length.  Must specify either: ",
       "  (1) PhaseEquation (and optionally PhaseName); ",
@@ -137,11 +138,13 @@ AddPhases = function(ThisProblem,
       PhaseEquation = paste(PhaseName, "=", PhaseEquation)
     }
     if (HasStoichCompsNames) {
-      for (i in 1:length(PhaseCompNames)) {
+      for (i in 1:length(PhaseCompNames)) { #nolint: seq_linter
 
-        PhaseCompsAgg = stats::aggregate(PhaseCompStoichs[[i]],
-                                        by = list(PhaseCompNames[[i]]), FUN = sum)
-        NewOrder = stats::na.omit(match(ThisProblem$Comp$Name, PhaseCompsAgg$Group.1))
+        PhaseCompsAgg =
+          stats::aggregate(PhaseCompStoichs[[i]],
+                           by = list(PhaseCompNames[[i]]), FUN = sum)
+        NewOrder =
+          stats::na.omit(match(ThisProblem$Comp$Name, PhaseCompsAgg$Group.1))
         PhaseCompNames[[i]] = PhaseCompsAgg$Group.1[NewOrder]
         PhaseCompStoichs[[i]] = PhaseCompsAgg$x[NewOrder]
         stopifnot(PhaseCompNames[[i]] == tmp$PhaseCompNames[[i]],
@@ -160,8 +163,8 @@ AddPhases = function(ThisProblem,
     }
   } else {
     PhaseEquation = StoichMatrixToEquation(SpecStoich = PhaseStoich,
-                                     SpecName = PhaseName,
-                                     CompName = ThisProblem$Comp$Name)
+                                           SpecName = PhaseName,
+                                           CompName = ThisProblem$Comp$Name)
     HasEquation = TRUE
   }
   NPhaseAdd = length(PhaseName)
@@ -171,8 +174,10 @@ AddPhases = function(ThisProblem,
   if (any(PhaseName %in% ThisProblem$Phase$Name)) {
     stop(paste0(
       "Phases (",
-      paste(paste0("\"", PhaseName[PhaseName %in% ThisProblem$Phase$Name], "\""),
-            collapse = ", "),
+      paste(
+        paste0("\"", PhaseName[PhaseName %in% ThisProblem$Phase$Name], "\""),
+        collapse = ", "
+      ),
       ") already exist as a component or Phases."
     ))
   }
@@ -180,7 +185,10 @@ AddPhases = function(ThisProblem,
     stop("NA arguments not allowed.")
   }
   if (any(PhaseNC != sapply(PhaseCompStoichs, FUN = length))) {
-    stop("Stoichiometric inputs differ in length. Specify a matching set of names and values in PhaseCompNames and PhaseCompStoichs.")
+    stop(
+      "Stoichiometric inputs differ in length. Specify a matching set of ",
+      "names and values in PhaseCompNames and PhaseCompStoichs."
+    )
   }
 
   # add Phases
@@ -249,7 +257,7 @@ RemovePhases = function(ThisProblem, PhasesToRemove, DoCheck = TRUE) {
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
@@ -262,7 +270,7 @@ RemovePhases = function(ThisProblem, PhasesToRemove, DoCheck = TRUE) {
   }
   if (any(PhasesToRemove <= 0L)) {
     stop("Invalid index in PhasesToRemove (",
-         PhasesToRemove[PhasesToRemove <= 0L],").")
+         PhasesToRemove[PhasesToRemove <= 0L], ").")
   }
   if (any(PhasesToRemove > ThisProblem$N["Phase"])) {
     stop(paste0("There are ", ThisProblem$N["Phase"], " Phases, ",
@@ -274,8 +282,10 @@ RemovePhases = function(ThisProblem, PhasesToRemove, DoCheck = TRUE) {
 
   # Remove Phases
   NewProblem$Phase = ThisProblem$Phase[-PhasesToRemove, , drop = FALSE]
-  NewProblem$PhaseCompList = ThisProblem$PhaseCompList[-PhasesToRemove, , drop = FALSE]
-  NewProblem$PhaseStoich = ThisProblem$PhaseStoich[-PhasesToRemove, , drop = FALSE]
+  NewProblem$PhaseCompList =
+    ThisProblem$PhaseCompList[-PhasesToRemove, , drop = FALSE]
+  NewProblem$PhaseStoich =
+    ThisProblem$PhaseStoich[-PhasesToRemove, , drop = FALSE]
   NewProblem$N["Phase"] = ThisProblem$N["Phase"] - length(PhasesToRemove)
 
   if (DoCheck) {

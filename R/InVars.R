@@ -58,11 +58,13 @@ NULL
 
 #' @rdname InVars
 #' @export
-AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
-                    InVarType = c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
-                                  "WHAM-HAFA", "PercHA", "PercAFA", "Misc"),
-                    InVarMCR = match(InVarMCName, ThisProblem$Mass$Name, nomatch = -1L),
-                    DoCheck = TRUE) {
+AddInVars = function(
+  ThisProblem, InVarName, InVarMCName = NULL,
+  InVarType = c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
+                "WHAM-HAFA", "PercHA", "PercAFA", "Misc"),
+  InVarMCR = match(InVarMCName, ThisProblem$Mass$Name, nomatch = -1L),
+  DoCheck = TRUE
+) {
 
   if (DoCheck) {
     CheckBLMObject(ThisProblem, BlankProblem(), BreakOnError = TRUE)
@@ -70,7 +72,7 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
@@ -79,28 +81,37 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
     stop("NA arguments not allowed.")
   }
   if (!all(InVarMCName %in% ThisProblem$Mass$Name) ||
-      !all(InVarMCR <= ThisProblem$N["Mass"])) {
-    stop("Mass compartment(s) specified in InVarMCName or InVarMCR does not exist.")
+        !all(InVarMCR <= ThisProblem$N["Mass"])) {
+    stop(
+      "Mass compartment(s) specified in InVarMCName or InVarMCR does not exist."
+    )
   }
   if (any((InVarName %in% ThisProblem$InVar$Name))) {
-    stop(paste0(
+    stop(
       "Input Variable(s) (",
-      paste(paste0("\"", InVarName[InVarName %in% ThisProblem$InVar$Name], "\""), collapse = ", "),
+      paste(
+        paste0("\"", InVarName[InVarName %in% ThisProblem$InVar$Name], "\""),
+        collapse = ", "
+      ),
       ") already exist."
-    ))
+    )
   }
-  if(is.null(InVarMCName)) {
+  if (is.null(InVarMCName)) {
     InVarMCName = ThisProblem$Mass$Name[InVarMCR]
   }
   if (!all(InVarMCName %in% ThisProblem$Mass$Name[InVarMCR])) {
     stop("InVarMCName does not match InVarMCR.")
   }
   if (!all(InVarType %in%
-                  c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
-                    "WHAM-HAFA", "PercHA", "PercAFA", "Misc"))) {
-    stop("Invalid InVarType specified (",
-         InVarType[InVarType %in% c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
-                                    "WHAM-HAFA", "PercHA", "PercAFA", "Misc") == FALSE],")")
+             c("Temperature", "pH", "WHAM-FA", "WHAM-HA",
+               "WHAM-HAFA", "PercHA", "PercAFA", "Misc"))) {
+    stop(
+      "Invalid InVarType specified (",
+      InVarType[InVarType %in% c("Temperature", "pH", "WHAM-FA",
+                                 "WHAM-HA", "WHAM-HAFA", "PercHA",
+                                 "PercAFA", "Misc") == FALSE],
+      ")"
+    )
   }
   NInVarAdd = length(InVarName)
   if (length(InVarMCName) == 1) { InVarMCName = rep(InVarMCName, NInVarAdd)}
@@ -108,33 +119,35 @@ AddInVars = function(ThisProblem, InVarName, InVarMCName = NULL,
   if (length(InVarType) == 1) { InVarType = rep(InVarType, NInVarAdd)}
 
   # Add input variable
-  NewProblem$InVar = rbind(ThisProblem$InVar,
-                           data.frame(Name = trimws(as.character(InVarName)),
-                                      MCName = trimws(as.character(InVarMCName)),
-                                      MCR = as.integer(InVarMCR),
-                                      Type = trimws(as.character(InVarType))))
+  NewProblem$InVar = rbind(
+    ThisProblem$InVar,
+    data.frame(Name = trimws(as.character(InVarName)),
+               MCName = trimws(as.character(InVarMCName)),
+               MCR = as.integer(InVarMCR),
+               Type = trimws(as.character(InVarType)))
+  )
   NewProblem$N["InVar"] = ThisProblem$N["InVar"] + NInVarAdd
 
   for (i in 1:NInVarAdd) {
     if (InVarType[i] == "pH") {
       NewProblem = AddDefComps(ThisProblem = NewProblem,
-                              DefCompName = c("H", "OH"),
-                              DefCompFromVar = c(InVarName[i], "KW/H"),
-                              DefCompFromNum = NA,
-                              DefCompCharge = c(1L, -1L),
-                              DefCompMCName = InVarMCName[i],
-                              DefCompType = "FixedAct",
-                              DefCompActCorr = "Debye",
-                              DefCompSiteDens = 1.0,
-                              DefCompMCR = InVarMCR[i],
-                              InDefComp = TRUE,
-                              DoCheck = DoCheck)
+                               DefCompName = c("H", "OH"),
+                               DefCompFromVar = c(InVarName[i], "KW/H"),
+                               DefCompFromNum = NA,
+                               DefCompCharge = c(1L, -1L),
+                               DefCompMCName = InVarMCName[i],
+                               DefCompType = "FixedAct",
+                               DefCompActCorr = "Debye",
+                               DefCompSiteDens = 1.0,
+                               DefCompMCR = InVarMCR[i],
+                               InDefComp = TRUE,
+                               DoCheck = DoCheck)
       # warning(paste("Defined component added for pH as a fixed activity",
       #               "component. Change manually if you wish to represent",
       #               "pH as a fixed concentration."))
     }
-    if (grepl("WHAM", InVarType[i]) &
-        (!is.na(NewProblem$WHAM$Ver) | !is.na(NewProblem$WHAM$File))) {
+    if (grepl("WHAM", InVarType[i]) &&
+          (!is.na(NewProblem$WHAM$Ver) || !is.na(NewProblem$WHAM$File))) {
       NewProblem = ExpandWHAM(ThisProblem = NewProblem)
     }
   }
@@ -157,7 +170,7 @@ RemoveInVars = function(ThisProblem, InVarToRemove, DoCheck = TRUE) {
   NewProblem = ThisProblem
 
   if ((NewProblem$ParamFile != "") &&
-      !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
+        !grepl("[(]modified[)]$", NewProblem$ParamFile)) {
     NewProblem$ParamFile = paste0(NewProblem$ParamFile, " (modified)")
   }
 
@@ -172,7 +185,7 @@ RemoveInVars = function(ThisProblem, InVarToRemove, DoCheck = TRUE) {
   }
   if (any(InVarToRemove <= 0L)) {
     stop("Invalid index in InVarToRemove (",
-         InVarToRemove[InVarToRemove <= 0L],").")
+         InVarToRemove[InVarToRemove <= 0L], ").")
   }
   if (any(InVarToRemove > ThisProblem$N["InVar"])) {
     stop("There are ", ThisProblem$N["InVar"], " input variables, ",

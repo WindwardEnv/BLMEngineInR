@@ -162,7 +162,7 @@ ThisProblem = AddCriticalValues(
   CATab = data.frame(
     CA = c(0.05541, 0.03395),
     Species = c("Ceriodaphnia dubia","FAV"),
-    Test.Type = "Acute",
+    TestType = "Acute",
     Duration = c("48h","DIV=2.00"),
     Lifestage = c("Neonate (<24h)","ACR=3.22"),
     Endpoint = c("Mortality","FAV"),

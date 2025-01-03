@@ -38,53 +38,62 @@
 #' @examples
 #' # This one works:
 #' myproblem = BlankProblem()
-#' myproblem = AddMassCompartments(myproblem, data.frame(Name = "Water",Amt = 1.0, Unit = "L"))
-#' CheckBLMObject(Object = myproblem, Reference = BlankProblem(), BreakOnError = FALSE)
+#' myproblem = AddMassCompartments(ThisProblem = myproblem,
+#'                                 MassName = "Water",
+#'                                 MassAmt = 1.0,
+#'                                 MassUnit = "L"))
+#' CheckBLMObject(Object = myproblem,
+#'                Reference = BlankProblem(),
+#'                BreakOnError = FALSE)
 #'
 #' # This one fails:
 #' myproblem$N = NULL
-#' CheckBLMObject(Object = myproblem, Reference = BlankProblem(), BreakOnError = FALSE)
-CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) {
+#' CheckBLMObject(Object = myproblem,
+#'                Reference = BlankProblem(),
+#'                BreakOnError = FALSE)
+CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) { #nolint: cyclocomp_linter
 
   ErrorList = character()
 
-  advanced.typeof = function(X) {
-    out = typeof(X)
-    if (is.data.frame(X)) {out = "data.frame"}
-    if (is.matrix(X)) {out = paste(out, "matrix")}
-    if (is.array(X)) {out = paste(out, "array")}
-    return(out)
+  AdvancedTypeOf = function(X) {
+    Out = typeof(X)
+    if (is.data.frame(X)) {Out = "data.frame"}
+    if (is.matrix(X)) {Out = paste(Out, "matrix")}
+    if (is.array(X)) {Out = paste(Out, "array")}
+    return(Out)
   }
 
   # Level 1 compare
-  Object.type = advanced.typeof(Object)
-  Reference.type = advanced.typeof(Reference)
-  if (Object.type != Reference.type) {
-    tmp = paste0(Object.type, "-->", Reference.type)
-    ErrorList = c(ErrorList, paste0("Invalid object - incorrect types (",tmp,"). "))
+  ObjectType = AdvancedTypeOf(Object)
+  ReferenceType = AdvancedTypeOf(Reference)
+  if (ObjectType != ReferenceType) {
+    Tmp = paste0(ObjectType, "-->", ReferenceType)
+    ErrorList = c(ErrorList,
+                  paste0("Invalid object - incorrect types (", Tmp, "). "))
   }
   if (!all(names(Reference) %in% names(Object))) {
     ErrorList = c(ErrorList,
                   paste0("Invalid object - missing elements (",
-                         paste(setdiff(names(Reference), names(Object)), collapse = ", "),
+                         paste(setdiff(names(Reference), names(Object)),
+                               collapse = ", "),
                          "). "))
   }
 
   # Level 2 compare
   for (i in names(Reference)){
     if (i %in% names(Object)) {
-      if (Reference.type == "list") {
-        tmp = CheckBLMObject(Object = Object[[i]],
+      if (ReferenceType == "list") {
+        Tmp = CheckBLMObject(Object = Object[[i]],
                              Reference = Reference[[i]],
                              BreakOnError = FALSE)
-      } else if (Reference.type == "data.frame") {
-        tmp = CheckBLMObject(Object = Object[, i],
+      } else if (ReferenceType == "data.frame") {
+        Tmp = CheckBLMObject(Object = Object[, i],
                              Reference = Reference[, i],
                              BreakOnError = FALSE)
-      } else {tmp = character()}
-      if (length(tmp) > 0) {
-        tmp = gsub("[(]", paste0("(",i,":"), tmp)
-        ErrorList = c(ErrorList, tmp)
+      } else {Tmp = character()}
+      if (length(Tmp) > 0) {
+        Tmp = gsub("[(]", paste0("(", i, ":"), Tmp)
+        ErrorList = c(ErrorList, Tmp)
       }
 
     }
@@ -101,7 +110,8 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) {
       LenType = dim(Object[[i]])[1]
       if (is.null(LenType)) { LenType = length(Object[[i]]) }
       if (LenType != Object$NObs) {
-        ErrorList = c(ErrorList, paste0("Observation counts mismatch in ", i, "."))
+        ErrorList = c(ErrorList,
+                      paste0("Observation counts mismatch in ", i, "."))
       }
 
       # Each matrix also needs to have the correct columns
@@ -117,8 +127,10 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) {
     # An array of "N"'s, each of the data.frames, matrices, and arrays
     # controlled by those "N"'s need to be the correct length
     for (iType in names(Reference$N)) {
-      TypeVars = intersect(names(Object),
-                           names(Reference)[grepl(paste0("^",iType), names(Reference))])
+      TypeVars = intersect(
+        names(Object),
+        names(Reference)[grepl(paste0("^", iType), names(Reference))]
+      )
       if (iType == "BL") {
         TypeVars = setdiff(TypeVars, "BLMetal")
       }
@@ -126,14 +138,20 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) {
         LenType = dim(Object[[i]])[1]
         if (is.null(LenType)) { LenType = length(Object[[i]]) }
         if (LenType != Object$N[iType]) {
-          ErrorList = c(ErrorList, paste0(iType, " counts mismatch in ", i,"."))
+          ErrorList = c(
+            ErrorList,
+            paste0(iType, " counts mismatch in ", i, ".")
+          )
         }
       }
 
       if (iType == "Comp") {
         for (i in intersect(c("SpecStoich", "PhaseStoich"), names(Object))) {
           if (dim(Object[[i]])[2] != Object$N["Comp"]) {
-            ErrorList = c(ErrorList, paste0(iType, " counts mismatch in ", i,"."))
+            ErrorList = c(
+              ErrorList,
+              paste0(iType, " counts mismatch in ", i, ".")
+            )
           }
         }
       }
@@ -141,14 +159,18 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) {
   }
 
   # each of the arrays controlled by those "N"'s need to be the correct length
-  NVarInBoth = intersect(c("NMass","NInLab","NInVar","NInMass","NInComp","NInDefComp","NInSpec",
-                           "NDefComp","NComp","NSpec","NPhase","NBL","NMetal","NBLMetal","NCAT"),
+  NVarInBoth = intersect(c("NMass", "NInLab", "NInVar", "NInMass", "NInComp",
+                           "NInDefComp", "NInSpec", "NDefComp", "NComp",
+                           "NSpec", "NPhase", "NBL", "NMetal", "NBLMetal",
+                           "NCAT"),
                          intersect(names(Object), names(Reference)))
   TypeInBoth = gsub("^N", "", NVarInBoth)
   for (iType in TypeInBoth) {
     NVar = paste0("N", iType)
-    TypeVars = intersect(names(Object),
-                         names(Reference)[grepl(paste0("^",iType), names(Reference))])
+    TypeVars = intersect(
+      names(Object),
+      names(Reference)[grepl(paste0("^", iType), names(Reference))]
+    )
     if (iType == "BL") {
       TypeVars = TypeVars[!grepl("BLMetal", TypeVars)]
     }
@@ -156,21 +178,24 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) {
       LenType = dim(Object[[i]])[1]
       if (is.null(LenType)) { LenType = length(Object[[i]]) }
       if ((iType %in% c("Metal", "BL")) && (Object[[NVar]] == 0)) {
-        if ((typeof(Object[[i]]) == "character") & (Object[[i]] == "")){
+        if ((typeof(Object[[i]]) == "character") && (Object[[i]] == "")) {
           LenType = 0L
         }
-        if ((typeof(Object[[i]]) == "integer") & (Object[[i]] == -1L)){
+        if ((typeof(Object[[i]]) == "integer") && (Object[[i]] == -1L)) {
           LenType = 0L
         }
       }
       if (LenType != Object[[NVar]]) {
-        ErrorList = c(ErrorList, paste0(iType, " counts mismatch in ", i,"."))
+        ErrorList = c(ErrorList, paste0(iType, " counts mismatch in ", i, "."))
       }
     }
     if (iType == "Comp") {
       for (i in intersect(c("SpecStoich", "PhaseStoich"), names(Object))) {
         if (dim(Object[[i]])[2] != Object$NComp) {
-          ErrorList = c(ErrorList, paste0(iType, " counts mismatch in ", i,"."))
+          ErrorList = c(
+            ErrorList,
+            paste0(iType, " counts mismatch in ", i, ".")
+          )
         }
       }
     }
@@ -188,4 +213,3 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) {
   }
 
 }
-

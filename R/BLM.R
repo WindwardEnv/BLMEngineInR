@@ -29,12 +29,17 @@
 #'   to the biotic ligand is calculated. In a toxicity run, the critical
 #'   accumulation is input and the free and total metal concentrations that
 #'   would result in that amount bound to the biotic ligand is calculated.
-#' @param iCA (unnecessary unless DoTox = TRUE) Either the index of the critical
-#'   accumulation value in the parameter file critical accumulation table, or
-#'   the critical accumulation to use in nmol/gw. If this is a single value,
-#'   then it will be applied to all observations. If it is a vector with the
-#'   same length as the inputs, then each value given will be used for the
-#'   corresponding observation.
+#' @param CritAccumIndex (unnecessary unless DoTox = TRUE) The index of the
+#'   critical accumulation value in the parameter file critical accumulation
+#'   table. If this is a single value, then it will be applied to all
+#'   observations. If it is a vector with the same length as the inputs, then
+#'   each value given will be used for the corresponding observation. Ignored if
+#'   `CritAccumValue` is given.
+#' @param CritAccumValue (unnecessary unless DoTox = TRUE) The critical
+#'   accumulation value to use, in nmol/gw. If this is a single value, then it
+#'   will be applied to all observations. If it is a vector with the same length
+#'   as the inputs, then each value given will be used for the corresponding
+#'   observation.
 #' @param QuietFlag Either "Quiet", "Very Quiet", or "Debug". With "Very Quiet",
 #'   the simulation will run silently. With "Quiet", the simulation will print
 #'   "Obs=1", "Obs=2", etc... to the console. With "Debug", intermediate
@@ -51,12 +56,13 @@
 #' @export
 #'
 #' @example tests/examples/examples-BLM.R
-BLM = function(ParamFile = character(),
+BLM = function(ParamFile = character(),#nolint: cyclocomp_linter
                InputFile = character(),
                ThisProblem = list(),
                AllInput = list(),
                DoTox = logical(),
-               iCA = 1L,
+               CritAccumIndex = 1L,
+               CritAccumValue = numeric(),
                QuietFlag = c("Very Quiet", "Quiet", "Debug"),
                ConvergenceCriteria = 0.0001,
                MaxIter = 100L) {
@@ -117,21 +123,23 @@ BLM = function(ParamFile = character(),
   BLComp = ThisProblem$BL$CompR
   if (DoTox) {
 
-    if (any(ThisProblem$N[c("BL","Metal","BLMetal")]) < 1){
-      stop("Cannot do tox mode without at least one each of BL, Metal, and BLMetal defined.")
+    if (any(ThisProblem$N[c("BL", "Metal", "BLMetal")]) < 1) {
+      stop("Cannot do tox mode without at least one each of BL, Metal, and",
+           "BLMetal defined.")
     }
 
-    if (is.integer(iCA) || all(as.integer(iCA) == iCA)) {
-      CATargetDefault = ThisProblem$CATab$CA[iCA]
-    } else if (is.double(iCA)) {
-      CATargetDefault = iCA
+    if (length(CritAccumValue) == 0L) {
+      CATargetDefault = ThisProblem$CATab$CA[CritAccumIndex]
+      CAByIndex = TRUE
     } else {
-      stop("Unknown type of critical value iCA.")
+      CATargetDefault = as.numeric(CritAccumValue)
+      CAByIndex = FALSE
     }
-    if (length(iCA) == 1) {
+    if (length(CATargetDefault) == 1) {
       CATargetDefault = rep(CATargetDefault, NObs)
-    } else if (length(iCA) != NObs) {
-      stop("Critical value iCA should be either 1 or NObs in length.")
+    } else if (length(CATargetDefault) != NObs) {
+      stop("Critical accumulation index or value should be either 1 or ",
+           "NObs in length.")
     }
     CATargetDefault = CATargetDefault * (10^-6) /
       ThisProblem$Comp$SiteDens[BLComp]
@@ -166,7 +174,8 @@ BLM = function(ParamFile = character(),
     DoDonnanSimpleAdjust = DoDonnanSimpleAdjust
   )
   ObsFunctionInputNames = formalArgs("CHESS")[
-    formalArgs("CHESS") %in% names(FunctionInputs) == FALSE]
+    formalArgs("CHESS") %in% names(FunctionInputs) == FALSE
+  ]
 
   # Initialize the output list
   OutputLabels = cbind(
@@ -175,7 +184,7 @@ BLM = function(ParamFile = character(),
   )
   MiscOutputCols = c("FinalIter", "FinalMaxError", "IonicStrength",
                      "WHAMIonicStrength", "ChargeBalance")
-  ZCols = paste0("Z_", c("HA","FA"))
+  ZCols = paste0("Z_", c("HA", "FA"))
   if (ThisProblem$N["BLMetal"] > 0) {
     BLMetalCols = paste0(ThisProblem$BLMetal$Name, " (nmol/gw)")
     TotBLMetalCol = paste0("Total ", ThisProblem$BL$Name, "-",
@@ -184,10 +193,12 @@ BLM = function(ParamFile = character(),
     BLMetalCols = character()
     TotBLMetalCol = character()
   }
-  MassAmtCols = paste0(MassName, " (",ThisProblem$Mass$Unit,")")
-  SpecConcCols = paste0(SpecName," (mol/",ThisProblem$Mass$Unit[ThisProblem$Spec$MCR],")")
-  TotConcCols = paste0("T.", CompName, " (mol/",ThisProblem$Mass$Unit[ThisProblem$Comp$MCR],")")
-  SpecMolesCols = paste0(SpecName," (mol)")
+  MassAmtCols = paste0(MassName, " (", ThisProblem$Mass$Unit, ")")
+  SpecConcCols = paste0(SpecName, " (mol/",
+                        ThisProblem$Mass$Unit[ThisProblem$Spec$MCR], ")")
+  TotConcCols = paste0("T.", CompName, " (mol/",
+                       ThisProblem$Mass$Unit[ThisProblem$Comp$MCR], ")")
+  SpecMolesCols = paste0(SpecName, " (mol)")
   TotMolesCols = paste0("T.", CompName, " (mol)")
   SpecActCols = paste0("Act.", SpecName)
   SpecActCoefCols = paste0("Gamma.", SpecName)
@@ -237,8 +248,11 @@ BLM = function(ParamFile = character(),
 
   # For tox mode, fill in missing values and add WQC tab
   DoStandards = FALSE
-  if (DoTox & (length(iCA) == 1)) {
-    if (ThisProblem$CAT$Endpoint[iCA] %in% c("FAV","FCV","HC5","WQS","CMC","CCC")) {
+  if (DoTox && CAByIndex && (length(CritAccumIndex) == 1)) {
+    CATDuration = ThisProblem$CAT$Duration[CritAccumIndex]
+    CATLifestage = ThisProblem$CAT$Lifestage[CritAccumIndex]
+    CATEndpoint = ThisProblem$CAT$Endpoint[CritAccumIndex]
+    if (CATEndpoint %in% c("FAV", "FCV", "HC5", "WQS", "CMC", "CCC")) {
       DoStandards = TRUE
 
       # If DIV is missing in Duration column, we'll assume the predicted metal
@@ -249,40 +263,43 @@ BLM = function(ParamFile = character(),
       NStandardsCols = 1
       NTUCols = 1
       StandardsCols = paste0(
-        c(ThisProblem$CAT$Endpoint[iCA], ThisProblem$Metal$Name, "TU"),
-        " (", c("\U00B5g/L", "\U00B5g/L", "unitless"), ")"
+        c(CATEndpoint, ThisProblem$Metal$Name, "TU"),
+        " (",
+        c("\U00B5g/L", "\U00B5g/L", "unitless"),
+        ")"
       )
       WQSCols = StandardsCols[1]
       TUCols = StandardsCols[3]
-      if (grepl("^DIV=[[:digit:]]+", ThisProblem$CAT$Duration[iCA])) {
+      if (grepl("^DIV=[[:digit:]]+", CATDuration)) {
         NStandardsCols = NStandardsCols + 1
-        DIV = as.numeric(gsub("^DIV=","", ThisProblem$CAT$Duration[iCA]))
+        DIV = as.numeric(gsub("^DIV=", "", CATDuration))
         StandardsCols = c(
           StandardsCols[1],
-          paste0(ThisProblem$CAT$Endpoint[iCA],"/DIV (\U00B5g/L)"),
+          paste0(CATEndpoint, "/DIV (\U00B5g/L)"),
           StandardsCols[2:3]
         )
-        if (ThisProblem$CAT$Endpoint[iCA] == "FAV") {
+        if (CATEndpoint == "FAV") {
           StandardsCols[2] = paste0("CMC=", StandardsCols[2])
-        } else if (ThisProblem$CAT$Endpoint[iCA] == "FCV") {
+        } else if (CATEndpoint == "FCV") {
           StandardsCols[2] = paste0("CCC=", StandardsCols[2])
         }
         WQSCols = StandardsCols[2]
       }
 
-      if (grepl("^ACR=[[:digit:]]+", ThisProblem$CAT$Lifestage[iCA])) {
-        ACR = as.numeric(gsub("^ACR=","", ThisProblem$CAT$Lifestage[iCA]))
+      if (grepl("^ACR=[[:digit:]]+", CATLifestage)) {
+        ACR = as.numeric(gsub("^ACR=", "", CATLifestage))
         StandardsCols = c(
           StandardsCols[1:NStandardsCols],
-          paste0(ThisProblem$CAT$Endpoint[iCA],"/ACR (\U00B5g/L)"),
+          paste0(CATEndpoint, "/ACR (\U00B5g/L)"),
           StandardsCols[NStandardsCols + 1],
           paste("Acute", utils::tail(StandardsCols, 1)),
           "Chronic TU (unitless)"
         )
         NTUCols = NTUCols + 1
         NStandardsCols = NStandardsCols + 1
-        if (ThisProblem$CAT$Endpoint[iCA] == "FAV") {
-          StandardsCols[NStandardsCols] = paste0("CCC=", StandardsCols[NStandardsCols])
+        if (CATEndpoint == "FAV") {
+          StandardsCols[NStandardsCols] =
+            paste0("CCC=", StandardsCols[NStandardsCols])
         }
         WQSCols = c(WQSCols, StandardsCols[NStandardsCols])
         TUCols = utils::tail(StandardsCols, 2)
@@ -294,12 +311,14 @@ BLM = function(ParamFile = character(),
                dimnames = list(NULL, StandardsCols))
       )
     }
-    EmptyOrInvalidMetalObs = is.na(AllInput$TotConcObs[, ThisProblem$Metal$Name]) |
+    EmptyOrInvalidMetalObs =
+      is.na(AllInput$TotConcObs[, ThisProblem$Metal$Name]) |
       (AllInput$TotConcObs[, ThisProblem$Metal$Name] <= 0)
     AllInput$TotConcObs[EmptyOrInvalidMetalObs, ThisProblem$Metal$Name] = 1.0E-7
   }
 
   # Loop through each observation
+  UsedDonnanMCR = ThisProblem$Index$WHAMDonnanMCR > 0
   for (iObs in 1:NObs) {
 
     if (QuietFlag != "Very Quiet") {
@@ -309,10 +328,12 @@ BLM = function(ParamFile = character(),
     ThisInput$InLab = AllInput$InLabObs[iObs, ]
     ThisInput$SysTempKelvin = AllInput$SysTempKelvinObs[iObs]
     ThisInput$TotConc = AllInput$TotConcObs[iObs, CompName]
-    ThisInput$HumicSubstGramsPerLiter = AllInput$HumicSubstGramsPerLiterObs[iObs, c("HA", "FA")]
+    ThisInput$HumicSubstGramsPerLiter =
+      AllInput$HumicSubstGramsPerLiterObs[iObs, c("HA", "FA")]
 
     if (DoTox) {
-      FunctionInputs$CATarget = CATargetDefault[iObs] * ThisInput$TotConc[BLComp]
+      FunctionInputs$CATarget =
+        CATargetDefault[iObs] * ThisInput$TotConc[BLComp]
     }
 
     # 3. Run the speciation problem
@@ -320,15 +341,20 @@ BLM = function(ParamFile = character(),
     #   <-- R variable with speciation outputs
     FunctionInputs[ObsFunctionInputNames] = ThisInput[ObsFunctionInputNames]
 
-    if (is.na(ThisInput$SysTempKelvin) |
-        any(is.na(ThisInput$TotConc)) |
-        (ThisProblem$DoWHAM & any(is.na(ThisInput$HumicSubstGramsPerLiter[ThisProblem$Index$WHAMDonnanMCR > 0])))) {
+    IncompleteChem =
+      is.na(ThisInput$SysTempKelvin) ||
+      any(is.na(ThisInput$TotConc)) ||
+      (ThisProblem$DoWHAM &&
+       any(is.na(ThisInput$HumicSubstGramsPerLiter[UsedDonnanMCR])))
+    InvalidChem = (ThisInput$SysTempKelvin <= 263) ||
+      any(ThisInput$TotConc <= 0) ||
+      (ThisInput$TotConc["H"] > 1) ||
+      (ThisInput$TotConc["H"] < 1.0E-14) ||
+      (any(ThisInput$HumicSubstGramsPerLiter[UsedDonnanMCR] <= 0))
+    if (IncompleteChem) {
       # Incomplete chemistry, so skip calling CHESS
       OutList$Miscellaneous$Status[iObs] = "Incomplete Chemistry"
-    } else if ((ThisInput$SysTempKelvin <= 263) |
-               any(ThisInput$TotConc <= 0) |
-               (ThisInput$TotConc["H"] > 1) | (ThisInput$TotConc["H"] < 1.0E-14) |
-               (any(ThisInput$HumicSubstGramsPerLiter[ThisProblem$Index$WHAMDonnanMCR > 0] <= 0))) {
+    } else if (InvalidChem) {
       # Invalid chemistry, so skip calling CHESS
       OutList$Miscellaneous$Status[iObs] = "Invalid Chemistry"
     } else {
@@ -336,7 +362,8 @@ BLM = function(ParamFile = character(),
       RunCompleted = FALSE
       tryCatch({
         Tmp = do.call("CHESS", args = FunctionInputs)
-        OutList$Miscellaneous[iObs, MiscOutputCols] = unlist(Tmp[MiscOutputCols])
+        OutList$Miscellaneous[iObs, MiscOutputCols] =
+          unlist(Tmp[MiscOutputCols])
         OutList$Miscellaneous[iObs, ZCols] = Tmp$WHAMSpecCharge
         OutList$Miscellaneous[iObs, MassAmtCols] = Tmp$MassAmt
         OutList$Concentrations[iObs, SpecConcCols] = Tmp$SpecConc
@@ -344,10 +371,12 @@ BLM = function(ParamFile = character(),
         OutList$Moles[iObs, SpecMolesCols] = Tmp$SpecMoles
         OutList$Moles[iObs, TotMolesCols] = Tmp$CalcTotMoles
         OutList$Activities[iObs, SpecActCols] = Tmp$SpecAct
-        OutList$ActivityCoefficients[iObs, SpecActCoefCols] = Tmp$SpecActivityCoef
+        OutList$ActivityCoefficients[iObs, SpecActCoefCols] =
+          Tmp$SpecActivityCoef
 
-        if (is.na(OutList$Miscellaneous$FinalMaxError[iObs]) |
-            (OutList$Miscellaneous$FinalMaxError[iObs] > ConvergenceCriteria)) {
+        if (is.na(OutList$Miscellaneous$FinalMaxError[iObs]) ||
+              (OutList$Miscellaneous$FinalMaxError[iObs] >
+                 ConvergenceCriteria)) {
           OutList$Miscellaneous$Status[iObs] = "Not Converged"
           OutList$Miscellaneous$Message[iObs] = Tmp$StatusMessage
         } else {
@@ -366,20 +395,23 @@ BLM = function(ParamFile = character(),
   # Make summary columns for organically-bound components
   if (ThisProblem$DoWHAM) {
     for (iComp in ThisProblem$InCompName){
-      OrgCols = SpecMolesCols[grepl(iComp, SpecMolesCols) &
-                                (grepl("DOC", SpecMolesCols) |
-                                   grepl("Donnan", SpecMolesCols))]
-      OutList$Concentrations[, paste0("TOrg.",iComp," (mol/L)")] =
+      OrgCols = SpecMolesCols[
+        grepl(iComp, SpecMolesCols) &
+          (grepl("DOC", SpecMolesCols) | grepl("Donnan", SpecMolesCols))
+      ]
+      OutList$Concentrations[, paste0("TOrg.", iComp, " (mol/L)")] =
         rowSums(OutList$Moles[, OrgCols, drop = FALSE])
     }
   }
 
   # Make summary columns for BL-Metal components
   if (ThisProblem$N["BLMetal"] > 0) {
-    BLMetalCPPCols = paste0(ThisProblem$BLMetal$Name,
-                            " (mol/",
-                            ThisProblem$Mass$Unit[ThisProblem$Index$BioticLigMCR],
-                            ")")
+    BLMetalCPPCols = paste0(
+      ThisProblem$BLMetal$Name,
+      " (mol/",
+      ThisProblem$Mass$Unit[ThisProblem$Index$BioticLigMCR],
+      ")"
+    )
     OutList$Miscellaneous[, BLMetalCols] =
       OutList$Concentrations[, BLMetalCPPCols] *
       ThisProblem$Comp$SiteDens[BLComp] / (10 ^ -6) /

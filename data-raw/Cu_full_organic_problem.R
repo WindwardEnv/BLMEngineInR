@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
+mypfile = system.file(file.path("extdata", "ParameterFiles", "Cu_full_organic.dat4"),
                       package = "BLMEngineInR", mustWork = TRUE)
 Cu_full_organic_problem = DefineProblem(ParamFile = mypfile, WriteLog = FALSE)
 
 usethis::use_data(Cu_full_organic_problem, overwrite = TRUE)
-

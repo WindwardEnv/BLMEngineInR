@@ -27,7 +27,8 @@
 #' @export
 #'
 #' @examples
-#' mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+#' mypfile = system.file(file.path("extdata", "ParameterFiles",
+#'                                 "carbonate_system_only.dat4"),
 #'                       package = "BLMEngineInR", mustWork = TRUE)
 #' thisProblem = DefineProblem(mypfile)
 #'
@@ -100,11 +101,23 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   #   component for that compartment.
   # - PercAFA = optionally indicate the percent of active fulvic acid for the
   #   WHAM-FA or WHAM-HAFA component for that compartment
+  # - Misc = anything else you want available, for instance a variable you want
+  #   to use for a defined component
 
   # read component list and properties
   SkipRows = SkipRows + NInVar + 3
   Tmp = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                  nrows = NInComp, strip.white = TRUE)
+  if (("OH" %in% trimws(Tmp[, 1])) && ("OH" %in% NewProblem$DefComp$Name)) {
+    # if the "OH" defined component was added with pH, but is specified as an
+    # input component, remove the defined component first.
+    NewProblem = RemoveDefComps(
+      ThisProblem = NewProblem,
+      DefCompToRemove = intersect(intersect(c("OH"),
+                                            NewProblem$DefComp$Name),
+                                  trimws(Tmp[, 1]))
+    )
+  }
   NewProblem = AddInComps(ThisProblem = NewProblem,
                           InCompName = as.character(trimws(Tmp[, 1])),
                           InCompCharge = as.integer(Tmp[, 2]),
@@ -127,28 +140,35 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     DefCompFromVar[!is.na(DefCompFromNum)] = NA
     DefCompFromNum[!is.na(DefCompFromVar)] = NA
     if (any((c("H", "OH") %in% NewProblem$Comp$Name) &
-            (c("H", "OH") %in% DefCompName))) {
-      iComp = match(c("H", "OH"), NewProblem$Comp$Name)
-      iNewDefComp = match(c("H", "OH"), DefCompName)
-      iOldDefComp = match(c("H", "OH"), NewProblem$DefComp$Name)
-      NewProblem$Comp$Charge[iComp] = as.integer(trimws(Tmp$Charge[iNewDefComp]))
-      NewProblem$Comp$MCName[iComp] = as.character(trimws(Tmp$Compartment[iNewDefComp]))
-      NewProblem$Comp$MCR[iComp] = match(NewProblem$Comp$MCName[iComp], NewProblem$Mass$Name)
-      NewProblem$Comp$Type[iComp] = as.character(trimws(Tmp$Type[iNewDefComp]))
-      NewProblem$Comp$ActCorr[iComp] = as.character(trimws(Tmp$Activity[iNewDefComp]))
-      NewProblem$Comp$SiteDens[iComp] = as.numeric(trimws(Tmp$Site.Den[iNewDefComp]))
-      NewProblem$DefComp$FromNum[iOldDefComp] = DefCompFromNum[iNewDefComp]
-      NewProblem$DefComp$FromVar[iOldDefComp] = DefCompFromVar[iNewDefComp]
-      NewProblem$DefComp$Charge[iOldDefComp] = NewProblem$Comp$Charge[iComp]
-      NewProblem$DefComp$MCName[iOldDefComp] = NewProblem$Comp$MCName[iComp]
-      NewProblem$DefComp$MCR[iOldDefComp] = NewProblem$Comp$MCR[iComp]
-      NewProblem$DefComp$Type[iOldDefComp] = NewProblem$Comp$Type[iComp]
-      NewProblem$DefComp$ActCorr[iOldDefComp] = NewProblem$Comp$ActCorr[iComp]
-      NewProblem$DefComp$SiteDens[iOldDefComp] = NewProblem$Comp$SiteDens[iComp]
-      Tmp = Tmp[-iNewDefComp, ]
-      DefCompName = DefCompName[-iNewDefComp]
-      DefCompFromNum = DefCompFromNum[-iNewDefComp]
-      DefCompFromVar = DefCompFromVar[-iNewDefComp]
+              (c("H", "OH") %in% DefCompName))) {
+      # update the component and defined component specifications for "H", and
+      # "OH, which were likely added with the input variables.
+      IComp = match(c("H", "OH"), NewProblem$Comp$Name)
+      INewDefComp = match(c("H", "OH"), DefCompName)
+      IOldDefComp = match(c("H", "OH"), NewProblem$DefComp$Name)
+      IBool = !is.na(INewDefComp) & !is.na(IOldDefComp) & !is.na(IComp)
+      IComp = IComp[IBool]
+      INewDefComp = INewDefComp[IBool]
+      IOldDefComp = IOldDefComp[IBool]
+      NewProblem$Comp$Charge[IComp] = as.integer(trimws(Tmp[INewDefComp, 3]))
+      NewProblem$Comp$MCName[IComp] = as.character(trimws(Tmp[INewDefComp, 4]))
+      NewProblem$Comp$MCR[IComp] =
+        match(NewProblem$Comp$MCName[IComp], NewProblem$Mass$Name)
+      NewProblem$Comp$Type[IComp] = as.character(trimws(Tmp[INewDefComp, 5]))
+      NewProblem$Comp$ActCorr[IComp] = as.character(trimws(Tmp[INewDefComp, 6]))
+      NewProblem$Comp$SiteDens[IComp] = as.numeric(trimws(Tmp[INewDefComp, 7]))
+      NewProblem$DefComp$FromNum[IOldDefComp] = DefCompFromNum[INewDefComp]
+      NewProblem$DefComp$FromVar[IOldDefComp] = DefCompFromVar[INewDefComp]
+      NewProblem$DefComp$Charge[IOldDefComp] = NewProblem$Comp$Charge[IComp]
+      NewProblem$DefComp$MCName[IOldDefComp] = NewProblem$Comp$MCName[IComp]
+      NewProblem$DefComp$MCR[IOldDefComp] = NewProblem$Comp$MCR[IComp]
+      NewProblem$DefComp$Type[IOldDefComp] = NewProblem$Comp$Type[IComp]
+      NewProblem$DefComp$ActCorr[IOldDefComp] = NewProblem$Comp$ActCorr[IComp]
+      NewProblem$DefComp$SiteDens[IOldDefComp] = NewProblem$Comp$SiteDens[IComp]
+      Tmp = Tmp[-INewDefComp, ]
+      DefCompName = DefCompName[-INewDefComp]
+      DefCompFromNum = DefCompFromNum[-INewDefComp]
+      DefCompFromVar = DefCompFromVar[-INewDefComp]
     }
     if (length(DefCompName) > 0) {
       NewProblem = AddDefComps(
@@ -166,23 +186,27 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
     }
   }
 
-  # Check that pH is in the component list
-  for (iMass in 1:NMass){#Must have either pH or H in non-BL compartments
-    if (grepl("Water", NewProblem$Mass$Name[iMass], ignore.case = TRUE)) {
-      if (!xor(("H" %in% NewProblem$InCompName),
-                    ("pH" %in% NewProblem$InVar$Type[NewProblem$InVar$MCR == iMass]) &
-                      ("H" %in% NewProblem$DefComp$Name[NewProblem$DefComp$MCR == iMass]))) {
-        stop("Must specify either H as an input component, or pH with a",
-             "corresponding H defined component.")
-      }
-    } else {
-      if (("H" %in% NewProblem$Comp$Name[NewProblem$Comp$MCR == iMass]) ||
-          ("pH" %in% NewProblem$InVar$Type[NewProblem$InVar$MCR == iMass])) {
-        stop("pH/[H+] specified for non-water mass compartment.")
-      }
-    }
+  # Check that pH is in the component list in the water compartment
+  WaterMC = which(grepl("Water", NewProblem$Mass$Name, ignore.case = TRUE))
+  if (length(WaterMC) == 0L) {
+    stop("No water mass compartment.")
   }
-
+  InCompH = ("H" %in% NewProblem$InCompName) &
+    ("H" %in% NewProblem$Comp$Name[NewProblem$MCR == WaterMC])
+  DefCompH =
+    ("pH" %in% NewProblem$InVar$Type[NewProblem$InVar$MCR == WaterMC]) &
+    ("H" %in% NewProblem$DefComp$Name[NewProblem$DefComp$MCR == WaterMC])
+  if (!xor(InCompH, DefCompH)) {
+    stop("Must specify either H as an input component, or pH with a",
+         "corresponding H defined component in the water mass compartment.")
+  }
+  NonWaterMC = which(!grepl("Water", NewProblem$Mass$Name, ignore.case = TRUE))
+  InCompH = ("H" %in% NewProblem$Comp$Name[NewProblem$Comp$MCR == NonWaterMC])
+  DefCompH =
+    ("pH" %in% NewProblem$InVar$Type[NewProblem$InVar$MCR == NonWaterMC])
+  if (InCompH || DefCompH) {
+    stop("pH or H specified for non-water mass compartment.")
+  }
 
   # read species information including stoichiometry, log Ks, etc.
   SkipRows = SkipRows + NDefComp + 4
@@ -190,17 +214,32 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
              what = "character", quiet = TRUE)
   TmpSplit = strsplit(Tmp, ",")
   for (i in 1:NSpec) {
-    SpecNC_i = as.integer(trimws(TmpSplit[[i]][4]))
+
+    if (("OH" %in% trimws(TmpSplit[[i]][1])) &&
+          ("OH" %in% NewProblem$DefComp$Name)) {
+      # if the "OH" defined component was added with pH, but is specified as a
+      # species, remove the defined component first.
+      NewProblem = RemoveDefComps(
+        ThisProblem = NewProblem,
+        DefCompToRemove = intersect(intersect(c("OH"),
+                                              NewProblem$DefComp$Name),
+                                    trimws(TmpSplit[[i]][1]))
+      )
+    }
+
+    SpecNCTimes2 = as.integer(trimws(TmpSplit[[i]][4])) * 2
+    NameInd = 4 + seq(1, SpecNCTimes2, by = 2)
+    StoichInd = 4 + seq(2, SpecNCTimes2, by = 2)
     NewProblem = AddSpecies(
       ThisProblem = NewProblem,
       SpecName = as.character(trimws(TmpSplit[[i]][1])),
       SpecMCName = as.character(trimws(TmpSplit[[i]][2])),
       SpecActCorr = as.character(trimws(TmpSplit[[i]][3])),
-      SpecCompNames = list(trimws(as.character(TmpSplit[[i]][4 + seq(1, 2 * SpecNC_i, by = 2)]))),
-      SpecCompStoichs = list(as.integer(trimws(TmpSplit[[i]][4 + seq(2, 2 * SpecNC_i, by = 2)]))),
-      SpecLogK = as.numeric(trimws(TmpSplit[[i]][5 + SpecNC_i * 2])),
-      SpecDeltaH = as.numeric(trimws(TmpSplit[[i]][6 + SpecNC_i * 2])),
-      SpecTempKelvin = as.numeric(trimws(TmpSplit[[i]][7 + SpecNC_i * 2])),
+      SpecCompNames = list(trimws(as.character(TmpSplit[[i]][NameInd]))),
+      SpecCompStoichs = list(as.integer(trimws(TmpSplit[[i]][StoichInd]))),
+      SpecLogK = as.numeric(trimws(TmpSplit[[i]][5 + SpecNCTimes2])),
+      SpecDeltaH = as.numeric(trimws(TmpSplit[[i]][6 + SpecNCTimes2])),
+      SpecTempKelvin = as.numeric(trimws(TmpSplit[[i]][7 + SpecNCTimes2])),
       DoCheck = FALSE
     )
   }
@@ -224,16 +263,18 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
                what = "character", quiet = TRUE)
     TmpSplit = strsplit(Tmp, ",")
     for (i in 1:NPhase) {
-      PhaseNC_i = as.integer(trimws(TmpSplit[[i]][2]))
+      PhaseNCTimes2 = as.integer(trimws(TmpSplit[[i]][2])) * 2
+      NameInd = 2 + seq(1, PhaseNCTimes2, by = 2)
+      StoichInd = 2 + seq(2, PhaseNCTimes2, by = 2)
       NewProblem = AddPhases(
         ThisProblem = NewProblem,
-        PhaseName = as.character(trimws(TmpSplit[[i]][1])),
-        PhaseCompNames = list(trimws(as.character(TmpSplit[[i]][2 + seq(1, 2 * PhaseNC_i, by = 2)]))),
-        PhaseCompStoichs = list(as.integer(trimws(TmpSplit[[i]][2 + seq(2, 2 * PhaseNC_i, by = 2)]))),
-        PhaseLogK = as.numeric(trimws(TmpSplit[[i]][3 + PhaseNC_i * 2])),
-        PhaseDeltaH = as.numeric(trimws(TmpSplit[[i]][4 + PhaseNC_i * 2])),
-        PhaseTempKelvin = as.numeric(trimws(TmpSplit[[i]][5 + PhaseNC_i * 2])),
-        PhaseMoles = as.numeric(trimws(TmpSplit[[i]][6 + PhaseNC_i * 2])),
+        PhaseName = trimws(TmpSplit[[i]][1]),
+        PhaseCompNames = list(trimws(TmpSplit[[i]][NameInd])),
+        PhaseCompStoichs = list(as.integer(trimws(TmpSplit[[i]][StoichInd]))),
+        PhaseLogK = as.numeric(trimws(TmpSplit[[i]][3 + PhaseNCTimes2])),
+        PhaseDeltaH = as.numeric(trimws(TmpSplit[[i]][4 + PhaseNCTimes2])),
+        PhaseTempKelvin = as.numeric(trimws(TmpSplit[[i]][5 + PhaseNCTimes2])),
+        PhaseMoles = as.numeric(trimws(TmpSplit[[i]][6 + PhaseNCTimes2])),
         DoCheck = FALSE
       )
     }
@@ -258,10 +299,14 @@ DefineProblem = function(ParamFile, WriteLog = FALSE) {
   if (NCAT > 0) {
     CATab = read.csv(file = ParamFile, header = TRUE, skip = SkipRows,
                      nrows = NCAT, strip.white = TRUE)
-    colnames(CATab) = c("Num", "CA", "Species", "Test.Type", "Duration",
+    colnames(CATab) = c("Num", "CA", "Species", "TestType", "Duration",
                         "Lifestage", "Endpoint", "Quantifier", "References",
                         "Miscellaneous")
-    NewProblem = AddCriticalValues(ThisProblem = NewProblem, CATab = CATab, DoCheck = FALSE)
+    NewProblem = AddCriticalValues(
+      ThisProblem = NewProblem,
+      CATab = CATab,
+      DoCheck = FALSE
+    )
 
   }
 

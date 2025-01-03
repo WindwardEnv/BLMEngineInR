@@ -11,7 +11,8 @@ AddCriticalValues(
   CATab = data.frame(),
   CA = CATab[, which(colnames(CATab) \%in\% c("CA", "CA (nmol/gw)"))[1]],
   Species = CATab$Species,
-  Test.Type = CATab[, which(colnames(CATab) \%in\% c("Test.Type", "Test Type"))[1]],
+  TestType = CATab[, which(colnames(CATab) \%in\% c("TestType", "Test.Type",
+    "Test Type"))[1]],
   Duration = CATab$Duration,
   Lifestage = CATab$Lifestage,
   Endpoint = CATab$Endpoint,
@@ -28,10 +29,10 @@ RemoveCriticalValues(ThisProblem, CAToRemove, DoCheck = TRUE)
 `BlankProblem()`.}
 
 \item{CATab}{a data.frame object with, at a minimum, columns named
-`CA`/`CA (nmol/gw)`, `Species`, `Test.Type`/`Test Type`, `Duration`,
-`Lifestage`, `Endpoint`, `Quantifier`, `References`, `Miscellaneous`.
-See optional parameter descriptions for further descriptions of each of
-those columns.}
+`CA`/`CA (nmol/gw)`, `Species`, `TestType`/`Test.Type`/`Test Type`,
+`Duration`, `Lifestage`, `Endpoint`, `Quantifier`, `References`,
+`Miscellaneous`. See optional parameter descriptions for further
+descriptions of each of those columns.}
 
 \item{CA}{(optional) a numeric vector of the critical accumulation value(s)
 in nmol/gw.}
@@ -39,8 +40,8 @@ in nmol/gw.}
 \item{Species}{(optional) a character vector of the species names to include
 for the corresponding `CA` value.}
 
-\item{Test.Type}{(optional) a character vector of the test type (e.g.,
-"Acute" or "Chronic") to include for the corresponding `CA` value.}
+\item{TestType}{(optional) a character vector of the test type (e.g., "Acute"
+or "Chronic") to include for the corresponding `CA` value.}
 
 \item{Duration}{(optional) a character vector of the Duration to include for
 the corresponding `CA` value. Can also be `"DIV=#.##"` for FAV, FCV, WQS,
@@ -92,7 +93,7 @@ my_new_problem = AddCriticalValues(
   ThisProblem = my_new_problem,
   CA = 12345,
   Species = "A. species",
-  Test.Type = "Acute",
+  TestType = "Acute",
   Duration = "24h",
   Lifestage = "adult",
   Endpoint = "survival",
@@ -103,7 +104,7 @@ my_new_problem = AddCriticalValues(
 
 lots_of_data = data.frame(CA = runif(26),
                           Species = paste0(LETTERS,". species"),
-                          Test.Type = "Acute",
+                          TestType = "Acute",
                           Duration = "24h",
                           Lifestage = "adult",
                           Endpoint = "survival",

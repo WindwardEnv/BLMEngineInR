@@ -13,10 +13,12 @@
 # limitations under the License.
 
 water_MC_problem = AddInLabs(
-  ThisProblem = AddMassCompartments(ThisProblem = BlankProblem(),
-                                     MassName = "Water",
-                                     MassAmt = 1.0,
-                                     MassUnit = "L"),
+  ThisProblem = AddMassCompartments(
+    ThisProblem = BlankProblem(),
+    MassName = "Water",
+    MassAmt = 1.0,
+    MassUnit = "L"
+  ),
   InLabName = "ID")
 
 water_problem = AddInVars(ThisProblem = water_MC_problem,

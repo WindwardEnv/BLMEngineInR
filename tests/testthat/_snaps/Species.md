@@ -106,7 +106,7 @@
       <0 rows> (or 0-length row.names)
       
       $CATab
-       [1] Num           CA            Species       Test.Type     Duration     
+       [1] Num           CA            Species       TestType      Duration     
        [6] Lifestage     Endpoint      Quantifier    References    Miscellaneous
       <0 rows> (or 0-length row.names)
       
@@ -306,7 +306,7 @@
       <0 rows> (or 0-length row.names)
       
       $CATab
-       [1] Num           CA            Species       Test.Type     Duration     
+       [1] Num           CA            Species       TestType      Duration     
        [6] Lifestage     Endpoint      Quantifier    References    Miscellaneous
       <0 rows> (or 0-length row.names)
       

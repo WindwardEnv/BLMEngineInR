@@ -10,7 +10,8 @@ BLM(
   ThisProblem = list(),
   AllInput = list(),
   DoTox = logical(),
-  iCA = 1L,
+  CritAccumIndex = 1L,
+  CritAccumValue = numeric(),
   QuietFlag = c("Very Quiet", "Quiet", "Debug"),
   ConvergenceCriteria = 1e-04,
   MaxIter = 100L
@@ -34,12 +35,18 @@ to the biotic ligand is calculated. In a toxicity run, the critical
 accumulation is input and the free and total metal concentrations that
 would result in that amount bound to the biotic ligand is calculated.}
 
-\item{iCA}{(unnecessary unless DoTox = TRUE) Either the index of the critical
-accumulation value in the parameter file critical accumulation table, or
-the critical accumulation to use in nmol/gw. If this is a single value,
-then it will be applied to all observations. If it is a vector with the
-same length as the inputs, then each value given will be used for the
-corresponding observation.}
+\item{CritAccumIndex}{(unnecessary unless DoTox = TRUE) The index of the
+critical accumulation value in the parameter file critical accumulation
+table. If this is a single value, then it will be applied to all
+observations. If it is a vector with the same length as the inputs, then
+each value given will be used for the corresponding observation. Ignored if
+`CritAccumValue` is given.}
+
+\item{CritAccumValue}{(unnecessary unless DoTox = TRUE) The critical
+accumulation value to use, in nmol/gw. If this is a single value, then it
+will be applied to all observations. If it is a vector with the same length
+as the inputs, then each value given will be used for the corresponding
+observation.}
 
 \item{QuietFlag}{Either "Quiet", "Very Quiet", or "Debug". With "Very Quiet",
 the simulation will run silently. With "Quiet", the simulation will print

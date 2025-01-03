@@ -108,7 +108,7 @@ Selectivity Coefficients for Non-specific binding
 Spec, KselHA, KselFA
 --------------------------------------------------------
 Notes
-written by kellyc from R: 2024-12-19 16:11:45.441728
+written by kellyc from R: 2025-01-03 13:27:23.613909
 ############################## NOTES: ###############################
 2017-02-03: This file was renamed from NIST_CalibNiFA.dbs to 
    NIST_20170203.dbs. The Ni / NiOH log K for FA was adjusted based 

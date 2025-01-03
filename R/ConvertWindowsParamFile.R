@@ -29,7 +29,7 @@
 #'   is provided, this will return invisibly.
 #' @export
 #'
-ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
+ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL, #nolint: cyclocomp_linter
                                    RWHAMFile = NULL, MarineFile = FALSE) {
 
   # Read info from WindowsParamFile
@@ -42,12 +42,18 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
     quiet = TRUE
   )
 
-  CompDF = utils::read.csv(file = WindowsParamFile, skip = 5, nrows = N[1], header = FALSE)
+  WinBLMActivities = c("None", "Davies", "Debye", "MoleFraction",
+                       "ChargeFraction", "Debye")
+
+  CompDF = utils::read.csv(file = WindowsParamFile, skip = 5, nrows = N[1],
+                           header = FALSE)
   colnames(CompDF) = c("Name", "Charge", "TypeNum", "ActivityNum", "SiteDen")
   CompDF$MCR = floor(CompDF$TypeNum / 10) + 1L
-  CompDF$MCName = c("Water","BL")[CompDF$MCR]
-  CompDF$Type = c("MassBal","FixedConc","Substituted","ChargeBal")[CompDF$TypeNum - 10*(CompDF$MCR - 1)]
-  CompDF$Activity = c("None","Davies","Debye","MoleFraction","ChargeFraction","Debye")[CompDF$ActivityNum]
+  CompDF$MCName = c("Water", "BL")[CompDF$MCR]
+  CompDF$Type = c("MassBal", "FixedConc", "Substituted", "ChargeBal")[
+    CompDF$TypeNum - 10 * (CompDF$MCR - 1)
+  ]
+  CompDF$Activity = WinBLMActivities[CompDF$ActivityNum]
   CompDF$Name = gsub("Gill", "BL", CompDF$Name)
 
   if (N[2] > 0L) {
@@ -58,25 +64,27 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
     if (ncol(SpecDF) == (6 + N[1])) {
       colnames(SpecDF) = c("Name", "TypeNum", "ActivityNum", "iTemp", "iMonte",
                            CompDF$Name, "LogK_VarLogK_DeltaH_Temp_Conc")
-      SpecDF$LogK_VarLogK_DeltaH_Temp_Conc = trimws(SpecDF$LogK_VarLogK_DeltaH_Temp_Conc)
-      while (any(nchar(SpecDF$LogK_VarLogK_DeltaH_Temp_Conc) !=
-                nchar(gsub("  "," ", SpecDF$LogK_VarLogK_DeltaH_Temp_Conc)))) {
-        SpecDF$LogK_VarLogK_DeltaH_Temp_Conc = gsub("  "," ", SpecDF$LogK_VarLogK_DeltaH_Temp_Conc)
+      LastVal = ""
+      NewVal = trimws(SpecDF$LogK_VarLogK_DeltaH_Temp_Conc)
+      while (any(nchar(LastVal) != nchar(NewVal))) {
+        LastVal = NewVal
+        NewVal = gsub("  ", " ", LastVal)
       }
-      LogK_VarLogK_DeltaH_Temp_Conc.mat =
-        t(simplify2array(strsplit(SpecDF$LogK_VarLogK_DeltaH_Temp_Conc, split = " ")))
-      SpecDF$LogK = as.numeric(LogK_VarLogK_DeltaH_Temp_Conc.mat[, 1])
-      # SpecDF$VarLogK = as.numeric(LogK_VarLogK_DeltaH_Temp_Conc.mat[, 2])
-      SpecDF$DeltaH = as.numeric(LogK_VarLogK_DeltaH_Temp_Conc.mat[, 3])
-      SpecDF$TempKelvin = as.numeric(LogK_VarLogK_DeltaH_Temp_Conc.mat[, 4])
-      # SpecDF$Conc = as.numeric(LogK_VarLogK_DeltaH_Temp_Conc.mat[, 5])
+      AfterStoichColsMat = t(simplify2array(strsplit(NewVal, split = " ")))
+      SpecDF$LogK = as.numeric(AfterStoichColsMat[, 1])
+      # SpecDF$VarLogK = as.numeric(AfterStoichColsMat[, 2])
+      SpecDF$DeltaH = as.numeric(AfterStoichColsMat[, 3])
+      SpecDF$TempKelvin = as.numeric(AfterStoichColsMat[, 4])
+      # SpecDF$Conc = as.numeric(AfterStoichColsMat[, 5])
     } else {
-      colnames(SpecDF) = c("Name", "TypeNum", "ActivityNum", "iTemp", "iMonte",
-                           CompDF$Name, "LogK","VarLogK","DeltaH","TempKelvin","Conc")
+      colnames(SpecDF) = c(
+        "Name", "TypeNum", "ActivityNum", "iTemp", "iMonte", CompDF$Name,
+        "LogK", "VarLogK", "DeltaH", "TempKelvin", "Conc"
+      )
     }
     SpecDF$MCR = floor(SpecDF$TypeNum / 10) + 1L
-    SpecDF$MCName = c("Water","BL")[SpecDF$MCR]
-    SpecDF$Activity = c("None","Davies","Debye","MoleFraction","ChargeFraction","Debye")[SpecDF$ActivityNum]
+    SpecDF$MCName = c("Water", "BL")[SpecDF$MCR]
+    SpecDF$Activity = WinBLMActivities[SpecDF$ActivityNum]
     SpecDF$Name = gsub("Gill", "BL", SpecDF$Name)
   }
 
@@ -93,18 +101,18 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
     if (ncol(PhasesDF) == (4 + N[1])) {
       colnames(PhasesDF) = c("Name", "iTemp", "iMonte", CompDF$Name,
                              "LogKs_VarLogK_DeltaH_Temp_Moles")
-      PhasesDF$LogKs_VarLogK_DeltaH_Temp_Moles = trimws(PhasesDF$LogKs_VarLogK_DeltaH_Temp_Moles)
-      while(any(nchar(PhasesDF$LogKs_VarLogK_DeltaH_Temp_Moles) !=
-                nchar(gsub("  "," ", PhasesDF$LogKs_VarLogK_DeltaH_Temp_Moles)))){
-        PhasesDF$LogKs_VarLogK_DeltaH_Temp_Moles = gsub("  "," ", PhasesDF$LogKs_VarLogK_DeltaH_Temp_Moles)
+      LastVal = ""
+      NewVal = trimws(PhasesDF$LogKs_VarLogK_DeltaH_Temp_Moles)
+      while (any(nchar(LastVal) != nchar(NewVal))) {
+        LastVal = NewVal
+        NewVal = gsub("  ", " ", LastVal)
       }
-      LogKs_VarLogK_DeltaH_Temp_Moles.mat =
-        t(simplify2array(strsplit(PhasesDF$LogKs_VarLogK_DeltaH_Temp_Moles, split = " ")))
-      PhasesDF$LogK = as.numeric(LogKs_VarLogK_DeltaH_Temp_Moles.mat[, 1])
-      # PhasesDF$VarLogK = as.numeric(LogKs_VarLogK_DeltaH_Temp_Moles.mat[, 2])
-      PhasesDF$DeltaH = as.numeric(LogKs_VarLogK_DeltaH_Temp_Moles.mat[, 3])
-      PhasesDF$TempKelvin = as.numeric(LogKs_VarLogK_DeltaH_Temp_Moles.mat[, 4])
-      PhasesDF$Moles = as.numeric(LogKs_VarLogK_DeltaH_Temp_Moles.mat[, 5])
+      AfterStoichColsMat = t(simplify2array(strsplit(NewVal, split = " ")))
+      PhasesDF$LogK = as.numeric(AfterStoichColsMat[, 1])
+      # PhasesDF$VarLogK = as.numeric(AfterStoichColsMat[, 2])
+      PhasesDF$DeltaH = as.numeric(AfterStoichColsMat[, 3])
+      PhasesDF$TempKelvin = as.numeric(AfterStoichColsMat[, 4])
+      PhasesDF$Moles = as.numeric(AfterStoichColsMat[, 5])
     } else {
       colnames(PhasesDF) = c("Name", "iTemp", "iMonte", CompDF$Name, "LogKs",
                              "VarLogK", "DeltaH", "TempKelvin", "Moles")
@@ -157,21 +165,21 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
   }
 
   # Remove unnecessary components
-  if ((NewProblem$N["InComp"] != 0L) &
-      any(NewProblem$InCompName %in% CompDF$Name == FALSE)) {
+  if ((NewProblem$N["InComp"] != 0L) &&
+        any(NewProblem$InCompName %in% CompDF$Name == FALSE)) {
     NewProblem = RemoveInComps(
       ThisProblem = NewProblem,
       InCompToRemove = NewProblem$InCompName[NewProblem$InCompName %in%
                                                CompDF$Name == FALSE]
     )
   }
-  if ((NewProblem$N["InDefComp"] != 0L) &
-      any(NewProblem$InDefCompName %in% c("H","OH") == FALSE)) {
+  if ((NewProblem$N["InDefComp"] != 0L) &&
+        any(NewProblem$InDefCompName %in% c("H", "OH") == FALSE)) {
     NewProblem = RemoveDefComps(
       ThisProblem = NewProblem,
-      DefCompToRemove = NewProblem$InDefCompName[NewProblem$InDefCompName %in% c(
-        "H","OH"
-      ) == FALSE]
+      DefCompToRemove =
+        NewProblem$InDefCompName[NewProblem$InDefCompName %in%
+                                 c("H", "OH") == FALSE]
     )
   }
   if (any(SpecDF$Name == "OH")) {
@@ -187,14 +195,14 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
                           !grepl("BL", CompDF$Name))
   if (length(CompsToUpdate) > 0L) {
     for (i in CompsToUpdate) {
-      iR = which(NewProblem$Comp$Name == CompDF$Name[i])
-      if (NewProblem$Comp$ActCorr[iR] != CompDF$Activity[i]) {
-        NewProblem$Comp$ActCorr[iR] = CompDF$Activity[i]
-        NewProblem$Spec$ActCorr[iR] = CompDF$Activity[i]
+      j = which(NewProblem$Comp$Name == CompDF$Name[i])
+      if (NewProblem$Comp$ActCorr[j] != CompDF$Activity[i]) {
+        NewProblem$Comp$ActCorr[j] = CompDF$Activity[i]
+        NewProblem$Spec$ActCorr[j] = CompDF$Activity[i]
 
-        iR = which(NewProblem$DefComp$Name == CompDF$Name[i])
-        if (length(iR) == 1) {
-          NewProblem$DefComp$ActCorr[iR] = CompDF$Activity[i]
+        j = which(NewProblem$DefComp$Name == CompDF$Name[i])
+        if (length(j) == 1) {
+          NewProblem$DefComp$ActCorr[j] = CompDF$Activity[i]
         }
       }
     }
@@ -248,22 +256,22 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
 
   # Species
   if (N[2] > 0L) {
-    SpecStoich.mat = as.matrix(SpecDF[, CompDF$Name])
-    rownames(SpecStoich.mat) = SpecDF$Name
-    if(any(NewProblem$Comp$Name %in% CompDF$Name == FALSE)) {
-      SpecStoich.mat = cbind(
-        SpecStoich.mat,
+    SpecStoichMat = as.matrix(SpecDF[, CompDF$Name])
+    rownames(SpecStoichMat) = SpecDF$Name
+    if (any(NewProblem$Comp$Name %in% CompDF$Name == FALSE)) {
+      SpecStoichMat = cbind(
+        SpecStoichMat,
         matrix(data = 0L, nrow = N[2],
                ncol = sum(NewProblem$Comp$Name %in% CompDF$Name == FALSE),
                dimnames = list(SpecDF$Name,
                                setdiff(NewProblem$Comp$Name, CompDF$Name)))
       )
     }
-    SpecStoich.mat = SpecStoich.mat[, NewProblem$Comp$Name]
+    SpecStoichMat = SpecStoichMat[, NewProblem$Comp$Name]
     NewProblem = AddSpecies(
       ThisProblem = NewProblem,
       SpecName = SpecDF$Name,
-      SpecStoich = SpecStoich.mat,
+      SpecStoich = SpecStoichMat,
       SpecMCName = SpecDF$MCName,
       SpecActCorr = SpecDF$Activity,
       SpecLogK = SpecDF$LogK,
@@ -274,22 +282,22 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
 
   # Phases
   if (N[3] > 0L) {
-    PhasesStoich.mat = as.matrix(PhasesDF[, CompDF$Name])
-    rownames(PhasesStoich.mat) = PhasesDF$Name
-    if(any(NewProblem$Comp$Name %in% CompDF$Name == FALSE)) {
-      PhasesStoich.mat = cbind(
-        PhasesStoich.mat,
+    PhaseStoichMat = as.matrix(PhasesDF[, CompDF$Name])
+    rownames(PhaseStoichMat) = PhasesDF$Name
+    if (any(NewProblem$Comp$Name %in% CompDF$Name == FALSE)) {
+      PhaseStoichMat = cbind(
+        PhaseStoichMat,
         matrix(data = 0L, nrow = N[3],
                ncol = sum(NewProblem$Comp$Name %in% CompDF$Name == FALSE),
                dimnames = list(PhasesDF$Name,
                                setdiff(NewProblem$Comp$Name, CompDF$Name)))
       )
     }
-    PhasesStoich.mat = PhasesStoich.mat[, NewProblem$Comp$Name, drop = FALSE]
+    PhaseStoichMat = PhaseStoichMat[, NewProblem$Comp$Name, drop = FALSE]
     NewProblem = AddPhases(
       ThisProblem = NewProblem,
       PhaseName = PhasesDF$Name,
-      PhaseStoich = PhasesStoich.mat,
+      PhaseStoich = PhaseStoichMat,
       PhaseLogK = PhasesDF$LogK,
       PhaseDeltaH = PhasesDF$DeltaH,
       PhaseTempKelvin = PhasesDF$TempKelvin,
@@ -308,7 +316,7 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
         InVarType = c("WHAM-HAFA", "PercHA")
       )
     } else if (any(grepl("^DOC[[:digit:]]", CompDF$Name) |
-                   grepl("^L[[:digit:]]", CompDF$Name))) {
+                     grepl("^L[[:digit:]]", CompDF$Name))) {
       # Marine DOC is a mix of ligands, usually named "L1, L2, L3, ..." or
       # "DOC1, DOC2, DOC3, ...". For these we need an input variable that we
       # split into the ligands based on the provided site density.
@@ -318,10 +326,12 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
         InVarMCName = "Water",
         InVarType = "Misc"
       )
-      DOCDefComp = NewProblem$Comp[grepl("^DOC[[:digit:]]", NewProblem$Comp$Name) |
-                                     grepl("^L[[:digit:]]", NewProblem$Comp$Name), ]
-      DOCSpec = NewProblem$Spec[(rowSums(NewProblem$SpecStoich[, DOCDefComp$Name]) != 0L) &
-                                  ((1:NewProblem$N["Spec"]) > NewProblem$N["Comp"]), ]
+      IBool = grepl("^DOC[[:digit:]]", NewProblem$Comp$Name) |
+        grepl("^L[[:digit:]]", NewProblem$Comp$Name)
+      DOCDefComp = NewProblem$Comp[IBool, ]
+      IBool = (rowSums(NewProblem$SpecStoich[, DOCDefComp$Name]) != 0L) &
+        ((1:NewProblem$N["Spec"]) > NewProblem$N["Comp"])
+      DOCSpec = NewProblem$Spec[IBool, ]
       NewProblem = RemoveInComps(
         ThisProblem = NewProblem,
         InCompToRemove = DOCDefComp$Name
@@ -349,16 +359,18 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
   }
 
   # Special Defs
-  SpecialDefs.mat = trimws(simplify2array(strsplit(
+  SpecialDefsMat = trimws(simplify2array(strsplit(
     UserNotes[grepl("[[]Metal[]]:", UserNotes) |
                 grepl("[[]BL[]]:", UserNotes) |
-                grepl("[[]BL-Metal[]]:", UserNotes)], split = ":")))
-  SpecialDefs.mat[1, ] = gsub("[[]", "", SpecialDefs.mat[1, ])
-  SpecialDefs.mat[1, ] = gsub("[]]", "", SpecialDefs.mat[1, ])
+                grepl("[[]BL-Metal[]]:", UserNotes)],
+    split = ":"
+  )))
+  SpecialDefsMat[1, ] = gsub("[[]", "", SpecialDefsMat[1, ])
+  SpecialDefsMat[1, ] = gsub("[]]", "", SpecialDefsMat[1, ])
   NewProblem = AddSpecialDefs(
     ThisProblem = NewProblem,
-    Value = SpecialDefs.mat[2, ],
-    SpecialDef = SpecialDefs.mat[1, ]
+    Value = SpecialDefsMat[2, ],
+    SpecialDef = SpecialDefsMat[1, ]
   )
 
   # Critical table
@@ -367,7 +379,7 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
     CATab = data.frame(
       CA = as.numeric(gsub("[[]LA50[]]:", "",
                            gsub("[[]CRITICAL[]]:", "", UserNotes[CritFlags]))),
-      Test.Type = "unknown"
+      TestType = "unknown"
     )
     if (any(grepl("HC5_LABEL", UserNotes))) {
       CATab$Endpoint = gsub("[[]HC5_LABEL[]]: ?", "",
@@ -382,29 +394,31 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
       CATab$Endpoint = "WQS"
     }
     if (any(grepl("ACUTE_DIV", UserNotes))) {
-      CATab$Test.Type = "Acute"
+      CATab$TestType = "Acute"
       CATab$Duration = gsub("[[]ACUTE_DIV[]]: ?", "DIV=",
                             UserNotes[grepl("[[]ACUTE_DIV[]]", UserNotes)])
     }
     if (any(grepl("CHRONIC_DIV", UserNotes))) {
-      CATab$Test.Type = "Acute"
+      CATab$TestType = "Acute"
       CATab$Lifestage = gsub("[[]CHRONIC_DIV[]]: ?", "ACR=",
                              UserNotes[grepl("CHRONIC_DIV", UserNotes)])
     }
-    CATab$Miscellaneous = paste0("Single critical value from \"",
-                                 WindowsParamFile,
-                                 "\" Windows BLM parameter file. See Notes for details")
+    CATab$Miscellaneous = paste0(
+      "Single critical value from \"",
+      WindowsParamFile,
+      "\" Windows BLM parameter file. See Notes for details"
+    )
   } else if (length(CritFlags) == 2L) {
     stopifnot(grepl("CRITICAL START", UserNotes[CritFlags[1]]) &
                 grepl("CRITICAL END", UserNotes[CritFlags[2]]))
-    CATab.text = UserNotes[(CritFlags[1] + 2):(CritFlags[2] - 1)]
+    CATabText = UserNotes[(CritFlags[1] + 2):(CritFlags[2] - 1)]
     CATab = utils::read.csv(
-      textConnection(CATab.text),
+      textConnection(CATabText),
       header = FALSE,
       col.names = c(
         "CA",
         "Species",
-        "Test.Type",
+        "TestType",
         "Lifestage",
         "Endpoint",
         "Quantifier",
@@ -413,20 +427,40 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL,
       ),
     )
     CATab$Duration = NA
-    i.bool = grepl("test duration:", CATab$Miscellaneous) & is.na(CATab$Duration)
-    if (any(i.bool)) {
-      CATab$Duration[i.bool] = gsub("; .+","", gsub("(.*);? ?test duration: (.+)", "\\2", CATab$Miscellaneous[i.bool]))
-      CATab$Miscellaneous[i.bool] = gsub("test duration: .+", "", gsub("; test duration: .+$","",gsub("test duration: .+; ", "", CATab$Miscellaneous[i.bool])))
+    IBool = grepl("test duration:", CATab$Miscellaneous) & is.na(CATab$Duration)
+    if (any(IBool)) {
+      CATab$Duration[IBool] = gsub(
+        "; .+",
+        "",
+        gsub(
+          "(.*);? ?test duration: (.+)",
+          "\\2",
+          CATab$Miscellaneous[IBool]
+        )
+      )
+      CATab$Miscellaneous[IBool] = gsub(
+        "test duration: .+",
+        "",
+        gsub(
+          "; test duration: .+$",
+          "",
+          gsub("test duration: .+; ", "", CATab$Miscellaneous[IBool])
+        )
+      )
     }
-    i.bool = grepl(" [(].+[)]", CATab$Test.Type) & is.na(CATab$Duration)
-    if (any(i.bool)) {
-      CATab$Duration[i.bool] = gsub("(.+) [(](.+)[)]", "\\2", CATab$Test.Type[i.bool])
-      CATab$Test.Type[i.bool] = gsub("(.+) [(](.+)[)]", "\\1", CATab$Test.Type[i.bool])
+    IBool = grepl(" [(].+[)]", CATab$TestType) & is.na(CATab$Duration)
+    if (any(IBool)) {
+      CATab$Duration[IBool] =
+        gsub("(.+) [(](.+)[)]", "\\2", CATab$TestType[IBool])
+      CATab$TestType[IBool] =
+        gsub("(.+) [(](.+)[)]", "\\1", CATab$TestType[IBool])
     }
-    i.bool = grepl("[,-] ", CATab$Test.Type) & is.na(CATab$Duration)
-    if (any(i.bool)) {
-      CATab$Duration[i.bool] = gsub("(.+) [,-](.+)", "\\2", CATab$Test.Type[i.bool])
-      CATab$Test.Type[i.bool] = gsub("(.+) [,-](.+)", "\\1", CATab$Test.Type[i.bool])
+    IBool = grepl("[,-] ", CATab$TestType) & is.na(CATab$Duration)
+    if (any(IBool)) {
+      CATab$Duration[IBool] =
+        gsub("(.+) [,-](.+)", "\\2", CATab$TestType[IBool])
+      CATab$TestType[IBool] =
+        gsub("(.+) [,-](.+)", "\\1", CATab$TestType[IBool])
     }
   } else {
     stop("Unknown critical value reporting.")

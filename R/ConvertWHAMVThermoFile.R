@@ -34,15 +34,16 @@ ConvertWHAMVThermoFile = function(ThermoDBSName,
 
   NewWHAM = DefineWHAM(WHAMVer = "V")
 
+  WHAMHSParams = c("nA", "pKA", "pKB", "dpKA", "dpKB", "P", "fprB",
+                   "Radius", "MolWt")
   Tmp = utils::read.csv(
     file = ThermoDBSName,
     header = FALSE,
     skip = 1L,
     nrows = 2L,
-    col.names = c("Label", "nA", "pKA", "pKB", "dpKA", "dpKB", "P", "fprB",
-                  "Radius", "MolWt")
+    col.names = c("Label", WHAMHSParams)
   )
-  for (i in c("nA", "pKA","pKB","dpKA", "dpKB", "fprB", "P", "Radius", "MolWt")) {
+  for (i in WHAMHSParams) {
     NewWHAM[[i]] = as.numeric(Tmp[, i])
     names(NewWHAM[[i]]) = c("HA", "FA")
   }
@@ -50,79 +51,82 @@ ConvertWHAMVThermoFile = function(ThermoDBSName,
   NewWHAM$dLK1A = NewWHAM$dpKA
   NewWHAM$dLK1B = NewWHAM$dpKB
 
-  Tmp = utils::read.csv(file = ThermoDBSName, header = FALSE, skip = 3, nrows = 2)
+  Tmp = utils::read.csv(file = ThermoDBSName, header = FALSE, skip = 3,
+                        nrows = 2)
   NewWHAM$DLF = as.numeric(Tmp[1, 2])
   NewWHAM$KZED = as.numeric(Tmp[2, 2])
 
-  NWHAM_rxn = utils::read.csv(file = ThermoDBSName, header = FALSE,
-                              skip = 5, nrows = 1)[, 2]
-  WHAM_rxn_tab = utils::read.csv(file = ThermoDBSName, header = FALSE, skip = 6,
-                                 nrows = NWHAM_rxn, col.names = c(
-                                   "Num", "Name", "Charge","C1","C2","C3",
-                                   "S1","S2","S3","LogK","DeltaH_kcal.mol",
-                                   "pKMAHA","pKMAFA"))
+  NWHAMRxn = utils::read.csv(file = ThermoDBSName, header = FALSE,
+                             skip = 5, nrows = 1)[, 2]
+  WHAMRxnTab = utils::read.csv(
+    file = ThermoDBSName, header = FALSE, skip = 6,
+    nrows = NWHAMRxn,
+    col.names = c("Num", "Name", "Charge", "C1", "C2", "C3", "S1", "S2", "S3",
+                  "LogK", "DeltaH_kcal.mol", "pKMAHA", "pKMAFA")
+  )
   NewWHAM$Notes = scan(file = ThermoDBSName, what = character(), sep = "\n",
-                       skip = 7 + NWHAM_rxn, quiet = TRUE)
+                       skip = 7 + NWHAMRxn, quiet = TRUE)
 
   # eliminate duplicate species names
-  if (any(duplicated(WHAM_rxn_tab$Name))) {
+  if (any(duplicated(WHAMRxnTab$Name))) {
 
-    NeedsRename = which(WHAM_rxn_tab$Name %in% WHAM_rxn_tab$Name[
-      duplicated(WHAM_rxn_tab$Name)])
+    NeedsRename = which(
+      WHAMRxnTab$Name %in% WHAMRxnTab$Name[duplicated(WHAMRxnTab$Name)]
+    )
 
-    WHAM_rxn_sub = WHAM_rxn_tab[NeedsRename, ]
-    WHAM_rxn_sub$OldName = WHAM_rxn_sub$Name
+    WHAMRxnSub = WHAMRxnTab[NeedsRename, ]
+    WHAMRxnSub$OldName = WHAMRxnSub$Name
 
-    WHAM_rxn_sub$C1_name = WHAM_rxn_tab$Name[match(WHAM_rxn_sub$C1, WHAM_rxn_tab$Num)]
-    WHAM_rxn_sub$C2_name = WHAM_rxn_tab$Name[match(WHAM_rxn_sub$C2, WHAM_rxn_tab$Num)]
-    WHAM_rxn_sub$C3_name = WHAM_rxn_tab$Name[match(WHAM_rxn_sub$C3, WHAM_rxn_tab$Num)]
+    WHAMRxnSub$C1_name = WHAMRxnTab$Name[match(WHAMRxnSub$C1, WHAMRxnTab$Num)]
+    WHAMRxnSub$C2_name = WHAMRxnTab$Name[match(WHAMRxnSub$C2, WHAMRxnTab$Num)]
+    WHAMRxnSub$C3_name = WHAMRxnTab$Name[match(WHAMRxnSub$C3, WHAMRxnTab$Num)]
 
-    WHAM_rxn_sub$C1_needs_paren = grepl("^[[:upper:]][[:upper:]]", WHAM_rxn_sub$C1_name)
-    WHAM_rxn_sub$C2_needs_paren = grepl("^[[:upper:]][[:upper:]]", WHAM_rxn_sub$C2_name)
-    WHAM_rxn_sub$C3_needs_paren = grepl("^[[:upper:]][[:upper:]]", WHAM_rxn_sub$C3_name)
+    PatternTmp = "^[[:upper:]][[:upper:]]"
+    WHAMRxnSub$C1_needs_paren = grepl(PatternTmp, WHAMRxnSub$C1_name)
+    WHAMRxnSub$C2_needs_paren = grepl(PatternTmp, WHAMRxnSub$C2_name)
+    WHAMRxnSub$C3_needs_paren = grepl(PatternTmp, WHAMRxnSub$C3_name)
 
+    Tmp = rep("", nrow(WHAMRxnSub))
+    IBool = (WHAMRxnSub$C1_needs_paren & (WHAMRxnSub$S1 > 1))
+    Tmp[IBool] = paste0(Tmp[IBool], "(")
+    IBool = (WHAMRxnSub$S1 > 0)
+    Tmp[IBool] = paste0(Tmp, WHAMRxnSub$C1_name)[IBool]
+    IBool = (WHAMRxnSub$C1_needs_paren & (WHAMRxnSub$S1 > 1))
+    Tmp[IBool] = paste0(Tmp[IBool], ")")
+    IBool = (WHAMRxnSub$S1 > 1)
+    Tmp[IBool] = paste0(Tmp, WHAMRxnSub$S1)[IBool]
 
-    Tmp = rep("", nrow(WHAM_rxn_sub))
-    i.bool = (WHAM_rxn_sub$C1_needs_paren & (WHAM_rxn_sub$S1 > 1))
-    Tmp[i.bool] = paste0(Tmp[i.bool], "(")
-    i.bool = (WHAM_rxn_sub$S1 > 0)
-    Tmp[i.bool] = paste0(Tmp, WHAM_rxn_sub$C1_name)[i.bool]
-    i.bool = (WHAM_rxn_sub$C1_needs_paren & (WHAM_rxn_sub$S1 > 1))
-    Tmp[i.bool] = paste0(Tmp[i.bool], ")")
-    i.bool = (WHAM_rxn_sub$S1 > 1)
-    Tmp[i.bool] = paste0(Tmp, WHAM_rxn_sub$S1)[i.bool]
+    IBool = (WHAMRxnSub$C2_needs_paren & (WHAMRxnSub$S2 > 1))
+    Tmp[IBool] = paste0(Tmp[IBool], "(")
+    IBool = (WHAMRxnSub$S2 > 0)
+    Tmp[IBool] = paste0(Tmp, WHAMRxnSub$C2_name)[IBool]
+    IBool = (WHAMRxnSub$C2_needs_paren & (WHAMRxnSub$S2 > 1))
+    Tmp[IBool] = paste0(Tmp[IBool], ")")
+    IBool = (WHAMRxnSub$S2 > 1)
+    Tmp[IBool] = paste0(Tmp, WHAMRxnSub$S2)[IBool]
 
-    i.bool = (WHAM_rxn_sub$C2_needs_paren & (WHAM_rxn_sub$S2 > 1))
-    Tmp[i.bool] = paste0(Tmp[i.bool], "(")
-    i.bool = (WHAM_rxn_sub$S2 > 0)
-    Tmp[i.bool] = paste0(Tmp, WHAM_rxn_sub$C2_name)[i.bool]
-    i.bool = (WHAM_rxn_sub$C2_needs_paren & (WHAM_rxn_sub$S2 > 1))
-    Tmp[i.bool] = paste0(Tmp[i.bool], ")")
-    i.bool = (WHAM_rxn_sub$S2 > 1)
-    Tmp[i.bool] = paste0(Tmp, WHAM_rxn_sub$S2)[i.bool]
+    IBool = (WHAMRxnSub$C3_needs_paren & (WHAMRxnSub$S3 > 1))
+    Tmp[IBool] = paste0(Tmp[IBool], "(")
+    IBool = (WHAMRxnSub$S3 > 0)
+    Tmp[IBool] = paste0(Tmp, WHAMRxnSub$C3_name)[IBool]
+    IBool = (WHAMRxnSub$C3_needs_paren & (WHAMRxnSub$S3 > 1))
+    Tmp[IBool] = paste0(Tmp[IBool], ")")
+    IBool = (WHAMRxnSub$S3 > 1)
+    Tmp[IBool] = paste0(Tmp, WHAMRxnSub$S3)[IBool]
 
-    i.bool = (WHAM_rxn_sub$C3_needs_paren & (WHAM_rxn_sub$S3 > 1))
-    Tmp[i.bool] = paste0(Tmp[i.bool], "(")
-    i.bool = (WHAM_rxn_sub$S3 > 0)
-    Tmp[i.bool] = paste0(Tmp, WHAM_rxn_sub$C3_name)[i.bool]
-    i.bool = (WHAM_rxn_sub$C3_needs_paren & (WHAM_rxn_sub$S3 > 1))
-    Tmp[i.bool] = paste0(Tmp[i.bool], ")")
-    i.bool = (WHAM_rxn_sub$S3 > 1)
-    Tmp[i.bool] = paste0(Tmp, WHAM_rxn_sub$S3)[i.bool]
+    WHAMRxnSub$Name = Tmp
 
-    WHAM_rxn_sub$Name = Tmp
-
-    WHAM_rxn_tab$Name[match(WHAM_rxn_sub$Num, WHAM_rxn_tab$Num)] = WHAM_rxn_sub$Name
+    WHAMRxnTab$Name[match(WHAMRxnSub$Num, WHAMRxnTab$Num)] = WHAMRxnSub$Name
   }
 
   # Separate out the components and species
-  WHAM_comp_tab = WHAM_rxn_tab[(WHAM_rxn_tab$Num < 100),
-                               c("Num","Name","Charge","pKMAHA","pKMAFA")]
-  WHAM_spec_tab = WHAM_rxn_tab[(WHAM_rxn_tab$Num > 100), ]
+  WHAMCompTab = WHAMRxnTab[(WHAMRxnTab$Num < 100),
+                           c("Num", "Name", "Charge", "pKMAHA", "pKMAFA")]
+  WHAMSpecTab = WHAMRxnTab[(WHAMRxnTab$Num > 100), ]
 
   # Species reaction enthalpy changes need converting
-  WHAM_spec_tab$SpecTempKelvin = 1 / 0.003354
-  WHAM_spec_tab$DeltaH = WHAM_spec_tab$DeltaH_kcal.mol * 220 * 8.314 * log(10)
+  WHAMSpecTab$SpecTempKelvin = 1 / 0.003354
+  WHAMSpecTab$DeltaH = WHAMSpecTab$DeltaH_kcal.mol * 220 * 8.314 * log(10)
   # Note: This is a conversion used by WHAM V. The WHAM deltaH values are in
   # units of kcal/mol while the Van't Hoff equation (which the BLM uses for
   # thermodynamic corrections) needs J/mol. Strictly speaking, you should
@@ -138,33 +142,45 @@ ConvertWHAMVThermoFile = function(ThermoDBSName,
   # to 220. This makes his conversion from kcal to J, effectively, 4211.612
   # J/kcal.
 
-  WHAM_rxn_tab$dLK2 = 0.13 # dLK2 is 0.13 for WHAM V, varies for WHAM VI/VII
-  NewWHAM$MetalsTable = WHAM_rxn_tab[(WHAM_rxn_tab$pKMAHA != 999) &
-                                       (WHAM_rxn_tab$pKMAFA != 999),
-                                     c("Name", "pKMAHA", "pKMAFA", "dLK2")]
+  WHAMRxnTab$dLK2 = 0.13 # dLK2 is 0.13 for WHAM V, varies for WHAM VI/VII
+  NewWHAM$MetalsTable = WHAMRxnTab[
+    (WHAMRxnTab$pKMAHA != 999) & (WHAMRxnTab$pKMAFA != 999),
+    c("Name", "pKMAHA", "pKMAFA", "dLK2")
+  ]
   colnames(NewWHAM$MetalsTable)[1] = "Metal"
   NewWHAM$MetalsTable = NewWHAM$MetalsTable[order(NewWHAM$MetalsTable$Metal), ]
   rownames(NewWHAM$MetalsTable) = NULL
 
   # Now add the inorganic reactions to a BLM problem list
+  NotHOHComps = (WHAMCompTab$Name %in% c("H", "OH") == FALSE)
   NewProblem = AddInComps(
     ThisProblem = BLMEngineInR::water_problem,
-    InCompName = WHAM_comp_tab$Name[(WHAM_comp_tab$Name %in% c("H","OH") == FALSE)],
-    InCompCharge = WHAM_comp_tab$Charge[(WHAM_comp_tab$Name %in% c("H","OH") == FALSE)],
+    InCompName = WHAMCompTab$Name[NotHOHComps],
+    InCompCharge = WHAMCompTab$Charge[NotHOHComps],
     InCompType = "MassBal",
     InCompActCorr = "Debye",
     InCompMCName = "Water"
   )
   NewProblem = AddSpecies(
     ThisProblem = NewProblem,
-    SpecName = WHAM_spec_tab$Name,
-    SpecCompNames = apply(WHAM_spec_tab[,c("C1","C2","C3")], MARGIN = 1, FUN = function(X){WHAM_comp_tab$Name[stats::na.omit(match(X, WHAM_comp_tab$Num))]}),
-    SpecCompStoichs = apply(WHAM_spec_tab[,c("S1","S2","S3")], MARGIN = 1, FUN = function(X){X[X != 0L]}),
+    SpecName = WHAMSpecTab$Name,
+    SpecCompNames = apply(
+      WHAMSpecTab[, c("C1", "C2", "C3")],
+      MARGIN = 1,
+      FUN = function(X) {
+        WHAMCompTab$Name[stats::na.omit(match(X, WHAMCompTab$Num))]
+      }
+    ),
+    SpecCompStoichs = apply(
+      WHAMSpecTab[, c("S1", "S2", "S3")],
+      MARGIN = 1,
+      FUN = function(X) { X[X != 0L] }
+    ),
     SpecMCName = "Water",
     SpecActCorr = "Debye",
-    SpecLogK = WHAM_spec_tab$LogK,
-    SpecDeltaH = WHAM_spec_tab$DeltaH,
-    SpecTempKelvin = WHAM_spec_tab$SpecTempKelvin,
+    SpecLogK = WHAMSpecTab$LogK,
+    SpecDeltaH = WHAMSpecTab$DeltaH,
+    SpecTempKelvin = WHAMSpecTab$SpecTempKelvin,
     DoCheck = TRUE
   )
 
@@ -174,7 +190,7 @@ ConvertWHAMVThermoFile = function(ThermoDBSName,
 
   CheckBLMObject(Object = NewProblem, Reference = BlankProblem())
 
-  if (!is.null(RWHAMFile) | !is.null(RParamFile)) {
+  if (!is.null(RWHAMFile) || !is.null(RParamFile)) {
     if (!is.null(RWHAMFile)) {
       WriteWHAMFile(ThisWHAM = NewWHAM,
                     WHAMFile = RWHAMFile)
@@ -191,5 +207,3 @@ ConvertWHAMVThermoFile = function(ThermoDBSName,
   }
 
 }
-
-

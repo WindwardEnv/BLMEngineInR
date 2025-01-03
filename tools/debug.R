@@ -2,8 +2,10 @@ rm(list = ls())
 # devtools::clean_dll()
 devtools::load_all()
 
-ParamFile = "inst/extdata/ParameterFiles/Cu_full_organic_WATER23dH.dat4"
-InputFile = "inst/extdata/InputFiles/Cu_full_organic.blm4"
+# ParamFile = "inst/extdata/ParameterFiles/Cu_full_organic.dat4"
+# InputFile = "inst/extdata/InputFiles/Cu_full_organic.blm4"
+ParamFile = "inst/extdata/ParameterFiles/Zn_full_organic_S.dat4"
+InputFile = "inst/extdata/InputFiles/Zn_full_organic_S.blm4"
 
 ThisProblem = DefineProblem(ParamFile, WriteLog = TRUE)
 tmp = ReadInputsFromFile(InputFile, ThisProblem)
@@ -11,14 +13,18 @@ InputDF = data.frame(tmp$InLabObs, tmp$InVarObs, tmp$InCompObs)
 # AllInput = GetData(InputFile, ThisProblem = ThisProblem)
 
 InputDF = data.frame(
-  Temp = c(rep(5, 7)),
-  pH = c(6, 9.5, 10, 10, 10, 10, 10),
-  DOC = c(5, 0.1, 5, 5, 5, 20, 20),
+  Temp = 15,
+  pH = 7,
+  DOC = 20,
   HA = 0.01,
-  Cu_ug.L = c(10000, 0.1, 0.1, 0.1, 0.1, 0.1, 10000),
-  Hard = c(1,1000,1, 100, 1000, 1, 1000)
+  Cu_ug.L = 0.1,
+  Zn_ug.L = 0.1,
+  Hard = 10,
+  S = 1E-20
 )
+InputDF$ObsNum = InputDF$ID = InputDF$ID2 = as.character("#13")
 InputDF$Cu = InputDF$Cu_ug.L / (10^6 * MW["Cu"])
+InputDF$Zn = InputDF$Zn_ug.L / (10^6 * MW["Zn"])
 InputDF$Ca = (InputDF$Hard / (1000 * MW["CaCO3"])) / (1 + 1 / 0.7)
 InputDF$Mg = InputDF$Ca / 0.7
 InputDF$Na = InputDF$Ca / 0.31
@@ -26,27 +32,26 @@ InputDF$K = InputDF$Ca / 6.50
 InputDF$SO4 = InputDF$Ca / 0.41 # CaSO4 and MgSO4 used in EPA water
 InputDF$Cl = InputDF$K #KCl used as salt in EPA water
 InputDF$CO3 = InputDF$Na #NaHCO3 used as salt in EPA water
-InputDF$ObsNum = InputDF$ID = InputDF$ID2 = as.character(c(273, 664, 745, 747, 748, 769, 780))
 
 AllInput = MatchInputsToProblem(DFInputs = InputDF,
-                                ThisProblem = Cu_full_organic_problem)
+                                ThisProblem = ThisProblem)
 
 
 ResultsTable <- BLM(
   ThisProblem = ThisProblem,
   AllInput = AllInput,
-  DoTox = FALSE,
-  QuietFlag ="Debug",
-  ConvergenceCriteria = 0.0001,
-  MaxIter = 100L,
-  DodVidCj = TRUE,
-  DodVidCjDonnan = FALSE,
-  DodKidCj = FALSE,
-  DoGammai = TRUE,
-  DoJacDonnan = FALSE,
-  DoJacWHAM = TRUE,
-  DoWHAMSimpleAdjust = TRUE,
-  DoDonnanSimpleAdjust = TRUE
+  DoTox = TRUE,
+  QuietFlag ="Debug"#,
+  # ConvergenceCriteria = 0.0001,
+  # MaxIter = 100L,
+  # DodVidCj = TRUE,
+  # DodVidCjDonnan = FALSE,
+  # DodKidCj = FALSE,
+  # DoGammai = TRUE,
+  # DoJacDonnan = FALSE,
+  # DoJacWHAM = TRUE,
+  # DoWHAMSimpleAdjust = TRUE,
+  # DoDonnanSimpleAdjust = TRUE
 )
 ResultsTable$Miscellaneous
 
@@ -98,7 +103,7 @@ ThisProblem_toxmode = AddCriticalValues(
   ),
   CA = 0.0001,
   Species = "Test",
-  Test.Type = "test",
+  TestType = "test",
   Duration = "test",
   Lifestage = "test",
   Endpoint = "test",

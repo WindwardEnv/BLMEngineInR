@@ -304,7 +304,7 @@ write(c(
 ), file = tf)
 All_NIST20170203_reactions = ConvertWHAMVThermoFile(
   ThermoDBSName = tf,
-  RWHAMFile = file.path("inst","extdata", "WHAM", "NIST_20170203.wdat"),
+  RWHAMFile = file.path("inst", "extdata", "WHAM", "NIST_20170203.wdat"),
   RParamFile = file.path("inst", "extdata", "ParameterFiles", "All_NIST20170203_reactions.dat4")
 )
 

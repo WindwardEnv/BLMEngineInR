@@ -32,10 +32,17 @@ This function will compare an object to a reference object to
 \examples{
 # This one works:
 myproblem = BlankProblem()
-myproblem = AddMassCompartments(myproblem, data.frame(Name = "Water",Amt = 1.0, Unit = "L"))
-CheckBLMObject(Object = myproblem, Reference = BlankProblem(), BreakOnError = FALSE)
+myproblem = AddMassCompartments(ThisProblem = myproblem,
+                                MassName = "Water",
+                                MassAmt = 1.0,
+                                MassUnit = "L"))
+CheckBLMObject(Object = myproblem,
+               Reference = BlankProblem(),
+               BreakOnError = FALSE)
 
 # This one fails:
 myproblem$N = NULL
-CheckBLMObject(Object = myproblem, Reference = BlankProblem(), BreakOnError = FALSE)
+CheckBLMObject(Object = myproblem,
+               Reference = BlankProblem(),
+               BreakOnError = FALSE)
 }
