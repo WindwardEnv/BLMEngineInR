@@ -37,7 +37,7 @@ my_new_problem = carbonate_system_problem
 print(carbonate_system_problem$InLabName) # ID only
 
 my_new_problem = AddInLabs(ThisProblem = my_new_problem, InLabName = "ID2")
-my_new_problem = RemoveInLabs(ThisProblem = my_new_problem, InLabToRemove = "ID")
+my_new_problem = RemoveInLabs(my_new_problem, InLabToRemove = "ID")
 
 print(my_new_problem$InLabName) # ID2 only
 

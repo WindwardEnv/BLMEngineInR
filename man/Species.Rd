@@ -114,14 +114,16 @@ my_new_problem = AddInComps(ThisProblem = my_new_problem,
                             InCompMCName = "Water",
                             InCompType = "MassBal",
                             InCompActCorr = "Debye")
-my_new_problem = AddSpecies(ThisProblem = my_new_problem,
-                            SpecEquation = c("CaCO3 = 1 * Ca + 1 * CO3",
-                                             "CaHCO3 = 1 * Ca + 1 * H + 1 * CO3"),
-                            SpecMCName = "Water",
-                            SpecActCorr = "Debye",
-                            SpecLogK = c(3.22, 11.44),
-                            SpecDeltaH = c(14951, -3664),
-                            SpecTempKelvin = 298.15)
+my_new_problem = AddSpecies(
+  ThisProblem = my_new_problem,
+  SpecEquation = c("CaCO3 = 1 * Ca + 1 * CO3",
+                   "CaHCO3 = 1 * Ca + 1 * H + 1 * CO3"),
+  SpecMCName = "Water",
+  SpecActCorr = "Debye",
+  SpecLogK = c(3.22, 11.44),
+  SpecDeltaH = c(14951, -3664),
+  SpecTempKelvin = 298.15
+)
 print(my_new_problem$Spec)
 my_new_problem = RemoveSpecies(ThisProblem = my_new_problem,
                                SpeciesToRemove = "CaCO3")
