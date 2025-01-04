@@ -52,7 +52,6 @@
 #' @examples
 #' carbonate_system_problem$Comp[, c("Name", "Charge", "Type")]
 #' carbonate_system_problem$Spec[, c("Equation", "ActCorr", "LogK", "DeltaH")]
-#'
 "carbonate_system_problem"
 
 #' @title Water mass compartment only problem

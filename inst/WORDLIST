@@ -43,6 +43,7 @@ CompMCName
 CompMCR
 Coplen
 Cotsifas
+CritAccumValue
 DDL
 DFInputs
 Daphnia
@@ -175,6 +176,7 @@ Stoichiometry
 Stubblefield
 TIEs
 Takahashi
+TestType
 Tham
 ThisProblem
 ThisWHAM
