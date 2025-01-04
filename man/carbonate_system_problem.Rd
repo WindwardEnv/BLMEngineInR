@@ -24,6 +24,5 @@ This problem consists of two components (hydrogen "H" and carbonate
 \examples{
 carbonate_system_problem$Comp[, c("Name", "Charge", "Type")]
 carbonate_system_problem$Spec[, c("Equation", "ActCorr", "LogK", "DeltaH")]
-
 }
 \keyword{datasets}
