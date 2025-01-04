@@ -4,16 +4,7 @@
 \alias{WriteParamFile}
 \title{Write a BLM Parameter File}
 \usage{
-WriteParamFile(
-  ThisProblem,
-  ParamFile,
-  Notes = if ("Notes" \%in\% names(ThisProblem)) {
-     ThisProblem$Notes
- } else {
-    
-    NULL
- }
-)
+WriteParamFile(ThisProblem, ParamFile, Notes = ThisProblem$Notes)
 }
 \arguments{
 \item{ThisProblem}{A list object with a structure like that returned by

@@ -1,8 +1,31 @@
+devtools::load_all()
+
+# update data files
+sapply(list.files("data-raw", full.names = TRUE), FUN = source)
+
+# check lints and style
+styler::style_pkg(
+  style = styler::tidyverse_style(scope = c("indention", "line_breaks")),
+  dry = "on"
+)
+lintr::lint_package()
+
 # to-do list before release:
-release()
+# release()
 
 # Update documentation
 devtools::document()
+
+# run tests and examples
+devtools::run_examples()
+devtools::test()
+
+# check test coverage
+devtools::unload()
+tmp = devtools::test_coverage()
+devtools::load_all()
+
+# update manual
 devtools::build_manual()
 
 # Have you checked for spelling errors (with `spell_check()`)?

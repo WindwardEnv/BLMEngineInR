@@ -47,10 +47,9 @@
 #' print(carbonate_system_problem$Mass)
 #' my_new_problem = carbonate_system_problem
 #' my_new_problem = AddMassCompartments(ThisProblem = my_new_problem,
-#'                                      MassTable = data.frame(
-#'                                        Name = c("Soil", "BL"),
-#'                                        Amt = 1,
-#'                                        Unit = c("kg","kg wet")))
+#'                                      MassName = c("Soil", "BL"),
+#'                                      MassAmt = 1,
+#'                                      MassUnit = c("kg","kg wet"))
 #' print(my_new_problem$Mass)
 #' my_new_problem = RemoveMassCompartments(ThisProblem = my_new_problem,
 #'                                         MCToRemove = "Soil")

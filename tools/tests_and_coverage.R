@@ -44,9 +44,9 @@ covr::file_coverage(
   test_files = paste0("tests/testthat/test-", files_with_tests, ".R")
 )
 
-devtools::load_all()
 devtools::unload()
 devtools::test_coverage()
+devtools::load_all()
 
 
 covr::file_coverage(
@@ -98,3 +98,4 @@ lintr::lint("R/WriteWHAMFile.R")
 lintr::lint_package()
 
 ?styler
+styler::style_pkg(style = styler::tidyverse_style(scope = c("indention", "line_breaks")), dry = "on")

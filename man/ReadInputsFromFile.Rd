@@ -51,7 +51,8 @@ Returns a \code{list} object with the following components:
 matches the problem as defined by the input arguments.
 }
 \examples{
-myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+myinputfile = system.file(file.path("extdata", "InputFiles",
+                                    "carbonate_system_test.blm4"),
                           package = "BLMEngineInR", mustWork = TRUE)
 ReadInputsFromFile(InputFile = myinputfile,
                    ThisProblem = carbonate_system_problem)

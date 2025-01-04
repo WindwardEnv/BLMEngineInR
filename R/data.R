@@ -50,9 +50,8 @@
 #'   input label "ID" is supplied as well.
 #'
 #' @examples
-#' print(carbonate_system_problem$Comp[, c("Name", "Charge", "Type")])
-#' print(carbonate_system_problem$Spec[, c("Equation", "Charge", "ActCorr",
-#'                                         "LogK", "DeltaH")])
+#' carbonate_system_problem$Comp[, c("Name", "Charge", "Type")]
+#' carbonate_system_problem$Spec[, c("Equation", "ActCorr", "LogK", "DeltaH")]
 #'
 "carbonate_system_problem"
 

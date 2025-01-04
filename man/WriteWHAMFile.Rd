@@ -4,16 +4,7 @@
 \alias{WriteWHAMFile}
 \title{Write a WHAM Parameter File}
 \usage{
-WriteWHAMFile(
-  ThisWHAM,
-  WHAMFile,
-  Notes = if ("Notes" \%in\% names(ThisWHAM)) {
-     ThisWHAM$Notes
- } else {
-     NULL
-
-    }
-)
+WriteWHAMFile(ThisWHAM, WHAMFile, Notes = ThisWHAM$Notes)
 }
 \arguments{
 \item{ThisWHAM}{A list object with a structure like that returned by
