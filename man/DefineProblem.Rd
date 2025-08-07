@@ -21,8 +21,8 @@ Returns a `list` object with each list item named according to the
 and matrices that will be needed to run the speciation calculations in CHESS.
 }
 \examples{
-mypfile = system.file(file.path("extdata", "ParameterFiles",
-                                "carbonate_system_only.dat4"),
+mypfile = system.file("extdata", "ParameterFiles",
+                      "carbonate_system_only.dat4",
                       package = "BLMEngineInR", mustWork = TRUE)
 thisProblem = DefineProblem(mypfile)
 

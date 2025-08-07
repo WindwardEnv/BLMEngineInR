@@ -1,6 +1,6 @@
 test_that("DefineProblem works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","Cu_full_organic.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   expect_no_error(DefineProblem(ParamFile = mypfile))
@@ -16,10 +16,10 @@ test_that("DefineProblem works", {
                Cu_full_organic_problem$WHAM[compare_names_WHAM])
 
   myproblem = DefineProblem(ParamFile = mypfile)
-  myproblem$WHAM$File = gsub(dirname(myproblem$WHAM$File), "", myproblem$WHAM$File)
+  myproblem$WHAM$File = basename(myproblem$WHAM$File)
 
   mytestproblem = Cu_full_organic_problem
-  mytestproblem$WHAM$File = gsub(dirname(mytestproblem$WHAM$File), "", mytestproblem$WHAM$File)
+  mytestproblem$WHAM$File = basename(mytestproblem$WHAM$File)
 
   expect_equal(myproblem[compare_names],
                mytestproblem[compare_names])

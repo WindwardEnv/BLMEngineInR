@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mypfile = system.file(file.path("extdata", "ParameterFiles", "carbonate_system_only.dat4"),
+mypfile = system.file("extdata", "ParameterFiles", "carbonate_system_only.dat4",
                       package = "BLMEngineInR",
                       mustWork = TRUE)
 carbonate_system_problem = DefineProblem(ParamFile = mypfile)

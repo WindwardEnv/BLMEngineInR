@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mypfile = system.file(file.path("extdata", "ParameterFiles", "Cu_inorganic_only.dat4"),
+mypfile = system.file("extdata", "ParameterFiles", "Cu_inorganic_only.dat4",
                       package = "BLMEngineInR", mustWork = TRUE)
 Cu_full_inorganic_problem = DefineProblem(ParamFile = mypfile, WriteLog = FALSE)
 

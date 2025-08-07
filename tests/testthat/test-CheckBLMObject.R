@@ -1,11 +1,11 @@
 test_that("CheckBLMObject works when nothing's wrong", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
@@ -21,12 +21,12 @@ test_that("CheckBLMObject works when nothing's wrong", {
 })
 test_that("CheckBLMObject works when an element's been removed or added", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
@@ -51,12 +51,12 @@ test_that("CheckBLMObject works when an element's been removed or added", {
 })
 test_that("CheckBLMObject works when there's a wrong type", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
@@ -85,12 +85,12 @@ test_that("CheckBLMObject works when there's a wrong type", {
 })
 test_that("CheckBLMObject works when a column in a matrix or data frame's been removed or added", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
@@ -147,12 +147,12 @@ test_that("CheckBLMObject works when a column in a matrix or data frame's been r
 })
 test_that("CheckBLMObject works when something's the wrong length", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
@@ -217,12 +217,12 @@ test_that("CheckBLMObject works when something's the wrong length", {
 })
 test_that("CheckBLMObject works when there's something extra", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)

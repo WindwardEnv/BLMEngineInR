@@ -1,5 +1,5 @@
 test_that("WriteWHAM works", {
-  mywfile = system.file(file.path("extdata", "WHAM", "WHAM_V.wdat"),
+  mywfile = system.file("extdata", "WHAM", "WHAM_V.wdat",
                         package = "BLMEngineInR", mustWork = TRUE)
   mywlist = DefineWHAM(WHAMFile = mywfile)
 

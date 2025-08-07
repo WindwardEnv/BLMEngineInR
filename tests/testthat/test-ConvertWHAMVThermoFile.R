@@ -251,7 +251,7 @@ test_that("ConvertWHAMVThermoFile works", {
   # testthat::skip_on_cran()
   converted.file = ConvertWHAMVThermoFile(ThermoDBSName = mydbsfile)
   previously.converted.file = DefineProblem(
-    ParamFile = system.file(file.path("extdata","ParameterFiles", "All_Water23_reactions.dat4"),
+    ParamFile = system.file("extdata","ParameterFiles", "All_Water23_reactions.dat4",
                             package = "BLMEngineInR",
                             mustWork = TRUE))
   compare.names = setdiff(names(previously.converted.file), c("ParamFile","WHAM"))

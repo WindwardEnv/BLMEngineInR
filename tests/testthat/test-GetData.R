@@ -1,9 +1,9 @@
 test_that("ReadInputsFromFile works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
@@ -30,7 +30,7 @@ test_that("ReadInputsFromFile works", {
 
 test_that("MatchInputsToProblem works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","Cu_full_organic.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
@@ -111,11 +111,11 @@ test_that("MatchInputsToProblem works", {
 
 test_that("GetData works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
 
@@ -125,7 +125,7 @@ test_that("GetData works", {
 
 test_that("BlankInputList works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)

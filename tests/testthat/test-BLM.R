@@ -1,10 +1,10 @@
 test_that("BLM function works - general functionality", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
-  myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
@@ -32,7 +32,7 @@ test_that("BLM function works - general functionality", {
 
 test_that("BLM function works - CHESS works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
@@ -67,7 +67,7 @@ test_that("BLM function works - toxicity mode works", {
 
   # skip_on_cran()
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
+  mypfile = system.file("extdata", "ParameterFiles", "Cu_full_organic.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
@@ -107,7 +107,7 @@ test_that("BLM function works - DOC binding works", {
 
   # skip_on_cran()
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
+  mypfile = system.file("extdata", "ParameterFiles", "Cu_full_organic.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)

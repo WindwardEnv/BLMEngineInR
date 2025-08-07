@@ -1,10 +1,10 @@
 test_that("WriteInputFile works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
+  mypfile = system.file("extdata","ParameterFiles","Cu_full_organic.dat4",
                         package = "BLMEngineInR",
                         mustWork = TRUE)
   myproblem = DefineProblem(ParamFile = mypfile)
-  myinputfile = system.file(file.path("extdata","InputFiles","Cu_full_organic.blm4"),
+  myinputfile = system.file("extdata","InputFiles","Cu_full_organic.blm4",
                             package = "BLMEngineInR",
                             mustWork = TRUE)
   myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)

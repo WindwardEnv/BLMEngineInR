@@ -158,7 +158,8 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL, #nolint:
         ThermoDBSName = file.path(dirname(WindowsParamFile), ThermoDBSName),
         RWHAMFile = RWHAMFile
       )
-    } else if (PkgDatasetName %in% data(package = "BLMEngineInR")$results[, "Item"]) {
+    } else if (PkgDatasetName %in%
+                 data(package = "BLMEngineInR")$results[, "Item"]) {
       utils::data(
         list = PkgDatasetName,
         package = "BLMEngineInR",

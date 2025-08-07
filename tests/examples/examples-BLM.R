@@ -1,8 +1,8 @@
 # running the BLM function with a parameter file and input file:
-mypfile = system.file(file.path("extdata","ParameterFiles","carbonate_system_only.dat4"),
+mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
                       package = "BLMEngineInR",
                       mustWork = TRUE)
-myinputfile = system.file(file.path("extdata","InputFiles","carbonate_system_test.blm4"),
+myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
                           package = "BLMEngineInR",
                           mustWork = TRUE)
 BLM(ParamFile = mypfile, InputFile = myinputfile, DoTox = FALSE)

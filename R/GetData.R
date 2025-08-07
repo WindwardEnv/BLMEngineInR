@@ -44,8 +44,8 @@
 #' @export
 #'
 #' @examples
-#' myinputfile = system.file(file.path("extdata", "InputFiles",
-#'                                     "carbonate_system_test.blm4"),
+#' myinputfile = system.file("extdata", "InputFiles",
+#'                           "carbonate_system_test.blm4",
 #'                           package = "BLMEngineInR", mustWork = TRUE)
 #' ReadInputsFromFile(InputFile = myinputfile,
 #'                    ThisProblem = carbonate_system_problem)
@@ -386,8 +386,8 @@ MatchInputsToProblem = function(
 #' @export
 #'
 #' @examples
-#' myinputfile = system.file(file.path("extdata", "InputFiles",
-#'                                     "carbonate_system_test.blm4"),
+#' myinputfile = system.file("extdata", "InputFiles",
+#'                           "carbonate_system_test.blm4",
 #'                           package = "BLMEngineInR", mustWork = TRUE)
 #' GetData(InputFile = myinputfile, ThisProblem = carbonate_system_problem)#'
 #'

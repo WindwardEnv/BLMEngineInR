@@ -25,8 +25,8 @@
 #'
 #' @examples
 #' tf = tempfile()
-#' myinputfile = system.file(file.path("extdata", "InputFiles",
-#'                                     "carbonate_system_test.blm4"),
+#' myinputfile = system.file("extdata", "InputFiles",
+#'                           "carbonate_system_test.blm4",
 #'                           package = "BLMEngineInR",
 #'                           mustWork = TRUE)
 #' myinputs = GetData(InputFile = myinputfile,

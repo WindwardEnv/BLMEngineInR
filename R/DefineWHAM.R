@@ -39,15 +39,15 @@ DefineWHAM = function(WHAMVer = "V", WHAMFile = NA) {
   WHAMVer = match.arg(WHAMVer, choices =  c("V", "VI", "VII", NA_character_))
   if (is.na(WHAMFile)) {
     if (WHAMVer == "V") {
-      WHAMFile = system.file(file.path("extdata", "WHAM", "WHAM_V.wdat"),
+      WHAMFile = system.file("extdata", "WHAM", "WHAM_V.wdat",
                              package = "BLMEngineInR",
                              mustWork = TRUE)
     } else if (WHAMVer == "VI") {
-      WHAMFile = system.file(file.path("extdata", "WHAM", "WHAM_VI.wdat"),
+      WHAMFile = system.file("extdata", "WHAM", "WHAM_VI.wdat",
                              package = "BLMEngineInR",
                              mustWork = TRUE)
     } else if (WHAMVer  == "VII") {
-      WHAMFile = system.file(file.path("extdata", "WHAM", "WHAM_VII.wdat"),
+      WHAMFile = system.file("extdata", "WHAM", "WHAM_VII.wdat",
                              package = "BLMEngineInR",
                              mustWork = TRUE)
     }

@@ -1,6 +1,6 @@
 test_that("DefineWHAM works", {
 
-  mywfile = system.file(file.path("extdata","WHAM","WHAM_V.wdat"),
+  mywfile = system.file("extdata","WHAM","WHAM_V.wdat",
                         package = "BLMEngineInR", mustWork = TRUE)
   expect_no_error(DefineWHAM(WHAMFile = mywfile))
   expect_no_error(DefineWHAM(WHAMVer = "VII"))
