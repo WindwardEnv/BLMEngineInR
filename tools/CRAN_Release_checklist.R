@@ -3,7 +3,7 @@ devtools::load_all()
 source("tools/CheckIfCopyrightHeader.R")
 
 # update data files
-sapply(list.files("data-raw", full.names = TRUE), FUN = source)
+sapply(list.files("data-raw", full.names = TRUE), FUN = function(X){print(X); source(X)})
 
 # check lints and style
 styler::style_pkg(
