@@ -46,7 +46,7 @@ WriteInputFile = function(AllInput, ThisProblem, InputFile) {
     if (length(unique(nchar(X))) > 1) {
       X = paste0(X, strrep(" ", max(nchar(X)) - nchar(X)))
     }
-    return(X)
+    X
   }
 
   write(AllInput$NObs, file = InputFile, append = FALSE)
@@ -104,5 +104,5 @@ WriteInputFile = function(AllInput, ThisProblem, InputFile) {
   write(paste0("ParameterFile = \"", ThisProblem$ParamFile, "\""),
         file = InputFile, append = TRUE)
 
-  return(invisible(TRUE))
+  invisible(TRUE)
 }

@@ -171,9 +171,7 @@ BlankProblem = function() {
 
   )
 
-
-
-  return(Out)
+  Out
 
 }
 
@@ -346,6 +344,6 @@ BlankProblemList = function() {
     )
   )
 
-  return(Out)
+  Out
 
 }

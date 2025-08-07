@@ -1,11 +1,14 @@
 devtools::load_all()
 
+source("tools/CheckIfCopyrightHeader.R")
+
 # update data files
 sapply(list.files("data-raw", full.names = TRUE), FUN = source)
 
 # check lints and style
 styler::style_pkg(
-  style = styler::tidyverse_style(scope = c("indention", "line_breaks")),
+  style = styler::tidyverse_style,
+  scope = I(c("indention", "line_breaks")),
   dry = "on"
 )
 lintr::lint_package()
@@ -22,10 +25,23 @@ devtools::test()
 
 # check test coverage
 devtools::unload()
-tmp = devtools::test_coverage()
+# tmp = devtools::test_coverage()
+tmp = covr::package_coverage()
+tmp2 = covr::report(tmp)
 devtools::load_all()
 
 # update manual
+devtools::check_man()
+if (!tinytex::is_tinytex()) {
+  tinytex::install_tinytext()
+  tinytex:::install_yihui_pkgs()
+  for (i in c("makeindex", "texinfo")) {
+    if (!tinytex::check_installed(i)) {
+      tinytex::tlmgr_install(i)
+    }
+  }
+  #make sure perl is installed
+}
 devtools::build_manual()
 
 # Have you checked for spelling errors (with `spell_check()`)?

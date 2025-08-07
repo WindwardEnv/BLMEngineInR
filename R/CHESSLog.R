@@ -71,9 +71,9 @@ CHESSLog = function(ThisProblem,
       FUN = function(X) {
         XNonzero = X[X != 0]
         XReact = names(XNonzero)
-        return(gsub(" [+] -", " - ",
-                    paste(paste(XNonzero, XReact, sep = " * "),
-                          collapse = " + ")))
+        gsub(" [+] -", " - ",
+             paste(paste(XNonzero, XReact, sep = " * "),
+                   collapse = " + "))
       }
     ),
     sep = " = "
@@ -118,9 +118,9 @@ CHESSLog = function(ThisProblem,
       FUN = function(X) {
         XNonzero = X[X != 0]
         XSpecies = names(XNonzero)
-        return(gsub(" [+] -", " - ",
-                    paste(paste(XNonzero, XSpecies, sep = " * "),
-                          collapse = " + ")))
+        gsub(" [+] -", " - ",
+             paste(paste(XNonzero, XSpecies, sep = " * "),
+                   collapse = " + "))
       }
     )
   )
@@ -138,9 +138,9 @@ CHESSLog = function(ThisProblem,
       FUN = function(X) {
         XNonzero = X[X != 0]
         XSpecies = names(XNonzero)
-        return(gsub(" [+] -", " - ",
-                    paste(paste(XNonzero, XSpecies, sep = " * "),
-                          collapse = " + ")))
+        gsub(" [+] -", " - ",
+             paste(paste(XNonzero, XSpecies, sep = " * "),
+                   collapse = " + "))
       }
     )
   )
@@ -163,9 +163,9 @@ CHESSLog = function(ThisProblem,
           FUN = function(X) {
             XNonzero = X[X != 0]
             XSpecies = names(XNonzero)
-            return(gsub(" [+] -", " - ",
-                        paste(paste(XNonzero, XSpecies, sep = " * "),
-                              collapse = " + ")))
+            gsub(" [+] -", " - ",
+                 paste(paste(XNonzero, XSpecies, sep = " * "),
+                       collapse = " + "))
           }
         )
       )

@@ -62,7 +62,7 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) { #nolint: cyc
     if (is.data.frame(X)) {Out = "data.frame"}
     if (is.matrix(X)) {Out = paste(Out, "matrix")}
     if (is.array(X)) {Out = paste(Out, "array")}
-    return(Out)
+    Out
   }
 
   # Level 1 compare
@@ -82,7 +82,7 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) { #nolint: cyc
   }
 
   # Level 2 compare
-  for (i in names(Reference)){
+  for (i in names(Reference)) {
     if (i %in% names(Object)) {
       if (ReferenceType == "list") {
         Tmp = CheckBLMObject(Object = Object[[i]],

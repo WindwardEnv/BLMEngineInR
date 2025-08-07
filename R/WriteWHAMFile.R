@@ -44,7 +44,7 @@ WriteWHAMFile = function(ThisWHAM, WHAMFile, Notes = ThisWHAM$Notes) {
     if (length(unique(nchar(X))) > 1) {
       X = paste0(X, strrep(" ", max(nchar(X)) - nchar(X)))
     }
-    return(X)
+    X
   }
 
   # Header Info

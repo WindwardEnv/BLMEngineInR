@@ -149,16 +149,27 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL, #nolint:
     ThermoDBSName = toupper(trimws(
       gsub("[[]THERMO[]]:", "", UserNotes[which(grepl("THERMO", UserNotes))])
     ))
+    PkgDatasetName = paste0("All_", gsub("_", "", gsub(
+      "[.]DBS", "", toupper(ThermoDBSName), ignore.case = TRUE
+    )), "_reactions")
     # ideally, look in the same directory as the parameter file
     if (file.exists(file.path(dirname(WindowsParamFile), ThermoDBSName))) {
       NewProblem = ConvertWHAMVThermoFile(
         ThermoDBSName = file.path(dirname(WindowsParamFile), ThermoDBSName),
         RWHAMFile = RWHAMFile
       )
-    } else if (ThermoDBSName == "WATER23.DBS") {
-      NewProblem = BLMEngineInR::All_WATER23_reactions
-    } else if (ThermoDBSName == "NIST_20170203.DBS") {
-      NewProblem = BLMEngineInR::All_NIST20170203_reactions
+    } else if (PkgDatasetName %in% data(package = "BLMEngineInR")$results[, "Item"]) {
+      utils::data(
+        list = PkgDatasetName,
+        package = "BLMEngineInR",
+        envir = environment()
+      )
+      NewProblem = get(PkgDatasetName)
+    } else {
+      stop(
+        "Unknown THERMO file specified. Ensure '", ThermoDBSName, "' is in ",
+        "the same directory as WindowsParamFile."
+      )
     }
   } else {
     NewProblem = BLMEngineInR::water_problem

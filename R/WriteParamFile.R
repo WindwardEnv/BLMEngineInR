@@ -45,7 +45,7 @@ WriteParamFile = function(ThisProblem, ParamFile, Notes = ThisProblem$Notes) {
     if (length(unique(nchar(X))) > 1) {
       X = paste0(X, strrep(" ", max(nchar(X)) - nchar(X)))
     }
-    return(X)
+    X
   }
 
   SectionBreak = "--------------------------------------------------------------------------------"#nolint: line_length_linter

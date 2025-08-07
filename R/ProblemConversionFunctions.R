@@ -90,7 +90,7 @@ ConvertToList = function(ThisProblemDF) { #nolint: cyclocomp_linter
   )
 
   CheckBLMObject(ThisProblemList, BlankProblemList(), BreakOnError = TRUE)
-  return(ThisProblemList)
+  ThisProblemList
 
 }
 
@@ -205,6 +205,6 @@ ConvertToDF = function(ThisProblemList) {
   )
 
   CheckBLMObject(ThisProblemDF, BlankProblem(), BreakOnError = TRUE)
-  return(ThisProblemDF)
+  ThisProblemDF
 
 }

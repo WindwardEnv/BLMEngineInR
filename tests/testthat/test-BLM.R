@@ -65,7 +65,7 @@ test_that("BLM function works - CHESS works", {
 
 test_that("BLM function works - toxicity mode works", {
 
-  skip_on_cran()
+  # skip_on_cran()
 
   mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
                         package = "BLMEngineInR",
@@ -100,5 +100,46 @@ test_that("BLM function works - toxicity mode works", {
   expect_silent(BLM(ThisProblem = myproblem,
                     AllInput = testinputs, DoTox = TRUE, CritAccumIndex = 2L))
 
+
+})
+
+test_that("BLM function works - DOC binding works", {
+
+  # skip_on_cran()
+
+  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
+                        package = "BLMEngineInR",
+                        mustWork = TRUE)
+  myproblem = DefineProblem(ParamFile = mypfile)
+
+  testinputsDF = data.frame(ObsNum = c(1, 2),
+                            ID = "focused_input",
+                            ID2 = c("Obs9","Obs13"),
+                            Temp = 15,
+                            pH = 7,
+                            DOC = c(0.1, 20),
+                            HA = 10,
+                            Cu = 1.57366317313442e-09,
+                            Ca = 4.1141089251479e-05,
+                            Mg = 5.877298464497e-05,
+                            Na = 0.000132713191133803,
+                            K = 6.32939834638139e-06,
+                            SO4 = 0.000100344120125559,
+                            Cl = 6.32939834638139e-06,
+                            CO3 = 0.000132713191133803)
+
+  testinputs = MatchInputsToProblem(
+    DFInputs = testinputsDF,
+    ThisProblem = myproblem
+  )
+  tmp = BLM(ThisProblem = myproblem,
+            AllInput = testinputs, DoTox = FALSE)
+
+  expect_equal(object = log10(tmp$Concentrations$`Cu (mol/L)`),
+               expected = log10(c(4.94586E-11, 1.92656E-13)),
+               tolerance = 0.051)
+  expect_equal(object = log10(tmp$Concentrations$`TOrg.Cu (mol/L)`),
+               expected = log10(c(1.43252E-09, 1.57324E-09)),
+               tolerance = 0.05)
 
 })

@@ -323,7 +323,7 @@ RemoveComponents = function(ThisProblem, ComponentToRemove, DoCheck = TRUE) {
         if (length(Tmp) < max(NewProblem$Spec$NC)) {
           Tmp = c(Tmp, rep(0L, max(NewProblem$Spec$NC) - length(Tmp)))
         }
-        return(Tmp)
+        Tmp
       }
     ),
     nrow = NewProblem$N["Spec"],
@@ -344,7 +344,7 @@ RemoveComponents = function(ThisProblem, ComponentToRemove, DoCheck = TRUE) {
           if (length(Tmp) < max(NewProblem$Phase$NC)) {
             Tmp = c(Tmp, rep(0L, max(NewProblem$Phase$NC) - length(Tmp)))
           }
-          return(Tmp)
+          Tmp
         }
       ),
       nrow = NewProblem$N["Phase"],

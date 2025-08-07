@@ -83,5 +83,6 @@ BlankWHAM = function() {
     )
   )
 
-  return(Out)
+  Out
+
 }

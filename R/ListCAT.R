@@ -91,6 +91,6 @@ ListCAT = function(ParamFile) {
   }
 
   # Return that table for the user
-  return(CATab)
+  CATab
 
 }
