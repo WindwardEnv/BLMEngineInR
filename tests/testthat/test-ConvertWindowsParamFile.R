@@ -404,12 +404,14 @@ test_that("ConvertWindowsParamFile marine works", {
 })
 test_that("ConvertWindowsParamFile dbs file in dir works", {
 
-  Temp_Thermo_file = withr::local_tempfile(fileext = ".dbs")
-  Thermo_In_Dir_file = withr::local_tempfile(fileext = ".dat")
+  td = withr::local_tempdir()
+  if (!dir.exists(td)) {dir.create(td)}
+  Temp_Thermo_file = file.path(td, "TESTTHERMO.DBS")
+  Thermo_In_Dir_file = file.path(td, "TESTPPARAM.DAT")
 
   # Make test data
   Temp_Thermo_text = c(
-    "WHAM DATABASE WATER VERSION TEMPYFILE.DBS",
+    "WHAM DATABASE WATER VERSION TESTTHERMO.DBS",
     "HA parameters, 3.29E-3, 4.02, 8.55, 1.78, 3.43, -374, 0.5, 1.72E-9,  15000",
     "FA parameters, 4.73E-3, 3.26, 9.64, 3.34, 5.52, -103, 0.4,    8E-10, 1500",
     "Double layer overlap factor, 0.25",
