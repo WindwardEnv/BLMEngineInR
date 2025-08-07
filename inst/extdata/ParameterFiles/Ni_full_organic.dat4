@@ -277,7 +277,7 @@ Num, CA,                 Species,                         TestType, Duration,   
 196, 85.441,             Xenopus laevis,                  Chronic,  96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Survival,                NOEC,       Fort et al. 2006,                                                                                       geomean of 2 values
 --------------------------------------------------------------------------------
 -------Notes--------
-written by kellyc from R: 2025-01-03 16:46:42.388532
+written by kellyc from R: 2025-08-07 11:25:31.403176
 ---------------------------------------------------------------------------------------------------
 Notes:
 ---------------------------------------------------------------------------------------------------
@@ -293,6 +293,7 @@ Effect: n/a
     
 2016-01-28: Name changed to "Ni_all_studies_calibration_2015-10-31.dat", based on the parameters 
    being calibrated in "Ni_calib_write.dat" on Oct 31, 2015.  
+   
 2021-03-03: Updated the thermo database to NIST_20170203.dbs, which includes the 
    calibrated Ni-FA binding constant and binding constants for carbonate complexes 
    have been corrected to the NIST/IUPAC values rather than WHAM V defaults.

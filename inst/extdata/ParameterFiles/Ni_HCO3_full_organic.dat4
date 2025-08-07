@@ -279,7 +279,7 @@ Num, CA,                 Species,                         TestType, Duration,   
 196, 324.4204,           Xenopus laevis,                  Chronic,  96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Survival,                NOEC,       Fort et al. 2006,                                                                                       geomean of 2 values
 --------------------------------------------------------------------------------
 -------Notes--------
-written by kellyc from R: 2025-01-03 16:46:45.704043
+written by kellyc from R: 2025-08-07 11:25:32.81746
 ---------------------------------------------------------------------------------------------------
 Notes:
 ---------------------------------------------------------------------------------------------------
@@ -295,6 +295,7 @@ Effect: n/a
     
 2016-01-28: Name changed to "Ni_all_studies_calibration_2015-10-31.dat", based on the parameters 
    being calibrated in "Ni_calib_write.dat" on Oct 31, 2015.  
+   
 2019-08-02: Name changed to "Ni_all_studies_calibration_2015-10-31_toxic_carbonates.dat".  Added 
    toxic BL species of BL-NiCO3 and BL-NiHCO3.  Trying to get a "hook" of increased toxicity at 
    high pH (>8.4), as is seen in many Ceriodaphnia dubia datasets. Related to major ion toxicity.
@@ -302,6 +303,7 @@ Effect: n/a
    For NiPERA. After playing with it a little, eliminated NiCO3 as a toxic species and just left 
    NiHCO3 - the range of pH values where you see the NiCO3 effects are too high for us to have any 
    data, so probably best not to make any assumptions there.
+   
 2020-02-04: Name changed to "Ni_all_studies_calibration_2020-02-04_toxic_carbonates.dat". CA for
   C. dubia chronic reproduction EC20 endpoint was updated to reflect the change to the parameter 
   file (introducing the toxic bicarbonate species).
@@ -313,11 +315,12 @@ Effect: n/a
 2021-04-06: Updated the critical accumulation table from "NiPERA/FW 
    Reconciliation/Data/R_Scripting/Data_Files/02_PFile_Critical_Table_NiHCO3.csv", dated 2021-04-06 12:24PM.
    These are the as-submitted values from the Ni BLM manuscript. 
+   
 2022-03-23: (KEC) Added quotes where appropriate in the critical table. (e.g. "juvenile, 16-24h" 
    needs quotes to parse correctly b/c it's comma-delimited), and removed duplicated references. 
    Note: this parameter file has >100 rows in the critical table, which is too many for versions 
    2.48 and prior. I fixed this in version 2.49 build 2022-03-23.
    
-2024-04-10: (KEC) Removed S as a component - it's reactions are not in the thermo database and it
+2024-04-10: (KEC) Removed S as a component - its reactions are not in the thermo database and it
    was causing confusion for BC and CCME software users. 
 ---------------------------------------------------------------------------------------------------

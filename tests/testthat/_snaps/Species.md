@@ -6,7 +6,7 @@
         1234, SpecTempKelvin = 298)
     Output
       $ParamFile
-      [1] "C:/Users/kellyc/Documents/BLM Development/engine/BLMEngineInR/inst/extdata/ParameterFiles/carbonate_system_only.dat4 (modified)"
+      [1] "C:/Users/kellyc/Documents/Projects/BLM Development/engine/BLMEngineInR/inst/extdata/ParameterFiles/carbonate_system_only.dat4 (modified)"
       
       $N
            Mass     InLab     InVar    InMass    InComp InDefComp    InSpec   DefComp 
@@ -214,7 +214,7 @@
       RemoveSpecies(ThisProblem = carbonate_system_problem, SpeciesToRemove = "HCO3")
     Output
       $ParamFile
-      [1] "C:/Users/kellyc/Documents/BLM Development/engine/BLMEngineInR/inst/extdata/ParameterFiles/carbonate_system_only.dat4 (modified)"
+      [1] "C:/Users/kellyc/Documents/Projects/BLM Development/engine/BLMEngineInR/inst/extdata/ParameterFiles/carbonate_system_only.dat4 (modified)"
       
       $N
            Mass     InLab     InVar    InMass    InComp InDefComp    InSpec   DefComp 

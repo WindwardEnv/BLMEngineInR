@@ -16,14 +16,14 @@
 #include "CHESSFunctions.h"
 
 //' @title Update fixed activity/concentration components
-//' 
-//' @description Components which are fixed activity or fixed concentration 
-//'   should maintain an activity or concentration equal to their input 
+//'
+//' @description Components which are fixed activity or fixed concentration
+//'   should maintain an activity or concentration equal to their input
 //'   concentration. This function resets the SpecConc and CompConc vectors to
 //'   those values.
-//' 
+//'
 //' @author Kelly Croteau (kellyc@windwardenv.com)
-//' 
+//'
 //' @param NComp integer, the combined number of components in the simulation,
 //'   including the input components, defined components (and including the
 //'   defined components that get added by ExpandWHAM)
@@ -33,16 +33,16 @@
 //'   component's concentration, whether it's on the basis of total
 //'   concentration, fixed activity, or fixed concentration
 //' @param SpecActivityCoef {type}, {text}
-//' @param SpecConc numeric vector (NSpec), the concentrations of each species 
+//' @param SpecConc numeric vector (NSpec), the concentrations of each species
 //'   for which we have formation reactions
 //' @param CompConc numeric vector (NComp) of component concentrations
-//' 
-//' 
-void UpdateFixedComps(int NComp, 
-                      Rcpp::CharacterVector CompType, 
-                      Rcpp::NumericVector InCompConc, 
+//'
+//'
+void UpdateFixedComps(int NComp,
+                      Rcpp::CharacterVector CompType,
+                      Rcpp::NumericVector InCompConc,
                       Rcpp::NumericVector SpecActivityCoef,
-                      Rcpp::NumericVector &SpecConc, 
+                      Rcpp::NumericVector &SpecConc,
                       Rcpp::NumericVector &CompConc) {
   /* variables */
   int iComp;
@@ -56,5 +56,5 @@ void UpdateFixedComps(int NComp,
       CompConc[iComp] = SpecConc[iComp];
     }
   }
-  
+
 }

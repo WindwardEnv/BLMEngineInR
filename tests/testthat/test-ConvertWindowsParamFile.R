@@ -402,15 +402,237 @@ test_that("ConvertWindowsParamFile marine works", {
   expect_no_error(DefineProblem(ParamFile = ex_Rfile))
 
 })
-test_that("ConvertWindowsParamFile unknown dbs file works", {
+test_that("ConvertWindowsParamFile dbs file in dir works", {
 
-  Zn_file = "C:/Users/kellyc/Documents/BLM/parameter_files/fresh/Zn/Zn_algae_tox_chronic_09-12-24.dat"
-  testthat::skip_if_not(file.exists(Zn_file))
+  Temp_Thermo_file = withr::local_tempfile(fileext = ".dbs")
+  Thermo_In_Dir_file = withr::local_tempfile(fileext = ".dat")
+
+  # Make test data
+  Temp_Thermo_text = c(
+    "WHAM DATABASE WATER VERSION TEMPYFILE.DBS",
+    "HA parameters, 3.29E-3, 4.02, 8.55, 1.78, 3.43, -374, 0.5, 1.72E-9,  15000",
+    "FA parameters, 4.73E-3, 3.26, 9.64, 3.34, 5.52, -103, 0.4,    8E-10, 1500",
+    "Double layer overlap factor, 0.25",
+    "Constant to control DDL at low ZED, 1E3",
+    "No. of data lines, 28",
+    "1,H,            1,  1,0,0,   1,0,0,   999,    0,     999, 999",
+    "3,Na,           1,  3,0,0,   1,0,0,   999,    0,     999, 999",
+    "4,Mg,           2,  4,0,0,   1,0,0,   999,    0,     3.3, 2.2",
+    "6,K,            1,  6,0,0,   1,0,0,   999,    0,     999, 999",
+    "7,Ca,           2,  7,0,0,   1,0,0,   999,    0,     3.2, 2.2",
+    "15,Y,           2, 15,0,0,   1,0,0,   999,    0,     2.3, 1.3",
+    "51,OH,         -1, 51,0,0,   1,0,0,   999,    0,     999, 999",
+    "52,Cl,         -1, 52,0,0,   1,0,0,   999,    0,     999, 999",
+    "54,SO4,        -2, 54,0,0,   1,0,0,   999,    0,     999, 999",
+    "55,CO3,        -2, 55,0,0,   1,0,0,   999,    0,     999, 999",
+    "60,S,          -2, 60,0,0,   1,0,0,   999,    0,     999, 999",
+    "101,HCO3,      -1,  1,55,0,  1,1,0,  10.329, -3.561, 999, 999",
+    "102,H2CO3,      0,  1,55,0,  2,1,0,  16.681, -5.738, 999, 999",
+    "108,HS,        -1,  1,60,0,  1,1,0,  13.9,    0.0,   999, 999",
+    "109,H2S,        0,  1,60,0,  2,1,0,  20.9,    0.0,   999, 999",
+    "124,MgHCO3,     1,  4,1,55,  1,1,1,  11.40,  -2.77,  999, 999",
+    "125,MgCO3,      0,  4,55,0,  1,1,0,   2.98,   2.71,  999, 999",
+    "126,MgSO4,      0,  4,54,0,  1,1,0,   2.37,   4.55,  999, 999",
+    "145,CaHCO3,     1,  7,1,55,  1,1,1,  11.44,  -0.87,  999, 999",
+    "146,CaCO3,      0,  7,55,0,  1,1,0,   3.22,   3.55,  999, 999",
+    "147,CaSO4,      0,  7,54,0,  1,1,0,   2.30,   1.65,  999, 999",
+    "232,YOH,        1, 15,51,0,  1,1,0,   5.04,   0.0,   2.3, 1.3",
+    "233,Y(OH)2,     0, 15,51,0,  1,2,0,  11.1,    0.0,   999, 999",
+    "234,YSO4,       0, 15,54,0,  1,1,0,   2.38,   1.5,   999, 999",
+    "235,YCO3,       0, 15,55,0,  1,1,0,   4.76,   0.0,   999, 999",
+    "236,YCl,        1, 15,52,0,  1,1,0,   0.4,    1.3,   999, 999",
+    "237,YHCO3,      1, 15,1,55,  1,1,1,  13.12,   0.0,   999, 999",
+    "407,YS,         0, 15,60,0,  1,1,0,  18.29,   0.0,   999, 999",
+    "END OF DATA",
+    "/*"
+  )
+  Thermo_In_Dir_text = c(
+    "Column model parameter file, Ver 3.00",
+    "--------------------------------------------------------------------------------",
+    "Number of Components, Species, Phases, Linked Lists",
+    "12,  4,  0,  0",
+    "Component Charge  Type  Activity  Site Den",
+    "H,         1,        2,        2,        1    ",
+    "Y,         2,        1,        2,        1",
+    "DOC,      -1,        1,        1,        .0006",
+    "Ca,        2,        1,        2,        1",
+    "Mg,        2,        1,        2,        1",
+    "Na,        1,        1,        2,        1",
+    "K,         1,        1,        2,        1",
+    "SO4,      -2,        1,        2,        1",
+    "Cl,       -1,        1,        2,        1",
+    "CO3,      -2,        1,        2,        1",
+    "S,        -2,        1,        2,        1",
+    "Gill,     -1,       11,        1,        1000.E-06",
+    "--------------------------------------------------------------------------------",
+    "Species  Type Act. iTemp iMonte pH  Y   DOC Ca   Mg  Na  K   SO4 Cl  CO3 S   BL   Log K      Var Log K  Delta H  Temp   Conc",
+    "Gill-Y,    11,  1,   0,    0,     0,  1,  0,  0,   0,  0,  0,  0,  0,  0,  0,  1,   4.000      0.000      0.000    0.000  0.0000E+00",
+    "Gill-Ca,   11,  1,   0,    0,     0,  0,  0,  1,   0,  0,  0,  0,  0,  0,  0,  1,   4.250      0.000      0.000    0.000  0.0000E+00",
+    "Gill-Mg,   11,  1,   0,    0,     0,  0,  0,  0,   1,  0,  0,  0,  0,  0,  0,  1,   3.600      0.000      0.000    0.000  0.0000E+00",
+    "Gill-H,    11,  1,   0,    0,     1,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  1,   4.700      0.000      0.000    0.000  0.0000E+00",
+    "--------------------------------------------------------------------------------",
+    "Linked Lists",
+    "--------------------------------------------------------------------------------",
+    "Phase    iTemp iMonte  H   Ni DOC Ca   Mg   Na  K SO4  Cl CO3   S BL  Log Ks  Var Log K   Delta H    Temp        Moles",
+    "--------------------------------------------------------------------------------",
+    "File I/O and System Description",
+    "                              |  File with sequence of input chemistry (next line)",
+    "D:\\MODELS\\CHESS315\\CU\\LC50.WK1                                              ",
+    " 2                            |  Type of file (1 = ASCII, 2 = LOTUS)",
+    "                              |",
+    "                              |  Name of output file (next line)",
+    "lc50??.WKS                                                                  ",
+    " 2                            |  Type of file (1 = ASCII, 2 = LOTUS)",
+    "                              |",
+    " 1                            |  Simulation Type",
+    "                              |  (1 = Batch, 2 = Titration, 3 = Column)",
+    "                              |",
+    " 1                            |  Number of Layers",
+    "                              |",
+    " 0                            |  Number of Monte Carlo Simulations",
+    "                              |",
+    " 1.0000E-06                   |  Error Tolerance",
+    "                              |",
+    " 500                          |  Maximum Iterations",
+    "                              |",
+    "                              |  Output file contents, do you want:",
+    "-1                            |     Concentrations?",
+    "-1                            |     Totals?",
+    " 0                            |     Equilibrium constants?",
+    " 0                            |     Residuals?",
+    " 0                            |     Activity Coefficients?",
+    "-1                            |     Phase Sat. Indices?",
+    " 0                            |     Phase Ion Activity Products?",
+    "",
+    "User Notes:",
+    "",
+    "[Metal]: Y",
+    "",
+    "[Gill]: Gill",
+    "",
+    "[Gill-Metal]: Gill-Y",
+    "",
+    "[DOC]: DOC",
+    "",
+    paste0("[THERMO]: ", basename(Temp_Thermo_file)),#<--the important bit
+    "",
+    "[CRITICAL]: 0.03395",
+    "",
+    "[ACUTE_DIV]: 2.0",
+    "[CHRONIC_DIV]: 3.22",
+    "[Z_EF]: 3.117",
+    "",
+    "[END]:",
+    "",
+    "",
+    "",
+    ""
+  )
+  write(Temp_Thermo_text, file = Temp_Thermo_file)
+  write(Thermo_In_Dir_text, file = Thermo_In_Dir_file)
+
   ex_Rfile = withr::local_tempfile(fileext = ".dat4")
-
-  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Zn_file,
+  expect_no_error(ConvertWindowsParamFile(WindowsParamFile = Thermo_In_Dir_file,
                                           RParamFile = ex_Rfile))
 
-expect_no_error(DefineProblem(ParamFile = ex_Rfile))
+  expect_no_error(DefineProblem(ParamFile = ex_Rfile))
+
+})
+test_that("ConvertWindowsParamFile unknown dbs file works", {
+
+  Thermo_DNE_file = withr::local_tempfile(fileext = ".dat")
+
+
+  # Make test data
+  Thermo_DNE_text = c(
+    "Column model parameter file, Ver 3.00",
+    "--------------------------------------------------------------------------------",
+    "Number of Components, Species, Phases, Linked Lists",
+    "12,  4,  0,  0",
+    "Component Charge  Type  Activity  Site Den",
+    "H,         1,        2,        2,        1    ",
+    "Y,         2,        1,        2,        1",
+    "DOC,      -1,        1,        1,        .0006",
+    "Ca,        2,        1,        2,        1",
+    "Mg,        2,        1,        2,        1",
+    "Na,        1,        1,        2,        1",
+    "K,         1,        1,        2,        1",
+    "SO4,      -2,        1,        2,        1",
+    "Cl,       -1,        1,        2,        1",
+    "CO3,      -2,        1,        2,        1",
+    "S,        -2,        1,        2,        1",
+    "Gill,     -1,       11,        1,        1000.E-06",
+    "--------------------------------------------------------------------------------",
+    "Species  Type Act. iTemp iMonte pH  Y   DOC Ca   Mg  Na  K   SO4 Cl  CO3 S   BL   Log K      Var Log K  Delta H  Temp   Conc",
+    "Gill-Y,    11,  1,   0,    0,     0,  1,  0,  0,   0,  0,  0,  0,  0,  0,  0,  1,   4.000      0.000      0.000    0.000  0.0000E+00",
+    "Gill-Ca,   11,  1,   0,    0,     0,  0,  0,  1,   0,  0,  0,  0,  0,  0,  0,  1,   4.250      0.000      0.000    0.000  0.0000E+00",
+    "Gill-Mg,   11,  1,   0,    0,     0,  0,  0,  0,   1,  0,  0,  0,  0,  0,  0,  1,   3.600      0.000      0.000    0.000  0.0000E+00",
+    "Gill-H,    11,  1,   0,    0,     1,  0,  0,  0,   0,  0,  0,  0,  0,  0,  0,  1,   4.700      0.000      0.000    0.000  0.0000E+00",
+    "--------------------------------------------------------------------------------",
+    "Linked Lists",
+    "--------------------------------------------------------------------------------",
+    "Phase    iTemp iMonte  H   Ni DOC Ca   Mg   Na  K SO4  Cl CO3   S BL  Log Ks  Var Log K   Delta H    Temp        Moles",
+    "--------------------------------------------------------------------------------",
+    "File I/O and System Description",
+    "                              |  File with sequence of input chemistry (next line)",
+    "D:\\MODELS\\CHESS315\\CU\\LC50.WK1                                              ",
+    " 2                            |  Type of file (1 = ASCII, 2 = LOTUS)",
+    "                              |",
+    "                              |  Name of output file (next line)",
+    "lc50??.WKS                                                                  ",
+    " 2                            |  Type of file (1 = ASCII, 2 = LOTUS)",
+    "                              |",
+    " 1                            |  Simulation Type",
+    "                              |  (1 = Batch, 2 = Titration, 3 = Column)",
+    "                              |",
+    " 1                            |  Number of Layers",
+    "                              |",
+    " 0                            |  Number of Monte Carlo Simulations",
+    "                              |",
+    " 1.0000E-06                   |  Error Tolerance",
+    "                              |",
+    " 500                          |  Maximum Iterations",
+    "                              |",
+    "                              |  Output file contents, do you want:",
+    "-1                            |     Concentrations?",
+    "-1                            |     Totals?",
+    " 0                            |     Equilibrium constants?",
+    " 0                            |     Residuals?",
+    " 0                            |     Activity Coefficients?",
+    "-1                            |     Phase Sat. Indices?",
+    " 0                            |     Phase Ion Activity Products?",
+    "",
+    "User Notes:",
+    "",
+    "[Metal]: Y",
+    "",
+    "[Gill]: Gill",
+    "",
+    "[Gill-Metal]: Gill-Y",
+    "",
+    "[DOC]: DOC",
+    "",
+    "[THERMO]: DOESNOTEXIST.dbs",#<--the important bit
+    "",
+    "[CRITICAL]: 0.03395",
+    "",
+    "[ACUTE_DIV]: 2.0",
+    "[CHRONIC_DIV]: 3.22",
+    "[Z_EF]: 3.117",
+    "",
+    "[END]:",
+    "",
+    "",
+    "",
+    ""
+  )
+
+  write(x = Thermo_DNE_text, file = Thermo_DNE_file)
+
+  ex_Rfile = withr::local_tempfile(fileext = ".dat4")
+  expect_error(ConvertWindowsParamFile(WindowsParamFile = Thermo_DNE_file,
+                                         RParamFile = ex_Rfile))
+
+  expect_false(file.exists(ex_Rfile))
 
 })
