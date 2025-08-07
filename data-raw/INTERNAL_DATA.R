@@ -17,16 +17,19 @@ WHAM_V_LIST = DefineWHAM(
                          package = "BLMEngineInR",
                          mustWork = TRUE)
 )
+WHAM_V_LIST$File = basename(WHAM_V_LIST$File)
 WHAM_VI_LIST = DefineWHAM(
   WHAMFile = system.file("extdata", "WHAM", "WHAM_VI.wdat",
                          package = "BLMEngineInR",
                          mustWork = TRUE)
 )
+WHAM_VI_LIST$File = basename(WHAM_VI_LIST$File)
 WHAM_VII_LIST = DefineWHAM(
   WHAMFile = system.file("extdata", "WHAM", "WHAM_VII.wdat",
                          package = "BLMEngineInR",
                          mustWork = TRUE)
 )
+WHAM_VII_LIST$File = basename(WHAM_VII_LIST$File)
 
 usethis::use_data(WHAM_V_LIST, WHAM_VI_LIST, WHAM_VII_LIST,
                   internal = TRUE, overwrite = TRUE)
