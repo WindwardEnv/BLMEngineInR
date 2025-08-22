@@ -341,7 +341,8 @@ BlankProblemList = function() {
       Spec = character(),
       KselHA = numeric(),
       KselFA = numeric()
-    )
+    ),
+    WHAMNotes = character()
   )
 
   Out

@@ -1,12 +1,15 @@
 test_that("ReadInputsFromFile works", {
 
-  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
-                            package = "BLMEngineInR",
-                            mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myinputfile = withr::local_tempfile(
+    lines = c(
+      "1",
+      "ID,    Temp,   pH,  CO3",
+      "n/a,   deg C,  SU,  mol/L",
+      "Test,  25,     7,   1e-04"
+    ),
+    fileext = ".dat4"
+  )
+  myproblem = carbonate_system_problem
 
   expect_no_error(GetData(InputFile = myinputfile, ThisProblem = myproblem))
   expect_no_error(GetData(InputFile = myinputfile,
@@ -30,10 +33,7 @@ test_that("ReadInputsFromFile works", {
 
 test_that("MatchInputsToProblem works", {
 
-  mypfile = system.file("extdata","ParameterFiles","Cu_full_organic.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myproblem = Cu_full_organic_problem
 
   myinputsDF = data.frame(
     ObsNum = "1",
@@ -111,13 +111,16 @@ test_that("MatchInputsToProblem works", {
 
 test_that("GetData works", {
 
-  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
-  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
-                            package = "BLMEngineInR",
-                            mustWork = TRUE)
+  myproblem = carbonate_system_problem
+  myinputfile = withr::local_tempfile(
+    lines = c(
+      "1",
+      "ID,    Temp,   pH,  CO3",
+      "n/a,   deg C,  SU,  mol/L",
+      "Test,  25,     7,   1e-04"
+    ),
+    fileext = ".dat4"
+  )
 
   expect_no_error(GetData(InputFile = myinputfile, ThisProblem = myproblem))
 
@@ -125,10 +128,7 @@ test_that("GetData works", {
 
 test_that("BlankInputList works", {
 
-  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myproblem = carbonate_system_problem
   expect_no_error(BlankInputList(ThisProblem = myproblem))
   expect_no_error(BlankInputList(ThisProblem = myproblem, NObs = 999L))
   expect_error(BlankInputList(ThisProblem = myproblem, NObs = -999L))

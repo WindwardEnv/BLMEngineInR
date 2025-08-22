@@ -40,11 +40,7 @@ test_that("Convert Back and Forth works", {
   expect_equal(carbonate_system_problem,
                ConvertToDF(ConvertToList(carbonate_system_problem)))
 
-  mypfile = system.file("extdata","ParameterFiles","Cu_full_organic.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
-  expect_equal(myproblem,
-               ConvertToDF(ConvertToList(myproblem)))
+  expect_equal(Cu_full_organic_problem,
+               ConvertToDF(ConvertToList(Cu_full_organic_problem)))
 
 })

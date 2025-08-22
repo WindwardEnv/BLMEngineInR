@@ -310,6 +310,15 @@ MatchInputsToProblem = function(
              dimnames = list(Obs = 1:NObs, Comp = NumDefCompName))
   }
 
+
+  InLabObs = as.matrix(InLabObs)
+  InVarObs = as.matrix(InVarObs)
+  InCompObs = as.matrix(InCompObs)
+
+  rownames(InLabObs) = NULL
+  rownames(InVarObs) = NULL
+  rownames(InCompObs) = NULL
+
   Out = list(
     NObs = as.integer(NObs),
     InLabObs = as.matrix(InLabObs),

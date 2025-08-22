@@ -246,14 +246,10 @@ test_that("ConvertWHAMVThermoFile works", {
     "/*"
   ), file = mydbsfile)
 
-  expect_no_error(ConvertWHAMVThermoFile(ThermoDBSName = mydbsfile))
+  expect_no_error({
+    converted.file = ConvertWHAMVThermoFile(ThermoDBSName = mydbsfile)
+  })
 
-  # testthat::skip_on_cran()
-  converted.file = ConvertWHAMVThermoFile(ThermoDBSName = mydbsfile)
-  # previously.converted.file = DefineProblem(
-  #   ParamFile = system.file("extdata","ParameterFiles", "All_Water23_reactions.dat4",
-  #                           package = "BLMEngineInR",
-  #                           mustWork = TRUE))
   previously.converted.file = BLMEngineInR::All_WATER23_reactions
   compare.names = setdiff(names(previously.converted.file), c("ParamFile","WHAM"))
   expect_equal(object = converted.file[compare.names],

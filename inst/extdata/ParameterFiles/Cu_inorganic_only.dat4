@@ -1,19 +1,19 @@
 Column model parameter file, Ver 4.00
 --------------------------------------------------------------------------------
 2,  Number of Mass Compartments
-3,  Input Labels
-2,  Input Variables
-8,  Input Components
-3,  Defined Components
-21, Species
-0,  Phases
+3,  Number of Input Labels
+2,  Number of Input Variables
+8,  Number of Input Components
+3,  Number of Defined Components
+21, Number of Species
+0,  Number of Phases
 4,  Number of Special Definitions
-2,  Number of Critical Values
+26, Number of Critical Values
 --------------------------------------------------------------------------------
 Mass Compartment List
-Compartment,   C to M,     Units label
-Water,         1,          L
-BL,            1,          kg wet
+Compartment, C to M, Unit Label
+Water,       1,      L
+Biotic,      1,      kg wet
 --------------------------------------------------------------------------------
 Input Labels
 ObsNum
@@ -21,63 +21,89 @@ ID
 ID2
 --------------------------------------------------------------------------------
 Input Variables
-Variable,  Compartment, Type
-Temp,      Water,       Temperature
-pH,        Water,       pH
+Variable, Compartment, Type
+Temp,     Water,       Temperature
+pH,       Water,       pH
 --------------------------------------------------------------------------------
 Input Components
-Component, Charge, Compartment, Type,     Activity
-Cu,         2,     Water,       MassBal,  Debye
-Ca,         2,     Water,       MassBal,  Debye
-Mg,         2,     Water,       MassBal,  Debye
-Na,         1,     Water,       MassBal,  Debye
-K,          1,     Water,       MassBal,  Debye
-SO4,       -2,     Water,       MassBal,  Debye
-Cl,        -1,     Water,       MassBal,  Debye
-CO3,       -2,     Water,       MassBal,  Debye
+Component, Charge, Compartment, Type,    Activity
+Na,        1,      Water,       MassBal, Debye
+Mg,        2,      Water,       MassBal, Debye
+K,         1,      Water,       MassBal, Debye
+Ca,        2,      Water,       MassBal, Debye
+Cu,        2,      Water,       MassBal, Debye
+Cl,        -1,     Water,       MassBal, Debye
+SO4,       -2,     Water,       MassBal, Debye
+CO3,       -2,     Water,       MassBal, Debye
 --------------------------------------------------------------------------------
-Defined components
-Component,  From,     Charge,   Compartment, Type,      Activity,   Site Den
-H,          pH,       1,        Water,       FixedConc, Debye,      1.0
-OH,         KW/H,     -1,       Water,       FixedAct,  Debye,      1.0
-BL1,        1.78E-05, -1,       BL,          MassBal,   None,       3E-5
+Defined Components
+Component, From,     Charge, Compartment, Type,      Activity, Site Den
+H,         pH,       1,      Water,       FixedConc, Debye,    1
+OH,        KW/H,     -1,     Water,       FixedAct,  Debye,    1
+BL,        1.78e-05, -1,     Biotic,      MassBal,   None,     3e-05
 --------------------------------------------------------------------------------
 Formation Reactions
-Species, Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,       Delta H,   Temp
-BL1-Cu,  BL,       None,  2,  BL1, 1,   Cu,  1,            7.400,         0.000,  0.000
-BL1-CuOH,BL,       None,  3,  BL1, 1,   Cu,  1, OH,   1,  -1.300,         0.000,  0.000
-BL1-Ca,  BL,       None,  2,  BL1, 1,   Ca,  1,            3.600,         0.000,  0.000
-BL1-Mg,  BL,       None,  2,  BL1, 1,   Mg,  1,            3.600,         0.000,  0.000
-BL1-H,   BL,       None,  2,  BL1, 1,    H,  1,            5.400,         0.000,  0.000
-BL1-Na,  BL,       None,  2,  BL1, 1,   Na,  1,            3.000,         0.000,  0.000
-HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,   -14997.55155, 298.1514609
-H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,   -24166.23162, 298.1514609
-MgHCO3,  Water,    Debye, 3,  CO3, 1,   Mg,  1,  H,   1,  11.400,   -11666.16619, 298.1514609
-MgCO3,   Water,    Debye, 2,  CO3, 1,   Mg,  1,            2.980,    11413.46945, 298.1514609
-MgSO4,   Water,    Debye, 2,  Mg,  1,  SO4,  1,            2.370,    19162.83616, 298.1514609
-CaHCO3,  Water,    Debye, 3,  Ca,  1,  CO3,  1,  H,   1,  11.440,    -3664.102737,298.1514609
-CaCO3,   Water,    Debye, 2,  Ca,  1,  CO3,  1,            3.220,    14951.22381, 298.1514609
-CaSO4,   Water,    Debye, 2,  Ca,  1,  SO4,  1,            2.300,     6949.160364,298.1514609
-CuOH,    Water,    Debye, 2,  Cu,  1,   OH,  1,           -7.520,    56186.73738, 298.1514609
-Cu(OH)2, Water,    Debye, 2,  Cu,  1,   OH,  2,          -16.220,   112373.47476, 298.1514609
-CuSO4,   Water,    Debye, 2,  Cu,  1,  SO4,  1,            2.360,     8844.385918,298.1514609
-CuCl,    Water,    Debye, 2,  Cu,  1,   Cl,  1,            0.400,     6738.57975, 298.1514609
-CuCO3,   Water,    Debye, 2,  Cu,  1,  CO3,  1,            6.750,              0, 298.1514609
-Cu(CO3)2,Water,    Debye, 2,  Cu,  1,  CO3,  2,            9.920,              0, 298.1514609
-CuHCO3,  Water,    Debye, 3,  Cu,  1,  CO3,  1,   H,  1,  14.620,              0, 298.1514609
+Species,  Compartment, Activity, NC, C1, S1, C2,  S2, C3,  S3, Log K,  Delta H,           TempK
+HCO3,     Water,       Debye,    2,  H,  1,  CO3, 1,           10.329, -14997.5515494829, 298.151460942159
+H2CO3,    Water,       Debye,    2,  H,  2,  CO3, 1,           16.681, -24166.2316177852, 298.151460942159
+MgHCO3,   Water,       Debye,    3,  H,  1,  Mg,  1,  CO3, 1,  11.4,   -11666.1661870451, 298.151460942159
+MgCO3,    Water,       Debye,    2,  Mg, 1,  CO3, 1,           2.98,   11413.4694465315,  298.151460942159
+MgSO4,    Water,       Debye,    2,  Mg, 1,  SO4, 1,           2.37,   19162.8361556157,  298.151460942159
+CaHCO3,   Water,       Debye,    3,  H,  1,  Ca,  1,  CO3, 1,  11.44,  -3664.10273744739, 298.151460942159
+CaCO3,    Water,       Debye,    2,  Ca, 1,  CO3, 1,           3.22,   14951.2238137221,  298.151460942159
+CaSO4,    Water,       Debye,    2,  Ca, 1,  SO4, 1,           2.3,    6949.16036412436,  298.151460942159
+CuOH,     Water,       Debye,    2,  OH, 1,  Cu,  1,           6.48,   0,                 298.151460942159
+Cu(OH)2,  Water,       Debye,    2,  OH, 2,  Cu,  1,           11.78,  0,                 298.151460942159
+CuSO4,    Water,       Debye,    2,  Cu, 1,  SO4, 1,           2.36,   8844.38591797645,  298.151460942159
+CuCO3,    Water,       Debye,    2,  Cu, 1,  CO3, 1,           6.75,   0,                 298.151460942159
+Cu(CO3)2, Water,       Debye,    2,  Cu, 1,  CO3, 2,           9.92,   0,                 298.151460942159
+CuCl,     Water,       Debye,    2,  Cu, 1,  Cl,  1,           0.4,    6738.57974702968,  298.151460942159
+CuHCO3,   Water,       Debye,    3,  H,  1,  Cu,  1,  CO3, 1,  14.62,  0,                 298.151460942159
+BL-Cu,    Biotic,      None,     2,  Cu, 1,  BL,  1,           7.4,    0,                 0
+BL-CuOH,  Biotic,      None,     3,  H,  -1, Cu,  1,  BL,  1,  -1.3,   0,                 0
+BL-Ca,    Biotic,      None,     2,  Ca, 1,  BL,  1,           3.6,    0,                 0
+BL-Mg,    Biotic,      None,     2,  Mg, 1,  BL,  1,           3.6,    0,                 0
+BL-H,     Biotic,      None,     2,  H,  1,  BL,  1,           5.4,    0,                 0
+BL-Na,    Biotic,      None,     2,  Na, 1,  BL,  1,           3,      0,                 0
 --------------------------------------------------------------------------------
 Phase List
-Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles
+Phase, NC, C1, S1, C2, S2, C3, S3, Log K, Delta H, Temp, Moles
 --------------------------------------------------------------------------------
 Special Definitions
-Definition, Species
+Definition, Value
+BL,         BL
 Metal,      Cu
-BL,         BL1
-BL-Metal,   BL1-Cu
-BL-Metal,   BL1-CuOH
+BL-Metal,   BL-Cu
+BL-Metal,   BL-CuOH
 --------------------------------------------------------------------------------
 Critical Accumulation Table
-#, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
-1, 0.05541,     Ceriodaphnia dubia, Acute,     48h,      Neonate (<24 hr), Mortality, EC50; LC50, Gensemer et al. 2002; Hyne et al. 2005; Naddy et al. 2002; Naddy et al. 2003; Van Genderen et al. 2007,SMEA calculated by median
-2, 0.03395,     FAV,                Acute,     DIV=2.00, ACR=3.22,         FAV,       NA,         US EPA 2007,         none
+Num, CA,        Species,                  TestType, Duration, Lifestage,                                                                                          Endpoint,                  Quantifier, References,                                                                                             Miscellaneous
+1,   0.03395,   FAV,                      Acute,    DIV=2.0,  ACR=3.22,                                                                                           FAV,                       NA,         US EPA 2007,                                                                                            
+2,   0.05541,   Ceriodaphnia dubia,       Acute,    NA,       Neonate (<24 hr),                                                                                   ,                          EC50; LC50, Gensemer et al. 2002; Hyne et al. 2005; Naddy et al. 2002; Naddy et al. 2003; Van Genderen et al. 2007, SMEA calculated by median
+3,   0.0099515, Ceriodaphnia dubia,       Chronic,  NA,       Neonate (<24 hr),                                                                                   reproduction - # of young, EC20,       Wang et al. 2011a,                                                                                      SMEA calculated by geomean
+4,   1.0223,    Chironomus tentans,       Acute,    NA,       "Larva, 1st instar",                                                                                death and immobility,      EC50,       Gauss et al. 1985,                                                                                      SMEA calculated by geomean
+5,   0.035846,  Daphnia magna,            Acute,    NA,       Neonate (<24 hr),                                                                                   death/immobility,          LC50; EC50, Al-Reasi et al. 2012; Fulton and Meyer 2014; Ryan et al. 2009; Villavicencio et al. 2011,               SMEA calculated by geomean
+6,   0.076833,  Daphnia magna,            Chronic,  NA,       Neonate (<24 hr),                                                                                   reproduction,              MATC,       De Schamphelaere and Janssen 2004,                                                                      SMEA calculated by median
+7,   0.062603,  Daphnia pulex,            Acute,    NA,       Neonate (<24 hr),                                                                                   ,                          LC50,       Van Genderen et al. 2007,                                                                               SMEA calculated by geomean
+8,   0.010919,  Daphnia pulex,            Chronic,  NA,       Neonate (<24 hr),                                                                                   survival,                  EC20,       Winner 1985,                                                                                            SMEA calculated by geomean
+9,   0.0097598, Daphnia pulicaria,        Acute,    NA,       ,                                                                                                   ,                          LC50,       Lind et al. Manuscript 1978,                                                                            SMEA calculated by geomean
+10,  2.2092,    Lampsilis fasciola,       Acute,    NA,       Glochidia,                                                                                          ,                          EC50,       BLis et al. 2008,                                                                                       SMEA calculated by median
+11,  0.25703,   Lampsilis siliquoidea,    Acute,    NA,       Glochidia,                                                                                          ,                          LC50,       Wang et al. 2007a; 2007c; Wang et al. 2007c,                                                            SMEA calculated by geomean
+12,  0.037046,  Lampsilis siliquoidea,    Acute,    NA,       Juvenile,                                                                                           ,                          LC50,       Wang et al. 2009,                                                                                       SMEA calculated by median
+13,  15.656,    Lepomis macrochirus,      Acute,    NA,       "4.2 cm, 0.59g",                                                                                    ,                          LC50,       Inglis and Davis 1972,                                                                                  SMEA calculated by geomean
+14,  0.21719,   Oncorhynchus mykiss,      Acute,    NA,       "swim-up, 0.25 g",                                                                                  ,                          LC50,       Cacela et al. 1996,                                                                                     SMEA calculated by geomean
+15,  0.99652,   Oncorhynchus tshawytscha, Acute,    NA,       "Swim-up, 0.36-0.45 g",                                                                             ,                          LC50,       Welsh et al. 2000,                                                                                      SMEA calculated by geomean
+16,  0.40192,   Pimephales promelas,      Acute,    NA,       "Larva, 1-7 d; <24 h, 0.68 mg",                                                                     ,                          LC50,       Lind et al. Manuscript 1978; Van Genderen et al. 2007; Welsh et al. 1993,                               SMEA calculated by median
+17,  0.074349,  Pimephales promelas,      Chronic,  NA,       "Larva, <24 hr",                                                                                    biomass,                   EC20,       Besser et al. 2001; 2005,                                                                               SMEA calculated by geomean
+18,  1.5533,    Utterbackia imbecillis,   Acute,    NA,       Juvenile,                                                                                           ,                          LC50,       Keller unpublished 2000 memo,                                                                           SMEA calculated by geomean
+19,  0.0054227, Villosa iris,             Chronic,  NA,       "3 mo. old, 2.0 mm",                                                                                growth-weight,             EC20,       Wang et al. 2011a,                                                                                      SMEA calculated by geomean
+20,  0.013496,  Acipenser transmontanus,  Acute,    NA,       "Columbia River, 26 dph, 0.08 g, 2.5 cm; Kootenai River, 38 dph, 0.07 g, 2.4 cm; Juvenile, 40 dph", ,                          LC50,       Little et al. 2012; Vardy et al. 2013,                                                                  SMEA calculated by geomean
+21,  0.005297,  Acipenser transmontanus,  Chronic,  NA,       "Larva, 1 dph, 12.7 mm, 8.57 mg dry weight",                                                        growth-dry weight,         EC20,       Wang et al. 2014,                                                                                       SMEA calculated by geomean
+22,  3.7,       Oncorhynchus mykiss,      Acute,    NA,       ,                                                                                                   ,                          ,           From the Cu_Rainbow_Trout_06-10-07.DAT parameter file,                                                  
+23,  0.119,     Daphnia magna,            Acute,    NA,       ,                                                                                                   ,                          ,           From the Cu_Daphnia_Magna_06-10-07.DAT parameter file,                                                  
+24,  0.0447,    Daphnia pulex,            Acute,    NA,       ,                                                                                                   ,                          ,           From the Cu_Daphnia_Pulex_06-10-07.DAT parameter file,                                                  
+25,  5.48,      Pimephales promelas,      Acute,    NA,       ,                                                                                                   ,                          ,           From the Cu_Fathead_Minnow_06-10-07.DAT parameter file,                                                 
+26,  0.021704,  Ceriodaphnia dubia,       Acute,    NA,       Neonate (<24h),                                                                                     survival,                  EC50,       "Larry Walker Associates, 2013",                                                                        
 --------------------------------------------------------------------------------
+-------Notes--------
+written by kellyc from R: 2025-08-22 11:19:05.577742

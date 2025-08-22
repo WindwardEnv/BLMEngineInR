@@ -3,11 +3,16 @@ devtools::load_all()
 source("tools/CheckIfCopyrightHeader.R")
 
 # update data files
-sapply(list.files("data-raw", full.names = TRUE), FUN = function(X){print(X); source(X)})
+source("tools/UpdateDataFiles.R")
+
+devtools::load_all()
+
 
 # check lints and style
 styler::style_pkg(
   style = styler::tidyverse_style,
+  filetype = "R",
+  exclude_dirs = c("tests", "data-raw", "tools"),
   scope = I(c("indention", "line_breaks")),
   dry = "on"
 )

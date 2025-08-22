@@ -48,7 +48,7 @@ WriteParamFile = function(ThisProblem, ParamFile, Notes = ThisProblem$Notes) {
     X
   }
 
-  SectionBreak = "--------------------------------------------------------------------------------"#nolint: line_length_linter
+  SectionBreak = strrep("-", 80)
 
   write("Column model parameter file, Ver 4.00",
         file = ParamFile, append = FALSE)

@@ -1,14 +1,14 @@
 test_that("CheckBLMObject works when nothing's wrong", {
 
-  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myproblem = carbonate_system_problem
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
-                            package = "BLMEngineInR",
-                            mustWork = TRUE)
-  myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+  myinputsdf = data.frame(
+    ID = "Test",
+    Temp = 25,
+    pH = 7,
+    CO3 = 1E-4
+  )
+  myinputs = MatchInputsToProblem(DFInputs = myinputsdf, ThisProblem = myproblem)
 
   # Nothing wrong
   expect_equal(CheckBLMObject(Object = myproblem, Reference = BlankProblem(), BreakOnError = FALSE), character())
@@ -21,15 +21,15 @@ test_that("CheckBLMObject works when nothing's wrong", {
 })
 test_that("CheckBLMObject works when an element's been removed or added", {
 
-  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myproblem = carbonate_system_problem
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
-                            package = "BLMEngineInR",
-                            mustWork = TRUE)
-  myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+  myinputsdf = data.frame(
+    ID = "Test",
+    Temp = 25,
+    pH = 7,
+    CO3 = 1E-4
+  )
+  myinputs = MatchInputsToProblem(DFInputs = myinputsdf, ThisProblem = myproblem)
 
   # Remove something:
   mytestproblem = myproblem
@@ -51,15 +51,15 @@ test_that("CheckBLMObject works when an element's been removed or added", {
 })
 test_that("CheckBLMObject works when there's a wrong type", {
 
-  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myproblem = carbonate_system_problem
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
-                            package = "BLMEngineInR",
-                            mustWork = TRUE)
-  myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+  myinputsdf = data.frame(
+    ID = "Test",
+    Temp = 25,
+    pH = 7,
+    CO3 = 1E-4
+  )
+  myinputs = MatchInputsToProblem(DFInputs = myinputsdf, ThisProblem = myproblem)
 
   # Wrong type
   mytestproblem = myproblem
@@ -85,15 +85,15 @@ test_that("CheckBLMObject works when there's a wrong type", {
 })
 test_that("CheckBLMObject works when a column in a matrix or data frame's been removed or added", {
 
-  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myproblem = carbonate_system_problem
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
-                            package = "BLMEngineInR",
-                            mustWork = TRUE)
-  myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+  myinputsdf = data.frame(
+    ID = "Test",
+    Temp = 25,
+    pH = 7,
+    CO3 = 1E-4
+  )
+  myinputs = MatchInputsToProblem(DFInputs = myinputsdf, ThisProblem = myproblem)
 
   # problem data.frame missing a column
   mytestproblem = myproblem
@@ -147,15 +147,15 @@ test_that("CheckBLMObject works when a column in a matrix or data frame's been r
 })
 test_that("CheckBLMObject works when something's the wrong length", {
 
-  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myproblem = carbonate_system_problem
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
-                            package = "BLMEngineInR",
-                            mustWork = TRUE)
-  myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+  myinputsdf = data.frame(
+    ID = "Test",
+    Temp = 25,
+    pH = 7,
+    CO3 = 1E-4
+  )
+  myinputs = MatchInputsToProblem(DFInputs = myinputsdf, ThisProblem = myproblem)
 
   # problem data.frame has extra row
   mytestproblem = myproblem
@@ -217,15 +217,15 @@ test_that("CheckBLMObject works when something's the wrong length", {
 })
 test_that("CheckBLMObject works when there's something extra", {
 
-  mypfile = system.file("extdata","ParameterFiles","carbonate_system_only.dat4",
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myproblem = carbonate_system_problem
   mylistproblem = ConvertToList(myproblem)
-  myinputfile = system.file("extdata","InputFiles","carbonate_system_test.blm4",
-                            package = "BLMEngineInR",
-                            mustWork = TRUE)
-  myinputs = GetData(InputFile = myinputfile, ThisProblem = myproblem)
+  myinputsdf = data.frame(
+    ID = "Test",
+    Temp = 25,
+    pH = 7,
+    CO3 = 1E-4
+  )
+  myinputs = MatchInputsToProblem(DFInputs = myinputsdf, ThisProblem = myproblem)
 
   mymegaproblemandinputs = c(myproblem, mylistproblem, myinputs)
   mymegaDFproblemandinputs = c(myproblem, myinputs)

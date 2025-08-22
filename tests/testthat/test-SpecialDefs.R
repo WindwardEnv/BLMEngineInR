@@ -22,7 +22,7 @@ test_that("AddSpecialDefs works", {
                                  SpecialDef = "BLMetal"),
                regexp = "Unknown species")
   expect_no_error(AddSpecialDefs(ThisProblem = Cu_full_organic_problem,
-                                 Value = "BL1-Ca",
+                                 Value = "BL-Ca",
                                  SpecialDef = "BLMetal"))
 
   expect_error(AddSpecialDefs(ThisProblem = myproblem,
@@ -64,10 +64,10 @@ test_that("RemoveSpecialDefs works", {
                                     SpecialDefToRemove = "WHAM"))
   expect_equal(RemoveSpecialDefs(ThisProblem = Cu_full_organic_problem,
                                  SpecialDefToRemove = "WHAM")$N,
-               c(Mass=2L, InLab = 3L, InVar = 4L, InMass = 2L, InComp = 8L,
+               c(Mass = 2L, InLab = 3L, InVar = 4L, InMass = 2L, InComp = 8L,
                  InDefComp = 3L, InSpec = 21L, DefComp = 3L, Comp = 11L,
                  Spec = 32L, Phase = 0L, BL = 1L, Metal = 1L, BLMetal = 2L,
-                 CAT = 2L))
+                 CAT = 26L))
   expect_error(RemoveSpecialDefs(ThisProblem = Cu_full_organic_problem,
                                     SpecialDefToRemove = "Junk"),
                regexp = "should be one of")

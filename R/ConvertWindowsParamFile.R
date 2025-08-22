@@ -49,7 +49,7 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL, #nolint:
                            header = FALSE)
   colnames(CompDF) = c("Name", "Charge", "TypeNum", "ActivityNum", "SiteDen")
   CompDF$MCR = floor(CompDF$TypeNum / 10) + 1L
-  CompDF$MCName = c("Water", "BL")[CompDF$MCR]
+  CompDF$MCName = c("Water", "Biotic")[CompDF$MCR]
   CompDF$Type = c("MassBal", "FixedConc", "Substituted", "ChargeBal")[
     CompDF$TypeNum - 10 * (CompDF$MCR - 1)
   ]
@@ -83,7 +83,7 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL, #nolint:
       )
     }
     SpecDF$MCR = floor(SpecDF$TypeNum / 10) + 1L
-    SpecDF$MCName = c("Water", "BL")[SpecDF$MCR]
+    SpecDF$MCName = c("Water", "Biotic")[SpecDF$MCR]
     SpecDF$Activity = WinBLMActivities[SpecDF$ActivityNum]
     SpecDF$Name = gsub("Gill", "BL", SpecDF$Name)
   }
@@ -201,24 +201,27 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL, #nolint:
     )
   }
 
-  # make non-extra components consistent with parameter file
-  CompsToUpdate = which((CompDF$Name %in% NewProblem$Comp$Name) &
-                          (CompDF$Name %in% c("DOC") == FALSE) &
-                          !grepl("BL", CompDF$Name))
-  if (length(CompsToUpdate) > 0L) {
-    for (i in CompsToUpdate) {
-      j = which(NewProblem$Comp$Name == CompDF$Name[i])
-      if (NewProblem$Comp$ActCorr[j] != CompDF$Activity[i]) {
-        NewProblem$Comp$ActCorr[j] = CompDF$Activity[i]
-        NewProblem$Spec$ActCorr[j] = CompDF$Activity[i]
-
-        j = which(NewProblem$DefComp$Name == CompDF$Name[i])
-        if (length(j) == 1) {
-          NewProblem$DefComp$ActCorr[j] = CompDF$Activity[i]
-        }
-      }
-    }
-  }
+  # # make non-extra components consistent with parameter file
+  ## --> If these are in WHAM, then they should be doing activity corrections
+  ## with extended Debye-Huckel...don't update to whatever the parameter file
+  ## says - it's lying.
+  # CompsToUpdate = which((CompDF$Name %in% NewProblem$Comp$Name) &
+  #                         (CompDF$Name %in% c("DOC") == FALSE) &
+  #                         !grepl("BL", CompDF$Name))
+  # if (length(CompsToUpdate) > 0L) {
+  #   for (i in CompsToUpdate) {
+  #     j = which(NewProblem$Comp$Name == CompDF$Name[i])
+  #     if (NewProblem$Comp$ActCorr[j] != CompDF$Activity[i]) {
+  #       NewProblem$Comp$ActCorr[j] = CompDF$Activity[i]
+  #       NewProblem$Spec$ActCorr[j] = CompDF$Activity[i]
+  #
+  #       j = which(NewProblem$DefComp$Name == CompDF$Name[i])
+  #       if (length(j) == 1) {
+  #         NewProblem$DefComp$ActCorr[j] = CompDF$Activity[i]
+  #       }
+  #     }
+  #   }
+  # }
 
 
   # Add extra components not in thermodynamic database
@@ -246,10 +249,10 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL, #nolint:
   # Add DefComps
   DefCompsToAdd = which(grepl("BL", CompDF$Name))
   if (length(DefCompsToAdd) > 0L) {
-    if (!any(NewProblem$Mass$Name == "BL")) {
+    if (!any(NewProblem$Mass$Name %in% c("BL", "Biotic"))) {
       NewProblem = AddMassCompartments(
         ThisProblem = NewProblem,
-        MassName = "BL",
+        MassName = "Biotic",
         MassAmt = 1,
         MassUnit = "kg wet"
       )
@@ -265,6 +268,7 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL, #nolint:
       DefCompSiteDens = CompDF$SiteDen[DefCompsToAdd]
     )
   }
+
 
   # Species
   if (N[2] > 0L) {
@@ -291,6 +295,19 @@ ConvertWindowsParamFile = function(WindowsParamFile, RParamFile = NULL, #nolint:
       SpecTempKelvin = SpecDF$TempKelvin
     )
   }
+
+  # make H and OH consistent with Windows BLM handling
+  iOH = which(NewProblem$Comp$Name == "OH")
+  iH = which(NewProblem$Comp$Name == "H")
+  NewProblem$Comp$ActCorr[iOH] = NewProblem$Comp$ActCorr[iH]
+  NewProblem$Comp$Type[iH] = "FixedConc"
+  iOH = which(NewProblem$DefComp$Name == "OH")
+  iH = which(NewProblem$DefComp$Name == "H")
+  NewProblem$DefComp$ActCorr[iOH] = NewProblem$DefComp$ActCorr[iH]
+  NewProblem$DefComp$Type[iH] = "FixedConc"
+  iOH = which(NewProblem$Spec$Name == "OH")
+  iH = which(NewProblem$Spec$Name == "H")
+  NewProblem$Spec$ActCorr[iOH] = NewProblem$Spec$ActCorr[iH]
 
   # Phases
   if (N[3] > 0L) {

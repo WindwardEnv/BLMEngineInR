@@ -136,6 +136,25 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) { #nolint: cyc
       if (iType == "BL") {
         TypeVars = setdiff(TypeVars, "BLMetal")
       }
+      if (iType %in% c("BL", "BLMetal")) {
+        # If there are BL/BLMetal special definitions, then Index$BioticLigMCR
+        # should not be NA
+        if ("Index" %in% intersect(names(Object), names(Reference))) {
+          if ("BioticLigMCR" %in% intersect(names(Object$Index),
+                                            names(Reference$Index))) {
+            if ((Object$N[iType] > 0) && is.na(Object$Index$BioticLigMCR)) {
+              ErrorList = c(
+                ErrorList,
+                paste(
+                  "Biotic Ligand mass compartment not specified with",
+                  iType,
+                  "special definition."
+                )
+              )
+            }
+          }
+        }
+      }
       for (i in TypeVars) {
         LenType = dim(Object[[i]])[1]
         if (is.null(LenType)) { LenType = length(Object[[i]]) }
@@ -203,6 +222,7 @@ CheckBLMObject = function(Object, Reference, BreakOnError = TRUE) { #nolint: cyc
     }
 
   }
+
 
   if (BreakOnError) {
     if (length(ErrorList) > 0) {

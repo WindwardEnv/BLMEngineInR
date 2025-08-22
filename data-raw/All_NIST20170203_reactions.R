@@ -305,7 +305,12 @@ write(c(
 All_NIST20170203_reactions = ConvertWHAMVThermoFile(
   ThermoDBSName = tf,
   RWHAMFile = file.path("inst", "extdata", "WHAM", "NIST_20170203.wdat"),
-  RParamFile = file.path("inst", "extdata", "ParameterFiles", "All_NIST20170203_reactions.dat4")
+  RParamFile = file.path("inst", "extdata", "ParameterFiles",
+                         "All_NIST20170203_reactions.dat4")
 )
+All_NIST20170203_reactions$ParamFile =
+  basename(All_NIST20170203_reactions$ParamFile)
+All_NIST20170203_reactions$WHAM$File =
+  basename(All_NIST20170203_reactions$WHAM$File)
 
 usethis::use_data(All_NIST20170203_reactions, overwrite = TRUE)

@@ -1,47 +1,49 @@
 Column model parameter file, Ver 4.00
 --------------------------------------------------------------------------------
-1,  Number of Mass Compartments
-1,  Input Labels
-2,  Input Variables
-1,  Input Components
-2,  Defined Components
-2,  Species
-0,  Phases
-0,  Number of Biotic Ligand Definitions
-0,  Number of Critical Values
+1, Number of Mass Compartments
+1, Number of Input Labels
+2, Number of Input Variables
+1, Number of Input Components
+2, Number of Defined Components
+2, Number of Species
+0, Number of Phases
+0, Number of Special Definitions
+0, Number of Critical Values
 --------------------------------------------------------------------------------
 Mass Compartment List
-Compartment,   C to M,     Units label
-Water,         1,          L
+Compartment, C to M, Unit Label
+Water,       1,      L
 --------------------------------------------------------------------------------
 Input Labels
 ID
 --------------------------------------------------------------------------------
 Input Variables
-Variable,  Compartment, Type
-Temp,      Water,       Temperature
-pH,        Water,       pH
+Variable, Compartment, Type
+Temp,     Water,       Temperature
+pH,       Water,       pH
 --------------------------------------------------------------------------------
 Input Components
-Component, Charge, Compartment, Type,     Activity
-CO3,       -2,     Water,       MassBal,  Debye
+Component, Charge, Compartment, Type,    Activity
+CO3,       -2,     Water,       MassBal, Debye
 --------------------------------------------------------------------------------
-Defined components
-Component,  From,     Charge,   Compartment, Type,     Activity,   Site Den
-H,          pH,       1,        Water,       FixedAct, Debye,      1.0
-OH,         KW/H,     -1,       Water,       FixedAct, Debye,      1.0
+Defined Components
+Component, From, Charge, Compartment, Type,     Activity, Site Den
+H,         pH,   1,      Water,       FixedAct, Debye,    1
+OH,        KW/H, -1,     Water,       FixedAct, Debye,    1
 --------------------------------------------------------------------------------
 Formation Reactions
-Species,  Compart., Act.,  NC, C1,  S1,  C2, S2, C3,  S3,   Log K,  Delta H,   Temp
-HCO3,    Water,    Debye, 2,  CO3, 1,    H,  1,           10.329,   -14600, 298.15
-H2CO3,   Water,    Debye, 2,  CO3, 1,    H,  2,           16.681,   -23760, 298.15
+Species, Compartment, Activity, NC, C1, S1, C2,  S2, Log K,  Delta H,      TempK
+HCO3,    Water,       Debye,    2,  H,  1,  CO3, 1,  10.329, -14997.55155, 298.1514609
+H2CO3,   Water,       Debye,    2,  H,  2,  CO3, 1,  16.681, -24166.23162, 298.1514609
 --------------------------------------------------------------------------------
 Phase List
-Phase,   NC,  C1,   S1,   C2,   S2,   C3,   S3,    Log K, Delta H,   Temp,   Moles
+Phase, NC, C1, S1, C2, S2, C3, S3, Log K, Delta H, Temp, Moles
 --------------------------------------------------------------------------------
-Biotic Ligand Definitions
-Definition, Species
+Special Definitions
+Definition, Value
 --------------------------------------------------------------------------------
 Critical Accumulation Table
-#, CA,          Species,            Test Type, Duration, Lifestage,        Endpoint,  Quantifier, References,          Miscellaneous
+Num, CA, Species, TestType, Duration, Lifestage, Endpoint, Quantifier, References, Miscellaneous
 --------------------------------------------------------------------------------
+-------Notes--------
+written by kellyc from R: 2025-08-22 11:18:51.272048

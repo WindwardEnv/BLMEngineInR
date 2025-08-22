@@ -17,6 +17,7 @@ Ni.w.pfile = withr::local_tempfile(fileext = ".dat")
 Ni.r.pfile = file.path("inst", "extdata", "ParameterFiles", "Ni_HCO3_full_organic.dat4")
 
 write(c(
+  # Ni_all_studies_calibration_toxic_carbonates_2024-04-10.dat
   'Column model parameter file, Ver 3.01',
   '--------------------------------------------------------------------------------',
   'Number of Components, Species, Phases, Linked Lists',

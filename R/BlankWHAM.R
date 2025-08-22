@@ -80,7 +80,8 @@ BlankWHAM = function() {
       Spec = character(),
       KselHA = numeric(),
       KselFA = numeric()
-    )
+    ),
+    Notes = character()
   )
 
   Out

@@ -32,7 +32,7 @@ test_that("RemoveMassCompartments works", {
   expect_error(RemoveMassCompartments(ThisProblem = carbonate_system_problem,
                                       MCToRemove = 1))
   expect_no_error(RemoveMassCompartments(ThisProblem = Cu_full_organic_problem,
-                                         MCToRemove = "BL"))
+                                         MCToRemove = "Biotic"))
   expect_no_error(RemoveMassCompartments(ThisProblem = Cu_full_organic_problem,
                                          MCToRemove = "Water"))
   expect_error(RemoveMassCompartments(ThisProblem = Cu_full_organic_problem,

@@ -114,7 +114,8 @@ AddMassCompartments = function(ThisProblem,
   }
   NewProblem$Index$BioticLigMCR = which(
     grepl("BL", NewProblem$Mass$Name, ignore.case = TRUE) |
-      grepl("gill", NewProblem$Mass$Name, ignore.case = TRUE)
+      grepl("gill", NewProblem$Mass$Name, ignore.case = TRUE) |
+      grepl("biotic", NewProblem$Mass$Name, ignore.case = TRUE)
   )
   if (length(NewProblem$Index$BioticLigMCR) == 0) {
     NewProblem$Index$BioticLigMCR = as.integer(NA)
@@ -232,7 +233,8 @@ RemoveMassCompartments = function(ThisProblem, MCToRemove, DoCheck = TRUE) {
     which(tolower(NewProblem$Mass$Name) %in% c("water", "aqueous"))[1]
   NewProblem$Index$BioticLigMCR =
     which(grepl("BL", NewProblem$Mass$Name, ignore.case = TRUE) |
-            grepl("gill", NewProblem$Mass$Name, ignore.case = TRUE))[1]
+            grepl("gill", NewProblem$Mass$Name, ignore.case = TRUE) |
+            grepl("biotic", NewProblem$Mass$Name, ignore.case = TRUE))[1]
   if (any(NewProblem$Mass$Name %in% "Water_DonnanHA")) {
     NewProblem$Index$WHAMDonnanMCR[1] =
       which(NewProblem$Mass$Name == "Water_DonnanHA")
