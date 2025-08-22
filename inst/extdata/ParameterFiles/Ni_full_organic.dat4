@@ -13,7 +13,7 @@ Column model parameter file, Ver 4.00
 Mass Compartment List
 Compartment, C to M, Unit Label
 Water,       1,      L
-BL,          1,      kg wet
+Biotic,      1,      kg wet
 --------------------------------------------------------------------------------
 Input Labels
 Site Label
@@ -28,20 +28,20 @@ HA,       Water,       PercHA
 --------------------------------------------------------------------------------
 Input Components
 Component, Charge, Compartment, Type,    Activity
-Na,        1,      Water,       MassBal, Davies
-Mg,        2,      Water,       MassBal, Davies
-K,         1,      Water,       MassBal, Davies
-Ca,        2,      Water,       MassBal, Davies
-Ni,        2,      Water,       MassBal, Davies
-Cl,        -1,     Water,       MassBal, Davies
-SO4,       -2,     Water,       MassBal, Davies
-CO3,       -2,     Water,       MassBal, Davies
+Na,        1,      Water,       MassBal, Debye
+Mg,        2,      Water,       MassBal, Debye
+K,         1,      Water,       MassBal, Debye
+Ca,        2,      Water,       MassBal, Debye
+Ni,        2,      Water,       MassBal, Debye
+Cl,        -1,     Water,       MassBal, Debye
+SO4,       -2,     Water,       MassBal, Debye
+CO3,       -2,     Water,       MassBal, Debye
 --------------------------------------------------------------------------------
 Defined Components
-Component, From,     Charge, Compartment, Type,     Activity, Site Den
-H,         pH,       1,      Water,       FixedAct, Davies,   1
-OH,        KW/H,     -1,     Water,       FixedAct, Debye,    1
-BL,        1.78e-05, -1,     BL,          MassBal,  None,     0.001
+Component, From,     Charge, Compartment, Type,      Activity, Site Den
+H,         pH,       1,      Water,       FixedConc, Debye,    1
+OH,        KW/H,     -1,     Water,       FixedAct,  Debye,    1
+BL,        1.78e-05, -1,     Biotic,      MassBal,   None,     0.001
 --------------------------------------------------------------------------------
 Formation Reactions
 Species, Compartment, Activity, NC, C1, S1, C2,  S2, C3,  S3, Log K,  Delta H,           TempK
@@ -59,12 +59,12 @@ NiSO4,   Water,       Debye,    2,  Ni, 1,  SO4, 1,           2.3,    6317.41851
 NiCO3,   Water,       Debye,    2,  Ni, 1,  CO3, 1,           3.57,   0,                 298.151460942159
 NiCl,    Water,       Debye,    2,  Ni, 1,  Cl,  1,           -0.43,  2105.80617094677,  298.151460942159
 NiHCO3,  Water,       Debye,    3,  H,  1,  Ni,  1,  CO3, 1,  11.919, 0,                 298.151460942159
-BL-Ni,   BL,          None,     2,  Ni, 1,  BL,  1,           4,      0,                 0
-BL-NiOH, BL,          None,     3,  H,  -1, Ni,  1,  BL,  1,  -5.5,   0,                 0
-BL-Ca,   BL,          None,     2,  Ca, 1,  BL,  1,           4.25,   0,                 0
-BL-Mg,   BL,          None,     2,  Mg, 1,  BL,  1,           3.6,    0,                 0
-BL-Na,   BL,          None,     2,  Na, 1,  BL,  1,           1,      0,                 0
-BL-H,    BL,          None,     2,  H,  1,  BL,  1,           4.7,    0,                 0
+BL-Ni,   Biotic,      None,     2,  Ni, 1,  BL,  1,           4,      0,                 0
+BL-NiOH, Biotic,      None,     3,  H,  -1, Ni,  1,  BL,  1,  -5.5,   0,                 0
+BL-Ca,   Biotic,      None,     2,  Ca, 1,  BL,  1,           4.25,   0,                 0
+BL-Mg,   Biotic,      None,     2,  Mg, 1,  BL,  1,           3.6,    0,                 0
+BL-Na,   Biotic,      None,     2,  Na, 1,  BL,  1,           1,      0,                 0
+BL-H,    Biotic,      None,     2,  H,  1,  BL,  1,           4.7,    0,                 0
 --------------------------------------------------------------------------------
 Phase List
 Phase, NC, C1, S1, C2, S2, C3, S3, Log K, Delta H, Temp, Moles
@@ -277,7 +277,7 @@ Num, CA,                 Species,                         TestType, Duration,   
 196, 85.441,             Xenopus laevis,                  Chronic,  96 hours,           "embryo,  late blastula/early gastrula (NF stage 10)",     Survival,                NOEC,       Fort et al. 2006,                                                                                       geomean of 2 values
 --------------------------------------------------------------------------------
 -------Notes--------
-written by kellyc from R: 2025-01-03 16:46:42.388532
+written by kellyc from R: 2025-08-22 11:19:18.508608
 ---------------------------------------------------------------------------------------------------
 Notes:
 ---------------------------------------------------------------------------------------------------
@@ -293,6 +293,7 @@ Effect: n/a
     
 2016-01-28: Name changed to "Ni_all_studies_calibration_2015-10-31.dat", based on the parameters 
    being calibrated in "Ni_calib_write.dat" on Oct 31, 2015.  
+   
 2021-03-03: Updated the thermo database to NIST_20170203.dbs, which includes the 
    calibrated Ni-FA binding constant and binding constants for carbonate complexes 
    have been corrected to the NIST/IUPAC values rather than WHAM V defaults.

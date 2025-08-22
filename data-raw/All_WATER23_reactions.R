@@ -261,7 +261,12 @@ write(c(
 All_WATER23_reactions = ConvertWHAMVThermoFile(
   ThermoDBSName = tf,
   RWHAMFile = file.path("inst", "extdata", "WHAM", "WATER23.wdat"),
-  RParamFile = file.path("inst", "extdata", "ParameterFiles", "All_WATER23_reactions.dat4")
+  RParamFile = file.path("inst", "extdata", "ParameterFiles",
+                         "All_WATER23_reactions.dat4")
 )
+All_WATER23_reactions$ParamFile =
+  basename(All_WATER23_reactions$ParamFile)
+All_WATER23_reactions$WHAM$File =
+  basename(All_WATER23_reactions$WHAM$File)
 
 usethis::use_data(All_WATER23_reactions, overwrite = TRUE)

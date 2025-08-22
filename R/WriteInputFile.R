@@ -25,8 +25,8 @@
 #'
 #' @examples
 #' tf = tempfile()
-#' myinputfile = system.file(file.path("extdata", "InputFiles",
-#'                                     "carbonate_system_test.blm4"),
+#' myinputfile = system.file("extdata", "InputFiles",
+#'                           "carbonate_system_test.blm4",
 #'                           package = "BLMEngineInR",
 #'                           mustWork = TRUE)
 #' myinputs = GetData(InputFile = myinputfile,
@@ -46,7 +46,7 @@ WriteInputFile = function(AllInput, ThisProblem, InputFile) {
     if (length(unique(nchar(X))) > 1) {
       X = paste0(X, strrep(" ", max(nchar(X)) - nchar(X)))
     }
-    return(X)
+    X
   }
 
   write(AllInput$NObs, file = InputFile, append = FALSE)
@@ -104,5 +104,5 @@ WriteInputFile = function(AllInput, ThisProblem, InputFile) {
   write(paste0("ParameterFile = \"", ThisProblem$ParamFile, "\""),
         file = InputFile, append = TRUE)
 
-  return(invisible(TRUE))
+  invisible(TRUE)
 }

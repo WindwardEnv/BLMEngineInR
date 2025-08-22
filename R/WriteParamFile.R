@@ -45,10 +45,10 @@ WriteParamFile = function(ThisProblem, ParamFile, Notes = ThisProblem$Notes) {
     if (length(unique(nchar(X))) > 1) {
       X = paste0(X, strrep(" ", max(nchar(X)) - nchar(X)))
     }
-    return(X)
+    X
   }
 
-  SectionBreak = "--------------------------------------------------------------------------------"#nolint: line_length_linter
+  SectionBreak = strrep("-", 80)
 
   write("Column model parameter file, Ver 4.00",
         file = ParamFile, append = FALSE)

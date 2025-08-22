@@ -44,8 +44,8 @@
 #' @export
 #'
 #' @examples
-#' myinputfile = system.file(file.path("extdata", "InputFiles",
-#'                                     "carbonate_system_test.blm4"),
+#' myinputfile = system.file("extdata", "InputFiles",
+#'                           "carbonate_system_test.blm4",
 #'                           package = "BLMEngineInR", mustWork = TRUE)
 #' ReadInputsFromFile(InputFile = myinputfile,
 #'                    ThisProblem = carbonate_system_problem)
@@ -310,6 +310,15 @@ MatchInputsToProblem = function(
              dimnames = list(Obs = 1:NObs, Comp = NumDefCompName))
   }
 
+
+  InLabObs = as.matrix(InLabObs)
+  InVarObs = as.matrix(InVarObs)
+  InCompObs = as.matrix(InCompObs)
+
+  rownames(InLabObs) = NULL
+  rownames(InVarObs) = NULL
+  rownames(InCompObs) = NULL
+
   Out = list(
     NObs = as.integer(NObs),
     InLabObs = as.matrix(InLabObs),
@@ -386,8 +395,8 @@ MatchInputsToProblem = function(
 #' @export
 #'
 #' @examples
-#' myinputfile = system.file(file.path("extdata", "InputFiles",
-#'                                     "carbonate_system_test.blm4"),
+#' myinputfile = system.file("extdata", "InputFiles",
+#'                           "carbonate_system_test.blm4",
 #'                           package = "BLMEngineInR", mustWork = TRUE)
 #' GetData(InputFile = myinputfile, ThisProblem = carbonate_system_problem)#'
 #'

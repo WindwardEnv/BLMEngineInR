@@ -27,15 +27,15 @@
 #' @export
 #'
 #' @examples
-#' mypfile = system.file(file.path("extdata", "ParameterFiles",
-#'                                 "carbonate_system_only.dat4"),
+#' mypfile = system.file("extdata", "ParameterFiles",
+#'                       "carbonate_system_only.dat4",
 #'                       package = "BLMEngineInR", mustWork = TRUE)
 #' thisProblem = DefineProblem(mypfile)
 #'
 DefineProblem = function(ParamFile, WriteLog = FALSE) {
 
   # error catching
-  stopifnot(file.exists(ParamFile))
+  ParamFile = normalizePath(ParamFile, mustWork = TRUE)
 
   # read in parameter file
   # -get number of mass compartments

@@ -39,17 +39,11 @@ DefineWHAM = function(WHAMVer = "V", WHAMFile = NA) {
   WHAMVer = match.arg(WHAMVer, choices =  c("V", "VI", "VII", NA_character_))
   if (is.na(WHAMFile)) {
     if (WHAMVer == "V") {
-      WHAMFile = system.file(file.path("extdata", "WHAM", "WHAM_V.wdat"),
-                             package = "BLMEngineInR",
-                             mustWork = TRUE)
+      return(WHAM_V_LIST)
     } else if (WHAMVer == "VI") {
-      WHAMFile = system.file(file.path("extdata", "WHAM", "WHAM_VI.wdat"),
-                             package = "BLMEngineInR",
-                             mustWork = TRUE)
+      return(WHAM_VI_LIST)
     } else if (WHAMVer  == "VII") {
-      WHAMFile = system.file(file.path("extdata", "WHAM", "WHAM_VII.wdat"),
-                             package = "BLMEngineInR",
-                             mustWork = TRUE)
+      return(WHAM_VII_LIST)
     }
   } else {
     WHAMVer = NA_character_
@@ -172,6 +166,8 @@ DefineWHAM = function(WHAMVer = "V", WHAMFile = NA) {
       strip.white = TRUE
     )
   }
+
+  NewWHAM$Notes = character()
 
   CheckBLMObject(NewWHAM, BlankWHAM(), BreakOnError = TRUE)
 

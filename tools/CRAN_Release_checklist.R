@@ -1,11 +1,19 @@
 devtools::load_all()
 
+source("tools/CheckIfCopyrightHeader.R")
+
 # update data files
-sapply(list.files("data-raw", full.names = TRUE), FUN = source)
+source("tools/UpdateDataFiles.R")
+
+devtools::load_all()
+
 
 # check lints and style
 styler::style_pkg(
-  style = styler::tidyverse_style(scope = c("indention", "line_breaks")),
+  style = styler::tidyverse_style,
+  filetype = "R",
+  exclude_dirs = c("tests", "data-raw", "tools"),
+  scope = I(c("indention", "line_breaks")),
   dry = "on"
 )
 lintr::lint_package()
@@ -22,10 +30,23 @@ devtools::test()
 
 # check test coverage
 devtools::unload()
-tmp = devtools::test_coverage()
+# tmp = devtools::test_coverage()
+tmp = covr::package_coverage()
+tmp2 = covr::report(tmp)
 devtools::load_all()
 
 # update manual
+devtools::check_man()
+if (!tinytex::is_tinytex()) {
+  tinytex::install_tinytext()
+  tinytex:::install_yihui_pkgs()
+  for (i in c("makeindex", "texinfo")) {
+    if (!tinytex::check_installed(i)) {
+      tinytex::tlmgr_install(i)
+    }
+  }
+  #make sure perl is installed
+}
 devtools::build_manual()
 
 # Have you checked for spelling errors (with `spell_check()`)?
@@ -45,6 +66,7 @@ devtools::release_checks()
 # check_rhub()
 # This function is deprecated and defunct since rhub v2.
 # Please see `?rhubv2` on transitioning to the new rhub functions.
+# **I have done the v2 update already. Check with rhub::rhub_check().
 rhub::rhub_check(platforms = c("linux", "macos", "macos-arm64", "windows"))
 
 # Have you checked on win-builder (with `check_win_devel()`)?

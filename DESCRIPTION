@@ -1,7 +1,7 @@
 Package: BLMEngineInR
 Type: Package
 Version: 0.1.7
-Date: 2025-01-02
+Date: 2025-08-22
 Title: Biotic Ligand Model Engine
 Authors@R: c(person(given = "Robert", family = "Santore", 
                     email = "roberts@windwardenv.com",
@@ -42,4 +42,4 @@ Suggests:
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)

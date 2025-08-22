@@ -281,7 +281,7 @@ AddSpecies = function( #nolint: cyclocomp_linter
         if (length(Tmp) < max(NewProblem$Spec$NC)) {
           Tmp = c(Tmp, rep(0L, max(NewProblem$Spec$NC) - length(Tmp)))
         }
-        return(Tmp)
+        Tmp
       }
     ),
     nrow = NSpecAdd,

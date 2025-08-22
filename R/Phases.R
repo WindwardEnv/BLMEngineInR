@@ -213,7 +213,7 @@ AddPhases = function(ThisProblem, #nolint: cyclocomp_linter
         if (length(Tmp) < max(NewProblem$Phase$NC)) {
           Tmp = c(Tmp, rep(0, max(NewProblem$Phase$NC) - length(Tmp)))
         }
-        return(Tmp)
+        Tmp
       }
     ),
     nrow = NPhaseAdd,

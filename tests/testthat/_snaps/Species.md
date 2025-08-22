@@ -6,7 +6,7 @@
         1234, SpecTempKelvin = 298)
     Output
       $ParamFile
-      [1] "C:/Users/kellyc/Documents/BLM Development/engine/BLMEngineInR/inst/extdata/ParameterFiles/carbonate_system_only.dat4 (modified)"
+      [1] "carbonate_system_only.dat4 (modified)"
       
       $N
            Mass     InLab     InVar    InMass    InComp InDefComp    InSpec   DefComp 
@@ -57,13 +57,13 @@
       4  HCO3  HCO3 = 1 * H + 1 * CO3     -1  Water   1 Normal   Debye 10.329
       5 H2CO3 H2CO3 = 2 * H + 1 * CO3      0  Water   1 Normal   Debye 16.681
       6 H3CO3 H3CO3 = 3 * H + 1 * CO3      1  Water   1 Normal   Debye  1.230
-                   K DeltaH TempKelvin NC
-      1 1.000000e+00      0       0.00  1
-      2 1.000000e+00      0       0.00  1
-      3 1.000000e+00      0       0.00  1
-      4 2.133045e+10 -14600     298.15  2
-      5 4.797334e+16 -23760     298.15  2
-      6 1.698244e+01  -1234     298.00  2
+                   K    DeltaH TempKelvin NC
+      1 1.000000e+00      0.00     0.0000  1
+      2 1.000000e+00      0.00     0.0000  1
+      3 1.000000e+00      0.00     0.0000  1
+      4 2.133045e+10 -14997.55   298.1515  2
+      5 4.797334e+16 -24166.23   298.1515  2
+      6 1.698244e+01  -1234.00   298.0000  2
       
       $SpecCompList
             [,1] [,2]
@@ -194,6 +194,9 @@
       [1] Spec   KselHA KselFA
       <0 rows> (or 0-length row.names)
       
+      $WHAM$Notes
+      character(0)
+      
       
       $Index
       $Index$AqueousMCR
@@ -214,7 +217,7 @@
       RemoveSpecies(ThisProblem = carbonate_system_problem, SpeciesToRemove = "HCO3")
     Output
       $ParamFile
-      [1] "C:/Users/kellyc/Documents/BLM Development/engine/BLMEngineInR/inst/extdata/ParameterFiles/carbonate_system_only.dat4 (modified)"
+      [1] "carbonate_system_only.dat4 (modified)"
       
       $N
            Mass     InLab     InVar    InMass    InComp InDefComp    InSpec   DefComp 
@@ -263,11 +266,11 @@
       2    OH             OH = 1 * OH     -1  Water   1 Normal   Debye  0.000
       3   CO3           CO3 = 1 * CO3     -2  Water   1 Normal   Debye  0.000
       4 H2CO3 H2CO3 = 2 * H + 1 * CO3      0  Water   1 Normal   Debye 16.681
-                   K DeltaH TempKelvin NC
-      1 1.000000e+00      0       0.00  1
-      2 1.000000e+00      0       0.00  1
-      3 1.000000e+00      0       0.00  1
-      4 4.797334e+16 -23760     298.15  2
+                   K    DeltaH TempKelvin NC
+      1 1.000000e+00      0.00     0.0000  1
+      2 1.000000e+00      0.00     0.0000  1
+      3 1.000000e+00      0.00     0.0000  1
+      4 4.797334e+16 -24166.23   298.1515  2
       
       $SpecCompList
             [,1] [,2]
@@ -393,6 +396,9 @@
       $WHAM$SpecKselTable
       [1] Spec   KselHA KselFA
       <0 rows> (or 0-length row.names)
+      
+      $WHAM$Notes
+      character(0)
       
       
       $Index

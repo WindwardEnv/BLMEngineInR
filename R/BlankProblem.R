@@ -171,9 +171,7 @@ BlankProblem = function() {
 
   )
 
-
-
-  return(Out)
+  Out
 
 }
 
@@ -343,9 +341,10 @@ BlankProblemList = function() {
       Spec = character(),
       KselHA = numeric(),
       KselFA = numeric()
-    )
+    ),
+    WHAMNotes = character()
   )
 
-  return(Out)
+  Out
 
 }

@@ -111,7 +111,7 @@ AddSpecialDefs = function(ThisProblem, Value, SpecialDef, DoCheck = TRUE) { #nol
         WHAMFile = Value[i]
         if (!file.exists(WHAMFile)) {
           ParamFileDir = file.path(dirname(NewProblem$ParamFile), WHAMFile)
-          SysFileDir = system.file(file.path("extdata", "WHAM", WHAMFile),
+          SysFileDir = system.file("extdata", "WHAM", WHAMFile,
                                    package = "BLMEngineInR")
           if (file.exists(ParamFileDir)) {
             WHAMFile = ParamFileDir

@@ -36,10 +36,7 @@ test_that("AddCriticalValues works", {
 })
 test_that("RemoveCriticalValues works", {
 
-  mypfile = system.file(file.path("extdata","ParameterFiles","Cu_full_organic.dat4"),
-                        package = "BLMEngineInR",
-                        mustWork = TRUE)
-  myproblem = DefineProblem(ParamFile = mypfile)
+  myproblem = Cu_full_organic_problem
 
   expect_no_error(RemoveCriticalValues(ThisProblem = myproblem, CAToRemove = 1))
   expect_error(RemoveCriticalValues(ThisProblem = myproblem, CAToRemove = -1))

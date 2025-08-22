@@ -152,6 +152,7 @@ MW = c(
   NO3 = as.numeric(MW["N"] + 3 * MW["O"]),
   NO2 = as.numeric(MW["N"] + 2 * MW["O"]),
   PO4 = as.numeric(MW["P"] + 4 * MW["O"]),
+  CN = as.numeric(MW["C"] + MW["N"]),
   CO2 = as.numeric(MW["C"] + 2 * MW["O"]),
   CaCO3 = as.numeric(MW["Ca"] + MW["C"] + 3 * MW["O"]),
   CaO = as.numeric(MW["Ca"] + MW["O"]),

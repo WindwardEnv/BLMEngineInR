@@ -5,7 +5,7 @@
 \alias{MW}
 \title{Molecular and atomic weights}
 \format{
-An object of class \code{numeric} of length 131.
+An object of class \code{numeric} of length 132.
 }
 \source{
 Prohaska, T., Irrgeher, J., Benefield, J., Böhlke, J., Chesson, L.,

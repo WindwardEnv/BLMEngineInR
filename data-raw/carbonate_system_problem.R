@@ -12,9 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mypfile = system.file(file.path("extdata", "ParameterFiles", "carbonate_system_only.dat4"),
-                      package = "BLMEngineInR",
-                      mustWork = TRUE)
-carbonate_system_problem = DefineProblem(ParamFile = mypfile)
+mypfile = file.path("inst", "extdata", "ParameterFiles", "carbonate_system_only.dat4")
+
+carbonate_system_problem = AddSpecies(
+  ThisProblem = AddInComps(
+    ThisProblem = water_problem,
+    InCompName = "CO3",
+    InCompCharge = -2,
+    InCompMCName = "Water",
+    InCompType = "MassBal",
+    InCompActCorr = "Debye"
+  ),
+  SpecEquation = c(
+    "HCO3 = 1 * H + 1 * CO3",
+    "H2CO3 = 2 * H + 1 * CO3"
+  ),
+  SpecMCName = "Water",
+  SpecActCorr = "Debye",
+  SpecLogK = c(
+    10.329, #HCO3
+    16.681  #H2CO3
+  ),
+  SpecDeltaH = c(
+    -14997.55155,  #HCO3
+    -24166.23162  #H2CO3
+  ),
+  SpecTempKelvin = 298.1514609
+)
+carbonate_system_problem$ParamFile = basename(mypfile)
+WriteParamFile(ThisProblem = carbonate_system_problem, ParamFile = mypfile)
 
 usethis::use_data(carbonate_system_problem, overwrite = TRUE)

@@ -44,8 +44,7 @@
 #' @export
 #'
 #' @examples
-#' mypfile = system.file(file.path("extdata", "ParameterFiles",
-#'                                 "Cu_full_organic.dat4"),
+#' mypfile = system.file("extdata", "ParameterFiles", "Cu_full_organic.dat4",
 #'                       package = "BLMEngineInR",
 #'                       mustWork = TRUE)
 #' ListCAT(ParamFile = mypfile)
@@ -91,6 +90,6 @@ ListCAT = function(ParamFile) {
   }
 
   # Return that table for the user
-  return(CATab)
+  CATab
 
 }
