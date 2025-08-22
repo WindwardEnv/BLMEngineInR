@@ -66,6 +66,7 @@ devtools::release_checks()
 # check_rhub()
 # This function is deprecated and defunct since rhub v2.
 # Please see `?rhubv2` on transitioning to the new rhub functions.
+# **I have done the v2 update already. Check with rhub::rhub_check().
 rhub::rhub_check(platforms = c("linux", "macos", "macos-arm64", "windows"))
 
 # Have you checked on win-builder (with `check_win_devel()`)?
