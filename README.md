@@ -1,6 +1,6 @@
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/KellyCroteau/BLMEngineInR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/KellyCroteau/BLMEngineInR/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/WindwardEnv/BLMEngineInR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/WindwardEnv/BLMEngineInR/actions/workflows/R-CMD-check.yaml)
 
 <!-- badges: end -->
 
