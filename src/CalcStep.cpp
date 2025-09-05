@@ -15,7 +15,6 @@
 #include <RcppArmadillo.h>
 #include "RcppArmaHelper.h"
 #include "CHESSFunctions.h"
-#include <armadillo>
 
 //' @title Calculate the Newton-Raphson step
 //'
