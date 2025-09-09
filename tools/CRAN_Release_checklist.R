@@ -9,13 +9,14 @@ devtools::load_all()
 
 
 # check lints and style
-styler::style_pkg(
-  style = styler::tidyverse_style,
-  filetype = "R",
-  exclude_dirs = c("tests", "data-raw", "tools"),
-  scope = I(c("indention", "line_breaks")),
-  dry = "on"
-)
+# styler::style_pkg(
+#   style = styler::tidyverse_style,
+#   # start_comments_with_one_space = TRUE,
+#   filetype = "R",
+#   exclude_dirs = c("tests", "data-raw", "tools"),
+#   scope = I(c("line_breaks", "indention")),
+#   dry = "on"
+# )
 lintr::lint_package()
 
 # to-do list before release:
