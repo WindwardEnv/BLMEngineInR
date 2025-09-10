@@ -14,11 +14,12 @@
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
+#include <RcppArmadillo.h>
 #include <vector>
 #include <cfloat>
-#include <RcppArmadillo.h>
 #include "RcppArmaHelper.h"
 
+/*
 // Rcpp to armadillo conversion functions
 arma::vec RcppVectorToVector(Rcpp::NumericVector XRcppVec){
   std::vector<double> Xstd = Rcpp::as<std::vector<double>>(XRcppVec);//Rcpp::NumericVector -> std::vector<double>
@@ -67,6 +68,7 @@ Rcpp::NumericMatrix MatrixToRcppMatrix(arma::mat Xmat){
   Rcpp::NumericMatrix XRcppmat = Rcpp::as<Rcpp::NumericMatrix>(XRcppvec);//Rcpp::NumericVector -> Rcpp::NumericMatrix
   return XRcppmat;
 }
+*/
 
 Rcpp::NumericVector MatrixToRcppVector(arma::mat Xmat){
   std::vector<double> Xstd = arma::conv_to< std::vector<double> >::from(Xmat.as_col());//arma::mat -> std::vector
@@ -74,6 +76,7 @@ Rcpp::NumericVector MatrixToRcppVector(arma::mat Xmat){
   return XRcppvec;
 }
 
+/*
 Rcpp::NumericMatrix RcppMatMult(Rcpp::NumericMatrix A, Rcpp::NumericMatrix B){
   arma::mat Amat = RcppMatrixToMatrix(A);
   arma::mat Bmat = RcppMatrixToMatrix(B);
@@ -166,3 +169,4 @@ Rcpp::NumericMatrix SvdInverse(Rcpp::NumericMatrix XRcppMat){
 
   return MatrixToRcppMatrix(Xinv);
 }
+*/
