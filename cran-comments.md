@@ -2,7 +2,7 @@
 
 Changes made:
 
--   DESCRIPTION file has been updated to better follow style guidelines and better describe the history and status of the model.
+-   DARMA_USE_CURRENT was added to PKG_CXXFLAGS in Makevars and Makevars.win
 
 ## R CMD check environment
 

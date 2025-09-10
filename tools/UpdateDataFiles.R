@@ -16,15 +16,35 @@ source.order = c(
 
 if (!all(source.order %in% list.files(path = "data-raw"))) {
   stop(
-    "Some data-creation do not exist anymore:",
+    "Some data-creation files do not exist anymore:",
     paste(setdiff(source.order, list.files(path = "data-raw")),
           collapse = ", ")
   )
 }
 
-for (i in source.order) {
-  devtools::load_all()
-  source(file.path("data-raw", i))
+
+# This will stop data files from being re-sourced if nothing has changed
+load(file.path("tools", "data-raw_mtime_previous.RData"))
+data.raw.mtime = merge(
+  data.frame(source.file = source.order,
+             mtime.new = file.info(file.path("data-raw", source.order))$mtime),
+  data.raw.mtime,
+  all.x = TRUE,
+  sort = FALSE
+)
+stopifnot(all(data.raw.mtime$source.file == source.order))
+data.raw.mtime$update =
+  as.logical(cumsum((data.raw.mtime$mtime.new > data.raw.mtime$mtime.prev)))
+data.raw.mtime$update = data.raw.mtime$update | (
+  max(file.info(list.files(path = "R", full.names = TRUE))$mtime) >
+  max(file.info(list.files(path = "data", full.names = TRUE))$mtime)
+)
+
+for (i in 1:length(source.order)) {
+  if (data.raw.mtime$update[i]) {
+    devtools::load_all()
+    source(file.path("data-raw", source.order[i]))
+  }
 }
 
 if (!all(list.files(path = "data-raw") %in% source.order)) {
@@ -35,5 +55,9 @@ if (!all(list.files(path = "data-raw") %in% source.order)) {
   )
 }
 
-
-
+if (any(data.raw.mtime$update)) {
+  data.raw.mtime$mtime.prev = data.raw.mtime$mtime.new
+  data.raw.mtime$mtime.new = NULL
+  data.raw.mtime$update = NULL
+  save(data.raw.mtime, file = file.path("tools", "data-raw_mtime_previous.RData"))
+}
