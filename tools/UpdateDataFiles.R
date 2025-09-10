@@ -35,10 +35,17 @@ data.raw.mtime = merge(
 stopifnot(all(data.raw.mtime$source.file == source.order))
 data.raw.mtime$update =
   as.logical(cumsum((data.raw.mtime$mtime.new > data.raw.mtime$mtime.prev)))
-data.raw.mtime$update = data.raw.mtime$update | (
-  max(file.info(list.files(path = "R", full.names = TRUE))$mtime) >
-  max(file.info(list.files(path = "data", full.names = TRUE))$mtime)
-)
+
+data.raw.mtime$update = data.raw.mtime$update |
+  switch(menu(
+    choices = c("Yes", "No"),
+    title = paste0("These files have been updated since the most recent data ",
+                   "file update. Do any of these warrant a data update?\n",
+                   paste(list.files(path = "R")[
+                     file.info(list.files(path = "R", full.names = TRUE))$mtime >
+                       max(file.info(list.files(path = "data", full.names = TRUE))$mtime)
+                   ], collapse = "\n"))
+  ), Yes = TRUE, No = FALSE)
 
 for (i in 1:length(source.order)) {
   if (data.raw.mtime$update[i]) {
